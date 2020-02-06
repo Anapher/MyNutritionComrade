@@ -4,7 +4,6 @@ using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Models.Request;
 using MyNutritionComrade.Models.Response;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MyNutritionComrade.Controllers
@@ -15,8 +14,6 @@ namespace MyNutritionComrade.Controllers
     {
         // POST api/v1/auth/login
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto request, [FromServices] ILoginUseCase loginUseCase)
         {
             var result = await loginUseCase.Handle(new LoginRequest(request.UserName, request.Password, HttpContext.Connection.RemoteIpAddress?.ToString()));
@@ -30,8 +27,6 @@ namespace MyNutritionComrade.Controllers
 
         // POST api/v1/auth/refreshtoken
         [HttpPost("refreshtoken")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<ExchangeRefreshTokenResponseDto>> RefreshToken([FromBody] ExchangeRefreshTokenRequestDto request, [FromServices] IExchangeRefreshTokenUseCase useCase)
         {
             var result = await useCase.Handle(new ExchangeRefreshTokenRequest(request.AccessToken, request.RefreshToken, HttpContext.Connection.RemoteIpAddress?.ToString()));

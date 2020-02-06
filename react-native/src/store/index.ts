@@ -5,13 +5,16 @@ import services from '../services';
 import rootEpic from './root-epic';
 import rootReducer from './root-reducer';
 import { persistState, loadState } from './storage';
+import createReduxPromiseListener from 'redux-promise-listener';
 
 export const epicMiddleware = createEpicMiddleware<RootAction, RootAction, RootState, Services>({
     dependencies: services,
 });
 
+export const promiseListener = createReduxPromiseListener();
+
 // configure middlewares
-const middlewares = [epicMiddleware];
+const middlewares = [epicMiddleware, promiseListener.middleware];
 
 // compose enhancers
 const enhancer = compose(applyMiddleware(...middlewares));

@@ -2,13 +2,13 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using MyNutritionComrade;
 using MyNutritionComrade.Models.Request;
+using MyNutritionComradeIntegrationTests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace MyNutritionComradeIntegrationTests.Controllers
+namespace MyNutritionComrade.IntegrationTests.Controllers
 {
     public class AuthControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
