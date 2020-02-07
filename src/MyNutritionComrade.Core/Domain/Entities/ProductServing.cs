@@ -9,26 +9,20 @@ namespace MyNutritionComrade.Core.Domain.Entities
     public class ProductServing : BaseEntity
     {
         private readonly List<ProductServingLabel> _productServingLabels = new List<ProductServingLabel>();
-        private readonly List<ProductServingAlias> _productServingAliases = new List<ProductServingAlias>();
 
-        public ProductServing(Product product, double mass)
+        public ProductServing(double weight, ServingType servingType)
         {
-            Product = product;
-            ProductId = product.Id;
-            Mass = mass;
+            Weight = weight;
+            ServingType = servingType;
         }
 
-        public int ProductId { get; private set; }
-        public Product Product { get; private set; }
-
-        public double Mass { get; private set; }
-
+        public double Weight { get; private set; }
+        public ServingType? ServingType { get; private set; }
         public IEnumerable<ProductServingLabel> ProductServingLabels => _productServingLabels;
-        public IEnumerable<ProductServingAlias> ProductServingAliases => _productServingAliases;
 
         public void AddLabel(string name, CultureInfo cultureInfo)
         {
-            var label = new ProductServingLabel(this, name, cultureInfo);
+            var label = new ProductServingLabel(name, cultureInfo);
             if (_productServingLabels.Any(x => x.LanguageCode == label.LanguageCode && x.NormalizedName == label.NormalizedName))
                 throw new ArgumentException("The label already exists");
 
@@ -39,19 +33,18 @@ namespace MyNutritionComrade.Core.Domain.Entities
         {
             _productServingLabels.Remove(_productServingLabels.First(x => x.Id == productServingLabelId));
         }
+    }
 
-        public void AddServingAlias(string name, CultureInfo cultureInfo)
+    public class ServingType
+    {
+        public ServingType(string name)
         {
-            var alias = new ProductServingAlias(this, name, cultureInfo);
-            if (_productServingAliases.Any(x => x.LanguageCode == alias.LanguageCode && x.NormalizedName == alias.NormalizedName))
-                throw new ArgumentException("The alias already exists");
-
-            _productServingAliases.Add(alias);
+            Name = name;
         }
 
-        public void RemoveAlias(int productServingAliasId)
-        {
-            _productServingAliases.Remove(_productServingAliases.First(x => x.Id == productServingAliasId));
-        }
+        public string Name { get; }
+
+        public static ServingType Slice = new ServingType("slice");
+        public static ServingType Piece = new ServingType("piece");
     }
 }
