@@ -4,6 +4,7 @@ import { RootState } from 'MyNutritionComrade';
 import { connect } from 'react-redux';
 import SignInScreen from 'src/features/auth/components/SignInScreen';
 import HomeScreen from './HomeScreen';
+import { IconButton } from 'react-native-paper';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,8 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                     options={{
                         // When logging out, a pop animation feels intuitive
                         animationTypeForReplace: isSignOut ? 'pop' : 'push',
+                        headerTitle: 'My Nutriton Comrade',
+                        headerRight: () => <IconButton icon="account" size={26} onPress={() => {}} />,
                     }}
                 />
             )}

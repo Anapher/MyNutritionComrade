@@ -1,6 +1,5 @@
 using MyNutritionComrade.Infrastructure.Auth;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using Microsoft.IdentityModel.Tokens;

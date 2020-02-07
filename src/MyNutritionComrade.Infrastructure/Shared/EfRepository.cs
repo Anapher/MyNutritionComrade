@@ -29,6 +29,11 @@ namespace MyNutritionComrade.Infrastructure.Shared
             return await _appDbContext.Set<T>().ToListAsync();
         }
 
+        public async Task<IList<T>> GetLimitedBySpecs(int limit, params ISpecification<T>[] specs)
+        {
+            return await QuerySpecs(specs).Take(limit).ToListAsync();
+        }
+
         public async Task<T> Add(T entity)
         {
             _appDbContext.Set<T>().Add(entity);

@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MyNutritionComrade.Infrastructure.Options;
 
 namespace MyNutritionComrade
 {
@@ -53,6 +54,7 @@ namespace MyNutritionComrade
             // Register the ConfigurationBuilder instance of AuthSettings
             var authSettings = Configuration.GetSection(nameof(AuthSettings));
             services.Configure<AuthSettings>(authSettings);
+            services.Configure<ProductsDatabaseSettings>(Configuration.GetSection(nameof(ProductsDatabaseSettings)));
 
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
 
