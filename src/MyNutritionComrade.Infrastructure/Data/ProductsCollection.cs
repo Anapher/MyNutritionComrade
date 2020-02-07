@@ -11,9 +11,9 @@ namespace MyNutritionComrade.Infrastructure.Data
             var client = new MongoClient(options.Value.ConnectionString);
             var database = client.GetDatabase(options.Value.DatabaseName);
 
-            Products = database.GetCollection<Product>(options.Value.ProductsCollectionName);
+            Products = database.GetCollection<OpenFoodFactsProduct>(options.Value.ProductsCollectionName);
         }
 
-        public IMongoCollection<Product> Products { get; }
+        public IMongoCollection<OpenFoodFactsProduct> Products { get; }
     }
 }

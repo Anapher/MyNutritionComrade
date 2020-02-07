@@ -1,4 +1,6 @@
-﻿namespace MyNutritionComrade.Core.Domain
+﻿using System;
+
+namespace MyNutritionComrade.Core.Domain
 {
     public class NutritionInformation : INutritionInformation
     {
@@ -66,5 +68,33 @@
         ///     <inheritdoc />
         /// </summary>
         public double Sodium { get; private set; }
+
+        protected bool Equals(NutritionInformation other) =>
+            Mass.Equals(other.Mass) && Energy.Equals(other.Energy) && Fat.Equals(other.Fat) && SaturatedFat.Equals(other.SaturatedFat) &&
+            Carbohydrates.Equals(other.Carbohydrates) && Sugars.Equals(other.Sugars) && Protein.Equals(other.Protein) &&
+            DietaryFiber.Equals(other.DietaryFiber) && Sodium.Equals(other.Sodium);
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((NutritionInformation) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = new HashCode();
+            hashCode.Add(Mass);
+            hashCode.Add(Energy);
+            hashCode.Add(Fat);
+            hashCode.Add(SaturatedFat);
+            hashCode.Add(Carbohydrates);
+            hashCode.Add(Sugars);
+            hashCode.Add(Protein);
+            hashCode.Add(DietaryFiber);
+            hashCode.Add(Sodium);
+            return hashCode.ToHashCode();
+        }
     }
 }

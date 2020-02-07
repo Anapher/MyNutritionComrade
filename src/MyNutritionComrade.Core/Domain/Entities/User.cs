@@ -21,6 +21,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public string? Email { get; set; }
         public string PasswordHash { get; set; }
         public string? UnconfirmedEmailAddress { get; set; }
+        public bool IsTrustworthy { get; set; }
 
         public bool HasConfirmedEmailAddress() => Email != null;
 

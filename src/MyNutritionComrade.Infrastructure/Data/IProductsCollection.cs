@@ -4,6 +4,6 @@ namespace MyNutritionComrade.Infrastructure.Data
 {
     public interface IProductsCollection
     {
-        IMongoCollection<Product> Products { get; }
+        IMongoCollection<OpenFoodFactsProduct> Products { get; }
     }
 }

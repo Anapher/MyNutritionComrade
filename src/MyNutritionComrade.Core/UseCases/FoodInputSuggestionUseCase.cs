@@ -36,7 +36,7 @@ namespace MyNutritionComrade.Core.UseCases
             _inputParser.TryParseServingSize(ref s, out var servingSize);
 
             var products = _productRepository.QueryProducts(s.ToString(), 10);
-
+            throw new NotImplementedException();
         }
     }
 }

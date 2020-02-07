@@ -4,6 +4,7 @@
 
   <ItemGroup>
     <PackageReference Include="autofac" Version="4.9.4" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="3.1.1" />
   </ItemGroup>
 
   <Import Project="../nullable.props" />

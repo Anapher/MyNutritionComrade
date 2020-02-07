@@ -19,7 +19,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 
         public Task<IList<IProduct>> QueryProducts(string searchString, int limit)
         {
-            _productsCollection.Products.FindAsync(new JsonFilterDefinition<Product>(""))
+            _productsCollection.Products.FindAsync(new JsonFilterDefinition<OpenFoodFactsProduct>(""))
         }
     }
 }

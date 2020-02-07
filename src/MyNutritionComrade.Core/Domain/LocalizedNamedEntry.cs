@@ -35,7 +35,6 @@ namespace MyNutritionComrade.Core.Domain
         /// </summary>
         public string NormalizedName { get; private set; } = string.Empty;
 
-
         /// <summary>
         ///     Change the name
         /// </summary>

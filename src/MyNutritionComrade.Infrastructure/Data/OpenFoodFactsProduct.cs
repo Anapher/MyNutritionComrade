@@ -3,7 +3,7 @@ using MyNutritionComrade.Core.Interfaces.Services;
 
 namespace MyNutritionComrade.Infrastructure.Data
 {
-    public class Product : IProduct
+    public class OpenFoodFactsProduct : IProduct
     {
         /// <summary>
         ///     Barcode of the product (can be EAN-13 or internal codes for some food stores), for products without a barcode, Open
@@ -37,13 +37,13 @@ namespace MyNutritionComrade.Infrastructure.Data
         public string? NutritionGrade { get; set; }
 
         [BsonElement("energy_100g")]
-        public int Energy { get; set; }
+        public double Energy { get; set; }
 
         [BsonElement("proteins_100g")]
         public double Protein { get; set; }
 
-        [BsonElement("casein_100g")]
-        public double Casein { get; set; }
+        [BsonElement("fiber_100g")]
+        public double DietaryFiber { get; set; }
 
         [BsonElement("carbohydrates_100g")]
         public double Carbohydrates { get; set; }

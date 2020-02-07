@@ -7,7 +7,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
     /// </summary>
     public class ProductLabel : LocalizedNamedEntry
     {
-        public ProductLabel(Product product, CultureInfo cultureInfo, string name) : base(cultureInfo.Name, name)
+        public ProductLabel(Product product, string name, CultureInfo cultureInfo) : base(cultureInfo.Name, name)
         {
             Product = product;
             ProductId = product.Id;
