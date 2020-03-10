@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using MyNutritionComrade.Core.Interfaces.Services;
+﻿using System.Threading.Tasks;
+using MyNutritionComrade.Core.Domain.Entities;
 
 namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
 {
-    public interface IProductRepository
+    public interface IProductRepository : IRepository<Product>
     {
-        Task<IList<IProduct>> QueryProducts(string searchString, int limit);
-        Task<IProduct> GetProductByCode(string productCode);
+        Task<Product?> GetFullProductById(int productId);
     }
 }

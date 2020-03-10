@@ -16,5 +16,7 @@
 
         public string Label { get; private set; }
         public string LanguageCode { get; private set; }
+
+        public string Key => $"{LanguageCode}/{Label}";
     }
 }

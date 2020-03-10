@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Driver;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
-using MyNutritionComrade.Core.Interfaces.Services;
+using MyNutritionComrade.Infrastructure.Shared;
 
 namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : EfRepository<Product>, IProductRepository
     {
-        private readonly IProductsCollection _productsCollection;
-
-        public ProductRepository(IProductsCollection productsCollection)
+        public ProductRepository(AppDbContext appDbContext) : base(appDbContext)
         {
-            _productsCollection = productsCollection;
         }
 
-        public Task<IList<IProduct>> QueryProducts(string searchString, int limit)
+        public Task<Product?> GetFullProductById(int productId)
         {
-            _productsCollection.Products.FindAsync(new JsonFilterDefinition<OpenFoodFactsProduct>(""))
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+            return _appDbContext.Set<Product>().Include(x => x.ProductLabel).Include(x => x.ProductServings).Include(x => x.ProductContributions)
+                .FirstOrDefaultAsync();
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
         }
     }
 }

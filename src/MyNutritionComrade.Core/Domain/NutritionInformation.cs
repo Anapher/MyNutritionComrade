@@ -2,6 +2,9 @@
 
 namespace MyNutritionComrade.Core.Domain
 {
+    /// <summary>
+    ///     Macro nutrition information
+    /// </summary>
     public class NutritionInformation : INutritionInformation
     {
         public NutritionInformation(double mass, double energy, double fat, double saturatedFat, double carbohydrates, double sugars, double protein,

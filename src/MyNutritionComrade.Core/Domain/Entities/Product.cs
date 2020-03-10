@@ -11,22 +11,14 @@ namespace MyNutritionComrade.Core.Domain.Entities
     {
         private readonly List<ProductContribution> _productContributions = new List<ProductContribution>();
         private readonly List<ProductLabel> _productLabel = new List<ProductLabel>();
-        private readonly Dictionary<double, ProductServing> _productServings = new Dictionary<double, ProductServing>();
+        private readonly List<ProductServing> _productServings = new List<ProductServing>();
+        private string _defaultServing = "g";
 
-        public Product(ProductDto value, User user)
+        public Product()
         {
             NutritionInformation = NutritionInformation.Empty;
             Code = null;
-
-            var contribution = AddContribution(value, user, Version);
-            ApplyContribution(contribution);
         }
-
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-        private Product()
-        {
-        }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
         /// <summary>
         ///     The product bar code
@@ -44,40 +36,48 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public int Version { get; private set; }
 
         /// <summary>
-        ///     The labels of the product, because equal products may have different labels depending on the location they are sold
+        ///     The labels of the product, because equal products may have different labels depending on the location they are sold/synonyms
         /// </summary>
         public IEnumerable<ProductLabel> ProductLabel => _productLabel;
 
         /// <summary>
         ///     The serving sizes of the product (e. g. 1g, 1 unit, 1 package, ...)
         /// </summary>
-        public IReadOnlyDictionary<double, ProductServing> ProductServings => _productServings;
+        public IReadOnlyList<ProductServing> ProductServings => _productServings;
 
         /// <summary>
         ///     The contributions done to this product
         /// </summary>
         public IEnumerable<ProductContribution> ProductContributions => _productContributions;
 
-        public ProductContribution AddContribution(ProductDto newValue, User user, int versionBase)
+        public ServingType DefaultServing
         {
-            var version = (_productContributions.Count == 0 ? 0 : _productContributions.Max(x => x.SourceVersion)) + 1;
-            var basedValue = versionBase == Version ? Value : _productContributions.First(x => x.Version == versionBase).NewValue;
-            var jsonPatch = ProductValueUtils.CreateJsonPatchDocument(basedValue, newValue);
+            get => new ServingType(_defaultServing);
+            set => _defaultServing = value.Name;
+        }
 
-            var contribution = new ProductContribution(versionBase, jsonPatch, newValue, this, user, version);
+        public ProductContribution AddContribution(User user, int sourceVersion, string jsonPatch)
+        {
+            var version = 0;
+            if (_productContributions.Count > 0)
+                version = _productContributions.Max(x => x.Version) + 1;
+
+            var contribution = new ProductContribution(sourceVersion, jsonPatch, this, user, version);
             _productContributions.Add(contribution);
-
-            if (user.IsTrustworthy)
-                ApplyContribution(contribution);
 
             return contribution;
         }
 
-        public void ApplyContribution(ProductContribution contribution)
+        public void ApplyContribution(ProductContribution productContribution, ProductDto productDto)
         {
-            Code = contribution.NewValue.Code;
-            NutritionInformation = contribution.NewValue.NutritionInformation;
-            Version = contribution.Version;
+            Code = productDto.Code;
+            NutritionInformation = productDto.NutritionInformation;
+            Version = productContribution.Version;
+
+            _defaultServing = productDto.DefaultServingType;
+
+            ProductUtils.PatchServings(this, _productServings, productDto.ServingTypes);
+            ProductUtils.PatchLabels(this, _productLabel, productDto.Label);
         }
 
         public void AddProductLabel(string name, CultureInfo cultureInfo)
@@ -94,12 +94,12 @@ namespace MyNutritionComrade.Core.Domain.Entities
             _productLabel.Remove(_productLabel.First(x => x.Id == productLabelId));
         }
 
-        public ProductServing AddProductServing(double mass)
+        public ProductServing AddProductServing(double weight, ServingType servingType)
         {
-            if (_productServings.Any(x => Math.Abs(x.Key - mass) < 1))
+            if (_productServings.Any(x => Math.Abs(x.Weight - weight) < 1))
                 throw new ArgumentException("A serving with the given mass already exists.");
 
-            var serving = new ProductServing(this, mass);
+            var serving = new ProductServing(weight, servingType, this);
             _productServings.Add(serving);
             return serving;
         }
@@ -108,6 +108,5 @@ namespace MyNutritionComrade.Core.Domain.Entities
         {
             _productServings.Remove(_productServings.First(x => x.Id == productServingId));
         }
-
     }
 }
