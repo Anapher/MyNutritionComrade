@@ -6,16 +6,16 @@ namespace MyNutritionComrade.Core.Dto.UseCaseRequests
 {
     public class AddOrUpdateProductRequest : IUseCaseRequest<AddOrUpdateProductResponse>
     {
-        public AddOrUpdateProductRequest(ProductDto productDto, int? productId, int? productVersion, string userId)
+        public AddOrUpdateProductRequest(ProductInfo product, string? productId, int? productVersion, string userId)
         {
-            ProductDto = productDto;
+            Product = product;
             ProductId = productId;
             ProductVersion = productVersion;
             UserId = userId;
         }
 
-        public ProductDto ProductDto { get; set; }
-        public int? ProductId { get; set; }
+        public ProductInfo Product { get; set; }
+        public string? ProductId { get; set; }
         public int? ProductVersion { get; set; }
         public string UserId { get; set; }
     }

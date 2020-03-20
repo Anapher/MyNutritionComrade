@@ -10,7 +10,7 @@ namespace MyNutritionComrade.Core.Shared
         [Key]
         public int Id { get; set; }
 
-        public DateTimeOffset CreatedOn { get; set; }
         public DateTimeOffset ModifiedOn { get; set; }
+        public DateTimeOffset CreatedOn { get; set; }
     }
 }

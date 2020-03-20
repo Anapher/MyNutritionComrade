@@ -41,10 +41,10 @@ namespace MyNutritionComrade.Core.Tests.Utilities
             var nutritionInfo1 = new NutritionInformation(100, 200, 15, 2, 5, 6, 20, 4, 1.2);
             var nutritionInfo2 = new NutritionInformation(100, 200, 20, 2, 5, 6, 20, 4, 1.2);
 
-            var originalProduct = new ProductDto(nutritionInfo1, "TestCode", new List<LocalizedLabel> {new LocalizedLabel("Name", "en")},
-                new List<ProductServingDto> {new ProductServingDto(100d, "gram", new[] {new ItemLocalizedLabel("gram", "en", "grams")})}, "gram");
-            var updatedProduct = new ProductDto(nutritionInfo2, "TestCode", new List<LocalizedLabel> { new LocalizedLabel("Name", "en") },
-                new List<ProductServingDto> { new ProductServingDto(100d, "gram", new[] { new ItemLocalizedLabel("gram", "en", "grams") }) }, "gram");
+            var originalProduct = new ProductDto(nutritionInfo1, "TestCode", new List<ProductLabelDto> {new ProductLabelDto("Name", "en")},
+                new List<ProductServingDto> {new ProductServingDto(100d, "gram", new[] {new ProductServingLabelDto("gram", "en", "grams")})}, "gram");
+            var updatedProduct = new ProductDto(nutritionInfo2, "TestCode", new List<ProductLabelDto> { new ProductLabelDto("Name", "en") },
+                new List<ProductServingDto> { new ProductServingDto(100d, "gram", new[] { new ProductServingLabelDto("gram", "en", "grams") }) }, "gram");
 
 
             var result = _utils.CreatePatch(originalProduct, updatedProduct);
@@ -57,10 +57,10 @@ namespace MyNutritionComrade.Core.Tests.Utilities
         [Fact]
         public void TestCreateJsonPatchDocumentListChanges()
         {
-            var originalProduct = new ProductDto(NutritionInformation.Empty, "TestCode", new List<LocalizedLabel> { new LocalizedLabel("Name", "en") },
-                new List<ProductServingDto> { new ProductServingDto(100d, "gram", new[] { new ItemLocalizedLabel("gram", "en", "grams") }) }, "gram");
-            var updatedProduct = new ProductDto(NutritionInformation.Empty, "TestCode", new List<LocalizedLabel> { new LocalizedLabel("Name", "en"), new LocalizedLabel("Name", "de") },
-                new List<ProductServingDto> { new ProductServingDto(100d, "gram", new[] { new ItemLocalizedLabel("gram", "en", "grams") }) }, "gram");
+            var originalProduct = new ProductDto(NutritionInformation.Empty, "TestCode", new List<ProductLabelDto> { new ProductLabelDto("Name", "en") },
+                new List<ProductServingDto> { new ProductServingDto(100d, "gram", new[] { new ProductServingLabelDto("gram", "en", "grams") }) }, "gram");
+            var updatedProduct = new ProductDto(NutritionInformation.Empty, "TestCode", new List<ProductLabelDto> { new ProductLabelDto("Name", "en"), new ProductLabelDto("Name", "de") },
+                new List<ProductServingDto> { new ProductServingDto(100d, "gram", new[] { new ProductServingLabelDto("gram", "en", "grams") }) }, "gram");
 
 
             var result = _utils.CreatePatch(originalProduct, updatedProduct);

@@ -19,6 +19,8 @@
             Name = name;
         }
 
+        public override string ToString() => Name;
+
         public string Name { get; }
 
         public static ServingType Gram = new ServingType("g");
@@ -26,6 +28,15 @@
         public static ServingType Slice = new ServingType("slice");
         public static ServingType Piece = new ServingType("piece");
         public static ServingType Bread = new ServingType("bread");
+        public static ServingType Bottle = new ServingType("bottle");
+        public static ServingType Cup = new ServingType("cup");
+        public static ServingType TableSpoon = new ServingType("el");
+        public static ServingType TeaSpoon = new ServingType("tl");
+
         public static ServingType Package = new ServingType("package");
+        public static ServingType Large = new ServingType("large");
+        public static ServingType ExtraLarge = new ServingType("extraLarge");
+        public static ServingType Small = new ServingType("small");
+        public static ServingType Medium = new ServingType("medium");
     }
 }

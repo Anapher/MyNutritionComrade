@@ -1,23 +1,33 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
-using MyNutritionComrade.Infrastructure.Shared;
 
 namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
-    public class ProductRepository : EfRepository<Product>, IProductRepository
+    public class ProductRepository : IProductRepository
     {
-        public ProductRepository(AppDbContext appDbContext) : base(appDbContext)
+        private readonly IProductsCollection _productsCollection;
+
+        public ProductRepository(IProductsCollection productsCollection)
         {
+            _productsCollection = productsCollection;
         }
 
-        public Task<Product?> GetFullProductById(int productId)
+        public async Task<Product?> FindById(string productId)
         {
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-            return _appDbContext.Set<Product>().Include(x => x.ProductLabel).Include(x => x.ProductServings).Include(x => x.ProductContributions)
-                .FirstOrDefaultAsync();
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
+            return await _productsCollection.Products.Find(Builders<Product>.Filter.Eq(x => x.Id, productId)).FirstOrDefaultAsync();
+        }
+
+        public Task Add(Product product)
+        {
+            return _productsCollection.Products.InsertOneAsync(product);
+        }
+
+        public Task Update(Product product)
+        {
+            return _productsCollection.Products.ReplaceOneAsync(Builders<Product>.Filter.Eq(x => x.Id, product.Id), product);
         }
     }
 }

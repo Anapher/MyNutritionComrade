@@ -21,7 +21,8 @@ namespace MyNutritionComrade.Infrastructure.Tests.Parsing
         public void TestTryParseServingSize(string s, bool canParse, int expectedSize, bool sizeIsGram, string expectedStringLeft)
         {
             var span = s.AsSpan();
-            var result = InputParser.TryParseServingSize(ref span, out var size);
+            var parser = new InputParser();
+            var result = parser.TryParseServingSize(ref span, out var size);
 
             Assert.Equal(canParse, result);
             Assert.Equal(expectedStringLeft, span.ToString());

@@ -9,8 +9,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         padding: 8,
-        paddingTop: 14,
-        paddingBottom: 14,
+        paddingTop: 12,
+        paddingBottom: 12,
     },
 });
 

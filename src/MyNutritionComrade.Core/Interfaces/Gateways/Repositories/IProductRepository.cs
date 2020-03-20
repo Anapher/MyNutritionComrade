@@ -3,8 +3,10 @@ using MyNutritionComrade.Core.Domain.Entities;
 
 namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IProductRepository
     {
-        Task<Product?> GetFullProductById(int productId);
+        Task<Product?> FindById(string productId);
+        Task Add(Product product);
+        Task Update(Product product);
     }
 }

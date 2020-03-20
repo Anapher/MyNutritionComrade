@@ -1,35 +1,50 @@
-﻿using System.Collections.Generic;
-using MyNutritionComrade.Core.Shared;
+﻿using System;
+using System.Collections.Generic;
+using MongoDB.Bson;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
-    public class ProductContribution : BaseEntity
+    public class ProductContribution
     {
-        public ProductContribution(int sourceVersion, string jsonPatch, Product product, User user, int version)
+        public ProductContribution(string userId, string productId, BsonDocument patch)
         {
-            ProductId = product.Id;
-            SourceVersion = sourceVersion;
-            JsonPatch = jsonPatch;
-            UserId = user.Id;
-            Product = product;
-            User = user;
-            Version = version;
+            UserId = userId;
+            ProductId = productId;
+            Patch = patch;
         }
 
-        public int ProductId { get; set; }
-        public int SourceVersion { get; set; }
-
-        /// <summary>
-        ///     A json patch document that updates the product with version <see cref="SourceVersion"/> to <see cref="Version"/>
-        /// </summary>
-        public string JsonPatch { get; private set; }
+        public string Id { get; private set; } = string.Empty;
         public string UserId { get; private set; }
 
-        public int Version { get; private set; }
+        public ProductContributionStatus Status { get; set; }
+        public int? AppliedVersion { get; private set; }
 
-        public Product Product { get; private set; }
-        public User User { get; private set; }
+        public string ProductId { get; private set; }
 
+        /// <summary>
+        ///     A json patch document that updates the product with version <see cref="SourceVersion" /> to <see cref="Version" />
+        /// </summary>
+        public BsonDocument Patch { get; private set; }
+
+        public DateTimeOffset CreatedOn { get; set; } = DateTimeOffset.UtcNow;
         public IList<ProductContributionApproval> Approvals { get; set; } = new List<ProductContributionApproval>();
+
+        public void Apply(int version)
+        {
+            Status = ProductContributionStatus.Applied;
+            AppliedVersion = version;
+        }
+
+        public void Reject()
+        {
+            Status = ProductContributionStatus.Rejected;
+        }
+    }
+
+    public enum ProductContributionStatus
+    {
+        Pending,
+        Applied,
+        Rejected
     }
 }

@@ -1,28 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using MyNutritionComrade.Core.Domain.Entities;
 
 namespace MyNutritionComrade.Core.Domain
 {
     public class ProductDto
     {
-        public ProductDto(NutritionInformation nutritionInformation, string? code, IList<LocalizedLabel> label, IList<ProductServingDto> servingTypes, string defaultServingType)
+        public ProductDto(string id, string? code, NutritionInformation nutritionInformation, IList<ProductLabel> label, IDictionary<ServingType, double> servings, ServingType defaultServingType, ISet<string> tags)
         {
-            NutritionInformation = nutritionInformation;
+            Id = id;
             Code = code;
+            NutritionInformation = nutritionInformation;
             Label = label;
-            ServingTypes = servingTypes;
-            DefaultServingType = defaultServingType;
-        }
-
-        public ProductDto(Product product)
-        {
-            NutritionInformation = product.NutritionInformation;
-            Code = product.Code;
-            Label = product.ProductLabel.Select(x => new LocalizedLabel(x.Name, x.LanguageCode)).ToList();
-            ServingTypes = product.ProductServings.Select(x => new ProductServingDto(x.Weight, x.ServingType.Name,
-                x.ProductServingLabels.Select(y => new ItemLocalizedLabel(y.Name, y.LanguageCode, y.PluralLabel)).ToList())).ToList();
-            DefaultServingType = product.DefaultServing.Name;
+            Servings = servings;
+            DefaultServing = defaultServingType;
+            Tags = tags;
         }
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
@@ -31,10 +22,12 @@ namespace MyNutritionComrade.Core.Domain
         }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
-        public NutritionInformation NutritionInformation { get; private set; }
+        public string Id { get; private set; }
         public string? Code { get; private set; }
-        public IList<LocalizedLabel> Label { get; private set; }
-        public IList<ProductServingDto> ServingTypes { get; private set; }
-        public string DefaultServingType { get; private set; }
+        public NutritionInformation NutritionInformation { get; private set; }
+        public IList<ProductLabel> Label { get; private set; }
+        public IDictionary<ServingType, double> Servings { get; private set; }
+        public ServingType DefaultServing { get; private set; }
+        public ISet<string> Tags { get; private set; }
     }
 }

@@ -7,7 +7,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
     {
         private double _amount;
 
-        public MealProduct(int mealId, ProductServing productServing, double amount)
+        public MealProduct(int mealId, ServingType productServing, double amount)
         {
             MealId = mealId;
             ProductServing = productServing;
@@ -36,6 +36,6 @@ namespace MyNutritionComrade.Core.Domain.Entities
             }
         }
 
-        public ProductServing ProductServing { get; private set; }
+        public ServingType ProductServing { get; private set; }
     }
 }

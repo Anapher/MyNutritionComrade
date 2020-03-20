@@ -29,6 +29,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MyNutritionComrade.Config;
+using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Infrastructure.Options;
 
 namespace MyNutritionComrade
@@ -54,7 +56,7 @@ namespace MyNutritionComrade
             // Register the ConfigurationBuilder instance of AuthSettings
             var authSettings = Configuration.GetSection(nameof(AuthSettings));
             services.Configure<AuthSettings>(authSettings);
-            services.Configure<ProductsDatabaseSettings>(Configuration.GetSection(nameof(ProductsDatabaseSettings)));
+            services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
 
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
 
@@ -102,8 +104,6 @@ namespace MyNutritionComrade
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
-                        var path = context.HttpContext.Request.Path;
-
                         if (!string.IsNullOrEmpty(accessToken))
                             context.Token = accessToken;
                         return Task.CompletedTask;
@@ -121,6 +121,8 @@ namespace MyNutritionComrade
 
             // use BCrypt to hash passwords
             services.AddScoped<IPasswordHasher<AppUser>, BCryptPasswordHasher<AppUser>>();
+
+            services.AddElasticsearch(Configuration);
 
             // add identity
             var identityBuilder = services.AddIdentityCore<AppUser>(o =>
@@ -182,6 +184,10 @@ namespace MyNutritionComrade
 
             builder.Populate(services);
             var container = builder.Build();
+
+            var mongoCollection = container.Resolve<ProductsCollection>();
+            mongoCollection.Setup().Wait();
+
             // Create the IServiceProvider based on the container.
             return new AutofacServiceProvider(container);
         }

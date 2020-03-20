@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using Moq;
 using MyNutritionComrade.Infrastructure.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Extensions.Options;
 
 namespace MyNutritionComrade.Infrastructure.Tests.Auth
 {
@@ -28,7 +27,7 @@ namespace MyNutritionComrade.Infrastructure.Tests.Auth
             var mockJwtTokenHandler = new Mock<IJwtHandler>();
             mockJwtTokenHandler.Setup(handler => handler.WriteToken(It.IsAny<JwtSecurityToken>())).Returns(token);
 
-            var jwtFactory = new JwtFactory(mockJwtTokenHandler.Object, Options.Create(jwtIssuerOptions));
+            var jwtFactory = new JwtFactory(mockJwtTokenHandler.Object, Microsoft.Extensions.Options.Options.Create(jwtIssuerOptions));
 
             // act
             var result = await jwtFactory.GenerateEncodedToken(id, "userName");

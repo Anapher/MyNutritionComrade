@@ -1,11 +1,11 @@
-﻿using MyNutritionComrade.Core.Shared;
+﻿using System;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
-    public class ProductContributionApproval : BaseEntity
+    public class ProductContributionApproval
     {
-        public int ProductContributionId { get; set; }
         public int UserId { get; set; }
         public bool Approve { get; set; }
+        public DateTimeOffset CreatedOn { get; set; }
     }
 }
