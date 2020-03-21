@@ -1,5 +1,4 @@
-import { FoodSuggestion } from 'Models';
-import { MealType } from 'Models';
+import { FoodSuggestion, MealType } from 'Models';
 import { createAction } from 'typesafe-actions';
 
 export const setSearchText = createAction('PRODUCTSEARCH/SET_TEXT')<string>();

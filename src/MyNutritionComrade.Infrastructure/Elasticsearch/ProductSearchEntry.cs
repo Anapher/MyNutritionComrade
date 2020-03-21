@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MyNutritionComrade.Core.Domain;
+using MyNutritionComrade.Core.Domain.Entities;
 using Nest;
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
@@ -24,10 +25,10 @@ namespace MyNutritionComrade.Infrastructure.Elasticsearch
         public string[] ServingTypes { get; set; }
 
         [Object(Enabled = false)]
-        public Dictionary<string, double> ServingTypePortions { get; set; }
+        public Dictionary<string, double> Servings { get; set; }
 
         [Object(Enabled = false)]
-        public Dictionary<string, string> ProductLabels { get; set; }
+        public List<ProductLabel> ProductLabels { get; set; }
 
         [Object(Enabled = false)]
         public string DefaultServingType { get; set; }

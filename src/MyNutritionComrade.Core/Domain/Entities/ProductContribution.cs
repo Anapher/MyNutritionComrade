@@ -13,6 +13,12 @@ namespace MyNutritionComrade.Core.Domain.Entities
             Patch = patch;
         }
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        private ProductContribution()
+        {
+        }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+
         public string Id { get; private set; } = string.Empty;
         public string UserId { get; private set; }
 
@@ -22,7 +28,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public string ProductId { get; private set; }
 
         /// <summary>
-        ///     A json patch document that updates the product with version <see cref="SourceVersion" /> to <see cref="Version" />
+        ///     A json patch document that updates the product
         /// </summary>
         public BsonDocument Patch { get; private set; }
 

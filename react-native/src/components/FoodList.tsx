@@ -1,16 +1,19 @@
+import color from 'color';
+import _ from 'lodash';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Surface, Text, Subheading, Divider, withTheme, Theme } from 'react-native-paper';
+import { FlatList } from 'react-native-gesture-handler';
+import { Divider, Subheading, Surface, Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import FoodButtons from './FoodButtons';
-import _ from 'lodash';
 import FoodItem, { FoodListItem } from './FoodItem';
-import { FlatList, TouchableHighlight } from 'react-native-gesture-handler';
-import color from 'color';
 
 const styles = StyleSheet.create({
     surface: {
         width: '100%',
         elevation: 8,
+        borderTopLeftRadius: 5,
+        borderTopRightRadius: 5,
+        borderTopWidth: 4,
     },
     header: {
         paddingLeft: 16,
@@ -49,6 +52,10 @@ function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme
         .rgb()
         .string();
 
+    const borderColor = color(theme.colors.surface)
+        .rgb(0.8)
+        .string();
+
     return (
         <Surface style={styles.surface}>
             <Surface style={styles.header}>
@@ -73,11 +80,11 @@ function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme
                 ItemSeparatorComponent={() => <Divider />}
                 keyExtractor={item => item.name}
                 renderItem={({ item }) => (
-                    <TouchableHighlight key={item.name}>
+                    <TouchableRipple key={item.name} onPress={() => {}} rippleColor={borderColor}>
                         <FoodItem item={item} />
-                    </TouchableHighlight>
+                    </TouchableRipple>
                 )}
-            ></FlatList>
+            />
             <Surface style={styles.footer}>
                 <FoodButtons onAddFood={onAddFood} onScanBarcode={onScanBarcode} onMoreOptions={onMoreOptions} />
             </Surface>

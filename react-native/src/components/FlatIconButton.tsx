@@ -22,7 +22,7 @@ type FlatIconButtonProps = {
 };
 
 function getToastCallback(text?: string) {
-    if (!text) return undefined;
+    if (!text) return;
     return () => ToastAndroid.show(text, ToastAndroid.SHORT);
 }
 

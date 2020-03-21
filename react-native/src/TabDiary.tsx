@@ -10,7 +10,7 @@ type Props = {
 
 export default function TabDiary({ navigation }: Props) {
     return (
-        <View>
+        <View style={{ marginTop: 16 }}>
             <FoodList
                 title="Lunch"
                 items={[

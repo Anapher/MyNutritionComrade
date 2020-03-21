@@ -56,7 +56,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             var newContributions = new List<ProductContribution>();
 
             // try to find the contribution that is currently applied and if found, add it to the list
-            var applied = product.ProductContributions.FirstOrDefault(x => x.AppliedVersion == product.Version);
+            var applied = product.Contributions.FirstOrDefault(x => x.AppliedVersion == product.Version);
             if (applied != null) newContributions.Add(applied);
 
             // add all pending product contributions
@@ -68,7 +68,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 
             // update product
             await _collection.Products.UpdateOneAsync(Builders<Product>.Filter.Eq(x => x.Id, product.Id),
-                Builders<Product>.Update.Set(x => x.ProductContributions, newContributions));
+                Builders<Product>.Update.Set(x => x.Contributions, newContributions));
         }
     }
 }

@@ -15,6 +15,7 @@ namespace MyNutritionComrade.Extensions
                 {
                     {ErrorType.ValidationError, HttpStatusCode.BadRequest},
                     {ErrorType.Authentication, HttpStatusCode.Unauthorized},
+                    {ErrorType.EntityNotFound, HttpStatusCode.NotFound},
                 }.ToImmutableDictionary(x => x.Key.ToString(), x => (int)x.Value);
 
         public static ActionResult ToActionResult(this IUseCaseErrors status)

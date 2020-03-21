@@ -9,6 +9,7 @@
   "dependencies": {
     "@aspnet/signalr": "^1.1.4",
     "@react-native-community/masked-view": "^0.1.6",
+    "@react-native-community/viewpager": "^3.3.0",
     "@react-navigation/drawer": "^5.0.0-alpha.47",
     "@react-navigation/material-bottom-tabs": "^5.0.0-alpha.42",
     "@react-navigation/native": "^5.0.0-alpha.35",
@@ -27,6 +28,7 @@
     "react-native-reanimated": "^1.7.0",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "^2.0.0-beta.1",
+    "react-native-step-indicator": "^0.0.11",
     "react-native-unimodules": "~0.7.0",
     "react-native-vector-icons": "^6.6.0",
     "react-native-web": "0.12.2",

@@ -30,7 +30,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
-using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Infrastructure.Options;
 
 namespace MyNutritionComrade
@@ -146,7 +145,8 @@ namespace MyNutritionComrade
                                     context.ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
                                     .ToDictionary(x => x.Key, x => x.Value.Errors.First().ErrorMessage)));
                         })
-                        .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+                        .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
+                        .AddJsonOptions(x => x.JsonSerializerOptions.Converters.Add(new ServingTypeSerializer()));
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(InfrastructureModule).Assembly);
 

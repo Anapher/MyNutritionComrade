@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using MyNutritionComrade.Core.Shared;
 using MyNutritionComrade.Core.Utilities;
 
 namespace MyNutritionComrade.Core.Domain.Entities
@@ -10,8 +9,6 @@ namespace MyNutritionComrade.Core.Domain.Entities
     public class Product : ProductInfo
     {
         public string Id { get; private set; } = string.Empty;
-        public DateTimeOffset CreatedOn { get; private set; } = DateTimeOffset.UtcNow;
-        public DateTimeOffset ModifiedOn { get; private set; } = DateTimeOffset.UtcNow;
 
         /// <summary>
         ///     The current version of the product value
@@ -21,7 +18,10 @@ namespace MyNutritionComrade.Core.Domain.Entities
         /// <summary>
         ///     All pending contributions and the current product contribution
         /// </summary>
-        public List<ProductContribution> ProductContributions { get; private set; } = new List<ProductContribution>();
+        public List<ProductContribution> Contributions { get; private set; } = new List<ProductContribution>();
+
+        public DateTimeOffset CreatedOn { get; private set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset ModifiedOn { get; private set; } = DateTimeOffset.UtcNow;
 
         public void AddProductLabel(string name, CultureInfo cultureInfo)
         {
