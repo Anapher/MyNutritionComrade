@@ -1,15 +1,17 @@
 import { createStackNavigator } from '@react-navigation/stack';
+import { MealType } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
-import { IconButton, Appbar } from 'react-native-paper';
+import { Appbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import SignInScreen from 'src/features/auth/components/SignInScreen';
+import BarcodeScanner from './BarcodeScanner';
+import AddProduct from './features/product-create/components/AddProduct';
+import AddProductHeader from './features/product-create/components/AddProductHeader';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearch from './features/product-search/components/ProductSearchScreen';
 import HomeScreen from './HomeScreen';
-import { MealType } from 'Models';
-import AddProduct from './features/product-create/components/AddProduct';
-import AddProductHeader from './features/product-create/components/AddProductHeader';
+import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +26,7 @@ export type RootStackParamList = {
     Home: undefined;
     SearchProduct: { mealType: MealType };
     AddProduct: undefined;
+    ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => void };
 };
 
 function RootNavigator({ isAuthenticated, isSignOut }: Props) {
@@ -65,6 +68,7 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                             header: () => <AddProductHeader navigation={navigation} />,
                         })}
                     />
+                    <Stack.Screen name="ScanBarcode" component={BarcodeScanner} options={{ headerShown: false }} />
                 </>
             )}
         </Stack.Navigator>

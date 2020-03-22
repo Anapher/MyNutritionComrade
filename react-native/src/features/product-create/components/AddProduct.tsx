@@ -7,6 +7,10 @@ import ViewPager from '@react-native-community/viewpager';
 import { Formik } from 'formik';
 import { ProductInfo } from 'Models';
 import NutritionInfo from './NutritionInfo';
+import ProductLabel from './ProductLabel';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from 'src/RootNavigator';
+import { RouteProp } from '@react-navigation/native';
 
 const stepperStyles = (theme: Theme) => {
     // const dark = Color(theme.colors.)
@@ -43,9 +47,11 @@ const stepperStyles = (theme: Theme) => {
 
 type Props = {
     theme: Theme;
+    navigation: StackNavigationProp<RootStackParamList>;
+    route: RouteProp<RootStackParamList, 'AddProduct'>;
 };
 
-function AddProduct({ theme }: Props) {
+function AddProduct({ theme, navigation }: Props) {
     const [currentPage, setCurrentPage] = useState(0);
     const viewPagerRef = useRef<ViewPager>(null);
 
@@ -82,7 +88,7 @@ function AddProduct({ theme }: Props) {
                         ref={viewPagerRef}
                     >
                         <View key="0">
-                            <Text>First page</Text>
+                            <ProductLabel formik={props} navigation={navigation} />
                         </View>
                         <View key="1">
                             <NutritionInfo
