@@ -8,5 +8,6 @@ namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
         Task<Product?> FindById(string productId);
         Task Add(Product product);
         Task Update(Product product);
+        Task Delete(string productId);
     }
 }

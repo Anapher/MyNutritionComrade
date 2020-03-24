@@ -41,22 +41,37 @@ namespace MyNutritionComrade.Core.UseCases
                 product = await _productRepository.FindById(message.ProductId);
 
             var isCreatingProduct = false;
+            var succeeded = false;
+
             if (product == null)
             {
                 isCreatingProduct = true;
                 product = new Product();
             }
 
-            if (isCreatingProduct)
-                await _productRepository.Add(product);
+            try
+            {
+                if (isCreatingProduct)
+                    await _productRepository.Add(product);
 
-            var patch = _bsonPatchFactory.CreatePatch(product, message.Product);
+                var patch = _bsonPatchFactory.CreatePatch(product, message.Product);
 
-            var contribution = new ProductContribution(user.Id, product.Id, patch);
-            await _contributionsRepository.Add(contribution);
+                var contribution = new ProductContribution(user.Id, product.Id, patch);
+                await _contributionsRepository.Add(contribution);
 
-            if (isCreatingProduct || user.IsTrustworthy)
-                await _contributionsRepository.Apply(contribution);
+                if (isCreatingProduct || user.IsTrustworthy)
+                {
+                    var result = await _contributionsRepository.Apply(contribution);
+                    if (result != null) return ReturnError(result);
+                }
+
+                succeeded = true;
+            }
+            finally
+            {
+                if (!succeeded && isCreatingProduct)
+                    await _productRepository.Delete(product.Id);
+            }
 
             product = await _productRepository.FindById(product.Id);
             if (isCreatingProduct)

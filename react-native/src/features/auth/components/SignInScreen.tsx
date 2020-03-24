@@ -42,7 +42,6 @@ function SignInScreen({ signIn }: Props) {
     const signInCallback = useCallback(
         async (values: SignInRequest, formikActions: FormikHelpers<SignInRequest>) => {
             const { setSubmitting } = formikActions;
-            console.log('test');
 
             try {
                 await signInAction!(values);

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Dto;
+using MyNutritionComrade.Core.Errors;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 
 namespace MyNutritionComrade.Infrastructure.Data.Repositories
@@ -25,19 +27,31 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             await UpdateProductContributions(productContribution.ProductId);
         }
 
-        public async Task Apply(ProductContribution productContribution)
+        public async Task<Error?> Apply(ProductContribution productContribution)
         {
             // this method should not suffer from race conditions
             var product = await _collection.Products.Find(Builders<Product>.Filter.Eq(x => x.Id, productContribution.ProductId)).FirstOrDefaultAsync();
             var newVersion = product.Version + 1; // increment version
 
-            var result = await _collection.Products.UpdateOneAsync(
-                Builders<Product>.Filter.And(Builders<Product>.Filter.Eq(x => x.Id, productContribution.ProductId),
-                    Builders<Product>.Filter.Eq(x => x.Version, product.Version)),
-                Builders<Product>.Update.Combine(productContribution.Patch, Builders<Product>.Update.Set(x => x.Version, newVersion)));
+            UpdateResult result;
+            try
+            {
+                result = await _collection.Products.UpdateOneAsync(
+                    Builders<Product>.Filter.And(Builders<Product>.Filter.Eq(x => x.Id, productContribution.ProductId),
+                        Builders<Product>.Filter.Eq(x => x.Version, product.Version)),
+                    Builders<Product>.Update.Combine(productContribution.Patch, Builders<Product>.Update.Set(x => x.Version, newVersion)));
+            }
+            catch (MongoWriteException e)
+            {
+                if (e.WriteError.Category == ServerErrorCategory.DuplicateKey)
+                    return new DomainError(ErrorType.StateError, "Duplicate key inserted. Please make sure that a product with the same code does not exist.",
+                        ErrorCode.Product_DuplicateKeyInserted);
+
+                throw;
+            }
 
             if (result.ModifiedCount != 1)
-                throw new InvalidOperationException("Product could not be modified. Possible race condition.");
+                return new RaceConditionError("Product could not be modified. Possible race condition.", ErrorCode.Product_VersionMismatch);
 
             productContribution.Apply(newVersion);
 
@@ -45,6 +59,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
                 productContribution);
 
             await UpdateProductContributions(product.Id);
+            return null;
         }
 
         private async Task UpdateProductContributions(string productId)
@@ -53,22 +68,17 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             if (product == null)
                 throw new InvalidOperationException("Cannot add product contribution for product that does not exist");
 
-            var newContributions = new List<ProductContribution>();
-
-            // try to find the contribution that is currently applied and if found, add it to the list
-            var applied = product.Contributions.FirstOrDefault(x => x.AppliedVersion == product.Version);
-            if (applied != null) newContributions.Add(applied);
-
             // add all pending product contributions
             var pendingProductContributions = await _collection.ProductContributions.Find(Builders<ProductContribution>.Filter.And(
                 Builders<ProductContribution>.Filter.Eq(x => x.ProductId, productId),
-                Builders<ProductContribution>.Filter.Eq(x => x.Status, ProductContributionStatus.Pending))).ToListAsync();
+                Builders<ProductContribution>.Filter.Or(Builders<ProductContribution>.Filter.Eq(x => x.Status, ProductContributionStatus.Pending),
+                    Builders<ProductContribution>.Filter.Eq(x => x.AppliedVersion, product.Version)))).ToListAsync();
 
-            newContributions.AddRange(pendingProductContributions.OrderBy(x => x.CreatedOn));
+            var contributions = pendingProductContributions.OrderBy(x => x.AppliedVersion == product.Version).ThenByDescending(x => x.CreatedOn).ToList();
 
             // update product
             await _collection.Products.UpdateOneAsync(Builders<Product>.Filter.Eq(x => x.Id, product.Id),
-                Builders<Product>.Update.Set(x => x.Contributions, newContributions));
+                Builders<Product>.Update.Set(x => x.Contributions, contributions));
         }
     }
 }

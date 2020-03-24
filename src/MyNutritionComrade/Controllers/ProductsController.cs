@@ -18,6 +18,7 @@ namespace MyNutritionComrade.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : Controller
     {
         [AllowAnonymous]

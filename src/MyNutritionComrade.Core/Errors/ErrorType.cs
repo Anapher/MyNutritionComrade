@@ -4,6 +4,7 @@ namespace MyNutritionComrade.Core.Errors
     {
         ValidationError,
         Authentication,
-        EntityNotFound
+        EntityNotFound,
+        StateError
     }
 }

@@ -7,10 +7,10 @@ namespace MyNutritionComrade.Core.Domain.Entities
     /// </summary>
     public class ProductLabel
     {
-        public ProductLabel(string label, CultureInfo cultureInfo)
+        public ProductLabel(string label, string languageCode)
         {
             Label = label;
-            LanguageCode = cultureInfo.TwoLetterISOLanguageName;
+            LanguageCode = languageCode;
         }
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.

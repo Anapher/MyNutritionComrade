@@ -31,6 +31,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
 using MyNutritionComrade.Infrastructure.Options;
+using Newtonsoft.Json.Serialization;
 
 namespace MyNutritionComrade
 {
@@ -137,16 +138,17 @@ namespace MyNutritionComrade
             identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
 
-            services.AddMvc()
-                        .ConfigureApiBehaviorOptions(options =>
-                        {
-                            options.InvalidModelStateResponseFactory = context =>
-                                new BadRequestObjectResult(new FieldValidationError(
-                                    context.ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
-                                    .ToDictionary(x => x.Key, x => x.Value.Errors.First().ErrorMessage)));
-                        })
-                        .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
-                        .AddJsonOptions(x => x.JsonSerializerOptions.Converters.Add(new ServingTypeSerializer()));
+            services.AddMvc().ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                    new BadRequestObjectResult(new FieldValidationError(context.ModelState
+                        .Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
+                        .ToDictionary(x => x.Key, x => x.Value.Errors.First().ErrorMessage)));
+            }).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>()).AddNewtonsoftJson(x =>
+            {
+                x.SerializerSettings.Converters.Add(new ServingTypeJsonConverter());
+                x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(InfrastructureModule).Assembly);
 
@@ -216,8 +218,10 @@ namespace MyNutritionComrade
             app.UseSpaStaticFiles();
 
             app.UseAuthentication();
-
             app.UseRouting();
+
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");

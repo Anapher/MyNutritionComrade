@@ -41,7 +41,8 @@ function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, mea
                 selectionColor={theme.colors.primary}
                 underlineColorAndroid="transparent"
                 returnKeyType="search"
-                style={{ color: theme.colors.text, fontSize: 16, flex: 1 }}
+                style={{ color: theme.colors.text, fontSize: 16, flex: 1, marginLeft: 16 }}
+                placeholder="Search for products"
                 keyboardAppearance={theme.dark ? 'dark' : 'light'}
                 accessibilityTraits="search"
                 accessibilityRole="search"

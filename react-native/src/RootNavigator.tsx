@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { MealType } from 'Models';
+import { MealType, Product, ProductInfo } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
@@ -25,7 +25,7 @@ type Props = ReturnType<typeof mapStateToProps>;
 export type RootStackParamList = {
     Home: undefined;
     SearchProduct: { mealType: MealType };
-    AddProduct: undefined;
+    AddProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean };
     ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => void };
 };
 
@@ -61,13 +61,7 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                             ),
                         })}
                     />
-                    <Stack.Screen
-                        name="AddProduct"
-                        component={AddProduct}
-                        options={({ navigation }) => ({
-                            header: () => <AddProductHeader navigation={navigation} />,
-                        })}
-                    />
+                    <Stack.Screen name="AddProduct" component={AddProduct} />
                     <Stack.Screen name="ScanBarcode" component={BarcodeScanner} options={{ headerShown: false }} />
                 </>
             )}

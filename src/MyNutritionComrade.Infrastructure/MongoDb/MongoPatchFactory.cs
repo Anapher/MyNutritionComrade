@@ -19,23 +19,19 @@ namespace MyNutritionComrade.Infrastructure.MongoDb
         public static UpdateDefinition<T> CreatePatch<T>(T original, T modified) where T : class
         {
             var patch = new List<UpdateDefinition<T>>();
-            FillPatchForObject(original, modified, patch, "");
+            FillPatchForObject(original, modified, typeof(T), patch, string.Empty);
 
             return Builders<T>.Update.Combine(patch);
         }
 
-        private static void FillPatchForObject<T>(object original, object modified, List<UpdateDefinition<T>> patch, string path)
+        private static void FillPatchForObject<T>(object original, object modified, Type type, List<UpdateDefinition<T>> patch, string path)
         {
-            var type = original.GetType();
-            if (type != modified.GetType())
-                throw new ArgumentException("Both objects must have the same type.");
-
             foreach (var property in type.GetProperties())
             {
                 var originalValue = property.GetValue(original)!;
                 var newValue = property.GetValue(modified)!;
 
-                PatchValue(originalValue, newValue, patch, $"{path}.{property.Name}");
+                PatchValue(originalValue, newValue, patch, path == string.Empty ? property.Name : $"{path}.{property.Name}");
             }
         }
 
@@ -43,6 +39,12 @@ namespace MyNutritionComrade.Infrastructure.MongoDb
         {
             if (originalValue == newValue)
                 return;
+
+            if (originalValue == null || newValue == null)
+            {
+                patch.Add(Builders<T>.Update.Set(path, newValue));
+                return;
+            }
 
             var originalObject = JToken.FromObject(originalValue);
             var newObject = JToken.FromObject(newValue);
@@ -53,9 +55,27 @@ namespace MyNutritionComrade.Infrastructure.MongoDb
             }
             else if (!string.Equals(originalObject.ToString(Formatting.None), newObject.ToString(Formatting.None)))
             {
+                if (originalValue is IDictionary originalDict && newValue is IDictionary newDict)
+                {
+                    var originalItems = originalDict.Keys.Cast<object>().ToList();
+                    var newItems = newDict.Keys.Cast<object>().ToList();
+
+                    // Names removed in modified
+                    foreach (var k in originalItems.Except(newItems)) patch.Add(Builders<T>.Update.Unset($"{path}.{k}"));
+
+                    // Names added in modified
+                    foreach (var k in newItems.Except(originalItems)) patch.Add(Builders<T>.Update.Set($"{path}.{k}", newDict[k]));
+
+                    // Names in both
+                    foreach (var k in newItems.Intersect(originalItems))
+                        PatchValue(originalDict[k]!, newDict[k]!, patch, $"{path}.{k}");
+
+                    return;
+                }
+
                 if (originalObject.Type == JTokenType.Object)
                 {
-                    FillPatchForObject(originalValue, newValue, patch, path);
+                    FillPatchForObject(originalValue, newValue, originalValue.GetType(), patch, path);
                     return;
                 }
 

@@ -1,0 +1,42 @@
+import React from 'react';
+import { View } from 'react-native';
+import { FormikProps } from 'formik';
+import { ProductInfo } from 'Models';
+import { Text, Caption, Subheading } from 'react-native-paper';
+import TextToggleButton from 'src/components/TextToggleButton';
+import { TagLiquid } from 'src/consts';
+
+type Props = {
+    formik: FormikProps<ProductInfo>;
+};
+
+export default function DefaultUnit({ formik }: Props) {
+    const { values, setFieldValue } = formik;
+
+    return (
+        <View>
+            <Text>Unit</Text>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                <TextToggleButton
+                    label="g"
+                    isChecked={!values.tags.includes(TagLiquid)}
+                    isLeft
+                    onToggle={() =>
+                        setFieldValue(
+                            'tags',
+                            values.tags.filter(x => x !== TagLiquid),
+                        )
+                    }
+                    style={{ width: 96 }}
+                />
+                <TextToggleButton
+                    label="ml"
+                    isChecked={values.tags.includes(TagLiquid)}
+                    isRight
+                    onToggle={() => setFieldValue('tags', [...values.tags, TagLiquid])}
+                    style={{ marginLeft: 2, width: 96 }}
+                />
+            </View>
+        </View>
+    );
+}

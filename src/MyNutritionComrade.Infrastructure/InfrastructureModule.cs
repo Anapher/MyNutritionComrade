@@ -1,5 +1,7 @@
 using Autofac;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
@@ -7,6 +9,7 @@ using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Infrastructure.Auth;
 using MyNutritionComrade.Infrastructure.Config;
 using MyNutritionComrade.Infrastructure.Data;
+using MyNutritionComrade.Infrastructure.Data.Repositories;
 using MyNutritionComrade.Infrastructure.Elasticsearch;
 using MyNutritionComrade.Infrastructure.Identity.Repositories;
 using MyNutritionComrade.Infrastructure.Interfaces;
@@ -28,8 +31,34 @@ namespace MyNutritionComrade.Infrastructure
             builder.RegisterType<ProductsCollection>().AsSelf().As<IProductsCollection>().InstancePerLifetimeScope();
             builder.RegisterType<ElasticsearchUpdateHandler>().As<IProductsChangedEventHandler>();
             builder.RegisterType<BsonPatchFactory>().As<IBsonPatchFactory>().SingleInstance();
+            builder.RegisterType<ProductRepository>().As<IProductRepository>().SingleInstance();
+            builder.RegisterType<ProductContributionsRepository>().As<IProductContributionsRepository>().SingleInstance();
 
-            BsonSerializer.RegisterSerializer(typeof(ServingType), new ServiceTypeBsonSerializer());
+            ConfigureBsonClasses();
+        }
+
+        public void ConfigureBsonClasses()
+        {
+            BsonSerializer.RegisterSerializer(typeof(ServingType), new ServingTypeBsonSerializer());
+
+            BsonClassMap.RegisterClassMap<Product>(x =>
+            {
+                x.AutoMap();
+                x.MapIdMember(x => x.Id).SetIdGenerator(new StringObjectIdGenerator());
+            });
+
+            BsonClassMap.RegisterClassMap<ProductInfo>(x =>
+            {
+                x.AutoMap();
+                x.MapProperty(x => x.Code).SetIgnoreIfNull(true); // VERY IMPORTANT, else the sparse index on this property won't work
+            });
+
+            BsonClassMap.RegisterClassMap<ProductContribution>(x =>
+            {
+                x.AutoMap();
+                x.MapIdMember(x => x.Id).SetIdGenerator(new StringObjectIdGenerator());
+                x.MapMember(x => x.Patch).SetSerializer(new BsonDocumentStringSerializer()); // because the patch has properties with invalid names, e. g. "$set"
+            });
         }
     }
 }

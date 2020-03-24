@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace MyNutritionComrade.Core.Domain
 {
@@ -35,41 +36,49 @@ namespace MyNutritionComrade.Core.Domain
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double Energy { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double Fat { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double SaturatedFat { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double Carbohydrates { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double Sugars { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double Protein { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double DietaryFiber { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double Sodium { get; private set; }
 
         protected bool Equals(NutritionInformation other) =>

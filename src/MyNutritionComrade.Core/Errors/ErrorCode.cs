@@ -29,6 +29,8 @@ namespace MyNutritionComrade.Core.Errors
         Identity_PasswordRequiresLower,
         Identity_PasswordRequiresUpper,
 
-        Product_NotFound
+        Product_NotFound,
+        Product_VersionMismatch,
+        Product_DuplicateKeyInserted
     }
 }

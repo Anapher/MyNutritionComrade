@@ -5,7 +5,7 @@ import SplashScreen from './src/SplashScreen';
 import configure from 'src/startup';
 import Axios from 'axios';
 
-Axios.defaults.baseURL = 'http://192.168.0.38:32423';
+Axios.defaults.baseURL = 'http://192.168.178.41:32423';
 
 function App() {
     const [isLoaded, setIsLoaded] = useState(false);

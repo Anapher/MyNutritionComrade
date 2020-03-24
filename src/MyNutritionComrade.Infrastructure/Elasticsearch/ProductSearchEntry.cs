@@ -10,7 +10,7 @@ namespace MyNutritionComrade.Infrastructure.Elasticsearch
     public class ProductSearchEntry
     {
         [Keyword]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Text]
         public string[] ProductName { get; set; }
@@ -28,9 +28,9 @@ namespace MyNutritionComrade.Infrastructure.Elasticsearch
         public Dictionary<string, double> Servings { get; set; }
 
         [Object(Enabled = false)]
-        public List<ProductLabel> ProductLabels { get; set; }
+        public List<ProductLabel> Labels { get; set; }
 
         [Object(Enabled = false)]
-        public string DefaultServingType { get; set; }
+        public string DefaultServing { get; set; }
     }
 }
