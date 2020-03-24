@@ -15,22 +15,18 @@ namespace MyNutritionComrade.Infrastructure.Elasticsearch
         [Text]
         public string[] ProductName { get; set; }
 
-        [Object(Enabled = false)]
-        public NutritionInformation NutritionInformation { get; set; }
-
         [Keyword]
         public string[] Tags { get; set; }
 
         [Keyword]
         public string[] ServingTypes { get; set; }
 
-        [Object(Enabled = false)]
+        // Data, disabled indexing
+        public NutritionInformation NutritionInformation { get; set; }
         public Dictionary<string, double> Servings { get; set; }
+        public List<ProductLabel> Label { get; set; }
 
-        [Object(Enabled = false)]
-        public List<ProductLabel> Labels { get; set; }
-
-        [Object(Enabled = false)]
+        [Keyword(Index = false)]
         public string DefaultServing { get; set; }
     }
 }

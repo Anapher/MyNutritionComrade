@@ -20,4 +20,8 @@
     <ProjectReference Include="..\..\src\MyNutritionComrade.Core\MyNutritionComrade.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Utilities\" />
+  </ItemGroup>
+
 </Project>

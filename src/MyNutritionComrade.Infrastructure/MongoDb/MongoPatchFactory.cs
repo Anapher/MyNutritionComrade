@@ -86,10 +86,18 @@ namespace MyNutritionComrade.Infrastructure.MongoDb
                         var newItems = ((IEnumerable) newValue).Cast<object>().ToList();
 
                         // Names removed in modified
-                        foreach (var k in originalItems.Except(newItems)) patch.Add(Builders<T>.Update.Pull(path, k));
+                        var removedItems = originalItems.Except(newItems).ToList();
+                        if (removedItems.Count == 1)
+                            patch.Add(Builders<T>.Update.Pull(path, removedItems.Single()));
+                        else if (removedItems.Count > 1)
+                            patch.Add(Builders<T>.Update.PullAll(path, removedItems));
 
                         // Names added in modified
-                        foreach (var o in newItems.Except(originalItems)) patch.Add(Builders<T>.Update.AddToSet(path, o));
+                        var addedItems = newItems.Except(originalItems).ToList();
+                        if (addedItems.Count == 1)
+                            patch.Add(Builders<T>.Update.AddToSet(path, addedItems.Single()));
+                        else if (addedItems.Count > 1)
+                            patch.Add(Builders<T>.Update.AddToSetEach(path, addedItems));
 
                         return;
                     }

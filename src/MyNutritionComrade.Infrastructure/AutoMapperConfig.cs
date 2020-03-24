@@ -10,9 +10,8 @@ namespace MyNutritionComrade.Infrastructure
         public AutoMapperConfig()
         {
             CreateMap<Product, ProductSearchEntry>().ForMember(x => x.ProductName, x => x.MapFrom(y => y.Label.Select(l => l.Label).ToArray()))
-                .ForMember(x => x.ServingTypes, x => x.MapFrom(y => y.Servings.ToArray()))
-                .ForMember(x => x.Servings, x => x.MapFrom(y => y.Servings.ToDictionary(z => z.Key.ToString(), z => z.Value)))
-                .ForMember(x => x.DefaultServing, x => x.MapFrom(y => y.DefaultServing.ToString()));
+                .ForMember(x => x.ServingTypes, x => x.MapFrom(y => y.Servings.Keys))
+                .ForMember(x => x.Servings, x => x.MapFrom(y => y.Servings.ToDictionary(z => z.Key.ToString(), z => z.Value)));
         }
     }
 }

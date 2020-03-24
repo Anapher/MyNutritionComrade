@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
@@ -30,5 +31,17 @@ namespace MyNutritionComrade.Core.Domain.Entities
         ///     The name localized with <see cref="LanguageCode" />
         /// </summary>
         public string Label { get; private set; }
+
+        protected bool Equals(ProductLabel other) => LanguageCode == other.LanguageCode && Label == other.Label;
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ProductLabel)obj);
+        }
+
+        public override int GetHashCode() => HashCode.Combine(LanguageCode, Label);
     }
 }

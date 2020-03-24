@@ -1,6 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyNutritionComrade.Core.Domain;
@@ -12,6 +13,7 @@ using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Elasticsearch;
 using MyNutritionComrade.Infrastructure.Helpers;
+using MyNutritionComrade.Models.Response;
 using Nest;
 
 namespace MyNutritionComrade.Controllers
@@ -22,18 +24,20 @@ namespace MyNutritionComrade.Controllers
     public class ProductsController : Controller
     {
         [AllowAnonymous]
-        public async Task<ActionResult> SearchProduct([FromQuery] string search, [FromQuery] string units, [FromServices] IElasticClient client)
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([FromQuery] string search, [FromQuery] string? units, [FromServices] IElasticClient client, [FromServices] IMapper mapper)
         {
-            var unitsArray = units.Split(',');
-            var response = await client.SearchAsync<ProductSearchEntry>(x => x.From(0).Size(8).Query(q =>
+            var unitsArray = units?.Split(',');
+            var response = await client.SearchAsync<ProductSearchEntry>(x => x.Size(8).Query(q =>
             {
-                var q2 = q.Match(m => m.Field(f => f.ProductName).Query(search).Fuzziness(Fuzziness.Auto));
-                if (units.Any())
+                var q2 = q.QueryString(m => m.DefaultField(f => f.ProductName).Query($"*{search}*"));
+                if (units?.Any() == true)
                     q2 = q2 && +q.Terms(t => t.Field(f => f.ServingTypes).Terms(unitsArray));
 
                 return q2;
             }));
-            throw new NotImplementedException();
+
+            return response.Documents.Select(mapper.Map<ProductSearchDto>).ToList();
         }
 
         [HttpPost]
