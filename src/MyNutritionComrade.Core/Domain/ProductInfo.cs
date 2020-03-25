@@ -64,7 +64,7 @@ namespace MyNutritionComrade.Core.Domain
         public void AddProductLabel(string name, CultureInfo cultureInfo)
         {
             var label = new ProductLabel(name, cultureInfo.TwoLetterISOLanguageName);
-            if (_label.Any(x => x.LanguageCode == label.LanguageCode && x.Label.NormalizeString() == label.Label.NormalizeString()))
+            if (_label.Any(x => x.LanguageCode == label.LanguageCode && x.Value.NormalizeString() == label.Value.NormalizeString()))
                 throw new ArgumentException("This product label already exists.");
 
             _label.Add(label);

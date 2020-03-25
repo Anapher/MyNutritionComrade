@@ -31,7 +31,7 @@ namespace MyNutritionComrade.Models.Validation
             RuleFor(x => x.Label).NotEmpty().UniqueItems();
             RuleForEach(x => x.Label).NotNull().ChildRules(labels =>
             {
-                labels.RuleFor(x => x.Label).NotEmpty();
+                labels.RuleFor(x => x.Value).NotEmpty();
                 labels.RuleFor(x => x.LanguageCode).NotEmpty().IsCulture();
             });
             RuleForEach(x => x.Tags).OneOf(Tags);

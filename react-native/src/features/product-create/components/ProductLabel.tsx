@@ -73,9 +73,7 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
             values.label.filter((_, i) => i !== index),
         );
 
-    const secondaryColor = Color(theme.colors.text)
-        .alpha(0.6)
-        .string();
+    const secondaryColor = Color(theme.colors.text).alpha(0.6).string();
 
     return (
         <View style={styles.root}>
@@ -95,9 +93,7 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
                 ListFooterComponent={
                     errors.label !== undefined && typeof errors.label === 'string' ? (
                         <Caption style={{ color: errorColor, margin: 8 }}>{errors.label}</Caption>
-                    ) : (
-                        undefined
-                    )
+                    ) : undefined
                 }
                 renderItem={({ item, index }) => (
                     <Surface
@@ -112,12 +108,12 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
                             <TextInput
                                 dense
                                 label={`Label (${item.languageCode})`}
-                                value={item.label}
-                                onChangeText={s =>
+                                value={item.value}
+                                onChangeText={(s) =>
                                     setFieldValue(
                                         'label',
                                         values.label.map((x, i) =>
-                                            i !== index ? x : { languageCode: x.languageCode, label: s },
+                                            i !== index ? x : { languageCode: x.languageCode, value: s },
                                         ),
                                     )
                                 }
@@ -145,7 +141,7 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
                     <Dialog.ScrollArea>
                         <ScrollView>
                             <View>
-                                {SupportedLanguages.map(x => (
+                                {SupportedLanguages.map((x) => (
                                     <TouchableRipple
                                         onPress={() => setSelectedLanguage(x.twoLetterCode)}
                                         key={x.twoLetterCode}

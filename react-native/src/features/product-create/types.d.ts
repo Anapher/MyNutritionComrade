@@ -29,7 +29,7 @@ declare module 'Models' {
 
     export interface ProductLabel {
         languageCode: string;
-        label: string;
+        value: string;
     }
 
     export interface NutritionInformation {
