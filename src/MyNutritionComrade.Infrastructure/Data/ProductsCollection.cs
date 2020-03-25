@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Infrastructure.Options;
@@ -19,13 +18,5 @@ namespace MyNutritionComrade.Infrastructure.Data
 
         public IMongoCollection<Product> Products { get; }
         public IMongoCollection<ProductContribution> ProductContributions { get; }
-
-        public async Task Setup()
-        {
-            var productCodeKey = Builders<Product>.IndexKeys.Ascending(x => x.Code);
-            var productCodeModel = new CreateIndexModel<Product>(productCodeKey, new CreateIndexOptions {Unique = true, Sparse = true});
-
-            await Products.Indexes.CreateOneAsync(productCodeModel);
-        }
     }
 }

@@ -20,13 +20,14 @@ const styles = StyleSheet.create({
     },
 });
 
-type RowProps = {
+export type RowProps = {
     name: React.ReactNode;
     children?: React.ReactNode;
     lastItem?: boolean;
     description?: string;
     error?: string;
 };
+
 export default function Row({ name, children, lastItem, description, error }: RowProps) {
     return (
         <View style={styles.root}>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { View } from 'react-native';
 import { FormikProps } from 'formik';
 import { ProductInfo } from 'Models';
-import { Text, Caption, Subheading } from 'react-native-paper';
+import React from 'react';
+import { View } from 'react-native';
+import { Text } from 'react-native-paper';
 import TextToggleButton from 'src/components/TextToggleButton';
 import { TagLiquid } from 'src/consts';
 
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function DefaultUnit({ formik }: Props) {
-    const { values, setFieldValue } = formik;
+    const { values, setValues } = formik;
 
     return (
         <View>
@@ -22,10 +22,16 @@ export default function DefaultUnit({ formik }: Props) {
                     isChecked={!values.tags.includes(TagLiquid)}
                     isLeft
                     onToggle={() =>
-                        setFieldValue(
-                            'tags',
-                            values.tags.filter(x => x !== TagLiquid),
-                        )
+                        setValues({
+                            ...values,
+                            tags: values.tags.filter(x => x !== TagLiquid),
+                            defaultServing: 'g',
+                            servings: Object.fromEntries(
+                                Object.keys(values.servings).map(x =>
+                                    x === 'ml' ? ['g', 1] : [x, values.servings[x]],
+                                ),
+                            ),
+                        })
                     }
                     style={{ width: 96 }}
                 />
@@ -33,7 +39,18 @@ export default function DefaultUnit({ formik }: Props) {
                     label="ml"
                     isChecked={values.tags.includes(TagLiquid)}
                     isRight
-                    onToggle={() => setFieldValue('tags', [...values.tags, TagLiquid])}
+                    onToggle={() =>
+                        setValues({
+                            ...values,
+                            tags: [...values.tags, TagLiquid],
+                            defaultServing: 'ml',
+                            servings: Object.fromEntries(
+                                Object.keys(values.servings).map(x =>
+                                    x === 'g' ? ['ml', 1] : [x, values.servings[x]],
+                                ),
+                            ),
+                        })
+                    }
                     style={{ marginLeft: 2, width: 96 }}
                 />
             </View>

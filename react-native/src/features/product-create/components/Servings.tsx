@@ -1,11 +1,12 @@
 import React, { useRef } from 'react';
 import { FlatList, SectionList, SectionListData, View, TextInput } from 'react-native';
-import { Surface, Subheading, Text, Theme, Caption } from 'react-native-paper';
+import { Surface, Subheading, Text, Theme, Caption, Button } from 'react-native-paper';
 import Row from 'src/components/Row';
 import { FormikProps } from 'formik';
 import { ProductInfo } from 'Models';
 import Color from 'color';
 import { TagLiquid } from 'src/consts';
+import CheckableRow from 'src/components/CheckableRow';
 
 type Props = {
     formik: FormikProps<ProductInfo>;
@@ -120,6 +121,7 @@ export default function Servings({ formik: { values, setFieldValue, errors }, th
 
     const isLiquid = values.tags.includes(TagLiquid);
     const servings = servingsFactory(isLiquid);
+    const baseUnit = isLiquid ? 'ml' : 'g';
 
     const flattendServings = servings.reduce<ServingInfo[]>((a, b) => a.concat(b.data), []);
     const refs = flattendServings.map(x => ({ id: x.id, ref: useRef<TextInput>(null) }));
@@ -134,12 +136,32 @@ export default function Servings({ formik: { values, setFieldValue, errors }, th
                     <Row name={<Subheading>{title}</Subheading>} lastItem />
                 </Surface>
             )}
+            ListHeaderComponent={
+                <CheckableRow
+                    checked={values.defaultServing === baseUnit}
+                    onPress={() => setFieldValue('defaultServing', baseUnit)}
+                    lastItem
+                    description="Please check the default serving portion."
+                    name={<Text>Base unit</Text>}
+                >
+                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end' }}>
+                        <Text>1</Text>
+                        <Text style={{ width: 32 }}> {baseUnit}</Text>
+                    </View>
+                </CheckableRow>
+            }
             renderItem={({ item }) => (
-                <Row
+                <CheckableRow
+                    disabled={item.setValue !== undefined}
+                    checked={values.defaultServing === item.id}
+                    onPress={() => setFieldValue('defaultServing', item.id)}
                     name={<Text>{item.label}</Text>}
                     lastItem
                     description={item.description}
-                    error={errors.servings && errors.servings[item.id]}
+                    error={
+                        (errors.servings && errors.servings[item.id]) ||
+                        (values.defaultServing === item.id && errors.defaultServing ? errors.defaultServing : undefined)
+                    }
                 >
                     <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end' }}>
                         <TextInput
@@ -176,9 +198,9 @@ export default function Servings({ formik: { values, setFieldValue, errors }, th
                                 }
                             }}
                         />
-                        <Text style={{ marginBottom: 4, width: 32 }}> {isLiquid ? 'ml' : 'g'}</Text>
+                        <Text style={{ marginBottom: 4, width: 32 }}> {baseUnit}</Text>
                     </View>
-                </Row>
+                </CheckableRow>
             )}
         />
     );

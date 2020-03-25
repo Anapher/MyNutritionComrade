@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 
@@ -29,7 +30,8 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public string Name { get; }
 
         public static ServingType Gram = new ServingType("g");
-        public static ServingType Gram100 = new ServingType("100g");
+        public static ServingType Milliliter = new ServingType("ml");
+
         public static ServingType Slice = new ServingType("slice");
         public static ServingType Piece = new ServingType("piece");
         public static ServingType Bread = new ServingType("bread");
@@ -38,12 +40,31 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public static ServingType TableSpoon = new ServingType("el");
         public static ServingType TeaSpoon = new ServingType("tl");
 
-        public static ServingType Package = new ServingType("package"); // bottle for liquids
+        public static ServingType Package = new ServingType("package");
+        public static ServingType Bottle = new ServingType("bottle");
 
-        public static ServingType Large = new ServingType("large");
-        public static ServingType ExtraLarge = new ServingType("extraLarge");
         public static ServingType Small = new ServingType("small");
         public static ServingType Medium = new ServingType("medium");
+        public static ServingType Large = new ServingType("large");
+        public static ServingType ExtraLarge = new ServingType("extraLarge");
+
+        public static ISet<ServingType> AvailableTypes = new HashSet<ServingType>
+        {
+            Gram,
+            Milliliter,
+            Slice,
+            Piece,
+            Bread,
+            Cup,
+            TableSpoon,
+            TeaSpoon,
+            Package,
+            Bottle,
+            Large,
+            ExtraLarge,
+            Small,
+            Medium
+        };
     }
 
     public class ServingTypeConverter : TypeConverter

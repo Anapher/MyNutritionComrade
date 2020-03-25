@@ -1,8 +1,8 @@
 {
+  "urlRandomness": "pm-bvv",
   "hostType": "lan",
   "lanType": "ip",
   "dev": true,
   "minify": false,
-  "urlRandomness": "c8-mp6",
   "https": false
 }

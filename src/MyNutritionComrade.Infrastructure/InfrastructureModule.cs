@@ -33,6 +33,7 @@ namespace MyNutritionComrade.Infrastructure
             builder.RegisterType<BsonPatchFactory>().As<IBsonPatchFactory>().SingleInstance();
             builder.RegisterType<ProductRepository>().As<IProductRepository>().SingleInstance();
             builder.RegisterType<ProductContributionsRepository>().As<IProductContributionsRepository>().SingleInstance();
+            builder.RegisterType<MongoDbInitializer>().As<IMongoDbInitializer>();
 
             ConfigureBsonClasses();
         }

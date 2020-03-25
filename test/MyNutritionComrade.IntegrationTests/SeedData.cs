@@ -1,9 +1,9 @@
+using System;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Infrastructure.Data;
 using MyNutritionComrade.Infrastructure.Identity;
-using System;
 
-namespace MyNutritionComradeIntegrationTests
+namespace MyNutritionComrade.IntegrationTests
 {
     public static class SeedData
     {

@@ -80,7 +80,13 @@ const validationSchema = yup.object().shape({
             }),
         )
         .min(1, 'Please provide at least one label.'),
-    defaultServing: yup.string().required(),
+    defaultServing: yup
+        .string()
+        .required()
+        .test('defaultServingHasValue', 'The default serving must have a value', function(value) {
+            const { servings } = this.parent;
+            return !!servings[value];
+        }),
     nutritionInformation: yup.object().shape({
         mass: yup
             .number()
@@ -127,7 +133,9 @@ const defaultValues = {
     },
     tags: [],
     label: [{ languageCode: CurrentLanguage, label: '' }],
-    servings: {},
+    servings: {
+        g: 1,
+    },
     code: '',
 };
 

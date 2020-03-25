@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
+using MyNutritionComrade.Infrastructure.MongoDb;
 using MyNutritionComrade.Infrastructure.Options;
 using Newtonsoft.Json.Serialization;
 
@@ -187,8 +188,8 @@ namespace MyNutritionComrade
             builder.Populate(services);
             var container = builder.Build();
 
-            var mongoCollection = container.Resolve<ProductsCollection>();
-            mongoCollection.Setup().Wait();
+            var initializer = container.Resolve<IMongoDbInitializer>();
+            initializer.Setup().Wait();
 
             // Create the IServiceProvider based on the container.
             return new AutofacServiceProvider(container);

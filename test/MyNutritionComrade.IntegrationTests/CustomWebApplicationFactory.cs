@@ -1,16 +1,15 @@
 using System;
-using MyNutritionComrade;
-using MyNutritionComrade.Infrastructure.Data;
-using MyNutritionComrade.Infrastructure.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MyNutritionComrade.Infrastructure.Data;
+using MyNutritionComrade.Infrastructure.Identity;
 
-namespace MyNutritionComradeIntegrationTests
+namespace MyNutritionComrade.IntegrationTests
 {
-    public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<Startup>
+    public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -45,7 +44,7 @@ namespace MyNutritionComradeIntegrationTests
                     var appDb = scopedServices.GetRequiredService<AppDbContext>();
                     var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
 
-                    var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
+                    var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
 
                     // Ensure the database is created.
                     appDb.Database.EnsureCreated();
