@@ -30,7 +30,7 @@ namespace MyNutritionComrade.Infrastructure
             builder.RegisterAssemblyTypes(ThisAssembly).AsClosedTypesOf(typeof(IRepository<>)).AsImplementedInterfaces();
             builder.RegisterType<ProductsCollection>().AsSelf().As<IProductsCollection>().InstancePerLifetimeScope();
             builder.RegisterType<ElasticsearchUpdateHandler>().As<IProductsChangedEventHandler>();
-            builder.RegisterType<BsonPatchFactory>().As<IBsonPatchFactory>().SingleInstance();
+            builder.RegisterType<ObjectPatchFactory>().As<IObjectPatchFactory>().SingleInstance();
             builder.RegisterType<ProductRepository>().As<IProductRepository>().SingleInstance();
             builder.RegisterType<ProductContributionsRepository>().As<IProductContributionsRepository>().SingleInstance();
             builder.RegisterType<MongoDbInitializer>().As<IMongoDbInitializer>();
@@ -58,7 +58,6 @@ namespace MyNutritionComrade.Infrastructure
             {
                 x.AutoMap();
                 x.MapIdMember(x => x.Id).SetIdGenerator(new StringObjectIdGenerator());
-                x.MapMember(x => x.Patch).SetSerializer(new BsonDocumentStringSerializer()); // because the patch has properties with invalid names, e. g. "$set"
             });
         }
     }

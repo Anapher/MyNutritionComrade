@@ -18,16 +18,16 @@ namespace MyNutritionComrade.Core.UseCases
         private readonly IProductContributionsRepository _contributionsRepository;
         private readonly IUserRepository _userRepository;
         private readonly IEnumerable<IProductsChangedEventHandler> _productsChangedEventHandlers;
-        private readonly IBsonPatchFactory _bsonPatchFactory;
+        private readonly IObjectPatchFactory _objectPatchFactory;
 
         public AddOrUpdateProductUseCase(IProductRepository productRepository, IProductContributionsRepository contributionsRepository,
-            IUserRepository userRepository, IEnumerable<IProductsChangedEventHandler> productsChangedEventHandlers, IBsonPatchFactory bsonPatchFactory)
+            IUserRepository userRepository, IEnumerable<IProductsChangedEventHandler> productsChangedEventHandlers, IObjectPatchFactory objectPatchFactory)
         {
             _productRepository = productRepository;
             _contributionsRepository = contributionsRepository;
             _userRepository = userRepository;
             _productsChangedEventHandlers = productsChangedEventHandlers;
-            _bsonPatchFactory = bsonPatchFactory;
+            _objectPatchFactory = objectPatchFactory;
         }
 
         public async Task<AddOrUpdateProductResponse?> Handle(AddOrUpdateProductRequest message)
@@ -54,7 +54,7 @@ namespace MyNutritionComrade.Core.UseCases
                 if (isCreatingProduct)
                     await _productRepository.Add(product);
 
-                var patch = _bsonPatchFactory.CreatePatch(product, message.Product);
+                var patch = _objectPatchFactory.CreatePatch(product, message.Product);
 
                 var contribution = new ProductContribution(user.Id, product.Id, patch);
                 await _contributionsRepository.Add(contribution);

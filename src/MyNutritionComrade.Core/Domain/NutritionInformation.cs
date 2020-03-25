@@ -31,6 +31,7 @@ namespace MyNutritionComrade.Core.Domain
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        [JsonProperty]
         public double Mass { get; private set; }
 
         /// <summary>

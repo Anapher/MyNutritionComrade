@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using MongoDB.Bson;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
     public class ProductContribution
     {
-        public ProductContribution(string userId, string productId, BsonDocument patch)
+        public ProductContribution(string userId, string productId, string patch)
         {
             UserId = userId;
             ProductId = productId;
@@ -30,7 +29,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
         /// <summary>
         ///     A json patch document that updates the product
         /// </summary>
-        public BsonDocument Patch { get; private set; }
+        public string Patch { get; private set; }
 
         public DateTimeOffset CreatedOn { get; set; } = DateTimeOffset.UtcNow;
         public IList<ProductContributionApproval> Approvals { get; set; } = new List<ProductContributionApproval>();

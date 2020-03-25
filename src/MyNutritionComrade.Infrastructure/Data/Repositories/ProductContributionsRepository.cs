@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto;
@@ -34,12 +34,15 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             var newVersion = product.Version + 1; // increment version
 
             UpdateResult result;
+
+            var patch = BsonDocument.Parse(productContribution.Patch);
+
             try
             {
                 result = await _collection.Products.UpdateOneAsync(
                     Builders<Product>.Filter.And(Builders<Product>.Filter.Eq(x => x.Id, productContribution.ProductId),
                         Builders<Product>.Filter.Eq(x => x.Version, product.Version)),
-                    Builders<Product>.Update.Combine(productContribution.Patch, Builders<Product>.Update.Set(x => x.Version, newVersion)));
+                    Builders<Product>.Update.Combine(patch, Builders<Product>.Update.Set(x => x.Version, newVersion)));
             }
             catch (MongoWriteException e)
             {

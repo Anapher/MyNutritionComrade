@@ -19,14 +19,14 @@ namespace MyNutritionComrade
                 var serviceProvider = scope.ServiceProvider;
                 var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
 
-                InitalizeAppDbContext(serviceProvider, logger);
-                InitalizeAppIdentityDbContext(serviceProvider, logger);
+                InitializeAppDbContext(serviceProvider, logger);
+                InitializeAppIdentityDbContext(serviceProvider, logger);
             }
 
             return webHost;
         }
 
-        private static void InitalizeAppDbContext(IServiceProvider serviceProvider, ILogger logger)
+        private static void InitializeAppDbContext(IServiceProvider serviceProvider, ILogger logger)
         {
             var context = serviceProvider.GetRequiredService<AppDbContext>();
             try
@@ -40,7 +40,7 @@ namespace MyNutritionComrade
             }
         }
 
-        private static void InitalizeAppIdentityDbContext(IServiceProvider serviceProvider, ILogger logger)
+        private static void InitializeAppIdentityDbContext(IServiceProvider serviceProvider, ILogger logger)
         {
             var context = serviceProvider.GetRequiredService<AppIdentityDbContext>();
             try
