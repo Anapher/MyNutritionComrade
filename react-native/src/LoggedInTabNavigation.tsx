@@ -1,6 +1,6 @@
 import React from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import TabDiary from './TabDiary';
+import TabDiary from './features/diary/components/TabDiary';
 import TabAnalysis from './TabAnalysis';
 import TabProfile from './TabProfile';
 

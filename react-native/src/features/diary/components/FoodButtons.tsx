@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
-import FlatButton from './FlatButton';
-import FlatIconButton from './FlatIconButton';
+import FlatButton from 'src/components/FlatButton';
+import FlatIconButton from 'src/components/FlatIconButton';
 
 type Props = {
     onAddFood: () => void;

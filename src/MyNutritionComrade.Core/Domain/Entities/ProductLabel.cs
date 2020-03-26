@@ -8,9 +8,9 @@ namespace MyNutritionComrade.Core.Domain.Entities
     /// </summary>
     public class ProductLabel
     {
-        public ProductLabel(string label, string languageCode)
+        public ProductLabel(string value, string languageCode)
         {
-            Label = label;
+            Value = value;
             LanguageCode = languageCode;
         }
 
@@ -30,9 +30,9 @@ namespace MyNutritionComrade.Core.Domain.Entities
         /// <summary>
         ///     The name localized with <see cref="LanguageCode" />
         /// </summary>
-        public string Label { get; private set; }
+        public string Value { get; private set; }
 
-        protected bool Equals(ProductLabel other) => LanguageCode == other.LanguageCode && Label == other.Label;
+        protected bool Equals(ProductLabel other) => LanguageCode == other.LanguageCode && Value == other.Value;
 
         public override bool Equals(object? obj)
         {
@@ -42,6 +42,6 @@ namespace MyNutritionComrade.Core.Domain.Entities
             return Equals((ProductLabel)obj);
         }
 
-        public override int GetHashCode() => HashCode.Combine(LanguageCode, Label);
+        public override int GetHashCode() => HashCode.Combine(LanguageCode, Value);
     }
 }

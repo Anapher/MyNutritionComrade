@@ -1,4 +1,4 @@
-import { FoodSuggestion, MealType } from 'Models';
+import { FoodSuggestion, ConsumptionTime } from 'Models';
 import { RootEpic } from 'MyNutritionComrade';
 import { filter, map } from 'rxjs/operators';
 import { tryParseServingSize } from 'src/utils/input-parser';
@@ -8,16 +8,18 @@ import * as actions from './actions';
 export const initSuggestionsEpic: RootEpic = (action$, state$) =>
     action$.pipe(
         filter(isActionOf(actions.initSearch)),
-        map(() => actions.setSuggestions(querySuggestions('', state$.value.productSearch.mealType))),
+        map(() => actions.setSuggestions(querySuggestions('', state$.value.productSearch.consumptionTime))),
     );
 
 export const querySuggestionsEpic: RootEpic = (action$, state$) =>
     action$.pipe(
         filter(isActionOf(actions.setSearchText)),
-        map(({ payload }) => actions.setSuggestions(querySuggestions(payload, state$.value.productSearch.mealType))),
+        map(({ payload }) =>
+            actions.setSuggestions(querySuggestions(payload, state$.value.productSearch.consumptionTime)),
+        ),
     );
 
-function querySuggestions(input: string, mealType: MealType): FoodSuggestion[] {
+function querySuggestions(input: string, consumptionTime: ConsumptionTime): FoodSuggestion[] {
     if (input === '') {
         // return most frequent items from last days
         return [{ name: 'Haferflocken', servingSize: { size: 70, unit: 'g' }, kcal: 200 }];

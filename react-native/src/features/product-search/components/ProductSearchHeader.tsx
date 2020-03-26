@@ -4,7 +4,7 @@ import { TextInput, ToastAndroid } from 'react-native';
 import { Theme, withTheme, IconButton, Appbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
-import { MealType } from 'Models';
+import { ConsumptionTime } from 'Models';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from 'src/RootNavigator';
 
@@ -25,14 +25,14 @@ function getToastCallback(text?: string) {
 type Props = ReturnType<typeof mapStateToProps> &
     typeof dispatchProps & {
         theme: Theme;
-        mealType: MealType;
+        consumptionTime: ConsumptionTime;
         navigation: StackNavigationProp<RootStackParamList>;
     };
 
-function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, mealType, navigation }: Props) {
+function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, consumptionTime, navigation }: Props) {
     useEffect(() => {
-        initSearch(mealType);
-    }, [mealType]);
+        initSearch(consumptionTime);
+    }, [consumptionTime]);
 
     return (
         <Appbar.Header style={{ display: 'flex', flexDirection: 'row' }}>
@@ -47,7 +47,7 @@ function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, mea
                 accessibilityTraits="search"
                 accessibilityRole="search"
                 value={searchText}
-                onChangeText={s => setSearchText(s)}
+                onChangeText={(s) => setSearchText(s)}
                 autoFocus
             />
             <IconButton

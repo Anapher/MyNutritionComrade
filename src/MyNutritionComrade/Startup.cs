@@ -198,6 +198,7 @@ namespace MyNutritionComrade
 
             builder.RegisterModule(new CoreModule());
             builder.RegisterModule(new InfrastructureModule());
+            builder.RegisterModule(new PresentationModule());
 
             builder.Populate(services);
             var container = builder.Build();

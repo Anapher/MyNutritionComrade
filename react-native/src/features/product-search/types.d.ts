@@ -1,6 +1,4 @@
 declare module 'Models' {
-    export type MealType = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
-
     export interface FoodSuggestion {
         name: string;
         servingSize?: ServingSize;

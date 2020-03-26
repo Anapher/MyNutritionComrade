@@ -1,5 +1,5 @@
 import { FoodSuggestion } from 'Models';
-import { MealType } from 'Models';
+import { ConsumptionTime } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { combineReducers } from 'redux';
 import { getType } from 'typesafe-actions';
@@ -7,7 +7,7 @@ import * as actions from './actions';
 
 export type ProductSearchState = Readonly<{
     searchText: string;
-    mealType: MealType;
+    consumptionTime: ConsumptionTime;
     suggestions: FoodSuggestion[];
 }>;
 
@@ -22,7 +22,7 @@ export default combineReducers<ProductSearchState, RootAction>({
                 return state;
         }
     },
-    mealType: (state = 'Lunch', action) => {
+    consumptionTime: (state = 'Lunch', action) => {
         switch (action.type) {
             case getType(actions.initSearch):
                 return action.payload;

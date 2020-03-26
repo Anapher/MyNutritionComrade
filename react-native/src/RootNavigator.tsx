@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { MealType, Product, ProductInfo } from 'Models';
+import { ConsumptionTime, Product, ProductInfo } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
@@ -24,7 +24,7 @@ type Props = ReturnType<typeof mapStateToProps>;
 
 export type RootStackParamList = {
     Home: undefined;
-    SearchProduct: { mealType: MealType };
+    SearchProduct: { consumptionTime: ConsumptionTime };
     AddProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean };
     ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => void };
 };
@@ -42,7 +42,7 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                         options={{
                             // When logging out, a pop animation feels intuitive
                             animationTypeForReplace: isSignOut ? 'pop' : 'push',
-                            header: x => (
+                            header: (x) => (
                                 <Appbar.Header>
                                     <Appbar.Content title="My Nutriton Comrade" />
                                 </Appbar.Header>
@@ -55,7 +55,7 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                         options={({ route, navigation }) => ({
                             header: () => (
                                 <ProductSearchHeader
-                                    mealType={(route.params as any).mealType}
+                                    consumptionTime={(route.params as any).consumptionTime}
                                     navigation={navigation}
                                 />
                             ),
