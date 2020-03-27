@@ -4,7 +4,7 @@ using MyNutritionComrade.Core.Domain.Entities;
 
 namespace MyNutritionComrade.Infrastructure.Data.Configurations
 {
-    internal class MealProductConfiguration : IEntityTypeConfiguration<MealProduct>
+    internal class MealProductConfiguration
     {
         public void Configure(EntityTypeBuilder<MealProduct> builder)
         {

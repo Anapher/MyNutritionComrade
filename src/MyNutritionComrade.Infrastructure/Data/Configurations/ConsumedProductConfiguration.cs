@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Immutable;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MyNutritionComrade.Core.Domain.Entities;
+using Newtonsoft.Json;
 
 namespace MyNutritionComrade.Infrastructure.Data.Configurations
 {
@@ -10,6 +12,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Configurations
         {
             builder.OwnsOne(x => x.NutritionInformation);
             builder.HasKey(x => new {x.UserId, x.Day, x.Time, x.ProductId});
+            builder.Property(x => x.Tags).HasConversion(x => JsonConvert.SerializeObject(x), x => JsonConvert.DeserializeObject<ImmutableHashSet<string>>(x));
         }
     }
 }

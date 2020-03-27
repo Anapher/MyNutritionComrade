@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Infrastructure.Data;
 using MyNutritionComrade.Models.Response;
 
@@ -14,15 +14,15 @@ namespace MyNutritionComrade.Selectors
     public class FrequentlyUsedProducts : IFrequentlyUsedProducts
     {
         private readonly AppDbContext _context;
-        private readonly IProductsCollection _productsCollection;
+        private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
         private const int ProductsTimeFrame = 60; // Consider products of the last 60 active days
         private const int QueriedProductsPerConsumptionTime = 20;
 
-        public FrequentlyUsedProducts(AppDbContext context, IProductsCollection productsCollection, IMapper mapper)
+        public FrequentlyUsedProducts(AppDbContext context, IProductRepository productRepository, IMapper mapper)
         {
             _context = context;
-            _productsCollection = productsCollection;
+            _productRepository = productRepository;
             _mapper = mapper;
         }
 
@@ -43,9 +43,7 @@ namespace MyNutritionComrade.Selectors
 
             // map to actual product objects
             var uniqueProductIds = result.SelectMany(x => x.Value).Distinct().ToList();
-            var products =
-                (await _productsCollection.Products.Find(Builders<Product>.Filter.In(x => x.Id, uniqueProductIds)).ToListAsync()).Select(
-                    _mapper.Map<ProductDto>);
+            var products = (await _productRepository.BulkFindProductsByIds(uniqueProductIds)).Select(_mapper.Map<ProductDto>);
 
             return result.ToDictionary(x => x.Key, x => x.Value.Select(y => products.First(z => z.Id == y)).ToArray());
         }

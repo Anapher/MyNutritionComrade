@@ -2,14 +2,20 @@
 
 using System;
 using System.Collections.Generic;
+using MyNutritionComrade.Config;
 using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace MyNutritionComrade.Models.Response
 {
     public class ConsumedProductDto
     {
+        [JsonConverter(typeof(DateTimeDayOnlyJsonConverter))]
         public DateTime Day { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public ConsumptionTime Time { get; set; }
 
         public string ProductId { get; set; }

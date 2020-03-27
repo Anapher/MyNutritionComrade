@@ -34,11 +34,10 @@ namespace MyNutritionComrade.Infrastructure
             builder.RegisterType<ProductRepository>().As<IProductRepository>().SingleInstance();
             builder.RegisterType<ProductContributionsRepository>().As<IProductContributionsRepository>().SingleInstance();
             builder.RegisterType<MongoDbInitializer>().As<IMongoDbInitializer>();
-
-            ConfigureBsonClasses();
+            builder.RegisterType<ConsumedProductRepository>().As<IConsumedProductRepository>();
         }
 
-        public void ConfigureBsonClasses()
+        static InfrastructureModule()
         {
             BsonSerializer.RegisterSerializer(typeof(ServingType), new ServingTypeBsonSerializer());
 

@@ -5,6 +5,16 @@ namespace MyNutritionComrade.Core.Domain.Entities
 {
     public class Product : ProductInfo
     {
+        public Product(string id, int version)
+        {
+            Id = id;
+            Version = version;
+        }
+
+        public Product()
+        {
+        }
+
         public string Id { get; private set; } = string.Empty;
 
         /// <summary>

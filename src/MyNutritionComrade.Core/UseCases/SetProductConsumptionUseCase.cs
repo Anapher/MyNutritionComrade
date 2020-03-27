@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
+using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
@@ -37,7 +38,7 @@ namespace MyNutritionComrade.Core.UseCases
 
                     var nutritionInfo = product.NutritionInformation.ChangeMass(message.Value);
                     await _repository.Add(
-                        new ConsumedProduct(message.UserId, message.Date, message.ConsumptionTime, message.ProductId, nutritionInfo, product.Tags));
+                        new ConsumedProduct(message.UserId, message.Date, message.ConsumptionTime, message.ProductId, nutritionInfo, product.Tags.ToImmutableHashSet()));
                 }
 
                 return new SetProductConsumptionResponse();

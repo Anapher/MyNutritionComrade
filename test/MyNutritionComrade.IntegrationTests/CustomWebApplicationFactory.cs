@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Infrastructure.Data;
 using MyNutritionComrade.Infrastructure.Identity;
+using MyNutritionComrade.IntegrationTests.Utils;
 
 namespace MyNutritionComrade.IntegrationTests
 {
@@ -32,6 +34,10 @@ namespace MyNutritionComrade.IntegrationTests
                     options.UseInMemoryDatabase("InMemoryIdentityDb");
                     options.UseInternalServiceProvider(serviceProvider);
                 });
+
+                var repo = new MockProductRepository();
+                services.AddSingleton<IProductRepository>(repo);
+                services.AddSingleton(repo);
 
 
                 // Build the service provider.
