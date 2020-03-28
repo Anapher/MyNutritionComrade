@@ -1,11 +1,12 @@
 import color from 'color';
 import _ from 'lodash';
+import { ConsumedProduct } from 'Models';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Divider, Subheading, Surface, Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import FoodButtons from './FoodButtons';
-import FoodItem, { FoodListItem } from './FoodItem';
+import FoodItem from './FoodItem';
 
 const styles = StyleSheet.create({
     surface: {
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
 
 type Props = {
     title: string;
-    items: FoodListItem[];
+    items: ConsumedProduct[];
     theme: Theme;
 
     onAddFood: () => void;
@@ -41,20 +42,15 @@ type Props = {
 };
 
 function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme }: Props) {
-    const totalCalories = _.sumBy(items, x => x.kcal);
-    const totalFat = _.sumBy(items, x => x.fat);
-    const totalCarbohydrates = _.sumBy(items, x => x.carbohydrates);
-    const totalProtein = _.sumBy(items, x => x.protein);
-    const totalSugars = _.sumBy(items, x => x.sugars);
+    const totalCalories = _.sumBy(items, (x) => x.nutritionInformation.energy);
+    const totalFat = _.sumBy(items, (x) => x.nutritionInformation.fat);
+    const totalCarbohydrates = _.sumBy(items, (x) => x.nutritionInformation.carbohydrates);
+    const totalProtein = _.sumBy(items, (x) => x.nutritionInformation.protein);
+    const totalSugars = _.sumBy(items, (x) => x.nutritionInformation.sugars);
 
-    const summaryColor = color(theme.colors.text)
-        .alpha(0.5)
-        .rgb()
-        .string();
+    const summaryColor = color(theme.colors.text).alpha(0.5).rgb().string();
 
-    const borderColor = color(theme.colors.surface)
-        .rgb(0.8)
-        .string();
+    const borderColor = color(theme.colors.surface).rgb(0.8).string();
 
     return (
         <Surface style={styles.surface}>
@@ -78,14 +74,17 @@ function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme
             <FlatList
                 data={items}
                 ItemSeparatorComponent={() => <Divider />}
-                keyExtractor={item => item.name}
+                keyExtractor={(item) => item.productId}
                 renderItem={({ item }) => (
-                    <TouchableRipple key={item.name} onPress={() => {}} rippleColor={borderColor}>
+                    <TouchableRipple onPress={() => {}} rippleColor={borderColor}>
                         <FoodItem item={item} />
                     </TouchableRipple>
                 )}
             />
             <Surface style={styles.footer}>
+                <View
+                    style={{ borderBottomColor: 'white', borderBottomWidth: StyleSheet.hairlineWidth, marginRight: 80 }}
+                />
                 <FoodButtons onAddFood={onAddFood} onScanBarcode={onScanBarcode} onMoreOptions={onMoreOptions} />
             </Surface>
         </Surface>

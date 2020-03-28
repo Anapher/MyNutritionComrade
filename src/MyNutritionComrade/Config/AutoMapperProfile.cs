@@ -12,6 +12,7 @@ namespace MyNutritionComrade.Config
             CreateMap<ProductSearchEntry, ProductSearchDto>();
             CreateMap<Product, ProductDto>();
             CreateMap<ConsumedProduct, ConsumedProductDto>();
+            CreateMap<Product, FrequentlyUsedProductDto>();
         }
     }
 }

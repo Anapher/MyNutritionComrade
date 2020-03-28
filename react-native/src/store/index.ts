@@ -26,7 +26,7 @@ export async function loadStore() {
 
     // create store
     store = createStore(rootReducer, initialState, enhancer);
-    persistState(store, x => ({ auth: x.auth }));
+    persistState(store, (x) => ({ auth: x.auth, diary: x.diary }));
 
     epicMiddleware.run(rootEpic);
 }

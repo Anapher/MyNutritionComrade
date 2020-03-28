@@ -4266,6 +4266,11 @@ istanbul-reports@^2.2.6:
   dependencies:
     html-escaper "^2.0.0"
 
+itiriri@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/itiriri/-/itiriri-2.0.1.tgz#893e2fcc59164bde2abe3ad59c7d52619636f816"
+  integrity sha512-XutdsL9Nm9ejgRlFwOBdWW78Txvs9ehhMFeGCp3GjGIWSeQNgOzOfo+PjuQSmaFgE1ol6Pr2g5Jg7W4BYIploQ==
+
 jest-changed-files@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-24.9.0.tgz#08d8c15eb79a7fa3fc98269bc14b451ee82f8039"

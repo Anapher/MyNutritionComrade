@@ -16,7 +16,8 @@ function ProductSearchScreen({ suggestions }: Props) {
         <FlatList
             data={suggestions}
             ItemSeparatorComponent={() => <Divider inset />}
-            renderItem={item => <SuggestionItem item={item.item} />}
+            keyExtractor={(x) => `${x.model.id}/${x.servingSize?.unit}`}
+            renderItem={(item) => <SuggestionItem item={item.item} />}
         />
     );
 }

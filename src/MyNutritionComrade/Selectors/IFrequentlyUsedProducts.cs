@@ -7,6 +7,6 @@ namespace MyNutritionComrade.Selectors
 {
     public interface IFrequentlyUsedProducts
     {
-        Task<Dictionary<ConsumptionTime, ProductDto[]>> GetFrequentlyUsedProducts(string userId);
+        Task<Dictionary<ConsumptionTime, FrequentlyUsedProductDto[]>> GetFrequentlyUsedProducts(string userId);
     }
 }

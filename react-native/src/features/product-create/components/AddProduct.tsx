@@ -23,9 +23,7 @@ import { RestError } from 'src/utils/error-result';
 
 const stepperStyles = (theme: Theme) => {
     // const dark = Color(theme.colors.)
-    const lineColor = Color(theme.colors.text)
-        .darken(0.6)
-        .string();
+    const lineColor = Color(theme.colors.text).darken(0.6).string();
 
     const accent = '#2980b9';
 
@@ -62,10 +60,7 @@ type Props = {
     route: RouteProp<RootStackParamList, 'AddProduct'>;
 };
 
-const nutritionalValue = yup
-    .number()
-    .min(0)
-    .required();
+const nutritionalValue = yup.number().min(0).required();
 
 const validationSchema = yup.object().shape({
     label: yup
@@ -75,15 +70,15 @@ const validationSchema = yup.object().shape({
                 languageCode: yup
                     .string()
                     .required()
-                    .oneOf(SupportedLanguages.map(x => x.twoLetterCode)),
-                label: yup.string().required('The label is required.'),
+                    .oneOf(SupportedLanguages.map((x) => x.twoLetterCode)),
+                value: yup.string().required('The label is required.'),
             }),
         )
         .min(1, 'Please provide at least one label.'),
     defaultServing: yup
         .string()
         .required()
-        .test('defaultServingHasValue', 'The default serving must have a value', function(value) {
+        .test('defaultServingHasValue', 'The default serving must have a value', function (value) {
             const { servings } = this.parent;
             return !!servings[value];
         }),
@@ -92,18 +87,18 @@ const validationSchema = yup.object().shape({
             .number()
             .oneOf([100])
             .required()
-            .test('max', 'Total nutritions must not exceed 100g', function(value) {
+            .test('max', 'Total nutritions must not exceed 100g', function (value) {
                 const { mass, fat, carbohydrates, protein, sodium } = this.parent;
                 return fat + carbohydrates + protein + sodium <= mass;
             }),
         energy: nutritionalValue,
         fat: nutritionalValue,
-        saturatedFat: nutritionalValue.test('max', 'Saturated Fat must not exceed total fat', function(value) {
+        saturatedFat: nutritionalValue.test('max', 'Saturated Fat must not exceed total fat', function (value) {
             const { fat } = this.parent;
             return fat >= value;
         }),
         carbohydrates: nutritionalValue,
-        sugars: nutritionalValue.test('max', 'Sugars must not exceed total carbohydrates', function(value) {
+        sugars: nutritionalValue.test('max', 'Sugars must not exceed total carbohydrates', function (value) {
             const { carbohydrates } = this.parent;
             return carbohydrates >= value;
         }),
@@ -114,11 +109,11 @@ const validationSchema = yup.object().shape({
     tags: yup.array().of(yup.string()),
     code: yup.string(),
     servings: yup.lazy((value: any) =>
-        yup.object().shape(Object.fromEntries(Object.keys(value).map(x => [x, yup.number().positive()]))),
+        yup.object().shape(Object.fromEntries(Object.keys(value).map((x) => [x, yup.number().positive()]))),
     ),
 });
 
-const defaultValues = {
+const defaultValues: ProductInfo = {
     defaultServing: 'g',
     nutritionInformation: {
         mass: 100,
@@ -132,7 +127,7 @@ const defaultValues = {
         sodium: 0,
     },
     tags: [],
-    label: [{ languageCode: CurrentLanguage, label: '' }],
+    label: [{ languageCode: CurrentLanguage, value: '' }],
     servings: {
         g: 1,
     },
@@ -159,6 +154,8 @@ function AddProduct({ theme, navigation, route }: Props) {
                 ToastAndroid.show('The product was created successfully.', 3000);
             } catch (error) {
                 const axiosError: AxiosError = error;
+                console.log(error);
+
                 if (axiosError?.response === undefined) {
                     ToastAndroid.show('Connection failed.', 3000);
                     return;
@@ -193,7 +190,7 @@ function AddProduct({ theme, navigation, route }: Props) {
             }}
             validationSchema={validationSchema}
         >
-            {props => {
+            {(props) => {
                 React.useLayoutEffect(() => {
                     navigation.setOptions({
                         header: () => (
@@ -217,7 +214,7 @@ function AddProduct({ theme, navigation, route }: Props) {
                                 keyboardDismissMode="on-drag"
                                 style={{ flexGrow: 1 }}
                                 orientation="horizontal"
-                                onPageSelected={e => {
+                                onPageSelected={(e) => {
                                     setCurrentPage(e.nativeEvent.position);
                                 }}
                                 ref={viewPagerRef}
@@ -248,7 +245,7 @@ function AddProduct({ theme, navigation, route }: Props) {
                                 stepCount={4}
                                 customStyles={stepperStyles(theme)}
                                 currentPosition={currentPage}
-                                onPress={pos => {
+                                onPress={(pos) => {
                                     viewPagerRef.current?.setPage(pos);
                                 }}
                                 labels={['Label', 'Properties', 'Nutritions', 'Servings']}

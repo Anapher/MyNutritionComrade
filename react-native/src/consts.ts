@@ -1,3 +1,5 @@
+import { ConsumptionTime } from 'Models';
+
 export const TagLiquid = 'liquid';
 export const CurrentLanguage = 'de';
 
@@ -12,3 +14,5 @@ export const SupportedLanguages: LanguageInfo[] = [
 ];
 
 export const errorColor = '#e74c3c';
+
+export const ConsumptionTimes: ConsumptionTime[] = ['breakfast', 'lunch', 'dinner', 'snack'];

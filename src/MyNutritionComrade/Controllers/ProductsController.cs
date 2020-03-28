@@ -25,12 +25,12 @@ namespace MyNutritionComrade.Controllers
     {
         [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([FromQuery] string search, [FromQuery] string? units, [FromServices] IElasticClient client, [FromServices] IMapper mapper)
+        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([FromQuery] string term, [FromQuery] string? units, [FromServices] IElasticClient client, [FromServices] IMapper mapper)
         {
             var unitsArray = units?.Split(',');
             var response = await client.SearchAsync<ProductSearchEntry>(x => x.Size(8).Query(q =>
             {
-                var q2 = q.QueryString(m => m.DefaultField(f => f.ProductName).Query($"*{search}*"));
+                var q2 = q.QueryString(m => m.DefaultField(f => f.ProductName).Query($"*{term}*"));
                 if (units?.Any() == true)
                     q2 = q2 && +q.Terms(t => t.Field(f => f.ServingTypes).Terms(unitsArray));
 

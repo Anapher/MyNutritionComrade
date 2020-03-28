@@ -1,11 +1,14 @@
 declare module 'Models' {
-    export interface ProductInfo {
-        code?: string;
+    export interface ProductProperties {
         nutritionInformation: NutritionInformation;
         label: ProductLabel[];
         servings: { [key: string]: number };
         defaultServing: string;
         tags: string[];
+    }
+
+    export interface ProductInfo extends ProductProperties {
+        code?: string;
     }
 
     export interface Product extends ProductInfo {

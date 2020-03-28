@@ -16,7 +16,7 @@ namespace MyNutritionComrade.Controllers
     public class UserServiceController : Controller
     {
         [HttpGet("frequently_used_products")]
-        public async Task<ActionResult<Dictionary<ConsumptionTime, ProductDto[]>>> GetFrequentlyUsedProducts(
+        public async Task<ActionResult<Dictionary<ConsumptionTime, FrequentlyUsedProductDto[]>>> GetFrequentlyUsedProducts(
             [FromServices] IFrequentlyUsedProducts frequentlyUsed)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;

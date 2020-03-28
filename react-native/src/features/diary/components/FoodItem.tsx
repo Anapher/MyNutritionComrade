@@ -2,20 +2,11 @@ import color from 'color';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Theme, withTheme } from 'react-native-paper';
-
-export interface FoodListItem {
-    name: string;
-    amount: string;
-
-    kcal: number;
-    fat: number;
-    carbohydrates: number;
-    protein: number;
-    sugars: number;
-}
+import { ConsumedProduct } from 'Models';
+import selectLabel from 'src/utils/label-selector';
 
 type Props = {
-    item: FoodListItem;
+    item: ConsumedProduct;
     theme: Theme;
 };
 
@@ -40,40 +31,30 @@ const styles = StyleSheet.create({
 });
 
 function FoodItem({ item, theme }: Props) {
-    const titleColor = color(theme.colors.text)
-        .alpha(0.87)
-        .rgb()
-        .string();
-    const descriptionColor = color(theme.colors.text)
-        .alpha(0.7)
-        .rgb()
-        .string();
-    const descriptionBColor = color(theme.colors.text)
-        .alpha(0.4)
-        .rgb()
-        .string();
+    const titleColor = color(theme.colors.text).alpha(0.87).rgb().string();
+    const descriptionColor = color(theme.colors.text).alpha(0.7).rgb().string();
+    const descriptionBColor = color(theme.colors.text).alpha(0.4).rgb().string();
 
-    const kcalColor = color(theme.colors.text)
-        .alpha(0.8)
-        .rgb()
-        .string();
+    const kcalColor = color(theme.colors.text).alpha(0.8).rgb().string();
+
+    const { fat, carbohydrates, protein, mass, energy } = item.nutritionInformation;
 
     return (
         <View style={styles.container}>
             <View style={{ flexDirection: 'column' }}>
                 <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.title, { color: titleColor }]}>
-                    {item.name}
+                    {selectLabel(item.label)}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={[styles.description, { color: descriptionColor }]}>{item.amount}</Text>
+                    <Text style={[styles.description, { color: descriptionColor }]}>{mass}</Text>
                     <Text style={[styles.description, { color: descriptionBColor, fontSize: 11 }]}>
                         {' | '}
-                        {`Fat: ${item.fat}g | Carbs: ${item.carbohydrates}g | Protein: ${item.protein}g`}
+                        {`Fat: ${fat}g | Carbs: ${carbohydrates}g | Protein: ${protein}g`}
                     </Text>
                 </View>
             </View>
             <View>
-                <Text style={{ color: kcalColor }}>{item.kcal} kcal</Text>
+                <Text style={{ color: kcalColor }}>{energy} kcal</Text>
             </View>
         </View>
     );

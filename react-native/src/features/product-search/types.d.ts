@@ -1,8 +1,11 @@
 declare module 'Models' {
     export interface FoodSuggestion {
-        name: string;
+        model: ProductSearchDto;
         servingSize?: ServingSize;
-        kcal?: number;
+    }
+
+    export interface ProductSearchDto extends ProductProperties {
+        id: string;
     }
 
     export interface ServingSize {

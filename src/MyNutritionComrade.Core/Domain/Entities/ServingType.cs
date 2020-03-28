@@ -41,6 +41,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public static ServingType TeaSpoon = new ServingType("tl");
 
         public static ServingType Package = new ServingType("package");
+        public static ServingType Portion = new ServingType("portion");
         public static ServingType Bottle = new ServingType("bottle");
 
         public static ServingType Small = new ServingType("small");
@@ -60,6 +61,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
             TeaSpoon,
             Package,
             Bottle,
+            Portion,
             Large,
             ExtraLarge,
             Small,

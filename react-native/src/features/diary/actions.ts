@@ -6,4 +6,4 @@ export const loadFrequentlyUsedProducts = createAsyncAction(
     'DIARY/LOAD_FREQUENTLYUSEDPRODUCTS_REQUEST',
     'DIARY/LOAD_FREQUENTLYUSEDPRODUCTS_SUCCESS',
     'DIARY/LOAD_FREQUENTLYUSEDPRODUCTS_FAILURE',
-)<never, FrequentlyUsedProducts, RequestErrorResponse>();
+)<any, FrequentlyUsedProducts, RequestErrorResponse>();

@@ -1,10 +1,10 @@
 declare module 'Models' {
-    export type ConsumptionTime = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack';
+    export type ConsumptionTime = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
-    export type ProductDto = {
+    export interface ProductDto extends ProductInfo {
         id: string;
         version: number;
-    };
+    }
 
     export type ConsumedProduct = {
         day: string;
@@ -12,7 +12,12 @@ declare module 'Models' {
         productId: string;
         nutritionInformation: NutritionInformation;
         tags: string[];
+        label: ProductLabel[];
     };
 
-    export type FrequentlyUsedProducts = { [time: ConsumptionTime]: ProductDto[] };
+    export interface FrequentlyUsedProductDto extends ProductDto {
+        recentlyConsumedMass: number;
+    }
+
+    export type FrequentlyUsedProducts = { [time in ConsumptionTime]: FrequentlyUsedProductDto[] };
 }

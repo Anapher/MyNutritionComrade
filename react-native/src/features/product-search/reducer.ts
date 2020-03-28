@@ -36,6 +36,8 @@ export default combineReducers<ProductSearchState, RootAction>({
                 return [];
             case getType(actions.setSuggestions):
                 return action.payload;
+            case getType(actions.appendSuggestions):
+                return [...state, ...action.payload];
             default:
                 return state;
         }

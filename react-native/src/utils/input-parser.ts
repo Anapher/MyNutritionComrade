@@ -96,7 +96,7 @@ export function tryParseServingSize(input: string): { serving?: Partial<ServingS
         return { productSearch, serving: [{ size: amount }] };
     }
 
-    const serving: ServingSize[] = servingTypes.map(x => ({
+    const serving: ServingSize[] = servingTypes.map((x) => ({
         size: amount || 0,
         unit: x.type,
         conversion: x.conversion,

@@ -26,26 +26,34 @@ namespace MyNutritionComrade.Selectors
             _mapper = mapper;
         }
 
-        public async Task<Dictionary<ConsumptionTime, ProductDto[]>> GetFrequentlyUsedProducts(string userId)
+        public async Task<Dictionary<ConsumptionTime, FrequentlyUsedProductDto[]>> GetFrequentlyUsedProducts(string userId)
         {
             // select start date, so we can adjust to changing habits
             var timeFrame = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId).Select(x => (DateTime?) x.Day).Distinct()
                 .OrderByDescending(x => x).Skip(ProductsTimeFrame).FirstOrDefaultAsync() ?? DateTime.MinValue;
 
             // get frequently used product ids of every consumption time
-            var result = new Dictionary<ConsumptionTime, List<string>>();
+            var result = new Dictionary<ConsumptionTime, List<(string, double)>>();
             foreach (var consumptionTime in Enum.GetValues(typeof(ConsumptionTime)).Cast<ConsumptionTime>())
             {
                 var productIds = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId && x.Time == consumptionTime && x.Day >= timeFrame)
                     .GroupBy(x => x.ProductId).OrderByDescending(x => x.Count()).Take(QueriedProductsPerConsumptionTime).Select(x => x.Key).ToListAsync();
-                result.Add(consumptionTime, productIds);
+
+                result.Add(consumptionTime, productIds.Select(x => (x, 0.0)).ToList());
             }
 
             // map to actual product objects
-            var uniqueProductIds = result.SelectMany(x => x.Value).Distinct().ToList();
-            var products = (await _productRepository.BulkFindProductsByIds(uniqueProductIds)).Select(_mapper.Map<ProductDto>);
+            var uniqueProductIds = result.SelectMany(x => x.Value.Select(y => y.Item1)).Distinct().ToList();
+            var products = await _productRepository.BulkFindProductsByIds(uniqueProductIds);
 
-            return result.ToDictionary(x => x.Key, x => x.Value.Select(y => products.First(z => z.Id == y)).ToArray());
+            return result.ToDictionary(x => x.Key, x => x.Value.Select(y =>
+            {
+                var (id, mass) = y;
+                var p = products.First(z => z.Id == id);
+                var frequentProduct = _mapper.Map<FrequentlyUsedProductDto>(p);
+                frequentProduct.RecentlyConsumedMass = mass;
+                return frequentProduct;
+            }).ToArray());
         }
     }
 }
