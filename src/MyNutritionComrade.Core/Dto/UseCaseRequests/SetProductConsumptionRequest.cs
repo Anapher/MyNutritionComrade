@@ -23,7 +23,7 @@ namespace MyNutritionComrade.Core.Dto.UseCaseRequests
         public string ProductId { get; }
 
         /// <summary>
-        ///     The new value of the product (usually the mass). If 0, the consumed product will be removed.
+        ///     The new value of the product (usually the volume). If 0, the consumed product will be removed.
         /// </summary>
         public int Value { get; }
     }

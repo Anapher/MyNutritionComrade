@@ -3,9 +3,9 @@
     public interface INutritionInformation
     {
         /// <summary>
-        ///     Mass the data belongs to in gram
+        ///     Volume the data belongs to in gram/ml (depending on product)
         /// </summary>
-        double Mass { get; }
+        double Volume { get; }
 
         /// <summary>
         ///     Energy in kJ
@@ -13,37 +13,37 @@
         double Energy { get; }
 
         /// <summary>
-        ///     Share of fat relative to <see cref="Mass"/> in gram
+        ///     Share of fat relative to <see cref="Volume"/> in gram
         /// </summary>
         double Fat { get; }
 
         /// <summary>
-        ///     Share of saturated fat relative to <see cref="Mass"/> in gram
+        ///     Share of saturated fat relative to <see cref="Volume"/> in gram
         /// </summary>
         double SaturatedFat { get; }
 
         /// <summary>
-        ///     Share of carbohydrates relative to <see cref="Mass"/> in gram
+        ///     Share of carbohydrates relative to <see cref="Volume"/> in gram
         /// </summary>
         double Carbohydrates { get; }
 
         /// <summary>
-        ///     Share of sugars relative to <see cref="Mass"/> in gram
+        ///     Share of sugars relative to <see cref="Volume"/> in gram
         /// </summary>
         double Sugars { get; }
 
         /// <summary>
-        ///     Share of protein relative to <see cref="Mass"/> in gram
+        ///     Share of protein relative to <see cref="Volume"/> in gram
         /// </summary>
         double Protein { get; }
 
         /// <summary>
-        ///     Share of dietary fiber relative to <see cref="Mass"/> in gram
+        ///     Share of dietary fiber relative to <see cref="Volume"/> in gram
         /// </summary>
         double DietaryFiber { get; }
 
         /// <summary>
-        ///     Share of sodium relative to <see cref="Mass"/> in gram
+        ///     Share of sodium relative to <see cref="Volume"/> in gram
         /// </summary>
         double Sodium { get; }
     }

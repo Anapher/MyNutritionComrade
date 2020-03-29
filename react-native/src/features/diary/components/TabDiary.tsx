@@ -1,12 +1,15 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import { ConsumptionTimes } from 'src/consts';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as actions from '../actions';
 import FoodList from './FoodList';
+import { ConsumptionTime } from 'Models';
+import _ from 'lodash';
+import { toDateString } from 'src/utils/date-helper';
 
 const mapStateToProps = (state: RootState) => ({
     currrentDate: state.diary.currentDate,
@@ -15,6 +18,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const dispatchProps = {
     loadFrequentlyUsedProducts: actions.loadFrequentlyUsedProducts.request,
+    loadDate: actions.loadDate.request,
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -22,23 +26,16 @@ type Props = ReturnType<typeof mapStateToProps> &
         navigation: StackNavigationProp<RootStackParamList>;
     };
 
-function TabDiary({ navigation, currrentDate, consumedProducts, loadFrequentlyUsedProducts }: Props) {
+function TabDiary({ navigation, currrentDate, consumedProducts, loadFrequentlyUsedProducts, loadDate }: Props) {
     useEffect(() => {
-        loadFrequentlyUsedProducts(null);
+        loadFrequentlyUsedProducts();
+        loadDate(toDateString(new Date()));
     }, []);
 
     return (
         <View style={{ marginTop: 16 }}>
             {ConsumptionTimes.map((time) => (
-                <View key={time} style={{ marginBottom: 16 }}>
-                    <FoodList
-                        title={time}
-                        items={consumedProducts.filter((x) => x.time === time)}
-                        onAddFood={() => navigation.navigate('SearchProduct', { consumptionTime: time })}
-                        onScanBarcode={() => {}}
-                        onMoreOptions={() => {}}
-                    />
-                </View>
+                <View key={time} style={{ marginBottom: 16 }}></View>
             ))}
         </View>
     );

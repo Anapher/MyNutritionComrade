@@ -7,6 +7,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { Divider, Subheading, Surface, Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import FoodButtons from './FoodButtons';
 import FoodItem from './FoodItem';
+import { roundNumber } from 'src/utils/string-utils';
 
 const styles = StyleSheet.create({
     surface: {
@@ -49,7 +50,6 @@ function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme
     const totalSugars = _.sumBy(items, (x) => x.nutritionInformation.sugars);
 
     const summaryColor = color(theme.colors.text).alpha(0.5).rgb().string();
-
     const borderColor = color(theme.colors.surface).rgb(0.8).string();
 
     return (
@@ -60,15 +60,19 @@ function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme
                         {title}
                     </Subheading>
                     <Subheading style={styles.headerText}>
-                        {totalCalories}
+                        {roundNumber(totalCalories)}
                         <Text style={{ fontSize: 12 }}> kcal</Text>
                     </Subheading>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Fat: ${totalFat}g`}</Text>
-                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Carbohydrates: ${totalCarbohydrates}g`}</Text>
-                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Sugars: ${totalSugars}g`}</Text>
-                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Protein: ${totalProtein}g`}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Fat: ${roundNumber(totalFat)}g`}</Text>
+                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Carbohydrates: ${roundNumber(
+                        totalCarbohydrates,
+                    )}g`}</Text>
+                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Sugars: ${roundNumber(totalSugars)}g`}</Text>
+                    <Text style={{ fontSize: 11, color: summaryColor }}>{`Protein: ${roundNumber(
+                        totalProtein,
+                    )}g`}</Text>
                 </View>
             </Surface>
             <FlatList
@@ -82,9 +86,15 @@ function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme
                 )}
             />
             <Surface style={styles.footer}>
-                <View
-                    style={{ borderBottomColor: 'white', borderBottomWidth: StyleSheet.hairlineWidth, marginRight: 80 }}
-                />
+                {items.length === 0 && (
+                    <View
+                        style={{
+                            borderBottomColor: 'white',
+                            borderBottomWidth: StyleSheet.hairlineWidth,
+                            marginRight: 80,
+                        }}
+                    />
+                )}
                 <FoodButtons onAddFood={onAddFood} onScanBarcode={onScanBarcode} onMoreOptions={onMoreOptions} />
             </Surface>
         </Surface>

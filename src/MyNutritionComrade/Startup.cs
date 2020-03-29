@@ -28,10 +28,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
 using MyNutritionComrade.Infrastructure.MongoDb;
 using MyNutritionComrade.Infrastructure.Options;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace MyNutritionComrade
@@ -142,12 +144,19 @@ namespace MyNutritionComrade
             services.AddMvc().ConfigureApiBehaviorOptions(options =>
             {
                 options.InvalidModelStateResponseFactory = context =>
-                    new BadRequestObjectResult(new FieldValidationError(context.ModelState
-                        .Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
-                        .ToDictionary(x => x.Key, x => x.Value.Errors.First().ErrorMessage)));
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<IMvcBuilder>>();
+
+                    var error = new FieldValidationError(context.ModelState.Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
+                        .ToDictionary(x => x.Key, x => x.Value.Errors.First().ErrorMessage));
+
+                    logger.LogDebug("Invalid Model State: {@error}", error);
+                    return new BadRequestObjectResult(error);
+                };
             }).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>()).AddNewtonsoftJson(x =>
             {
                 x.SerializerSettings.Converters.Add(new ServingTypeJsonConverter());
+                x.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
                 x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
 

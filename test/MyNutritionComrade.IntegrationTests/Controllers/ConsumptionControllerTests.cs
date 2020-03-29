@@ -114,7 +114,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var consumedProduct = Assert.Single(result);
             Assert.Equal(ConsumptionTime.Lunch, consumedProduct.Time);
             Assert.Equal("1", consumedProduct.ProductId);
-            Assert.Equal(120, consumedProduct.NutritionInformation.Mass);
+            Assert.Equal(120, consumedProduct.NutritionInformation.Volume);
         }
 
         [Fact]
@@ -146,7 +146,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ConsumedProductDto[]>(stringResponse);
             var consumedProduct = Assert.Single(result);
-            Assert.Equal(400, consumedProduct.NutritionInformation.Mass);
+            Assert.Equal(400, consumedProduct.NutritionInformation.Volume);
 
             // update product
             httpResponse = await client.PutAsync("/api/v1/consumption/2020-05-01/dinner/1", new JsonContent(600));
@@ -158,7 +158,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             stringResponse = await httpResponse.Content.ReadAsStringAsync();
             result = JsonConvert.DeserializeObject<ConsumedProductDto[]>(stringResponse);
             consumedProduct = Assert.Single(result);
-            Assert.Equal(600, consumedProduct.NutritionInformation.Mass);
+            Assert.Equal(600, consumedProduct.NutritionInformation.Volume);
         }
 
         [Fact]

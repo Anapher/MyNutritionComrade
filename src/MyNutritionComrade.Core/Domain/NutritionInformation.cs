@@ -8,10 +8,10 @@ namespace MyNutritionComrade.Core.Domain
     /// </summary>
     public class NutritionInformation : INutritionInformation
     {
-        public NutritionInformation(double mass, double energy, double fat, double saturatedFat, double carbohydrates, double sugars, double protein,
+        public NutritionInformation(double volume, double energy, double fat, double saturatedFat, double carbohydrates, double sugars, double protein,
             double dietaryFiber, double sodium)
         {
-            Mass = mass;
+            Volume = volume;
             Energy = energy;
             Fat = fat;
             SaturatedFat = saturatedFat;
@@ -32,7 +32,7 @@ namespace MyNutritionComrade.Core.Domain
         ///     <inheritdoc />
         /// </summary>
         [JsonProperty]
-        public double Mass { get; private set; }
+        public double Volume { get; private set; }
 
         /// <summary>
         ///     <inheritdoc />
@@ -83,7 +83,7 @@ namespace MyNutritionComrade.Core.Domain
         public double Sodium { get; private set; }
 
         protected bool Equals(NutritionInformation other) =>
-            Mass.Equals(other.Mass) && Energy.Equals(other.Energy) && Fat.Equals(other.Fat) && SaturatedFat.Equals(other.SaturatedFat) &&
+            Volume.Equals(other.Volume) && Energy.Equals(other.Energy) && Fat.Equals(other.Fat) && SaturatedFat.Equals(other.SaturatedFat) &&
             Carbohydrates.Equals(other.Carbohydrates) && Sugars.Equals(other.Sugars) && Protein.Equals(other.Protein) &&
             DietaryFiber.Equals(other.DietaryFiber) && Sodium.Equals(other.Sodium);
 
@@ -98,7 +98,7 @@ namespace MyNutritionComrade.Core.Domain
         public override int GetHashCode()
         {
             var hashCode = new HashCode();
-            hashCode.Add(Mass);
+            hashCode.Add(Volume);
             hashCode.Add(Energy);
             hashCode.Add(Fat);
             hashCode.Add(SaturatedFat);

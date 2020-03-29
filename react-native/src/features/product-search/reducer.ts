@@ -22,7 +22,7 @@ export default combineReducers<ProductSearchState, RootAction>({
                 return state;
         }
     },
-    consumptionTime: (state = 'Lunch', action) => {
+    consumptionTime: (state = 'lunch', action) => {
         switch (action.type) {
             case getType(actions.initSearch):
                 return action.payload;

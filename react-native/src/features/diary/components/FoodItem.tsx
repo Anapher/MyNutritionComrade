@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text, Theme, withTheme } from 'react-native-paper';
 import { ConsumedProduct } from 'Models';
 import selectLabel from 'src/utils/label-selector';
+import { roundNumber } from 'src/utils/string-utils';
 
 type Props = {
     item: ConsumedProduct;
@@ -37,7 +38,7 @@ function FoodItem({ item, theme }: Props) {
 
     const kcalColor = color(theme.colors.text).alpha(0.8).rgb().string();
 
-    const { fat, carbohydrates, protein, mass, energy } = item.nutritionInformation;
+    const { fat, carbohydrates, protein, volume, energy } = item.nutritionInformation;
 
     return (
         <View style={styles.container}>
@@ -46,15 +47,17 @@ function FoodItem({ item, theme }: Props) {
                     {selectLabel(item.label)}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={[styles.description, { color: descriptionColor }]}>{mass}</Text>
+                    <Text style={[styles.description, { color: descriptionColor }]}>{volume}</Text>
                     <Text style={[styles.description, { color: descriptionBColor, fontSize: 11 }]}>
                         {' | '}
-                        {`Fat: ${fat}g | Carbs: ${carbohydrates}g | Protein: ${protein}g`}
+                        {`Fat: ${roundNumber(fat)}g | Carbs: ${roundNumber(carbohydrates)}g | Protein: ${roundNumber(
+                            protein,
+                        )}g`}
                     </Text>
                 </View>
             </View>
             <View>
-                <Text style={{ color: kcalColor }}>{energy} kcal</Text>
+                <Text style={{ color: kcalColor }}>{roundNumber(energy)} kcal</Text>
             </View>
         </View>
     );

@@ -21,7 +21,7 @@ namespace MyNutritionComrade.Controllers
     public class ConsumptionController : Controller
     {
         [HttpPut("{date}/{type}/{productId}")]
-        public async Task<ActionResult> SetConsumption(string date, string type, string productId, [FromBody] int value,
+        public async Task<ActionResult> SetConsumption(string date, string type, string productId, [FromBody] ValueHolder value,
             [FromServices] ISetProductConsumption useCase)
         {
             if (!DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
@@ -31,7 +31,7 @@ namespace MyNutritionComrade.Controllers
                 return BadRequest("The url parameter must be a valid consumption time.");
 
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
-            await useCase.Handle(new SetProductConsumptionRequest(userId, dateTime, consumptionTime, productId, value));
+            await useCase.Handle(new SetProductConsumptionRequest(userId, dateTime, consumptionTime, productId, value.Value));
 
             if (useCase.HasError)
                 return useCase.ToActionResult();
@@ -47,6 +47,11 @@ namespace MyNutritionComrade.Controllers
 
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
             return await selector.GetConsumedProductsOfTheDay(userId, dateTime);
+        }
+
+        public class ValueHolder
+        {
+            public int Value { get; set; }
         }
     }
 }

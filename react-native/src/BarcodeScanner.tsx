@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useIsFocused, NavigationProp, RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from './RootNavigator';
+import { RouteProp, useIsFocused } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { BarCodeScannedCallback, BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
-import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
-import { BarCodeScanner, BarCodeScannedCallback } from 'expo-barcode-scanner';
-import { Text, Appbar, IconButton } from 'react-native-paper';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StatusBar, StyleSheet, View } from 'react-native';
+import { IconButton, Text } from 'react-native-paper';
+import { RootStackParamList } from './RootNavigator';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -24,7 +23,7 @@ function BarcodeScanner({ navigation, route }: Props) {
         })();
     }, []);
 
-    const handleBarCodeScanned: BarCodeScannedCallback = result => {
+    const handleBarCodeScanned: BarCodeScannedCallback = (result) => {
         route.params.onBarcodeScanned(result);
         navigation.goBack();
     };

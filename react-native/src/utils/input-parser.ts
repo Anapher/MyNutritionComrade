@@ -50,13 +50,13 @@ const servingTypes: ServingType[] = [
         keywords: ['bread'],
     },
     {
-        id: 'l',
+        id: 'ml',
         keywords: ['l', 'liter'],
+        conversionFactor: 1000,
     },
     {
-        id: 'l',
+        id: 'ml',
         keywords: ['ml'],
-        conversionFactor: 0.001,
     },
 ];
 

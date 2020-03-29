@@ -2,6 +2,6 @@
 {
     public class FrequentlyUsedProductDto : ProductDto
     {
-        public double RecentlyConsumedMass { get; set; }
+        public double RecentlyConsumedVolume { get; set; }
     }
 }

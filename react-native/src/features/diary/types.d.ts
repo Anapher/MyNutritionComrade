@@ -16,7 +16,7 @@ declare module 'Models' {
     };
 
     export interface FrequentlyUsedProductDto extends ProductDto {
-        recentlyConsumedMass: number;
+        recentlyConsumedVolume: number;
     }
 
     export type FrequentlyUsedProducts = { [time in ConsumptionTime]: FrequentlyUsedProductDto[] };

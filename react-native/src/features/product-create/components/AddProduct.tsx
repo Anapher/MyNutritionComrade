@@ -83,13 +83,13 @@ const validationSchema = yup.object().shape({
             return !!servings[value];
         }),
     nutritionInformation: yup.object().shape({
-        mass: yup
+        volume: yup
             .number()
             .oneOf([100])
             .required()
             .test('max', 'Total nutritions must not exceed 100g', function (value) {
-                const { mass, fat, carbohydrates, protein, sodium } = this.parent;
-                return fat + carbohydrates + protein + sodium <= mass;
+                const { volume, fat, carbohydrates, protein, sodium } = this.parent;
+                return fat + carbohydrates + protein + sodium <= volume;
             }),
         energy: nutritionalValue,
         fat: nutritionalValue,
@@ -116,7 +116,7 @@ const validationSchema = yup.object().shape({
 const defaultValues: ProductInfo = {
     defaultServing: 'g',
     nutritionInformation: {
-        mass: 100,
+        volume: 100,
         energy: 0,
         fat: 0,
         saturatedFat: 0,

@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import SignInScreen from 'src/features/auth/components/SignInScreen';
 import BarcodeScanner from './BarcodeScanner';
 import AddProduct from './features/product-create/components/AddProduct';
-import AddProductHeader from './features/product-create/components/AddProductHeader';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearch from './features/product-search/components/ProductSearchScreen';
 import HomeScreen from './HomeScreen';
@@ -24,7 +23,7 @@ type Props = ReturnType<typeof mapStateToProps>;
 
 export type RootStackParamList = {
     Home: undefined;
-    SearchProduct: { consumptionTime: ConsumptionTime };
+    SearchProduct: { consumptionTime: ConsumptionTime; date: string };
     AddProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean };
     ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => void };
 };

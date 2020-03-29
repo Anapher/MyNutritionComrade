@@ -36,7 +36,7 @@ declare module 'Models' {
     }
 
     export interface NutritionInformation {
-        mass: number;
+        volume: number;
         energy: number;
         fat: number;
         saturatedFat: number;

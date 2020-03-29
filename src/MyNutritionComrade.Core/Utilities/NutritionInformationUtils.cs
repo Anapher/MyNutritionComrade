@@ -19,7 +19,7 @@ namespace MyNutritionComrade.Core.Utilities
 
             foreach (var entry in entries)
             {
-                totalMass += entry.Mass;
+                totalMass += entry.Volume;
                 totalEnergy += entry.Energy;
                 totalFat += entry.Fat;
                 totalSaturatedFat += entry.SaturatedFat;
@@ -35,7 +35,7 @@ namespace MyNutritionComrade.Core.Utilities
 
         public static NutritionInformation ChangeMass(this INutritionInformation nutritionInformation, double newMass)
         {
-            var factor = newMass / nutritionInformation.Mass;
+            var factor = newMass / nutritionInformation.Volume;
             return new NutritionInformation(newMass, nutritionInformation.Energy * factor, nutritionInformation.Fat * factor,
                 nutritionInformation.SaturatedFat * factor, nutritionInformation.Carbohydrates * factor, nutritionInformation.Sugars * factor,
                 nutritionInformation.Protein * factor, nutritionInformation.DietaryFiber * factor, nutritionInformation.Sodium * factor);

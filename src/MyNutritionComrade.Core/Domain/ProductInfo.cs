@@ -78,7 +78,7 @@ namespace MyNutritionComrade.Core.Domain
         public void AddProductServing(ServingType servingType, double weight)
         {
             if (_servings.ContainsKey(servingType))
-                throw new ArgumentException("A serving with the given mass already exists.");
+                throw new ArgumentException("A serving with the given volume already exists.");
 
             _servings.Add(servingType, weight);
         }

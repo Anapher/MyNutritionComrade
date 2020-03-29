@@ -13,7 +13,7 @@ namespace MyNutritionComrade.Models.Validation
 
         public ProductInfoValidator()
         {
-            RuleFor(x => x.NutritionInformation.Mass).Equal(100);
+            RuleFor(x => x.NutritionInformation.Volume).Equal(100);
             RuleFor(x => x.NutritionInformation.Energy).GreaterThan(0);
             RuleFor(x => x.NutritionInformation.Fat).GreaterThanOrEqualTo(0);
             RuleFor(x => x.NutritionInformation.SaturatedFat).GreaterThanOrEqualTo(0);

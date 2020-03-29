@@ -48,10 +48,10 @@ namespace MyNutritionComrade.Selectors
 
             return result.ToDictionary(x => x.Key, x => x.Value.Select(y =>
             {
-                var (id, mass) = y;
+                var (id, volume) = y;
                 var p = products.First(z => z.Id == id);
                 var frequentProduct = _mapper.Map<FrequentlyUsedProductDto>(p);
-                frequentProduct.RecentlyConsumedMass = mass;
+                frequentProduct.RecentlyConsumedVolume = volume;
                 return frequentProduct;
             }).ToArray());
         }

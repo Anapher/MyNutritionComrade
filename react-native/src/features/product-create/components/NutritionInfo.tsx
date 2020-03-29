@@ -31,13 +31,9 @@ const nutritionInfo: NutritionRow[] = [
 ];
 
 function NutritionInfo({ formik, theme, onShowNextPage }: Props) {
-    const dividerColor = Color(theme.colors.text)
-        .alpha(0.5)
-        .string();
+    const dividerColor = Color(theme.colors.text).alpha(0.5).string();
 
-    const background = Color(theme.colors.accent)
-        .alpha(0.3)
-        .string();
+    const background = Color(theme.colors.accent).alpha(0.3).string();
 
     const refs = nutritionInfo.map(() => useRef<TextInput>(null));
     const { values, setFieldValue, errors } = formik;
@@ -48,13 +44,13 @@ function NutritionInfo({ formik, theme, onShowNextPage }: Props) {
             ItemSeparatorComponent={() => <View style={{ borderBottomColor: dividerColor, borderBottomWidth: 1 }} />}
             data={nutritionInfo}
             stickyHeaderIndices={[0]}
-            keyExtractor={item => item.name}
+            keyExtractor={(item) => item.name}
             ListHeaderComponent={
                 <Surface style={{ elevation: 14 }}>
                     <Row
                         name={<Subheading>Nutrition Facts</Subheading>}
                         lastItem
-                        error={errors.nutritionInformation?.mass}
+                        error={errors.nutritionInformation?.volume}
                     >
                         <Subheading>{`Ø/100${formik.values.tags.includes(TagLiquid) ? 'ml' : 'g'}`}</Subheading>
                     </Row>
@@ -81,7 +77,7 @@ function NutritionInfo({ formik, theme, onShowNextPage }: Props) {
                             value={values.nutritionInformation[item.name].toString()}
                             blurOnSubmit={false}
                             selectTextOnFocus
-                            onChangeText={s =>
+                            onChangeText={(s) =>
                                 !Number.isNaN(Number(s)) &&
                                 setFieldValue(`nutritionInformation.${item.name}`, Number(s))
                             }

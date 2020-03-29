@@ -5,10 +5,7 @@
   <ItemGroup>
     <PackageReference Include="autofac" Version="4.9.4" />
     <PackageReference Include="AutoMapper" Version="9.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\libs\JsonPatchGenerator\JsonPatchGenerator.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <Import Project="../nullable.props" />

@@ -12,6 +12,6 @@ namespace MyNutritionComrade.Config
         }
 
         public override ServingType ReadJson(JsonReader reader, Type objectType, ServingType existingValue, bool hasExistingValue, JsonSerializer serializer) =>
-            new ServingType((string) reader.Value);
+            new ServingType((string) (reader.Value ?? throw new ArgumentNullException()));
     }
 }
