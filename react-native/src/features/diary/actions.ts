@@ -1,9 +1,8 @@
-import { FrequentlyUsedProducts, ConsumedProduct, ConsumptionTime, ProductSearchDto } from 'Models';
-import { RequestErrorResponse } from 'src/utils/error-result';
-import { createAsyncAction, createAction } from 'typesafe-actions';
 import cuid from 'cuid';
-import { createStandardAction } from 'typesafe-actions/dist/deprecated/create-standard-action';
+import { ConsumedProduct, FrequentlyUsedProducts } from 'Models';
 import { withTheme } from 'react-native-paper';
+import { RequestErrorResponse } from 'src/utils/error-result';
+import { createAction, createAsyncAction } from 'typesafe-actions';
 import { ConsumeProductData } from './reducer';
 
 export const loadFrequentlyUsedProducts = createAsyncAction(
@@ -19,13 +18,12 @@ export const loadDate = createAsyncAction(
 )<string, { date: string; value: ConsumedProduct[] }, RequestErrorResponse>();
 
 export const changeProductConsumption = {
-    request: createStandardAction(
+    request: createAction(
         'DIARY/CHANGE_PRODUCT_CONSUMPTION_REQUEST',
-    ).map((payload: Omit<ConsumeProductData, 'requestId'>) => ({ payload: { ...payload, requestId: cuid() } })),
-    success: createStandardAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_SUCCESS')<ConsumeProductData>(),
-    failure: createStandardAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_FAILURE')<
-        RequestErrorResponse & { requestId: string }
-    >(),
+        (payload: Omit<ConsumeProductData, 'requestId'>) => ({ ...payload, requestId: cuid() }),
+    )(),
+    success: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_SUCCESS')<ConsumeProductData>(),
+    failure: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_FAILURE')<RequestErrorResponse & { requestId: string }>(),
 };
 
 withTheme;

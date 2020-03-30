@@ -3,6 +3,9 @@ import FoodList from './FoodList';
 import { ConsumptionTime } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import { connect } from 'react-redux';
+import * as selectors from '../selectors';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from 'src/RootNavigator';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
     breakfast: 'Breakfast',
@@ -11,19 +14,23 @@ const timeTitles: { [time in ConsumptionTime]: string } = {
     snack: 'Snack',
 };
 
-const mapStateToProps = (state: RootState) => ({
-    currentDate: state.diary.currentDate,
-});
-
-type Props = ReturnType<typeof mapStateToProps> & {
+type UserProps = {
     time: ConsumptionTime;
+    navigation: StackNavigationProp<RootStackParamList>;
 };
 
-function ConsumedProducts({ time, currentDate }: Props) {
+const mapStateToProps = (state: RootState, props: UserProps) => ({
+    currentDate: state.diary.currentDate,
+    consumedProducts: selectors.getConsumedProducts(state, props),
+});
+
+type Props = ReturnType<typeof mapStateToProps> & UserProps;
+
+function ConsumedProducts({ time, currentDate, consumedProducts, navigation }: Props) {
     return (
         <FoodList
             title={timeTitles[time]}
-            items={consumedProducts.filter((x) => x.time === time && x.day == currentDate)}
+            items={consumedProducts}
             onAddFood={() => navigation.navigate('SearchProduct', { consumptionTime: time, date: currentDate })}
             onScanBarcode={() => {}}
             onMoreOptions={() => {}}

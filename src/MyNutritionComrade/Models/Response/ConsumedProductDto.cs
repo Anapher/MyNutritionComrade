@@ -12,7 +12,7 @@ namespace MyNutritionComrade.Models.Response
     public class ConsumedProductDto
     {
         [JsonConverter(typeof(DateTimeDayOnlyJsonConverter))]
-        public DateTime Day { get; set; }
+        public DateTime Date { get; set; }
 
         public ConsumptionTime Time { get; set; }
 

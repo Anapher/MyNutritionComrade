@@ -7,7 +7,7 @@ declare module 'Models' {
     }
 
     export type ConsumedProduct = {
-        day: string;
+        date: string;
         time: ConsumptionTime;
         productId: string;
         nutritionInformation: NutritionInformation;

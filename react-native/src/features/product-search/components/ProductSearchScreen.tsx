@@ -14,7 +14,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const dispatchProps = {
-    appendProductConsumption: actions.appendProductConsumption,
+    changeProductConsumption: actions.changeProductConsumption.request,
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -23,7 +23,7 @@ type Props = ReturnType<typeof mapStateToProps> &
         route: RouteProp<RootStackParamList, 'SearchProduct'>;
     };
 
-function ProductSearchScreen({ suggestions, navigation, route, appendProductConsumption }: Props) {
+function ProductSearchScreen({ suggestions, navigation, route, changeProductConsumption }: Props) {
     return (
         <FlatList
             data={suggestions}
@@ -41,11 +41,12 @@ function ProductSearchScreen({ suggestions, navigation, route, appendProductCons
                             }
                             value = item.model.servings[item.servingSize.unit || item.model.defaultServing] * value;
 
-                            appendProductConsumption({
+                            changeProductConsumption({
                                 date: route.params.date,
                                 time: route.params.consumptionTime,
                                 product: item.model,
                                 value,
+                                append: true,
                             });
                             navigation.goBack();
                         }

@@ -29,14 +29,14 @@ namespace MyNutritionComrade.Selectors
         public async Task<Dictionary<ConsumptionTime, FrequentlyUsedProductDto[]>> GetFrequentlyUsedProducts(string userId)
         {
             // select start date, so we can adjust to changing habits
-            var timeFrame = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId).Select(x => (DateTime?) x.Day).Distinct()
+            var timeFrame = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId).Select(x => (DateTime?) x.Date).Distinct()
                 .OrderByDescending(x => x).Skip(ProductsTimeFrame).FirstOrDefaultAsync() ?? DateTime.MinValue;
 
             // get frequently used product ids of every consumption time
             var result = new Dictionary<ConsumptionTime, List<(string, double)>>();
             foreach (var consumptionTime in Enum.GetValues(typeof(ConsumptionTime)).Cast<ConsumptionTime>())
             {
-                var productIds = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId && x.Time == consumptionTime && x.Day >= timeFrame)
+                var productIds = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId && x.Time == consumptionTime && x.Date >= timeFrame)
                     .GroupBy(x => x.ProductId).OrderByDescending(x => x.Count()).Take(QueriedProductsPerConsumptionTime).Select(x => x.Key).ToListAsync();
 
                 result.Add(consumptionTime, productIds.Select(x => (x, 0.0)).ToList());

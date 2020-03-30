@@ -37,7 +37,10 @@ export default combineReducers<ProductSearchState, RootAction>({
             case getType(actions.setSuggestions):
                 return action.payload;
             case getType(actions.appendSuggestions):
-                return [...state, ...action.payload];
+                return [
+                    ...state,
+                    ...action.payload.filter((x) => state.findIndex((y) => y.model.id === x.model.id) === -1),
+                ];
             default:
                 return state;
         }

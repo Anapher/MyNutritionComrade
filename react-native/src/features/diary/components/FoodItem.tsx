@@ -5,6 +5,7 @@ import { Text, Theme, withTheme } from 'react-native-paper';
 import { ConsumedProduct } from 'Models';
 import selectLabel from 'src/utils/label-selector';
 import { roundNumber } from 'src/utils/string-utils';
+import { TagLiquid } from 'src/consts';
 
 type Props = {
     item: ConsumedProduct;
@@ -47,7 +48,10 @@ function FoodItem({ item, theme }: Props) {
                     {selectLabel(item.label)}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={[styles.description, { color: descriptionColor }]}>{volume}</Text>
+                    <Text style={[styles.description, { color: descriptionColor }]}>
+                        {volume}
+                        {item.tags.includes(TagLiquid) ? 'ml' : 'g'}
+                    </Text>
                     <Text style={[styles.description, { color: descriptionBColor, fontSize: 11 }]}>
                         {' | '}
                         {`Fat: ${roundNumber(fat)}g | Carbs: ${roundNumber(carbohydrates)}g | Protein: ${roundNumber(

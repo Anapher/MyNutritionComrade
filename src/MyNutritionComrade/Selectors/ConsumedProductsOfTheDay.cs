@@ -29,7 +29,7 @@ namespace MyNutritionComrade.Selectors
             if (day.Date != day)
                 throw new ArgumentException("A date without a time must be given.", nameof(day));
 
-            var consumedProducts = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId && x.Day == day).ToListAsync();
+            var consumedProducts = await _context.Set<ConsumedProduct>().Where(x => x.UserId == userId && x.Date == day).ToListAsync();
             if (!consumedProducts.Any())
                 return new List<ConsumedProductDto>();
 

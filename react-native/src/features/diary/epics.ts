@@ -5,6 +5,7 @@ import { catchError, filter, map, switchMap } from 'rxjs/operators';
 import toErrorResult from 'src/utils/error-result';
 import { isActionOf, action } from 'typesafe-actions';
 import * as actions from './actions';
+import { matchProduct } from './utils';
 
 export const loadFrequentProductsEpic: RootEpic = (action$, _, { api }) =>
     action$.pipe(
@@ -28,37 +29,17 @@ export const loadDateEpic: RootEpic = (action$, _, { api }) =>
         ),
     );
 
-export const setProductConsumptionEpic: RootEpic = (action$, _, { api }) =>
+export const changeProductConsumptionEpic: RootEpic = (action$, state$, { api }) =>
     action$.pipe(
-        filter(isActionOf(actions.setProductConsumption)),
-        switchMap(({ payload }) =>
-            from(api.consumption.setConsumption(payload.date, payload.time, payload.product.id, payload.value)).pipe(
-                map(() => actions.changeProductConsumption.success(payload)),
-                catchError((error: AxiosError) =>
-                    of(
-                        actions.changeProductConsumption.failure({
-                            ...toErrorResult(error),
-                            requestId: payload.requestId,
-                        }),
-                    ),
-                ),
-            ),
-        ),
-    );
-
-export const appendProductConsumptionEpic: RootEpic = (action$, state$, { api }) =>
-    action$.pipe(
-        filter(isActionOf(actions.appendProductConsumption)),
+        filter(isActionOf(actions.changeProductConsumption.request)),
         switchMap(({ payload }) => {
-            const appendedValue =
-                (state$.value.diary.consumedProducts.find(
-                    (x) => x.day === payload.date && x.time === payload.time && x.productId === payload.product.id,
-                )?.nutritionInformation.volume ?? 0) + payload.value;
+            const newValue = payload.append
+                ? (state$.value.diary.consumedProducts.find((x) => matchProduct(x, payload))?.nutritionInformation
+                      .volume ?? 0) + payload.value
+                : payload.value;
 
-            return from(
-                api.consumption.setConsumption(payload.date, payload.time, payload.product.id, appendedValue),
-            ).pipe(
-                map(() => actions.changeProductConsumption.success({ ...payload, value: appendedValue })),
+            return from(api.consumption.setConsumption(payload.date, payload.time, payload.product.id, newValue)).pipe(
+                map(() => actions.changeProductConsumption.success(payload)),
                 catchError((error: AxiosError) =>
                     of(
                         actions.changeProductConsumption.failure({
