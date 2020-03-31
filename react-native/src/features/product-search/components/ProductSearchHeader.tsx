@@ -52,7 +52,7 @@ function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, con
             />
             <IconButton
                 icon="plus"
-                onPress={() => navigation.navigate('AddProduct')}
+                onPress={() => navigation.navigate('CreateProduct')}
                 onLongPress={getToastCallback('Add new product')}
             />
         </Appbar.Header>

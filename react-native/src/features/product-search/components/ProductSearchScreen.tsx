@@ -8,6 +8,7 @@ import * as actions from '../../diary/actions';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from 'src/RootNavigator';
 import { RouteProp } from '@react-navigation/native';
+import { Keyboard } from 'react-native';
 
 const mapStateToProps = (state: RootState) => ({
     suggestions: state.productSearch.suggestions,
@@ -49,7 +50,16 @@ function ProductSearchScreen({ suggestions, navigation, route, changeProductCons
                                 append: true,
                             });
                             navigation.goBack();
+                        } else {
+                            navigation.navigate('AddProduct', {
+                                append: true,
+                                consumptionTime: route.params.consumptionTime,
+                                date: route.params.consumptionTime,
+                                product: item.model,
+                            });
                         }
+
+                        Keyboard.dismiss();
                     }}
                 />
             )}

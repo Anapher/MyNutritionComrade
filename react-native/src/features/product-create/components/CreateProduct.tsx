@@ -11,7 +11,7 @@ import StepIndicator from 'react-native-step-indicator';
 import { CurrentLanguage, SupportedLanguages } from 'src/consts';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as yup from 'yup';
-import AddProductHeader from './AddProductHeader';
+import CreateProductHeader from './CreateProductHeader';
 import NutritionInfo from './NutritionInfo';
 import ProductLabel from './ProductLabel';
 import Properties from './properties';
@@ -57,7 +57,7 @@ const isIOS = Platform.OS === 'ios';
 type Props = {
     theme: Theme;
     navigation: StackNavigationProp<RootStackParamList>;
-    route: RouteProp<RootStackParamList, 'AddProduct'>;
+    route: RouteProp<RootStackParamList, 'CreateProduct'>;
 };
 
 const nutritionalValue = yup.number().min(0).required();
@@ -134,7 +134,7 @@ const defaultValues: ProductInfo = {
     code: '',
 };
 
-function AddProduct({ theme, navigation, route }: Props) {
+function CreateProduct({ theme, navigation, route }: Props) {
     const [currentPage, setCurrentPage] = useState(0);
     const viewPagerRef = useRef<ViewPager>(null);
 
@@ -194,7 +194,7 @@ function AddProduct({ theme, navigation, route }: Props) {
                 React.useLayoutEffect(() => {
                     navigation.setOptions({
                         header: () => (
-                            <AddProductHeader
+                            <CreateProductHeader
                                 navigation={navigation}
                                 canSubmit={props.isValid}
                                 onSubmit={props.submitForm}
@@ -274,4 +274,4 @@ function AddProduct({ theme, navigation, route }: Props) {
         </Formik>
     );
 }
-export default withTheme(AddProduct);
+export default withTheme(CreateProduct);

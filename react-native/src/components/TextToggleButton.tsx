@@ -1,8 +1,7 @@
-import React from 'react';
-import { View, ViewStyle, StyleProp } from 'react-native';
-import { TouchableRipple, withTheme, Theme, Text } from 'react-native-paper';
-import { StyleSheet } from 'react-native';
 import Color from 'color';
+import React, { useRef, useEffect } from 'react';
+import { StyleProp, StyleSheet, ViewStyle, View, Animated, Easing } from 'react-native';
+import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 
 type Props = {
     isChecked?: boolean;
@@ -32,24 +31,39 @@ const styles = StyleSheet.create({
 });
 
 function TextToggleButton({ onToggle, isChecked, label, isLeft, isRight, theme, style }: Props) {
-    const uncheckedBackground = Color(theme.colors.text)
-        .alpha(0.3)
-        .string();
+    const uncheckedBackground = Color(theme.colors.text).alpha(0.3).string();
+
+    const backgroundAnimation = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+        Animated.timing(backgroundAnimation, {
+            toValue: isChecked ? 1 : 0,
+            duration: 300,
+            easing: Easing.quad,
+        }).start();
+    }, [isChecked]);
 
     return (
         <TouchableRipple
             borderless
             centered
-            style={[
-                styles.root,
-                isLeft && styles.leftRounded,
-                isRight && styles.rightRounded,
-                { backgroundColor: isChecked ? theme.colors.primary : uncheckedBackground },
-                style,
-            ]}
+            style={[isLeft && styles.leftRounded, isRight && styles.rightRounded, style]}
             onPress={isChecked ? undefined : onToggle}
         >
-            <Text>{label}</Text>
+            <Animated.View
+                style={[
+                    styles.root,
+                    isLeft && styles.leftRounded,
+                    isRight && styles.rightRounded,
+                    {
+                        backgroundColor: backgroundAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [uncheckedBackground, theme.colors.primary],
+                        }),
+                    },
+                ]}
+            >
+                <Text>{label}</Text>
+            </Animated.View>
         </TouchableRipple>
     );
 }

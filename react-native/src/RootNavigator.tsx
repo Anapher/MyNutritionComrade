@@ -1,16 +1,17 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { ConsumptionTime, Product, ProductInfo } from 'Models';
+import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
+import { ConsumptionTime, ProductInfo, ProductSearchDto } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import SignInScreen from 'src/features/auth/components/SignInScreen';
-import BarcodeScanner from './BarcodeScanner';
-import AddProduct from './features/product-create/components/AddProduct';
+import BarcodeScanner from './features/barcode-scanner/BarcodeScanner';
+import AddProduct from './features/product-add/components/AddProduct';
+import CreateProduct from './features/product-create/components/CreateProduct';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearch from './features/product-search/components/ProductSearchScreen';
 import HomeScreen from './HomeScreen';
-import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 
 const Stack = createStackNavigator();
 
@@ -24,8 +25,9 @@ type Props = ReturnType<typeof mapStateToProps>;
 export type RootStackParamList = {
     Home: undefined;
     SearchProduct: { consumptionTime: ConsumptionTime; date: string };
-    AddProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean };
+    CreateProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean };
     ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => void };
+    AddProduct: { consumptionTime: ConsumptionTime; date: string; append: boolean; product: ProductSearchDto };
 };
 
 function RootNavigator({ isAuthenticated, isSignOut }: Props) {
@@ -60,8 +62,9 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                             ),
                         })}
                     />
-                    <Stack.Screen name="AddProduct" component={AddProduct} />
+                    <Stack.Screen name="CreateProduct" component={CreateProduct} />
                     <Stack.Screen name="ScanBarcode" component={BarcodeScanner} options={{ headerShown: false }} />
+                    <Stack.Screen name="AddProduct" component={AddProduct} />
                 </>
             )}
         </Stack.Navigator>

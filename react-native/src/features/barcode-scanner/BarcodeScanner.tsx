@@ -5,7 +5,7 @@ import { Camera } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
-import { RootStackParamList } from './RootNavigator';
+import { RootStackParamList } from '../../RootNavigator';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
