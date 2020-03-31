@@ -32,8 +32,11 @@ function ConsumedProducts({ time, currentDate, consumedProducts, navigation }: P
             title={timeTitles[time]}
             items={consumedProducts}
             onAddFood={() => navigation.navigate('SearchProduct', { consumptionTime: time, date: currentDate })}
-            onScanBarcode={() => {}}
+            onScanBarcode={() => navigation.navigate('ScanBarcode', { onBarcodeScanned: (x) => {} })}
             onMoreOptions={() => {}}
+            // onItemPress={(item) => navigation.navigate('AddProduct', { product: item, onSubmit: () => {
+
+            // } })}
         />
     );
 }

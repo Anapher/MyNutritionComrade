@@ -1,9 +1,8 @@
+import { NutritionInformation, ProductSearchDto } from 'Models';
 import React from 'react';
 import { View } from 'react-native';
-import { Title, Caption, Text, Subheading, useTheme } from 'react-native-paper';
+import { Text, Title } from 'react-native-paper';
 import selectLabel from 'src/utils/label-selector';
-import { ProductSearchDto, NutritionInformation } from 'Models';
-import { changeVolume } from 'src/utils/nutrition-info-helper';
 import { roundNumber } from 'src/utils/string-utils';
 
 type TileProps = {

@@ -35,13 +35,7 @@ function ProductSearchScreen({ suggestions, navigation, route, changeProductCons
                 <SuggestionItem
                     item={item}
                     onPress={() => {
-                        if (item.servingSize?.size) {
-                            let value = item.servingSize.size;
-                            if (item.servingSize.conversion) {
-                                value = item.servingSize.conversion.factor * value;
-                            }
-                            value = item.model.servings[item.servingSize.unit || item.model.defaultServing] * value;
-
+                        const execute = (value: number) => {
                             changeProductConsumption({
                                 date: route.params.date,
                                 time: route.params.consumptionTime,
@@ -50,11 +44,18 @@ function ProductSearchScreen({ suggestions, navigation, route, changeProductCons
                                 append: true,
                             });
                             navigation.goBack();
+                        };
+
+                        if (item.servingSize?.size) {
+                            let value = item.servingSize.size;
+                            if (item.servingSize.conversion) {
+                                value = item.servingSize.conversion.factor * value;
+                            }
+                            value = item.model.servings[item.servingSize.unit || item.model.defaultServing] * value;
+                            execute(value);
                         } else {
                             navigation.navigate('AddProduct', {
-                                append: true,
-                                consumptionTime: route.params.consumptionTime,
-                                date: route.params.consumptionTime,
+                                onSubmit: execute,
                                 product: item.model,
                             });
                         }

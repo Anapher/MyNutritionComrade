@@ -2,9 +2,9 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Color from 'color';
 import _ from 'lodash';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dimensions, View } from 'react-native';
-import { Text, Theme, withTheme } from 'react-native-paper';
+import { Text, Theme, withTheme, useTheme } from 'react-native-paper';
 import CurvedSlider from 'src/components/CurvedSlider/CurvedSlider';
 import { RootStackParamList } from 'src/RootNavigator';
 import { selectScale } from '../utils';
@@ -15,11 +15,10 @@ import ServingSelection from './ServingSelection';
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
     route: RouteProp<RootStackParamList, 'AddProduct'>;
-    theme: Theme;
 };
 
-function AddProduct({ navigation, route, theme }: Props) {
-    const { product } = route.params;
+function AddProduct({ navigation, route }: Props) {
+    const { product, onSubmit } = route.params;
 
     const [volume, setVolume] = useState(0);
     const [serving, setServing] = useState(product.defaultServing);
@@ -27,13 +26,27 @@ function AddProduct({ navigation, route, theme }: Props) {
         selectScale(serving, product.servings[serving], product.nutritionInformation),
     );
 
+    const theme = useTheme();
     const curveBackground = Color(theme.colors.text).alpha(0.3).string();
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
-            header: () => <AddProductHeader navigation={navigation} canSubmit={true} onSubmit={() => {}} />,
+            header: () => (
+                <AddProductHeader
+                    navigation={navigation}
+                    canSubmit={volume > 0}
+                    onSubmit={() => {
+                        onSubmit(volume);
+                        navigation.goBack();
+                    }}
+                />
+            ),
         });
     });
+
+    useEffect(() => {
+        setVolume(curveScale.labelStep);
+    }, [curveScale]);
 
     return (
         <View style={{ marginTop: 16 }}>
@@ -42,11 +55,13 @@ function AddProduct({ navigation, route, theme }: Props) {
             </View>
             <View style={{ marginTop: 32 }}>
                 <ServingSelection
-                    servings={_.sortBy(Object.keys(product.servings), (x) => product.servings[x])}
+                    product={product}
                     value={serving}
                     onChange={(x) => {
                         setServing(x);
-                        setCurveScale(selectScale(x, product.servings[x], product.nutritionInformation));
+
+                        const scale = selectScale(x, product.servings[x], product.nutritionInformation);
+                        setCurveScale(scale);
                     }}
                 />
             </View>
@@ -71,4 +86,4 @@ function AddProduct({ navigation, route, theme }: Props) {
     );
 }
 
-export default withTheme(AddProduct);
+export default AddProduct;

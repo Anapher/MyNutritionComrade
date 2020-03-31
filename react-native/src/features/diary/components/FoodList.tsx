@@ -12,16 +12,14 @@ import { roundNumber } from 'src/utils/string-utils';
 const styles = StyleSheet.create({
     surface: {
         width: '100%',
-        elevation: 8,
+        elevation: 4,
         borderTopLeftRadius: 5,
         borderTopRightRadius: 5,
         borderTopWidth: 4,
     },
     header: {
-        paddingLeft: 16,
-        paddingRight: 16,
-        paddingTop: 8,
-        paddingBottom: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         elevation: 14,
     },
     headerText: {
@@ -40,9 +38,20 @@ type Props = {
     onAddFood: () => void;
     onScanBarcode: () => void;
     onMoreOptions: () => void;
+    onItemPress?: (item: ConsumedProduct) => void;
+    onItemLongPress?: (item: ConsumedProduct) => void;
 };
 
-function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme }: Props) {
+function FoodList({
+    title,
+    items,
+    onAddFood,
+    onScanBarcode,
+    onMoreOptions,
+    theme,
+    onItemPress,
+    onItemLongPress,
+}: Props) {
     const totalCalories = _.sumBy(items, (x) => x.nutritionInformation.energy);
     const totalFat = _.sumBy(items, (x) => x.nutritionInformation.fat);
     const totalCarbohydrates = _.sumBy(items, (x) => x.nutritionInformation.carbohydrates);
@@ -80,7 +89,11 @@ function FoodList({ title, items, onAddFood, onScanBarcode, onMoreOptions, theme
                 ItemSeparatorComponent={() => <Divider />}
                 keyExtractor={(item) => item.productId}
                 renderItem={({ item }) => (
-                    <TouchableRipple onPress={() => {}} rippleColor={borderColor}>
+                    <TouchableRipple
+                        onPress={onItemPress && (() => onItemPress(item))}
+                        onLongPress={onItemLongPress && (() => onItemLongPress(item))}
+                        rippleColor={borderColor}
+                    >
                         <FoodItem item={item} />
                     </TouchableRipple>
                 )}

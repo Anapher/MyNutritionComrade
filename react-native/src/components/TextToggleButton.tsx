@@ -5,12 +5,12 @@ import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 
 type Props = {
     isChecked?: boolean;
-    label?: string;
     onToggle?: () => void;
     isLeft?: boolean;
     isRight?: boolean;
     theme: Theme;
     style?: StyleProp<ViewStyle>;
+    children?: React.ReactNode;
 };
 
 const styles = StyleSheet.create({
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     },
 });
 
-function TextToggleButton({ onToggle, isChecked, label, isLeft, isRight, theme, style }: Props) {
+function TextToggleButton({ onToggle, isChecked, children, isLeft, isRight, theme, style }: Props) {
     const uncheckedBackground = Color(theme.colors.text).alpha(0.3).string();
 
     const backgroundAnimation = useRef(new Animated.Value(0)).current;
@@ -46,7 +46,7 @@ function TextToggleButton({ onToggle, isChecked, label, isLeft, isRight, theme, 
         <TouchableRipple
             borderless
             centered
-            style={[isLeft && styles.leftRounded, isRight && styles.rightRounded, style]}
+            style={[isLeft && styles.leftRounded, isRight && styles.rightRounded]}
             onPress={isChecked ? undefined : onToggle}
         >
             <Animated.View
@@ -60,9 +60,10 @@ function TextToggleButton({ onToggle, isChecked, label, isLeft, isRight, theme, 
                             outputRange: [uncheckedBackground, theme.colors.primary],
                         }),
                     },
+                    style,
                 ]}
             >
-                <Text>{label}</Text>
+                {children}
             </Animated.View>
         </TouchableRipple>
     );

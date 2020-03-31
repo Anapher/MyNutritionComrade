@@ -4,8 +4,9 @@ import { BarCodeScannedCallback, BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
-import { IconButton, Text } from 'react-native-paper';
+import { IconButton, Text, Button } from 'react-native-paper';
 import { RootStackParamList } from '../../RootNavigator';
+import Overlay from './Overlay';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -19,6 +20,9 @@ function BarcodeScanner({ navigation, route }: Props) {
     useEffect(() => {
         (async () => {
             const { status } = await BarCodeScanner.requestPermissionsAsync();
+            if (status !== 'granted') {
+                navigation.goBack();
+            }
             setHasPermission(status === 'granted');
         })();
     }, []);
@@ -38,36 +42,33 @@ function BarcodeScanner({ navigation, route }: Props) {
     }
 
     return (
-        <View
-            style={{
-                flex: 1,
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-            }}
+        <Camera
+            onBarCodeScanned={(!isFocused ? undefined : handleBarCodeScanned) as any}
+            barCodeScannerSettings={{ barCodeTypes: ['upc_a', 'upc_e', 'upc_ean', 'ean13', 'ean8'] }}
+            style={StyleSheet.absoluteFill}
+            ratio="16:9"
+            useCamera2Api
+            flashMode={torch ? 'torch' : 'off'}
         >
-            <Camera
-                onBarCodeScanned={(!isFocused ? undefined : handleBarCodeScanned) as any}
-                barCodeScannerSettings={{ barCodeTypes: ['upc_a', 'upc_e', 'upc_ean', 'ean13', 'ean8'] }}
-                style={StyleSheet.absoluteFill}
-                ratio="16:9"
-                useCamera2Api
-                flashMode={torch ? 'torch' : 'off'}
-            >
-                <View>
-                    <View
-                        style={{
-                            marginTop: StatusBar.currentHeight,
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
-                        <IconButton icon={torch ? 'flash-off' : 'flash'} onPress={() => setTorch(!torch)} />
-                    </View>
+            <View style={StyleSheet.absoluteFill}>
+                <View
+                    style={{
+                        position: 'absolute',
+                        top: StatusBar.currentHeight,
+                        left: 0,
+                        right: 0,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        zIndex: 100,
+                    }}
+                >
+                    <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
+                    <IconButton icon={torch ? 'flash-off' : 'flash'} onPress={() => setTorch(!torch)} />
                 </View>
-            </Camera>
-        </View>
+                <Overlay />
+            </View>
+        </Camera>
     );
 }
 

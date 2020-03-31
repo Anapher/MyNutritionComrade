@@ -27,7 +27,7 @@ export type RootStackParamList = {
     SearchProduct: { consumptionTime: ConsumptionTime; date: string };
     CreateProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean };
     ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => void };
-    AddProduct: { consumptionTime: ConsumptionTime; date: string; append: boolean; product: ProductSearchDto };
+    AddProduct: { product: ProductSearchDto; onSubmit: (volume: number) => void };
 };
 
 function RootNavigator({ isAuthenticated, isSignOut }: Props) {
