@@ -13,7 +13,12 @@ type Props = {
     route: RouteProp<RootStackParamList, 'ScanBarcode'>;
 };
 
-function BarcodeScanner({ navigation, route }: Props) {
+function BarcodeScanner({
+    navigation,
+    route: {
+        params: { onBarcodeScanned },
+    },
+}: Props) {
     const isFocused = useIsFocused();
     const [hasPermission, setHasPermission] = useState(false);
 
@@ -27,23 +32,25 @@ function BarcodeScanner({ navigation, route }: Props) {
         })();
     }, []);
 
-    const handleBarCodeScanned: BarCodeScannedCallback = (result) => {
-        route.params.onBarcodeScanned(result);
-        navigation.goBack();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleBarCodeScanned: BarCodeScannedCallback = async (result) => {
+        const promise = onBarcodeScanned(result);
+        setIsLoading(true);
+        if (!(await promise)) {
+            navigation.goBack();
+        }
     };
 
     const [torch, setTorch] = useState(false);
 
-    if (hasPermission === null) {
+    if (!hasPermission) {
         return <Text>Requesting for camera permission</Text>;
-    }
-    if (hasPermission === false) {
-        return <Text>No access to camera</Text>;
     }
 
     return (
         <Camera
-            onBarCodeScanned={(!isFocused ? undefined : handleBarCodeScanned) as any}
+            onBarCodeScanned={(!isFocused || isLoading ? undefined : handleBarCodeScanned) as any}
             barCodeScannerSettings={{ barCodeTypes: ['upc_a', 'upc_e', 'upc_ean', 'ean13', 'ean8'] }}
             style={StyleSheet.absoluteFill}
             ratio="16:9"
@@ -66,7 +73,7 @@ function BarcodeScanner({ navigation, route }: Props) {
                     <IconButton icon="arrow-left" onPress={() => navigation.goBack()} />
                     <IconButton icon={torch ? 'flash-off' : 'flash'} onPress={() => setTorch(!torch)} />
                 </View>
-                <Overlay />
+                <Overlay isLoading={isLoading} />
             </View>
         </Camera>
     );

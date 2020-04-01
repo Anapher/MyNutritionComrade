@@ -1,27 +1,33 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Color from 'color';
-import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Dimensions, View } from 'react-native';
-import { Text, Theme, withTheme, useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import CurvedSlider from 'src/components/CurvedSlider/CurvedSlider';
 import { RootStackParamList } from 'src/RootNavigator';
 import { selectScale } from '../utils';
 import AddProductHeader from './AddProductHeader';
 import ServingInfo from './ServingInfo';
 import ServingSelection from './ServingSelection';
+import { TagLiquid } from 'src/consts';
+import selectLabel from 'src/utils/label-selector';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
     route: RouteProp<RootStackParamList, 'AddProduct'>;
 };
 
-function AddProduct({ navigation, route }: Props) {
-    const { product, onSubmit } = route.params;
-
+function AddProduct({
+    navigation,
+    route: {
+        params: { product, onSubmit, volume: startVolume },
+    },
+}: Props) {
     const [volume, setVolume] = useState(0);
     const [serving, setServing] = useState(product.defaultServing);
+    const loadState = useRef({ isLoaded: false });
+
     const [curveScale, setCurveScale] = useState(() =>
         selectScale(serving, product.servings[serving], product.nutritionInformation),
     );
@@ -33,10 +39,11 @@ function AddProduct({ navigation, route }: Props) {
         navigation.setOptions({
             header: () => (
                 <AddProductHeader
+                    title={selectLabel(product.label)}
                     navigation={navigation}
                     canSubmit={volume > 0}
                     onSubmit={() => {
-                        onSubmit(volume);
+                        onSubmit(volume * product.servings[serving]);
                         navigation.goBack();
                     }}
                 />
@@ -45,6 +52,15 @@ function AddProduct({ navigation, route }: Props) {
     });
 
     useEffect(() => {
+        if (!loadState.current.isLoaded) {
+            loadState.current.isLoaded = true;
+
+            if (startVolume) {
+                setVolume(startVolume - (startVolume % curveScale.step));
+                return;
+            }
+        }
+
         setVolume(curveScale.labelStep);
     }, [curveScale]);
 
@@ -80,7 +96,10 @@ function AddProduct({ navigation, route }: Props) {
                 />
             </View>
             <View style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row' }}>
-                <Text style={{ fontSize: 36 }}>{volume * product.servings[serving]}g</Text>
+                <Text style={{ fontSize: 36 }}>
+                    {volume * product.servings[serving]}
+                    {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
+                </Text>
             </View>
         </View>
     );

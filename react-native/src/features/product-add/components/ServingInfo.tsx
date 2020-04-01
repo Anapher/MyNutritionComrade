@@ -48,7 +48,7 @@ type Props = {
 export default function ServingInfo({ product: { label, nutritionInformation }, volume }: Props) {
     return (
         <View>
-            <Title>{selectLabel(label)}</Title>
+            {/* <Title>{selectLabel(label)}</Title> */}
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
                 <Tile
                     caption=" "

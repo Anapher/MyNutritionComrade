@@ -20,6 +20,11 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             return await _productsCollection.Products.Find(Builders<Product>.Filter.Eq(x => x.Id, productId)).FirstOrDefaultAsync();
         }
 
+        public async Task<Product?> FindByBarcode(string code)
+        {
+            return await _productsCollection.Products.Find(Builders<Product>.Filter.Eq(x => x.Code, code)).FirstOrDefaultAsync();
+        }
+
         public Task Add(Product product) => _productsCollection.Products.InsertOneAsync(product);
 
         public Task Update(Product product)

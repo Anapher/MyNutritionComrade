@@ -15,7 +15,7 @@ export default function BarCodeField({ navigation, formik }: Props) {
     const { values, handleChange, setFieldValue } = formik;
 
     const handleScanBarcode = () => {
-        navigation.push('ScanBarcode', { onBarcodeScanned: ({ data }) => setFieldValue('code', data) });
+        navigation.push('ScanBarcode', { onBarcodeScanned: async ({ data }) => setFieldValue('code', data) });
     };
 
     return (

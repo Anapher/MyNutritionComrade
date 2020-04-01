@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -25,8 +26,20 @@ namespace MyNutritionComrade.Controllers
     {
         [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([FromQuery] string term, [FromQuery] string? units, [FromServices] IElasticClient client, [FromServices] IMapper mapper)
+        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([FromQuery] string? term, [FromQuery] string? barcode,
+            [FromQuery] string? units, [FromServices] IElasticClient client, [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
         {
+            if (!string.IsNullOrEmpty(barcode))
+            {
+                var product = await repository.FindByBarcode(barcode);
+                if (product == null) return ImmutableList<ProductSearchDto>.Empty;
+
+                return mapper.Map<ProductSearchDto>(product).Yield().ToList();
+            }
+
+            if (string.IsNullOrEmpty(term))
+                return new FieldValidationError("The query parameter term or barcode is required.", "query").ToActionResult();
+
             var unitsArray = units?.Split(',');
             var response = await client.SearchAsync<ProductSearchEntry>(x => x.Size(8).Query(q =>
             {
@@ -64,14 +77,14 @@ namespace MyNutritionComrade.Controllers
             return Ok(response!.Product);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(string id, [FromServices] IProductRepository repository)
+        [HttpGet("{id}"), AllowAnonymous]
+        public async Task<ActionResult<Product>> GetProduct(string id, [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
         {
             var product = await repository.FindById(id);
             if (product == null)
                 return new EntityNotFoundError("The product could not be found.", ErrorCode.Product_NotFound).ToActionResult();
 
-            return Ok(product);
+            return Ok(mapper.Map<ProductDto>(product));
         }
     }
 }

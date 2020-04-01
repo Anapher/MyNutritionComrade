@@ -7,6 +7,7 @@ namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
     public interface IProductRepository
     {
         Task<Product?> FindById(string productId);
+        Task<Product?> FindByBarcode(string code);
         Task Add(Product product);
         Task Update(Product product);
         Task Delete(string productId);

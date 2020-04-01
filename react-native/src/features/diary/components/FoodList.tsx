@@ -59,7 +59,7 @@ function FoodList({
     const totalSugars = _.sumBy(items, (x) => x.nutritionInformation.sugars);
 
     const summaryColor = color(theme.colors.text).alpha(0.5).rgb().string();
-    const borderColor = color(theme.colors.surface).rgb(0.8).string();
+    const rippleColor = 'black';
 
     return (
         <Surface style={styles.surface}>
@@ -92,7 +92,7 @@ function FoodList({
                     <TouchableRipple
                         onPress={onItemPress && (() => onItemPress(item))}
                         onLongPress={onItemLongPress && (() => onItemLongPress(item))}
-                        rippleColor={borderColor}
+                        rippleColor={rippleColor}
                     >
                         <FoodItem item={item} />
                     </TouchableRipple>
