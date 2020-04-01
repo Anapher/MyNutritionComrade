@@ -21,13 +21,14 @@ type FlatButtonProps = {
     icon: string;
     text: string;
     onPress?: () => void | null;
+    center?: boolean;
 };
 
-export default function FlatButton({ icon, text, onPress }: FlatButtonProps) {
+export default function FlatButton({ icon, text, onPress, center = false }: FlatButtonProps) {
     const theme = useTheme();
     return (
         <TouchableRipple onPress={onPress}>
-            <View style={styles.buttonContent}>
+            <View style={[styles.buttonContent, { justifyContent: center ? 'center' : 'flex-start' }]}>
                 <Icon name={icon} size={20} color={theme.colors.text} />
                 <Text style={{ marginLeft: 8 }}>{text}</Text>
             </View>

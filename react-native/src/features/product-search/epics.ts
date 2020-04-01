@@ -1,9 +1,7 @@
-import { AxiosError } from 'axios';
 import { FoodSuggestion } from 'Models';
 import { RootEpic } from 'MyNutritionComrade';
-import { empty, from, of } from 'rxjs';
+import { empty, from } from 'rxjs';
 import { catchError, debounceTime, filter, ignoreElements, map, switchMap } from 'rxjs/operators';
-import toErrorResult from 'src/utils/error-result';
 import { tryParseServingSize } from 'src/utils/input-parser';
 import { isActionOf } from 'typesafe-actions';
 import * as actions from './actions';

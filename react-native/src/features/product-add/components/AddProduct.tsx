@@ -12,6 +12,7 @@ import ServingInfo from './ServingInfo';
 import ServingSelection from './ServingSelection';
 import { TagLiquid } from 'src/consts';
 import selectLabel from 'src/utils/label-selector';
+import FlatButton from 'src/components/FlatButton';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -65,41 +66,54 @@ function AddProduct({
     }, [curveScale]);
 
     return (
-        <View style={{ marginTop: 16 }}>
-            <View style={{ marginHorizontal: 16 }}>
-                <ServingInfo product={product} volume={volume * product.servings[serving]} />
-            </View>
-            <View style={{ marginTop: 32 }}>
-                <ServingSelection
-                    product={product}
-                    value={serving}
-                    onChange={(x) => {
-                        setServing(x);
+        <View
+            style={{
+                marginTop: 16,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                flex: 1,
+            }}
+        >
+            <View>
+                <View style={{ marginHorizontal: 16 }}>
+                    <ServingInfo product={product} volume={volume * product.servings[serving]} />
+                </View>
+                <View style={{ marginTop: 32 }}>
+                    <ServingSelection
+                        product={product}
+                        value={serving}
+                        onChange={(x) => {
+                            setServing(x);
 
-                        const scale = selectScale(x, product.servings[x], product.nutritionInformation);
-                        setCurveScale(scale);
-                    }}
-                />
+                            const scale = selectScale(x, product.servings[x], product.nutritionInformation);
+                            setCurveScale(scale);
+                        }}
+                    />
+                </View>
+                <View style={{ marginTop: 16, marginHorizontal: 16 }}>
+                    <CurvedSlider
+                        value={volume}
+                        onChange={(x) => setVolume(x)}
+                        step={curveScale.step}
+                        minValue={0}
+                        maxValue={curveScale.max}
+                        width={Dimensions.get('window').width - 32}
+                        scaleSteps={curveScale.labelStep}
+                        curveBackground={curveBackground}
+                        curveGradientStart="#e74c3c"
+                        curveGradientEnd="#e74c3c"
+                    />
+                </View>
+                <View style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row' }}>
+                    <Text style={{ fontSize: 36 }}>
+                        {volume * product.servings[serving]}
+                        {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
+                    </Text>
+                </View>
             </View>
-            <View style={{ marginTop: 16, marginHorizontal: 16 }}>
-                <CurvedSlider
-                    value={volume}
-                    onChange={(x) => setVolume(x)}
-                    step={curveScale.step}
-                    minValue={0}
-                    maxValue={curveScale.max}
-                    width={Dimensions.get('window').width - 32}
-                    scaleSteps={curveScale.labelStep}
-                    curveBackground={curveBackground}
-                    curveGradientStart="#e74c3c"
-                    curveGradientEnd="#e74c3c"
-                />
-            </View>
-            <View style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row' }}>
-                <Text style={{ fontSize: 36 }}>
-                    {volume * product.servings[serving]}
-                    {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
-                </Text>
+            <View>
+                <FlatButton text="Suggest changes" icon="flag" onPress={() => {}} center />
             </View>
         </View>
     );

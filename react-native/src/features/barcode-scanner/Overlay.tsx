@@ -91,7 +91,6 @@ function Edge({
     );
 }
 
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 function LoadingRect({ width, height, strokeWidth }: { width: number; height: number; strokeWidth: number }) {
@@ -115,7 +114,7 @@ function LoadingRect({ width, height, strokeWidth }: { width: number; height: nu
     useEffect(() => {
         Animated.timing(animation, { duration: 1500, toValue: 4 }).start();
 
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             setInterpolation(
                 animation.interpolate({
                     inputRange: [factor, 1, 1 + factor, 2, 2 + factor, 3, 3 + factor, 4],
@@ -141,6 +140,8 @@ function LoadingRect({ width, height, strokeWidth }: { width: number; height: nu
                 }),
             ).start();
         }, 1500);
+
+        return () => clearTimeout(timer);
     }, []);
 
     return (

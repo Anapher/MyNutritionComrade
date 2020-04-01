@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import FoodList from './FoodList';
-import { ConsumptionTime, ProductSearchDto, ProductDto } from 'Models';
+import { ConsumptionTime, ProductSearchDto, ProductDto, ConsumedProduct } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import { connect } from 'react-redux';
 import * as selectors from '../selectors';
@@ -12,6 +12,8 @@ import { View } from 'react-native';
 import { Portal, Dialog, Paragraph, Button } from 'react-native-paper';
 import { AxiosError } from 'axios';
 import { TagLiquid } from 'src/consts';
+import { flattenProductsPrioritize } from 'src/utils/product-utils';
+import itiriri from 'itiriri';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
     breakfast: 'Breakfast',
@@ -28,6 +30,7 @@ type UserProps = {
 const mapStateToProps = (state: RootState, props: UserProps) => ({
     currentDate: state.diary.currentDate,
     consumedProducts: selectors.getConsumedProducts(state, props),
+    frequentlyUsedProducts: state.diary.frequentlyUsedProducts,
 });
 
 const dispatchProps = {
@@ -36,8 +39,101 @@ const dispatchProps = {
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchProps & UserProps;
 
-function ConsumedProducts({ time, currentDate, consumedProducts, navigation, changeProductConsumption }: Props) {
+function ConsumedProducts({
+    time,
+    currentDate,
+    consumedProducts,
+    navigation,
+    changeProductConsumption,
+    frequentlyUsedProducts,
+}: Props) {
     const [unlistedProduct, setUnlistedProduct] = useState<string | undefined>();
+
+    const scanBarcode = useCallback(() => {
+        navigation.navigate('ScanBarcode', {
+            onBarcodeScanned: async ({ data: barcode }) => {
+                let product: ProductSearchDto | undefined = itiriri(
+                    flattenProductsPrioritize(frequentlyUsedProducts, time),
+                ).find((x) => x.code === barcode);
+
+                if (product === undefined) {
+                    try {
+                        product = await productApi.searchByBarcode(barcode);
+                    } catch (error) {
+                        return false;
+                    }
+                }
+
+                navigation.goBack(); // close barcode scanner
+
+                if (product !== undefined) {
+                    navigation.navigate('AddProduct', {
+                        product,
+                        onSubmit: (volume) => {
+                            changeProductConsumption({
+                                date: currentDate,
+                                time,
+                                product: product!,
+                                value: volume,
+                                append: true,
+                            });
+                        },
+                    });
+                } else {
+                    setUnlistedProduct(barcode);
+                }
+
+                return true;
+            },
+        });
+    }, [frequentlyUsedProducts, setUnlistedProduct, changeProductConsumption, navigation, time, currentDate]);
+
+    const editItem = useCallback(
+        async (item: ConsumedProduct) => {
+            let product: ProductDto | undefined = itiriri(flattenProductsPrioritize(frequentlyUsedProducts, time)).find(
+                (x) => x.id === item.productId,
+            );
+
+            if (product === undefined) {
+                try {
+                    product = await productApi.getById(item.productId);
+                } catch (error) {
+                    const axiosError: AxiosError = error;
+                    if (axiosError.response?.status === 404) {
+                        // message that product wasnt found
+                    }
+
+                    product = {
+                        id: item.productId,
+                        label: item.label,
+                        nutritionInformation: item.nutritionInformation,
+                        version: 1,
+                        code: undefined,
+                        tags: item.tags,
+                        defaultServing: item.tags.includes(TagLiquid) ? 'ml' : 'g',
+                        servings: {
+                            [item.tags.includes(TagLiquid) ? 'ml' : 'g']: 1,
+                        },
+                    };
+                }
+            }
+
+            navigation.navigate('AddProduct', {
+                product,
+                volume: item.nutritionInformation.volume,
+                onSubmit: (volume) => {
+                    changeProductConsumption({
+                        date: currentDate,
+                        time,
+                        product: product!,
+                        value: volume,
+                        append: false,
+                    });
+                },
+            });
+        },
+        [navigation, changeProductConsumption, frequentlyUsedProducts, time, currentDate],
+    );
 
     return (
         <View>
@@ -45,78 +141,9 @@ function ConsumedProducts({ time, currentDate, consumedProducts, navigation, cha
                 title={timeTitles[time]}
                 items={consumedProducts}
                 onAddFood={() => navigation.navigate('SearchProduct', { consumptionTime: time, date: currentDate })}
-                onScanBarcode={() =>
-                    navigation.navigate('ScanBarcode', {
-                        onBarcodeScanned: async (x) => {
-                            let product: ProductSearchDto | undefined;
-                            try {
-                                product = await productApi.searchByBarcode(x.data);
-                            } catch (error) {
-                                return false;
-                            }
-
-                            navigation.goBack(); // close barcode scanner
-
-                            if (product !== undefined) {
-                                navigation.navigate('AddProduct', {
-                                    product,
-                                    onSubmit: (volume) => {
-                                        changeProductConsumption({
-                                            date: currentDate,
-                                            time,
-                                            product: product!,
-                                            value: volume,
-                                            append: true,
-                                        });
-                                    },
-                                });
-                            } else {
-                                setUnlistedProduct(x.data);
-                            }
-
-                            return true;
-                        },
-                    })
-                }
+                onScanBarcode={scanBarcode}
                 onMoreOptions={() => {}}
-                onItemPress={async (item) => {
-                    let product: ProductDto | undefined;
-                    try {
-                        product = await productApi.getById(item.productId);
-                    } catch (error) {
-                        const axiosError: AxiosError = error;
-                        if (axiosError.response?.status === 404) {
-                            // message that product wasnt found
-                        }
-
-                        product = {
-                            id: item.productId,
-                            label: item.label,
-                            nutritionInformation: item.nutritionInformation,
-                            version: 1,
-                            code: undefined,
-                            tags: item.tags,
-                            defaultServing: item.tags.includes(TagLiquid) ? 'ml' : 'g',
-                            servings: {
-                                [item.tags.includes(TagLiquid) ? 'ml' : 'g']: 1,
-                            },
-                        };
-                    }
-
-                    navigation.navigate('AddProduct', {
-                        product,
-                        volume: item.nutritionInformation.volume,
-                        onSubmit: (volume) => {
-                            changeProductConsumption({
-                                date: currentDate,
-                                time,
-                                product: product!,
-                                value: volume,
-                                append: false,
-                            });
-                        },
-                    });
-                }}
+                onItemPress={editItem}
             />
             <Portal>
                 <Dialog visible={!!unlistedProduct} onDismiss={() => setUnlistedProduct(undefined)}>
