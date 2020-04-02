@@ -106,7 +106,7 @@ function ConsumedProducts({
                     product = {
                         id: item.productId,
                         label: item.label,
-                        nutritionInformation: item.nutritionInformation,
+                        nutritionalInformation: item.nutritionalInformation,
                         version: 1,
                         code: undefined,
                         tags: item.tags,
@@ -120,7 +120,7 @@ function ConsumedProducts({
 
             navigation.navigate('AddProduct', {
                 product,
-                volume: item.nutritionInformation.volume,
+                volume: item.nutritionalInformation.volume,
                 onSubmit: (volume) => {
                     changeProductConsumption({
                         date: currentDate,

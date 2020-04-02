@@ -1,4 +1,4 @@
-import { NutritionInformation, ProductSearchDto } from 'Models';
+import { NutritionalInformation, ProductSearchDto } from 'Models';
 import React from 'react';
 import { View } from 'react-native';
 import { Text, Title } from 'react-native-paper';
@@ -25,9 +25,9 @@ function Tile({ caption, value, text, fat }: TileProps) {
 }
 
 type NutritionTile = {
-    info: NutritionInformation;
+    info: NutritionalInformation;
     volume: number;
-    name: keyof NutritionInformation;
+    name: keyof NutritionalInformation;
 };
 
 function NutritionTile({ info, name, volume }: NutritionTile) {
@@ -45,20 +45,20 @@ type Props = {
     volume: number;
 };
 
-export default function ServingInfo({ product: { label, nutritionInformation }, volume }: Props) {
+export default function ServingInfo({ product: { label, nutritionalInformation }, volume }: Props) {
     return (
         <View>
             {/* <Title>{selectLabel(label)}</Title> */}
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
                 <Tile
                     caption=" "
-                    value={roundNumber((nutritionInformation.energy / nutritionInformation.volume) * volume) as any}
+                    value={roundNumber((nutritionalInformation.energy / nutritionalInformation.volume) * volume) as any}
                     text="kcal"
                     fat
                 />
-                <NutritionTile volume={volume} info={nutritionInformation} name="carbohydrates" />
-                <NutritionTile volume={volume} info={nutritionInformation} name="fat" />
-                <NutritionTile volume={volume} info={nutritionInformation} name="protein" />
+                <NutritionTile volume={volume} info={nutritionalInformation} name="carbohydrates" />
+                <NutritionTile volume={volume} info={nutritionalInformation} name="fat" />
+                <NutritionTile volume={volume} info={nutritionalInformation} name="protein" />
             </View>
         </View>
     );

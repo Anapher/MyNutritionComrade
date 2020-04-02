@@ -1,6 +1,6 @@
 declare module 'Models' {
     export interface ProductProperties {
-        nutritionInformation: NutritionInformation;
+        nutritionalInformation: NutritionalInformation;
         label: ProductLabel[];
         servings: { [key: string]: number };
         defaultServing: string;
@@ -24,10 +24,10 @@ declare module 'Models' {
     export interface ProductContribution {
         id: string;
         userId: string;
-        status: 'Pending' | 'Applied' | 'Rejected';
+        status: 'pending' | 'applied' | 'rejected';
         appliedVersion?: number;
         createdOn: string;
-        patch: object;
+        patch: PatchOperation[];
     }
 
     export interface ProductLabel {
@@ -35,7 +35,7 @@ declare module 'Models' {
         value: string;
     }
 
-    export interface NutritionInformation {
+    export interface NutritionalInformation {
         volume: number;
         energy: number;
         fat: number;
@@ -46,4 +46,29 @@ declare module 'Models' {
         dietaryFiber: number;
         sodium: number;
     }
+
+    export interface OpSetProperty {
+        type: 'set';
+        path: string;
+        value: any;
+    }
+
+    export interface OpUnsetProperty {
+        type: 'unset';
+        path: string;
+    }
+
+    export interface OpAddItem {
+        type: 'add';
+        path: string;
+        item: any;
+    }
+
+    export interface OpRemoveItem {
+        type: 'remove';
+        path: string;
+        item: any;
+    }
+
+    export type PatchOperation = OpSetProperty | OpUnsetProperty | OpAddItem | OpRemoveItem;
 }

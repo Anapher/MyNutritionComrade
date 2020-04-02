@@ -1,6 +1,6 @@
-import { NutritionInformation } from 'Models';
+import { NutritionalInformation } from 'Models';
 
-export function changeVolume(info: NutritionInformation, newVolume: number): NutritionInformation {
+export function changeVolume(info: NutritionalInformation, newVolume: number): NutritionalInformation {
     if (info.volume === 0) throw 'Cannot calculate a new volume if the information are based on a zero volume';
 
     const factor = newVolume / info.volume;

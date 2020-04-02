@@ -25,7 +25,7 @@ type Props = ReturnType<typeof mapStateToProps>;
 export type RootStackParamList = {
     Home: undefined;
     SearchProduct: { consumptionTime: ConsumptionTime; date: string };
-    CreateProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean };
+    CreateProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean; productId?: string };
     ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => Promise<boolean> };
     AddProduct: { product: ProductSearchDto; volume?: number; onSubmit: (volume: number) => void };
 };

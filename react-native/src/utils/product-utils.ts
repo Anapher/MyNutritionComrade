@@ -1,4 +1,5 @@
-import { FrequentlyUsedProducts, ConsumptionTime, FrequentlyUsedProductDto } from 'Models';
+import { TagLiquid } from 'src/consts';
+import { FrequentlyUsedProducts, ConsumptionTime, FrequentlyUsedProductDto, ProductInfo } from 'Models';
 import { ConsumptionTimes } from 'src/consts';
 import _ from 'lodash';
 
@@ -20,4 +21,12 @@ export function* flattenProductsPrioritize(
             }
         }
     }
+}
+
+export function isProductLiquid(product: ProductInfo): boolean {
+    return product.tags.includes(TagLiquid);
+}
+
+export function getBaseUnit(product: ProductInfo): string {
+    return isProductLiquid(product) ? 'ml' : 'g';
 }

@@ -10,7 +10,7 @@ export const mapToProduct = (x: ConsumeProductData, newValue?: number): Consumed
     time: x.time,
     productId: x.product.id,
     label: x.product.label,
-    nutritionInformation: changeVolume(x.product.nutritionInformation, newValue ?? x.value),
+    nutritionalInformation: changeVolume(x.product.nutritionalInformation, newValue ?? x.value),
     tags: x.product.tags,
 });
 
@@ -22,12 +22,14 @@ export function patchConsumedProducts(list: ConsumedProduct[], patch: ConsumePro
         }
     } else if (list.findIndex((x) => matchProduct(x, patch)) > -1) {
         const newValue = patch.append
-            ? (list.find((x) => matchProduct(x, patch))?.nutritionInformation.volume ?? 0) + patch.value
+            ? (list.find((x) => matchProduct(x, patch))?.nutritionalInformation.volume ?? 0) + patch.value
             : patch.value;
 
         // update item
         return list.map((x) =>
-            matchProduct(x, patch) ? { ...x, nutritionInformation: changeVolume(x.nutritionInformation, newValue) } : x,
+            matchProduct(x, patch)
+                ? { ...x, nutritionalInformation: changeVolume(x.nutritionalInformation, newValue) }
+                : x,
         );
     } else {
         // add item

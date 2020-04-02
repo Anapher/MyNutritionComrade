@@ -30,7 +30,7 @@ function AddProduct({
     const loadState = useRef({ isLoaded: false });
 
     const [curveScale, setCurveScale] = useState(() =>
-        selectScale(serving, product.servings[serving], product.nutritionInformation),
+        selectScale(serving, product.servings[serving], product.nutritionalInformation),
     );
 
     const theme = useTheme();
@@ -86,7 +86,7 @@ function AddProduct({
                         onChange={(x) => {
                             setServing(x);
 
-                            const scale = selectScale(x, product.servings[x], product.nutritionInformation);
+                            const scale = selectScale(x, product.servings[x], product.nutritionalInformation);
                             setCurveScale(scale);
                         }}
                     />

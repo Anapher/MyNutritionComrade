@@ -39,7 +39,7 @@ function FoodItem({ item, theme }: Props) {
 
     const kcalColor = color(theme.colors.text).alpha(0.8).rgb().string();
 
-    const { fat, carbohydrates, protein, volume, energy } = item.nutritionInformation;
+    const { fat, carbohydrates, protein, volume, energy } = item.nutritionalInformation;
 
     return (
         <View style={styles.container}>

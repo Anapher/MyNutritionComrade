@@ -1,11 +1,12 @@
 import Color from 'color';
 import { FormikProps } from 'formik';
-import { NutritionInformation, ProductInfo } from 'Models';
+import { NutritionalInformation, ProductInfo } from 'Models';
 import React, { useRef } from 'react';
-import { TextInput, View, FlatList } from 'react-native';
-import { Subheading, Surface, Text, Theme, withTheme, Caption } from 'react-native-paper';
+import { FlatList, TextInput, View } from 'react-native';
+import { Subheading, Surface, Text, Theme, withTheme } from 'react-native-paper';
 import Row from 'src/components/Row';
-import { TagLiquid, errorColor } from 'src/consts';
+import { TagLiquid } from 'src/consts';
+import { nutritionalInfo } from '../data';
 
 type Props = {
     formik: FormikProps<ProductInfo>;
@@ -13,36 +14,18 @@ type Props = {
     onShowNextPage: () => void;
 };
 
-type NutritionRow = {
-    name: keyof NutritionInformation;
-    label: string;
-    unit: string;
-};
-
-const nutritionInfo: NutritionRow[] = [
-    { name: 'energy', label: 'Energy', unit: 'kcal' },
-    { name: 'fat', label: 'Fat', unit: 'g' },
-    { name: 'saturatedFat', label: '      Saturated Fat', unit: 'g' },
-    { name: 'carbohydrates', label: 'Carbohydrates', unit: 'g' },
-    { name: 'dietaryFiber', label: '      Dietary Fiber', unit: 'g' },
-    { name: 'sugars', label: '      Sugars', unit: 'g' },
-    { name: 'protein', label: 'Protein', unit: 'g' },
-    { name: 'sodium', label: 'Sodium', unit: 'g' },
-];
-
 function NutritionInfo({ formik, theme, onShowNextPage }: Props) {
     const dividerColor = Color(theme.colors.text).alpha(0.5).string();
-
     const background = Color(theme.colors.accent).alpha(0.3).string();
 
-    const refs = nutritionInfo.map(() => useRef<TextInput>(null));
+    const refs = nutritionalInfo.map(() => useRef<TextInput>(null));
     const { values, setFieldValue, errors } = formik;
 
     return (
         <FlatList
             scrollEnabled
             ItemSeparatorComponent={() => <View style={{ borderBottomColor: dividerColor, borderBottomWidth: 1 }} />}
-            data={nutritionInfo}
+            data={nutritionalInfo}
             stickyHeaderIndices={[0]}
             keyExtractor={(item) => item.name}
             ListHeaderComponent={
@@ -50,7 +33,7 @@ function NutritionInfo({ formik, theme, onShowNextPage }: Props) {
                     <Row
                         name={<Subheading>Nutrition Facts</Subheading>}
                         lastItem
-                        error={errors.nutritionInformation?.volume}
+                        error={errors.nutritionalInformation?.volume}
                     >
                         <Subheading>{`Ø/100${formik.values.tags.includes(TagLiquid) ? 'ml' : 'g'}`}</Subheading>
                     </Row>
@@ -61,7 +44,7 @@ function NutritionInfo({ formik, theme, onShowNextPage }: Props) {
                     key={item.name}
                     name={<Text>{item.label}</Text>}
                     lastItem
-                    error={errors.nutritionInformation && errors.nutritionInformation[item.name]}
+                    error={errors.nutritionalInformation && errors.nutritionalInformation[item.name]}
                 >
                     <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end' }}>
                         <TextInput
@@ -74,12 +57,12 @@ function NutritionInfo({ formik, theme, onShowNextPage }: Props) {
                             }}
                             keyboardType="numeric"
                             returnKeyType="next"
-                            value={values.nutritionInformation[item.name].toString()}
+                            value={values.nutritionalInformation[item.name].toString()}
                             blurOnSubmit={false}
                             selectTextOnFocus
                             onChangeText={(s) =>
                                 !Number.isNaN(Number(s)) &&
-                                setFieldValue(`nutritionInformation.${item.name}`, Number(s))
+                                setFieldValue(`nutritionalInformation.${item.name}`, Number(s))
                             }
                             onSubmitEditing={() => {
                                 if (index < refs.length - 1) {

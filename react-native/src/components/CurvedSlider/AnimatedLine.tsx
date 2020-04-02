@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
+import { Animated } from 'react-native';
 import { Line } from 'react-native-svg';
 import { Vector2 } from './vector';
-import { Animated, StyleSheet } from 'react-native';
 
 type Props = {
     p1: Vector2;

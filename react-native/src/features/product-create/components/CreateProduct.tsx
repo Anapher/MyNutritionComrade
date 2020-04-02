@@ -20,6 +20,9 @@ import useAsyncFunction from 'src/hooks/use-async-function';
 import * as actions from '../actions';
 import { AxiosError } from 'axios';
 import { RestError } from 'src/utils/error-result';
+import * as productApi from 'src/services/api/products';
+import { createPatch, reducePatch } from '../utils';
+import itiriri from 'itiriri';
 
 const stepperStyles = (theme: Theme) => {
     // const dark = Color(theme.colors.)
@@ -82,7 +85,7 @@ const validationSchema = yup.object().shape({
             const { servings } = this.parent;
             return !!servings[value];
         }),
-    nutritionInformation: yup.object().shape({
+    nutritionalInformation: yup.object().shape({
         volume: yup
             .number()
             .oneOf([100])
@@ -115,7 +118,7 @@ const validationSchema = yup.object().shape({
 
 const defaultValues: ProductInfo = {
     defaultServing: 'g',
-    nutritionInformation: {
+    nutritionalInformation: {
         volume: 100,
         energy: 0,
         fat: 0,
@@ -134,7 +137,13 @@ const defaultValues: ProductInfo = {
     code: '',
 };
 
-function CreateProduct({ theme, navigation, route }: Props) {
+function CreateProduct({
+    theme,
+    navigation,
+    route: {
+        params: { isUpdating, product, productId },
+    },
+}: Props) {
     const [currentPage, setCurrentPage] = useState(0);
     const viewPagerRef = useRef<ViewPager>(null);
 
@@ -154,7 +163,6 @@ function CreateProduct({ theme, navigation, route }: Props) {
                 ToastAndroid.show('The product was created successfully.', 3000);
             } catch (error) {
                 const axiosError: AxiosError = error;
-                console.log(error);
 
                 if (axiosError?.response === undefined) {
                     ToastAndroid.show('Connection failed.', 3000);
@@ -180,9 +188,32 @@ function CreateProduct({ theme, navigation, route }: Props) {
         [createAction, navigation],
     );
 
+    const updateProductCallback = useCallback(
+        async (values: ProductInfo, formikActions: FormikHelpers<ProductInfo>) => {
+            const product = await productApi.getById(productId!);
+            const productInfo: ProductInfo = {
+                code: product.code,
+                defaultServing: product.defaultServing,
+                label: product.label,
+                nutritionalInformation: product.nutritionalInformation,
+                servings: product.servings,
+                tags: product.tags,
+            };
+
+            const differences = createPatch(productInfo, values);
+            const changesets = itiriri(reducePatch(differences)).toArray();
+            if (changesets.length === 0) {
+                navigation.goBack();
+                ToastAndroid.show('No changes were found.', 3000);
+                return;
+            }
+        },
+        [navigation, productId],
+    );
+
     return (
         <Formik<ProductInfo>
-            initialValues={{ ...defaultValues, ...(route.params?.product || {}) }}
+            initialValues={{ ...defaultValues, ...(product || {}) }}
             validateOnMount
             onSubmit={(values, helpers) => {
                 Keyboard.dismiss();
@@ -254,7 +285,7 @@ function CreateProduct({ theme, navigation, route }: Props) {
                         <Portal>
                             <Dialog visible={props.isSubmitting} dismissable={false}>
                                 <Dialog.Title>
-                                    {route.params?.isUpdating ? 'Submitting update...' : 'Creating product...'}
+                                    {isUpdating ? 'Submitting update...' : 'Creating product...'}
                                 </Dialog.Title>
                                 <Dialog.Content>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>

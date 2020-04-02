@@ -1,4 +1,4 @@
-import { NutritionInformation } from 'Models';
+import { NutritionalInformation } from 'Models';
 import { changeVolume } from 'src/utils/nutrition-info-helper';
 
 const maxSelectableCalories = 2000;
@@ -16,7 +16,7 @@ const scales = [
 export function selectScale(
     servingType: string,
     servingVolume: number,
-    nutritionInfo: NutritionInformation,
+    nutritionInfo: NutritionalInformation,
 ): { max: number; step: number; labelStep: number } {
     const oneServingNutritions = changeVolume(nutritionInfo, servingVolume);
     for (const scale of scales) {

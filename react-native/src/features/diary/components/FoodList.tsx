@@ -52,11 +52,11 @@ function FoodList({
     onItemPress,
     onItemLongPress,
 }: Props) {
-    const totalCalories = _.sumBy(items, (x) => x.nutritionInformation.energy);
-    const totalFat = _.sumBy(items, (x) => x.nutritionInformation.fat);
-    const totalCarbohydrates = _.sumBy(items, (x) => x.nutritionInformation.carbohydrates);
-    const totalProtein = _.sumBy(items, (x) => x.nutritionInformation.protein);
-    const totalSugars = _.sumBy(items, (x) => x.nutritionInformation.sugars);
+    const totalCalories = _.sumBy(items, (x) => x.nutritionalInformation.energy);
+    const totalFat = _.sumBy(items, (x) => x.nutritionalInformation.fat);
+    const totalCarbohydrates = _.sumBy(items, (x) => x.nutritionalInformation.carbohydrates);
+    const totalProtein = _.sumBy(items, (x) => x.nutritionalInformation.protein);
+    const totalSugars = _.sumBy(items, (x) => x.nutritionalInformation.sugars);
 
     const summaryColor = color(theme.colors.text).alpha(0.5).rgb().string();
     const rippleColor = 'black';
