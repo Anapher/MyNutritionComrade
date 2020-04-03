@@ -9,7 +9,7 @@ import {
     ServingSize,
 } from 'Models';
 import { tryParseServingSize } from 'src/utils/input-parser';
-import selectLabel from 'src/utils/label-selector';
+import selectLabel from 'src/utils/product-utils';
 import { flattenProductsPrioritize } from 'src/utils/product-utils';
 
 const maxSearchResults: number = 10;

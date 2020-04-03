@@ -1,6 +1,6 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
-import { ConsumptionTime, ProductInfo, ProductSearchDto } from 'Models';
+import { ConsumptionTime, ProductInfo, ProductSearchDto, ProductDto, PatchOperation } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
@@ -12,6 +12,9 @@ import CreateProduct from './features/product-create/components/CreateProduct';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearch from './features/product-search/components/ProductSearchScreen';
 import HomeScreen from './HomeScreen';
+import ChangeProduct from './features/product-create/components/ChangeProduct';
+import ReviewChanges from './features/product-create/components/ReviewChanges';
+import { View } from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -25,8 +28,15 @@ type Props = ReturnType<typeof mapStateToProps>;
 export type RootStackParamList = {
     Home: undefined;
     SearchProduct: { consumptionTime: ConsumptionTime; date: string };
-    CreateProduct: { product?: Partial<ProductInfo>; isUpdating?: boolean; productId?: string };
-    ScanBarcode: { onBarcodeScanned: (result: BarCodeScanningResult) => Promise<boolean> };
+    CreateProduct: { initialValues?: Partial<ProductInfo> };
+    ChangeProduct: { product: ProductDto };
+    ReviewProductChanges: { product: ProductDto; changes: PatchOperation[][]; acceptChanges: () => void };
+    ScanBarcode: {
+        onBarcodeScanned: (
+            result: BarCodeScanningResult,
+            navigation: StackNavigationProp<RootStackParamList>,
+        ) => Promise<boolean | void>;
+    };
     AddProduct: { product: ProductSearchDto; volume?: number; onSubmit: (volume: number) => void };
 };
 
@@ -62,8 +72,24 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                             ),
                         })}
                     />
-                    <Stack.Screen name="CreateProduct" component={CreateProduct} />
-                    <Stack.Screen name="ScanBarcode" component={BarcodeScanner} options={{ headerShown: false }} />
+                    <Stack.Screen
+                        name="CreateProduct"
+                        initialParams={{ initialValues: {} }}
+                        options={{
+                            headerStyle: { backgroundColor: '#222' },
+                        }}
+                        component={CreateProduct}
+                    />
+                    <Stack.Screen name="ChangeProduct" component={ChangeProduct} />
+                    <Stack.Screen name="ReviewProductChanges" component={ReviewChanges} />
+                    <Stack.Screen
+                        name="ScanBarcode"
+                        component={BarcodeScanner}
+                        options={{
+                            headerShown: false,
+                            animationTypeForReplace: 'pop',
+                        }}
+                    />
                     <Stack.Screen name="AddProduct" component={AddProduct} />
                 </>
             )}

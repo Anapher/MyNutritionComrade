@@ -2,12 +2,12 @@ import Color from 'color';
 import { FormikProps } from 'formik';
 import { ProductInfo } from 'Models';
 import React, { useRef } from 'react';
-import { SectionList, SectionListData, TextInput, View } from 'react-native';
-import { Subheading, Surface, Text, Theme } from 'react-native-paper';
+import { SectionList, SectionListData, TextInput, View, StyleSheet } from 'react-native';
+import { Subheading, Surface, Text, Theme, useTheme } from 'react-native-paper';
 import CheckableRow from 'src/components/CheckableRow';
 import Row from 'src/components/Row';
 import { TagLiquid } from 'src/consts';
-import { getServings, ServingInfo } from '../data';
+import { getServings, ServingInfo } from '../../data';
 
 const servingsFactory: (isLiquid: boolean) => SectionListData<ServingInfo>[] = (isLiquid) => {
     const servings = getServings(isLiquid);
@@ -19,7 +19,7 @@ const servingsFactory: (isLiquid: boolean) => SectionListData<ServingInfo>[] = (
         },
         {
             title: 'Kitchen Measurements',
-            data: [servings.cup, servings.el, servings.tl],
+            data: [servings.cup, servings.te, servings.ts],
         },
         {
             title: 'Applications',
@@ -34,12 +34,12 @@ const servingsFactory: (isLiquid: boolean) => SectionListData<ServingInfo>[] = (
 
 type Props = {
     formik: FormikProps<ProductInfo>;
-    theme: Theme;
 };
 
-export default function Servings({ formik: { values, setFieldValue, errors }, theme }: Props) {
-    const dividerColor = Color(theme.colors.text).alpha(0.5).string();
-    const background = Color(theme.colors.accent).alpha(0.3).string();
+function Servings({ formik: { values, setFieldValue, errors } }: Props) {
+    const theme = useTheme();
+    const dividerColor = Color(theme.colors.text).alpha(0.2).string();
+    const textBackground = Color(theme.colors.text).alpha(0.1).string();
 
     const isLiquid = values.tags.includes(TagLiquid);
     const servings = servingsFactory(isLiquid);
@@ -54,7 +54,7 @@ export default function Servings({ formik: { values, setFieldValue, errors }, th
             keyExtractor={(item) => item.id}
             ItemSeparatorComponent={() => <View style={{ borderBottomColor: dividerColor, borderBottomWidth: 1 }} />}
             renderSectionHeader={({ section: { title } }) => (
-                <Surface style={{ elevation: 14 }}>
+                <Surface style={styles.listHeader}>
                     <Row name={<Subheading>{title}</Subheading>} lastItem />
                 </Surface>
             )}
@@ -66,9 +66,9 @@ export default function Servings({ formik: { values, setFieldValue, errors }, th
                     description="Please check the default serving portion."
                     name={<Text>Base unit</Text>}
                 >
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <View style={styles.rightAlignedRow}>
                         <Text>1</Text>
-                        <Text style={{ width: 32 }}> {baseUnit}</Text>
+                        <Text style={[styles.unitText, { marginBottom: 0 }]}> {baseUnit}</Text>
                     </View>
                 </CheckableRow>
             }
@@ -85,12 +85,12 @@ export default function Servings({ formik: { values, setFieldValue, errors }, th
                         (values.defaultServing === item.id && errors.defaultServing ? errors.defaultServing : undefined)
                     }
                 >
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end' }}>
+                    <View style={styles.rightAlignedRow}>
                         <TextInput
                             ref={refs.find((x) => x.id === item.id)!.ref}
                             style={{
                                 paddingHorizontal: 8,
-                                backgroundColor: background,
+                                backgroundColor: textBackground,
                                 color: theme.colors.text,
                                 width: 60,
                                 opacity: item.predefinedValue === undefined ? 1 : 0.5,
@@ -123,10 +123,27 @@ export default function Servings({ formik: { values, setFieldValue, errors }, th
                                 }
                             }}
                         />
-                        <Text style={{ marginBottom: 4, width: 32 }}> {baseUnit}</Text>
+                        <Text style={styles.unitText}> {baseUnit}</Text>
                     </View>
                 </CheckableRow>
             )}
         />
     );
 }
+
+const styles = StyleSheet.create({
+    listHeader: {
+        elevation: 2,
+    },
+    rightAlignedRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+    },
+    unitText: {
+        marginBottom: 4,
+        width: 32,
+    },
+});
+
+export default Servings;

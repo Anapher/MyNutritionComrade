@@ -18,7 +18,7 @@ namespace MyNutritionComrade.Models.Response
 
         public string ProductId { get; set; }
 
-        public NutritionInformation NutritionInformation { get; set; }
+        public NutritionalInfo NutritionalInfo { get; set; }
         public ISet<string> Tags { get; set; }
 
         public IEnumerable<ProductLabel> Label { get; set; }

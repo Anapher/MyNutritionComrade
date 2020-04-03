@@ -35,9 +35,9 @@ function BarcodeScanner({
     const [isLoading, setIsLoading] = useState(false);
 
     const handleBarCodeScanned: BarCodeScannedCallback = async (result) => {
-        const promise = onBarcodeScanned(result);
+        const promise = onBarcodeScanned(result, navigation);
         setIsLoading(true);
-        if (!(await promise)) {
+        if ((await promise) !== true) {
             navigation.goBack();
         }
     };

@@ -13,19 +13,19 @@ namespace MyNutritionComrade.Models.Validation
 
         public ProductInfoValidator()
         {
-            RuleFor(x => x.NutritionInformation.Volume).Equal(100);
-            RuleFor(x => x.NutritionInformation.Energy).GreaterThan(0);
-            RuleFor(x => x.NutritionInformation.Fat).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.NutritionInformation.SaturatedFat).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.NutritionInformation.Carbohydrates).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.NutritionInformation.Sugars).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.NutritionInformation.Protein).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.NutritionInformation.DietaryFiber).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.NutritionInformation.Sodium).GreaterThanOrEqualTo(0);
-            RuleFor(x => x.NutritionInformation).Must(x => x.Carbohydrates >= x.Sugars + x.DietaryFiber)
+            RuleFor(x => x.NutritionalInfo.Volume).Equal(100);
+            RuleFor(x => x.NutritionalInfo.Energy).GreaterThan(0);
+            RuleFor(x => x.NutritionalInfo.Fat).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.NutritionalInfo.SaturatedFat).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.NutritionalInfo.Carbohydrates).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.NutritionalInfo.Sugars).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.NutritionalInfo.Protein).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.NutritionalInfo.DietaryFiber).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.NutritionalInfo.Sodium).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.NutritionalInfo).Must(x => x.Carbohydrates >= x.Sugars + x.DietaryFiber)
                 .WithMessage("The carbohydrates must not exceed the sum of sugars and dietary fiber");
-            RuleFor(x => x.NutritionInformation).Must(x => x.Fat >= x.SaturatedFat).WithMessage("The fat must not exceed the saturated fat");
-            RuleFor(x => x.NutritionInformation).Must(x => x.Carbohydrates + x.Fat + x.Protein + x.Sodium <= 100)
+            RuleFor(x => x.NutritionalInfo).Must(x => x.Fat >= x.SaturatedFat).WithMessage("The fat must not exceed the saturated fat");
+            RuleFor(x => x.NutritionalInfo).Must(x => x.Carbohydrates + x.Fat + x.Protein + x.Sodium <= 100)
                 .WithMessage("The nutritions must not exceed 100g.");
 
             RuleFor(x => x.Label).NotEmpty().UniqueItems();

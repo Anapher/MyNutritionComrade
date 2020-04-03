@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
@@ -19,6 +20,11 @@ namespace MyNutritionComrade.IntegrationTests.Utils
                 return Task.FromResult(product);
 
             return Task.FromResult<Product>(null);
+        }
+
+        public Task<Product> FindByBarcode(string code)
+        {
+            return Task.FromResult(_products.FirstOrDefault(x => x.Value.Code == code).Value);
         }
 
         public void EnsureProductExists(Product product)

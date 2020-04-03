@@ -1,7 +1,7 @@
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
 import { FlatList } from 'react-native-gesture-handler';
-import { Divider } from 'react-native-paper';
+import { Divider, useTheme } from 'react-native-paper';
 import { connect } from 'react-redux';
 import SuggestionItem from './SuggestionItem';
 import * as actions from '../../diary/actions';
@@ -25,10 +25,12 @@ type Props = ReturnType<typeof mapStateToProps> &
     };
 
 function ProductSearchScreen({ suggestions, navigation, route, changeProductConsumption }: Props) {
+    const theme = useTheme();
     return (
         <FlatList
             data={suggestions}
             keyboardShouldPersistTaps="handled"
+            style={{ backgroundColor: theme.colors.background }}
             ItemSeparatorComponent={() => <Divider inset />}
             keyExtractor={(x) => `${x.model.id}/${x.servingSize?.unit}`}
             renderItem={({ item }) => (

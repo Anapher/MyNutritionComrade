@@ -44,7 +44,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var sp = _factory.Services;
             using (var scope = sp.CreateScope())
             {
-                var nutritionInfo = new NutritionInformation(100, 240, 0, 0, 60, 0, 20, 0, 0);
+                var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
                 var scopedServices = scope.ServiceProvider;
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();

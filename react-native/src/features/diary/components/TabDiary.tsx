@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { connect } from 'react-redux';
 import { ConsumptionTimes } from 'src/consts';
 import { RootStackParamList } from 'src/RootNavigator';
-import { toDateString } from 'src/utils/date-helper';
+import { toDateString } from 'src/utils/string-utils';
 import * as actions from '../actions';
 import ConsumedProducts from './ConsumedProducts';
 

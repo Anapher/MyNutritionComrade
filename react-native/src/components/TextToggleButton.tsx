@@ -1,7 +1,7 @@
 import Color from 'color';
-import React, { useRef, useEffect } from 'react';
-import { StyleProp, StyleSheet, ViewStyle, View, Animated, Easing } from 'react-native';
-import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Theme, TouchableRipple, withTheme } from 'react-native-paper';
 
 type Props = {
     isChecked?: boolean;
@@ -12,23 +12,6 @@ type Props = {
     style?: StyleProp<ViewStyle>;
     children?: React.ReactNode;
 };
-
-const styles = StyleSheet.create({
-    root: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 8,
-    },
-    leftRounded: {
-        borderTopLeftRadius: 8,
-        borderBottomLeftRadius: 8,
-    },
-    rightRounded: {
-        borderTopRightRadius: 8,
-        borderBottomRightRadius: 8,
-    },
-});
 
 function TextToggleButton({ onToggle, isChecked, children, isLeft, isRight, theme, style }: Props) {
     const uncheckedBackground = Color(theme.colors.text).alpha(0.3).string();
@@ -68,5 +51,22 @@ function TextToggleButton({ onToggle, isChecked, children, isLeft, isRight, them
         </TouchableRipple>
     );
 }
+
+const styles = StyleSheet.create({
+    root: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 8,
+    },
+    leftRounded: {
+        borderTopLeftRadius: 8,
+        borderBottomLeftRadius: 8,
+    },
+    rightRounded: {
+        borderTopRightRadius: 8,
+        borderBottomRightRadius: 8,
+    },
+});
 
 export default withTheme(TextToggleButton);

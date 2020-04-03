@@ -22,7 +22,7 @@ namespace MyNutritionComrade.Infrastructure.Elasticsearch
         public string[] ServingTypes { get; set; }
 
         // Data, disabled indexing
-        public NutritionInformation NutritionInformation { get; set; }
+        public NutritionalInfo NutritionalInfo { get; set; }
         public Dictionary<string, double> Servings { get; set; }
         public List<ProductLabel> Label { get; set; }
 

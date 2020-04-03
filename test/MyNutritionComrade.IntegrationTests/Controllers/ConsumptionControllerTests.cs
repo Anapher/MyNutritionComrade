@@ -44,7 +44,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var sp = _factory.Services;
             using (var scope = sp.CreateScope())
             {
-                var nutritionInfo = new NutritionInformation(100, 240, 0, 0, 60, 0, 20, 0, 0);
+                var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
                 var scopedServices = scope.ServiceProvider;
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();
@@ -84,9 +84,9 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var sp = _factory.Services;
             using (var scope = sp.CreateScope())
             {
-                var nutritionInfo = new NutritionInformation(100, 240, 0, 0, 60, 0, 20, 0, 0);
+                var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
-                var product = new Product("1", 1) {NutritionInformation = nutritionInfo};
+                var product = new Product("1", 1) {NutritionalInfo = nutritionInfo};
                 product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
 
                 var mockRepo = scope.ServiceProvider.GetRequiredService<MockProductRepository>();
@@ -114,7 +114,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var consumedProduct = Assert.Single(result);
             Assert.Equal(ConsumptionTime.Lunch, consumedProduct.Time);
             Assert.Equal("1", consumedProduct.ProductId);
-            Assert.Equal(120, consumedProduct.NutritionInformation.Volume);
+            Assert.Equal(120, consumedProduct.NutritionalInfo.Volume);
         }
 
         [Fact]
@@ -123,9 +123,9 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var sp = _factory.Services;
             using (var scope = sp.CreateScope())
             {
-                var nutritionInfo = new NutritionInformation(100, 240, 0, 0, 60, 0, 20, 0, 0);
+                var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
-                var product = new Product("1", 1) { NutritionInformation = nutritionInfo };
+                var product = new Product("1", 1) { NutritionalInfo = nutritionInfo };
                 product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
 
                 var mockRepo = scope.ServiceProvider.GetRequiredService<MockProductRepository>();
@@ -146,7 +146,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var stringResponse = await httpResponse.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ConsumedProductDto[]>(stringResponse);
             var consumedProduct = Assert.Single(result);
-            Assert.Equal(400, consumedProduct.NutritionInformation.Volume);
+            Assert.Equal(400, consumedProduct.NutritionalInfo.Volume);
 
             // update product
             httpResponse = await client.PutAsync("/api/v1/consumption/2020-05-01/dinner/1", new JsonContent(600));
@@ -158,7 +158,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             stringResponse = await httpResponse.Content.ReadAsStringAsync();
             result = JsonConvert.DeserializeObject<ConsumedProductDto[]>(stringResponse);
             consumedProduct = Assert.Single(result);
-            Assert.Equal(600, consumedProduct.NutritionInformation.Volume);
+            Assert.Equal(600, consumedProduct.NutritionalInfo.Volume);
         }
 
         [Fact]
@@ -167,9 +167,9 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             var sp = _factory.Services;
             using (var scope = sp.CreateScope())
             {
-                var nutritionInfo = new NutritionInformation(100, 240, 0, 0, 60, 0, 20, 0, 0);
+                var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
-                var product = new Product("1", 1) { NutritionInformation = nutritionInfo };
+                var product = new Product("1", 1) { NutritionalInfo = nutritionInfo };
                 product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
 
                 var mockRepo = scope.ServiceProvider.GetRequiredService<MockProductRepository>();

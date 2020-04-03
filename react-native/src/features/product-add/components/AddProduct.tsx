@@ -11,7 +11,7 @@ import AddProductHeader from './AddProductHeader';
 import ServingInfo from './ServingInfo';
 import ServingSelection from './ServingSelection';
 import { TagLiquid } from 'src/consts';
-import selectLabel from 'src/utils/label-selector';
+import selectLabel from 'src/utils/product-utils';
 import FlatButton from 'src/components/FlatButton';
 
 type Props = {
@@ -30,7 +30,7 @@ function AddProduct({
     const loadState = useRef({ isLoaded: false });
 
     const [curveScale, setCurveScale] = useState(() =>
-        selectScale(serving, product.servings[serving], product.nutritionalInformation),
+        selectScale(serving, product.servings[serving], product.nutritionalInfo),
     );
 
     const theme = useTheme();
@@ -86,7 +86,7 @@ function AddProduct({
                         onChange={(x) => {
                             setServing(x);
 
-                            const scale = selectScale(x, product.servings[x], product.nutritionalInformation);
+                            const scale = selectScale(x, product.servings[x], product.nutritionalInfo);
                             setCurveScale(scale);
                         }}
                     />

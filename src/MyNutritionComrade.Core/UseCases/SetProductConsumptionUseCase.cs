@@ -36,7 +36,7 @@ namespace MyNutritionComrade.Core.UseCases
                     if (product == null)
                         return ReturnError(new EntityNotFoundError("The product was not found.", ErrorCode.Product_NotFound));
 
-                    var nutritionInfo = product.NutritionInformation.ChangeMass(message.Value);
+                    var nutritionInfo = product.NutritionalInfo.ChangeMass(message.Value);
                     await _repository.Add(
                         new ConsumedProduct(message.UserId, message.Date, message.ConsumptionTime, message.ProductId, nutritionInfo, product.Tags.ToImmutableHashSet()));
                 }
@@ -46,7 +46,7 @@ namespace MyNutritionComrade.Core.UseCases
 
             if (message.Value > 0)
             {
-                existingConsumption.NutritionInformation = existingConsumption.NutritionInformation.ChangeMass(message.Value);
+                existingConsumption.NutritionalInfo = existingConsumption.NutritionalInfo.ChangeMass(message.Value);
                 await _repository.Update(existingConsumption);
             }
             else

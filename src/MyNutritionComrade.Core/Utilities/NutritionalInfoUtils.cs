@@ -3,9 +3,9 @@ using MyNutritionComrade.Core.Domain;
 
 namespace MyNutritionComrade.Core.Utilities
 {
-    public static class NutritionInformationUtils
+    public static class NutritionalInfoUtils
     {
-        public static NutritionInformation SumNutrition(this IEnumerable<INutritionInformation> entries)
+        public static NutritionalInfo SumNutrition(this IEnumerable<INutritionalInfo> entries)
         {
             var totalMass = 0d;
             var totalEnergy = 0d;
@@ -30,15 +30,15 @@ namespace MyNutritionComrade.Core.Utilities
                 totalSodium += entry.Sodium;
             }
 
-            return new NutritionInformation(totalMass, totalEnergy, totalFat, totalSaturatedFat, totalCarbohydrates, totalSugars, totalProtein, totalDietaryFiber, totalSodium);
+            return new NutritionalInfo(totalMass, totalEnergy, totalFat, totalSaturatedFat, totalCarbohydrates, totalSugars, totalProtein, totalDietaryFiber, totalSodium);
         }
 
-        public static NutritionInformation ChangeMass(this INutritionInformation nutritionInformation, double newMass)
+        public static NutritionalInfo ChangeMass(this INutritionalInfo nutritionalInfo, double newMass)
         {
-            var factor = newMass / nutritionInformation.Volume;
-            return new NutritionInformation(newMass, nutritionInformation.Energy * factor, nutritionInformation.Fat * factor,
-                nutritionInformation.SaturatedFat * factor, nutritionInformation.Carbohydrates * factor, nutritionInformation.Sugars * factor,
-                nutritionInformation.Protein * factor, nutritionInformation.DietaryFiber * factor, nutritionInformation.Sodium * factor);
+            var factor = newMass / nutritionalInfo.Volume;
+            return new NutritionalInfo(newMass, nutritionalInfo.Energy * factor, nutritionalInfo.Fat * factor,
+                nutritionalInfo.SaturatedFat * factor, nutritionalInfo.Carbohydrates * factor, nutritionalInfo.Sugars * factor,
+                nutritionalInfo.Protein * factor, nutritionalInfo.DietaryFiber * factor, nutritionalInfo.Sodium * factor);
         }
     }
 }

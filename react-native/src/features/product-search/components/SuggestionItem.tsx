@@ -1,7 +1,7 @@
 import { FoodSuggestion } from 'Models';
 import React from 'react';
 import { List, TouchableRipple, Text, Caption, Theme, withTheme } from 'react-native-paper';
-import selectLabel from 'src/utils/label-selector';
+import selectLabel from 'src/utils/product-utils';
 import { View, StyleSheet } from 'react-native';
 import color from 'color';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

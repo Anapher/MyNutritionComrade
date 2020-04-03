@@ -8,7 +8,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Meal> builder)
         {
-            builder.OwnsOne(x => x.NutritionInformation);
+            builder.OwnsOne(x => x.NutritionalInfo);
             builder.Property(x => x.Name).IsRequired();
         }
     }

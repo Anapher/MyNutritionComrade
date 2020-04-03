@@ -1,6 +1,6 @@
 ﻿namespace MyNutritionComrade.Core.Domain
 {
-    public interface INutritionInformation
+    public interface INutritionalInfo
     {
         /// <summary>
         ///     Volume the data belongs to in gram/ml (depending on product)

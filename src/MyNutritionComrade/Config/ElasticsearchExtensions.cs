@@ -18,7 +18,7 @@ namespace MyNutritionComrade.Config
 
             client.Indices.Create(defaultIndex,
                 descriptor => descriptor.Map<ProductSearchEntry>(m => m.AutoMap().Properties(p =>
-                    p.Object<ProductSearchEntry>(o => o.Name(x => x.NutritionInformation).Enabled(false))
+                    p.Object<ProductSearchEntry>(o => o.Name(x => x.NutritionalInfo).Enabled(false))
                         .Object<ProductSearchEntry>(o => o.Name(x => x.Servings).Enabled(false))
                         .Object<ProductSearchEntry>(o => o.Name(x => x.Label).Enabled(false)))));
 

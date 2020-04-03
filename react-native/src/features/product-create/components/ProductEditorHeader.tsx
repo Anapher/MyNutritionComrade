@@ -6,15 +6,17 @@ import { StackNavigationProp } from '@react-navigation/stack';
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
     canSubmit: boolean;
+    title: string;
+    icon?: string;
     onSubmit: () => void;
 };
 
-export default function CreateProductHeader({ navigation, canSubmit, onSubmit }: Props) {
+export default function ProductEditorHeader({ navigation, canSubmit, onSubmit, title, icon = 'check' }: Props) {
     return (
         <Appbar.Header>
             <Appbar.BackAction onPress={navigation.goBack} />
-            <Appbar.Content title="Add Product" />
-            <Appbar.Action icon="check" disabled={!canSubmit} onPress={onSubmit} />
+            <Appbar.Content title={title} />
+            <Appbar.Action icon={icon} disabled={!canSubmit} onPress={onSubmit} />
         </Appbar.Header>
     );
 }

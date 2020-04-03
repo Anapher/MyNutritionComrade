@@ -15,7 +15,7 @@ namespace MyNutritionComrade.Core.Domain
 
         public ProductInfo()
         {
-            NutritionInformation = NutritionInformation.Empty;
+            NutritionalInfo = NutritionalInfo.Empty;
             Code = null;
         }
 
@@ -27,7 +27,7 @@ namespace MyNutritionComrade.Core.Domain
         /// <summary>
         ///     The nutrition information of the product
         /// </summary>
-        public NutritionInformation NutritionInformation { get; set; }
+        public NutritionalInfo NutritionalInfo { get; set; }
 
         /// <summary>
         ///     The labels of the product, because equal products may have different labels depending on the location they are

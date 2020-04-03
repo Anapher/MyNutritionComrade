@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Theme, withTheme } from 'react-native-paper';
 import { ConsumedProduct } from 'Models';
-import selectLabel from 'src/utils/label-selector';
+import selectLabel from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
 import { TagLiquid } from 'src/consts';
 
@@ -39,7 +39,7 @@ function FoodItem({ item, theme }: Props) {
 
     const kcalColor = color(theme.colors.text).alpha(0.8).rgb().string();
 
-    const { fat, carbohydrates, protein, volume, energy } = item.nutritionalInformation;
+    const { fat, carbohydrates, protein, volume, energy } = item.nutritionalInfo;
 
     return (
         <View style={styles.container}>

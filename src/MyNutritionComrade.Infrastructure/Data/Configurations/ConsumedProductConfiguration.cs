@@ -10,7 +10,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<ConsumedProduct> builder)
         {
-            builder.OwnsOne(x => x.NutritionInformation);
+            builder.OwnsOne(x => x.NutritionalInfo);
             builder.HasKey(x => new {x.UserId, x.Date, x.Time, x.ProductId});
             builder.Property(x => x.Tags).HasConversion(x => JsonConvert.SerializeObject(x), x => JsonConvert.DeserializeObject<ImmutableHashSet<string>>(x));
         }

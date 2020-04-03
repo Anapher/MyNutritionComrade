@@ -1,8 +1,44 @@
 import { TagLiquid } from 'src/consts';
-import { FrequentlyUsedProducts, ConsumptionTime, FrequentlyUsedProductDto, ProductInfo } from 'Models';
+import {
+    FrequentlyUsedProducts,
+    ConsumptionTime,
+    FrequentlyUsedProductDto,
+    ProductInfo,
+    NutritionalInfo,
+    ProductLabel,
+} from 'Models';
 import { ConsumptionTimes } from 'src/consts';
 import _ from 'lodash';
 
+/**
+ * Change the volume of a {@see NutritionalInfo} and calculate the new nutrtional values
+ * @param info the nutritional information
+ * @param newVolume the new volume
+ */
+export function changeVolume(info: NutritionalInfo, newVolume: number): NutritionalInfo {
+    if (info.volume === 0) throw 'Cannot calculate a new volume if the information are based on a zero volume';
+
+    const factor = newVolume / info.volume;
+
+    return {
+        volume: newVolume,
+        energy: info.energy * factor,
+        fat: info.fat * factor,
+        saturatedFat: info.saturatedFat * factor,
+        carbohydrates: info.carbohydrates * factor,
+        sugars: info.sugars * factor,
+        protein: info.protein * factor,
+        dietaryFiber: info.dietaryFiber * factor,
+        sodium: info.sodium * factor,
+    };
+}
+
+/**
+ * Flatten {@see FrequentlyUsedProducts} by first returning all products of the priorizedTime
+ * and then returning the first products of the other times until all products are returned
+ * @param frequentlyUsedProducts the frequently used products
+ * @param priorizedTime the prioritized time
+ */
 export function* flattenProductsPrioritize(
     frequentlyUsedProducts: FrequentlyUsedProducts,
     priorizedTime: ConsumptionTime,
@@ -23,10 +59,22 @@ export function* flattenProductsPrioritize(
     }
 }
 
+/**
+ * Return true if the product is a liquid
+ * @param product the product
+ */
 export function isProductLiquid(product: ProductInfo): boolean {
     return product.tags.includes(TagLiquid);
 }
 
+/**
+ * Return the base unit for the product. 'ml' for liquids, 'g' else
+ * @param product the product
+ */
 export function getBaseUnit(product: ProductInfo): string {
     return isProductLiquid(product) ? 'ml' : 'g';
+}
+
+export default function selectLabel(label: ProductLabel[]): string {
+    return label[0].value;
 }

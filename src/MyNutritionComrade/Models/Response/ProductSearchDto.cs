@@ -10,7 +10,7 @@ namespace MyNutritionComrade.Models.Response
     {
         public string Id { get; set; }
         public string[] Tags { get; set; }
-        public NutritionInformation NutritionInformation { get; set; }
+        public NutritionalInfo NutritionalInfo { get; set; }
         public Dictionary<string, double> Servings { get; set; }
         public List<ProductLabel> Label { get; set; }
         public string DefaultServing { get; set; }

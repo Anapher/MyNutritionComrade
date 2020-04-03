@@ -37,8 +37,8 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public static ServingType Bread = new ServingType("bread");
 
         public static ServingType Cup = new ServingType("cup");
-        public static ServingType TableSpoon = new ServingType("el");
-        public static ServingType TeaSpoon = new ServingType("tl");
+        public static ServingType TableSpoon = new ServingType("ts");
+        public static ServingType TeaSpoon = new ServingType("te");
 
         public static ServingType Package = new ServingType("package");
         public static ServingType Portion = new ServingType("portion");

@@ -1,8 +1,8 @@
-import { NutritionalInformation, ProductSearchDto } from 'Models';
+import { NutritionalInfo, ProductSearchDto } from 'Models';
 import React from 'react';
 import { View } from 'react-native';
 import { Text, Title } from 'react-native-paper';
-import selectLabel from 'src/utils/label-selector';
+import selectLabel from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
 
 type TileProps = {
@@ -25,9 +25,9 @@ function Tile({ caption, value, text, fat }: TileProps) {
 }
 
 type NutritionTile = {
-    info: NutritionalInformation;
+    info: NutritionalInfo;
     volume: number;
-    name: keyof NutritionalInformation;
+    name: keyof NutritionalInfo;
 };
 
 function NutritionTile({ info, name, volume }: NutritionTile) {
@@ -45,20 +45,20 @@ type Props = {
     volume: number;
 };
 
-export default function ServingInfo({ product: { label, nutritionalInformation }, volume }: Props) {
+export default function ServingInfo({ product: { label, nutritionalInfo }, volume }: Props) {
     return (
         <View>
             {/* <Title>{selectLabel(label)}</Title> */}
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
                 <Tile
                     caption=" "
-                    value={roundNumber((nutritionalInformation.energy / nutritionalInformation.volume) * volume) as any}
+                    value={roundNumber((nutritionalInfo.energy / nutritionalInfo.volume) * volume) as any}
                     text="kcal"
                     fat
                 />
-                <NutritionTile volume={volume} info={nutritionalInformation} name="carbohydrates" />
-                <NutritionTile volume={volume} info={nutritionalInformation} name="fat" />
-                <NutritionTile volume={volume} info={nutritionalInformation} name="protein" />
+                <NutritionTile volume={volume} info={nutritionalInfo} name="carbohydrates" />
+                <NutritionTile volume={volume} info={nutritionalInfo} name="fat" />
+                <NutritionTile volume={volume} info={nutritionalInfo} name="protein" />
             </View>
         </View>
     );

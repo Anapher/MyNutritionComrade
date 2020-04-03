@@ -1,6 +1,6 @@
 declare module 'Models' {
     export interface ProductProperties {
-        nutritionalInformation: NutritionalInformation;
+        nutritionalInfo: NutritionalInfo;
         label: ProductLabel[];
         servings: { [key: string]: number };
         defaultServing: string;
@@ -35,7 +35,7 @@ declare module 'Models' {
         value: string;
     }
 
-    export interface NutritionalInformation {
+    export interface NutritionalInfo {
         volume: number;
         energy: number;
         fat: number;

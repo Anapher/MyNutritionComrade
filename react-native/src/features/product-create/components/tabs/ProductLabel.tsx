@@ -16,41 +16,19 @@ import {
     TextInput,
     Theme,
     TouchableRipple,
+    useTheme,
 } from 'react-native-paper';
 import { SupportedLanguages, errorColor } from 'src/consts';
 
-const styles = StyleSheet.create({
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-    },
-    text: {
-        paddingLeft: 8,
-    },
-    root: {
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    list: {
-        flex: 1,
-    },
-    fab: {
-        position: 'absolute',
-        margin: 16,
-        right: 0,
-        bottom: 0,
-    },
-});
-
 type Props = {
     formik: FormikProps<ProductInfo>;
-    theme: Theme;
 };
 
-export default function ProductLabel({ formik: { values, setFieldValue, errors }, theme }: Props) {
+function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
+    const theme = useTheme();
+    const secondaryColor = Color(theme.colors.text).alpha(0.6).string();
+    const dividerColor = Color(theme.colors.text).alpha(0.2).string();
+
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState(SupportedLanguages[0].twoLetterCode);
     const [autoFocusTextField, setAutoFocusTextField] = useState(false);
@@ -73,8 +51,6 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
             values.label.filter((_, i) => i !== index),
         );
 
-    const secondaryColor = Color(theme.colors.text).alpha(0.6).string();
-
     return (
         <View style={styles.root}>
             <FlatList
@@ -82,10 +58,10 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
                 data={values.label}
                 stickyHeaderIndices={[0]}
                 ItemSeparatorComponent={() => (
-                    <View style={{ borderTopWidth: StyleSheet.hairlineWidth, borderColor: theme.colors.text }} />
+                    <View style={{ borderTopWidth: StyleSheet.hairlineWidth, borderColor: dividerColor }} />
                 )}
                 ListHeaderComponent={
-                    <Surface style={{ elevation: 14, paddingVertical: 4, paddingLeft: 8 }}>
+                    <Surface style={{ elevation: 1, paddingVertical: 4, paddingLeft: 8 }}>
                         <Subheading>Product label</Subheading>
                         <Caption>The full label (including producer), translations, synonyms</Caption>
                     </Surface>
@@ -95,13 +71,13 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
                         <Caption style={{ color: errorColor, margin: 8 }}>{errors.label}</Caption>
                     ) : undefined
                 }
+                keyExtractor={(x, i) => `${x.languageCode}`}
                 renderItem={({ item, index }) => (
-                    <Surface
+                    <View
                         style={{
                             padding: 8,
-                            paddingTop: 16,
-                            paddingBottom: 16,
-                            elevation: 3,
+                            paddingTop: 8,
+                            paddingBottom: 8,
                         }}
                     >
                         <View style={{ display: 'flex', flexDirection: 'row' }}>
@@ -127,7 +103,7 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
                                 {errors.label && (errors.label[index] as any).label}
                             </Caption>
                         )}
-                    </Surface>
+                    </View>
                 )}
             />
             <FAB
@@ -173,3 +149,31 @@ export default function ProductLabel({ formik: { values, setFieldValue, errors }
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    text: {
+        paddingLeft: 8,
+    },
+    root: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    list: {
+        flex: 1,
+    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+    },
+});
+
+export default ProductLabel;

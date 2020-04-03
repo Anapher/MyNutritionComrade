@@ -1,10 +1,10 @@
-import React from 'react';
-import { View } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from 'src/RootNavigator';
 import { FormikProps } from 'formik';
 import { ProductInfo } from 'Models';
+import React from 'react';
+import { View } from 'react-native';
+import { Button, TextInput } from 'react-native-paper';
+import { RootStackParamList } from 'src/RootNavigator';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;

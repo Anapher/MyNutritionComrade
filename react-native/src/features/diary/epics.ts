@@ -34,8 +34,8 @@ export const changeProductConsumptionEpic: RootEpic = (action$, state$, { api })
         filter(isActionOf(actions.changeProductConsumption.request)),
         switchMap(({ payload }) => {
             const newValue = payload.append
-                ? (state$.value.diary.consumedProducts.find((x) => matchProduct(x, payload))?.nutritionalInformation
-                      .volume ?? 0) + payload.value
+                ? (state$.value.diary.consumedProducts.find((x) => matchProduct(x, payload))?.nutritionalInfo.volume ??
+                      0) + payload.value
                 : payload.value;
 
             return from(api.consumption.setConsumption(payload.date, payload.time, payload.product.id, newValue)).pipe(

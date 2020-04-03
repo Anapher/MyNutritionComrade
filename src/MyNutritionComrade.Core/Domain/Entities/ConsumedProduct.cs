@@ -5,7 +5,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
 {
     public class ConsumedProduct
     {
-        public ConsumedProduct(string userId, DateTime date, ConsumptionTime time, string productId, NutritionInformation nutritionInformation, IImmutableSet<string> tags)
+        public ConsumedProduct(string userId, DateTime date, ConsumptionTime time, string productId, NutritionalInfo nutritionalInfo, IImmutableSet<string> tags)
         {
             if (date.Date != date)
                 throw new ArgumentException("The date must not have a time associated.", nameof(date));
@@ -14,7 +14,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
             Date = date;
             Time = time;
             ProductId = productId;
-            NutritionInformation = nutritionInformation;
+            NutritionalInfo = nutritionalInfo;
             Tags = tags;
         }
 
@@ -31,7 +31,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
 
         public string ProductId { get; private set; }
 
-        public NutritionInformation NutritionInformation { get; set; }
+        public NutritionalInfo NutritionalInfo { get; set; }
         public IImmutableSet<string> Tags { get; private set; }
     }
 

@@ -51,7 +51,7 @@ function ConsumedProducts({
 
     const scanBarcode = useCallback(() => {
         navigation.navigate('ScanBarcode', {
-            onBarcodeScanned: async ({ data: barcode }) => {
+            onBarcodeScanned: async ({ data: barcode }, nav) => {
                 let product: ProductSearchDto | undefined = itiriri(
                     flattenProductsPrioritize(frequentlyUsedProducts, time),
                 ).find((x) => x.code === barcode);
@@ -64,10 +64,8 @@ function ConsumedProducts({
                     }
                 }
 
-                navigation.goBack(); // close barcode scanner
-
                 if (product !== undefined) {
-                    navigation.navigate('AddProduct', {
+                    nav.replace('AddProduct', {
                         product,
                         onSubmit: (volume) => {
                             changeProductConsumption({
@@ -79,11 +77,11 @@ function ConsumedProducts({
                             });
                         },
                     });
+                    return true;
                 } else {
                     setUnlistedProduct(barcode);
+                    return false;
                 }
-
-                return true;
             },
         });
     }, [frequentlyUsedProducts, setUnlistedProduct, changeProductConsumption, navigation, time, currentDate]);
@@ -106,7 +104,7 @@ function ConsumedProducts({
                     product = {
                         id: item.productId,
                         label: item.label,
-                        nutritionalInformation: item.nutritionalInformation,
+                        nutritionalInfo: item.nutritionalInfo,
                         version: 1,
                         code: undefined,
                         tags: item.tags,
@@ -120,7 +118,7 @@ function ConsumedProducts({
 
             navigation.navigate('AddProduct', {
                 product,
-                volume: item.nutritionalInformation.volume,
+                volume: item.nutritionalInfo.volume,
                 onSubmit: (volume) => {
                     changeProductConsumption({
                         date: currentDate,
@@ -158,7 +156,7 @@ function ConsumedProducts({
                         <Button onPress={() => setUnlistedProduct(undefined)}>Cancel</Button>
                         <Button
                             onPress={() => {
-                                navigation.navigate('CreateProduct', { product: { code: unlistedProduct } });
+                                navigation.navigate('CreateProduct', { initialValues: { code: unlistedProduct } });
                                 setUnlistedProduct(undefined);
                             }}
                         >

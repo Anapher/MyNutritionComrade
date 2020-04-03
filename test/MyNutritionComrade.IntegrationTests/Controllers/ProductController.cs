@@ -27,7 +27,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
             productInfo.DefaultServing = ServingType.Gram;
             productInfo.AddProductLabel("Haferflocken", CultureInfo.CurrentCulture);
             productInfo.AddProductServing(ServingType.Gram, 1);
-            productInfo.NutritionInformation = new NutritionInformation(100, 300, 0, 0, 80, 0, 20, 0, 0);
+            productInfo.NutritionalInfo = new NutritionalInfo(100, 300, 0, 0, 80, 0, 20, 0, 0);
             productInfo.Tags.Add("liquid");
 
             var httpResponse = await _client.PostAsync("/api/v1/products", new JsonContent(productInfo));

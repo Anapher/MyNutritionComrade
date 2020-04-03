@@ -1,11 +1,11 @@
 import { TagLiquid } from 'src/consts';
 import itiriri from 'itiriri';
-import { ProductInfo, NutritionalInformation, PatchOperation } from 'Models';
+import { ProductInfo, NutritionalInfo, PatchOperation } from 'Models';
 import { createPatch, reducePatch } from './utils';
 
 const emptyProduct: ProductInfo = {
     defaultServing: 'g',
-    nutritionalInformation: {
+    nutritionalInfo: {
         volume: 0,
         energy: 0,
         fat: 0,
@@ -81,7 +81,7 @@ test('should create patch with changed barcode correctly', () => {
 });
 
 test('should create patch with changed nutrition info correctly', () => {
-    const nutritionalInformation: NutritionalInformation = {
+    const nutritionalInfo: NutritionalInfo = {
         volume: 100,
         energy: 244,
         fat: 10,
@@ -92,12 +92,12 @@ test('should create patch with changed nutrition info correctly', () => {
         dietaryFiber: 1,
         sodium: 0.1,
     };
-    const changedNutritionInfo = { ...nutritionalInformation, carbohydrates: 62 };
+    const changedNutritionInfo = { ...nutritionalInfo, carbohydrates: 62 };
 
-    const product1: ProductInfo = { ...emptyProduct, nutritionalInformation: nutritionalInformation };
+    const product1: ProductInfo = { ...emptyProduct, nutritionalInfo: nutritionalInfo };
     const product2: ProductInfo = {
         ...emptyProduct,
-        nutritionalInformation: changedNutritionInfo,
+        nutritionalInfo: changedNutritionInfo,
     };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
@@ -109,7 +109,7 @@ test('should create patch with changed nutrition info correctly', () => {
     expect(op.type).toBe('set');
 
     if (op.type === 'set') {
-        expect(op.path).toBe('nutritionalInformation.carbohydrates');
+        expect(op.path).toBe('nutritionalInfo.carbohydrates');
         expect(op.value).toBe(62);
     }
 });
@@ -376,21 +376,21 @@ test('should reduce changes to liquid state', () => {
 
 test('should reduce changes to nutrition information', () => {
     const patch: PatchOperation[] = [
-        { path: 'nutritionalInformation.energy', type: 'set', value: 500 },
+        { path: 'nutritionalInfo.energy', type: 'set', value: 500 },
         { path: 'code', type: 'set', value: '123456' },
     ];
 
     const result = itiriri(reducePatch(arrayToGenerator(patch))).toArray();
 
     expect(result.length).toBe(2);
-    expect(result[0]).toEqual([{ path: 'nutritionalInformation.energy', type: 'set', value: 500 }]);
+    expect(result[0]).toEqual([{ path: 'nutritionalInfo.energy', type: 'set', value: 500 }]);
     expect(result[1]).toEqual([{ path: 'code', type: 'set', value: '123456' }]);
 });
 
 test('should reduce changes to nutrition information', () => {
     const patch: PatchOperation[] = [
-        { path: 'nutritionalInformation.energy', type: 'set', value: 500 },
-        { path: 'nutritionalInformation.protein', type: 'set', value: 23 },
+        { path: 'nutritionalInfo.energy', type: 'set', value: 500 },
+        { path: 'nutritionalInfo.protein', type: 'set', value: 23 },
         { path: 'code', type: 'set', value: '123456' },
     ];
 
@@ -399,8 +399,8 @@ test('should reduce changes to nutrition information', () => {
     expect(result.length).toBe(2);
     expect(result[0]).toEqual(
         jasmine.arrayContaining([
-            { path: 'nutritionalInformation.energy', type: 'set', value: 500 },
-            { path: 'nutritionalInformation.protein', type: 'set', value: 23 },
+            { path: 'nutritionalInfo.energy', type: 'set', value: 500 },
+            { path: 'nutritionalInfo.protein', type: 'set', value: 23 },
         ]),
     );
     expect(result[1]).toEqual([{ path: 'code', type: 'set', value: '123456' }]);

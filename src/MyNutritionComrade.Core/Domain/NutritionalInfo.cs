@@ -6,9 +6,9 @@ namespace MyNutritionComrade.Core.Domain
     /// <summary>
     ///     Macro nutrition information
     /// </summary>
-    public class NutritionInformation : INutritionInformation
+    public class NutritionalInfo : INutritionalInfo
     {
-        public NutritionInformation(double volume, double energy, double fat, double saturatedFat, double carbohydrates, double sugars, double protein,
+        public NutritionalInfo(double volume, double energy, double fat, double saturatedFat, double carbohydrates, double sugars, double protein,
             double dietaryFiber, double sodium)
         {
             Volume = volume;
@@ -22,11 +22,11 @@ namespace MyNutritionComrade.Core.Domain
             Sodium = sodium;
         }
 
-        private NutritionInformation()
+        private NutritionalInfo()
         {
         }
 
-        public static NutritionInformation Empty { get; } = new NutritionInformation();
+        public static NutritionalInfo Empty { get; } = new NutritionalInfo();
 
         /// <summary>
         ///     <inheritdoc />
@@ -82,7 +82,7 @@ namespace MyNutritionComrade.Core.Domain
         [JsonProperty]
         public double Sodium { get; private set; }
 
-        protected bool Equals(NutritionInformation other) =>
+        protected bool Equals(NutritionalInfo other) =>
             Volume.Equals(other.Volume) && Energy.Equals(other.Energy) && Fat.Equals(other.Fat) && SaturatedFat.Equals(other.SaturatedFat) &&
             Carbohydrates.Equals(other.Carbohydrates) && Sugars.Equals(other.Sugars) && Protein.Equals(other.Protein) &&
             DietaryFiber.Equals(other.DietaryFiber) && Sodium.Equals(other.Sodium);
@@ -92,7 +92,7 @@ namespace MyNutritionComrade.Core.Domain
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((NutritionInformation) obj);
+            return Equals((NutritionalInfo) obj);
         }
 
         public override int GetHashCode()

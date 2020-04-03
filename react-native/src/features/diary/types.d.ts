@@ -10,7 +10,7 @@ declare module 'Models' {
         date: string;
         time: ConsumptionTime;
         productId: string;
-        nutritionalInformation: NutritionalInformation;
+        nutritionalInfo: NutritionalInfo;
         tags: string[];
         label: ProductLabel[];
     };

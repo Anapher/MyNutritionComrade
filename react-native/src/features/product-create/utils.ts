@@ -1,8 +1,8 @@
-import { PatchOperation, ProductInfo, ProductLabel, OpAddItem, OpRemoveItem } from 'Models';
-import levenshteinDistance from 'src/utils/levenshtein-distance';
-import _ from 'lodash';
-import { TagLiquid } from 'src/consts';
 import itiriri from 'itiriri';
+import _ from 'lodash';
+import { OpAddItem, OpRemoveItem, PatchOperation } from 'Models';
+import { TagLiquid } from 'src/consts';
+import levenshteinDistance from 'src/utils/levenshtein-distance';
 
 export function* createPatch(source: any, target: any, path: string = ''): Generator<PatchOperation> {
     for (const key of Object.keys(target)) {
@@ -56,62 +56,6 @@ export function* createPatch(source: any, target: any, path: string = ''): Gener
     }
 }
 
-// export function* createPatch(source: ProductInfo, target: ProductInfo): Generator<PatchOperation> {
-//     // code
-//     if (source.code !== target.code) {
-//         if (!target.code) {
-//             yield { type: 'set', path: 'code', value: target.code };
-//         } else {
-//             yield { type: 'unset', path: 'code' };
-//         }
-//     }
-
-//     // nutritionalInformation
-//     if (compareObjectProperties(source.nutritionalInformation, target.nutritionalInformation)) {
-//         yield { type: 'set', path: 'nutritionalInformation', value: target.nutritionalInformation };
-//     }
-
-//     // defaultServing
-//     if (source.defaultServing !== target.defaultServing) {
-//         yield { type: 'set', path: 'defaultServing', value: target.defaultServing };
-//     }
-
-//     // added, changed servings
-//     for (const key of Object.keys(target.servings)) {
-//         const value = target.servings[key];
-//         if (source.servings[key] !== value) {
-//             yield { type: 'set', path: `servings.${key}`, value };
-//         }
-//     }
-
-//     // removed servings
-//     for (const key of Object.keys(source.servings)) {
-//         if (!target.servings[key]) {
-//             yield { type: 'unset', path: `servings.${key}` };
-//         }
-//     }
-
-//     // added tags
-//     for (const item of target.tags.filter((x) => !source.tags.includes(x))) {
-//         yield { type: 'add', path: `tags`, item };
-//     }
-
-//     // removed tags
-//     for (const item of source.tags.filter((x) => !target.tags.includes(x))) {
-//         yield { type: 'remove', path: `tags`, item };
-//     }
-
-//     const addedLabels = target.label.filter((x) => source.label.findIndex((y) => labelsEqual(x, y)) === -1);
-//     for (const addedLabel of addedLabels) {
-//         yield { type: 'add', path: 'label', item: addedLabel };
-//     }
-
-//     const removedLabels = source.label.filter((x) => target.label.findIndex((y) => labelsEqual(x, y)) === -1);
-//     for (const removedLabel of removedLabels) {
-//         yield { type: 'remove', path: 'label', item: removedLabel };
-//     }
-// }
-
 export function* reducePatch(patch: Generator<PatchOperation>): Generator<PatchOperation[], any, undefined> {
     const ops = itiriri(patch).toArray();
 
@@ -162,7 +106,7 @@ export function* reducePatch(patch: Generator<PatchOperation>): Generator<PatchO
     }
 
     // combine all changes made to nutrition info
-    const nutritionInfoChanges = ops.filter((x) => x.path.startsWith('nutritionalInformation.'));
+    const nutritionInfoChanges = ops.filter((x) => x.path.startsWith('nutritionalInfo.'));
     if (nutritionInfoChanges.length > 0) {
         for (const op of nutritionInfoChanges) ops.splice(ops.indexOf(op), 1);
         yield nutritionInfoChanges;
