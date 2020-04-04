@@ -156,6 +156,7 @@ namespace MyNutritionComrade
             }).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>()).AddNewtonsoftJson(x =>
             {
                 x.SerializerSettings.Converters.Add(new ServingTypeJsonConverter());
+                x.SerializerSettings.Converters.Add(new PatchOperationJsonConverter());
                 x.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
                 x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });

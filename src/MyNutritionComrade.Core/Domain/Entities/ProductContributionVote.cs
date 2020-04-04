@@ -2,9 +2,10 @@
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
-    public class ProductContributionApproval
+    public class ProductContributionVote
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public string ProductContributionId { get; set; } = string.Empty;
         public bool Approve { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
     }

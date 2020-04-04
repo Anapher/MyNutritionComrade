@@ -2,9 +2,9 @@
 
 namespace MyNutritionComrade.Core.Dto.UseCaseResponses
 {
-    public class AddOrUpdateProductResponse
+    public class AddProductResponse
     {
-        public AddOrUpdateProductResponse(Product product)
+        public AddProductResponse(Product product)
         {
             Product = product;
         }

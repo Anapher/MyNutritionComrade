@@ -374,7 +374,7 @@ test('should reduce changes to liquid state', () => {
     expect(result[1]).toEqual([{ path: 'code', type: 'set', value: '123456' }]);
 });
 
-test('should reduce changes to nutrition information', () => {
+test('should reduce changes to nutritional information', () => {
     const patch: PatchOperation[] = [
         { path: 'nutritionalInfo.energy', type: 'set', value: 500 },
         { path: 'code', type: 'set', value: '123456' },
@@ -387,7 +387,7 @@ test('should reduce changes to nutrition information', () => {
     expect(result[1]).toEqual([{ path: 'code', type: 'set', value: '123456' }]);
 });
 
-test('should reduce changes to nutrition information', () => {
+test('should reduce changes to nutritional information', () => {
     const patch: PatchOperation[] = [
         { path: 'nutritionalInfo.energy', type: 'set', value: 500 },
         { path: 'nutritionalInfo.protein', type: 'set', value: 23 },

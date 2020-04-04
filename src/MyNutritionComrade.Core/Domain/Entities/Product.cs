@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
@@ -21,11 +20,6 @@ namespace MyNutritionComrade.Core.Domain.Entities
         ///     The current version of the product value
         /// </summary>
         public int Version { get; private set; }
-
-        /// <summary>
-        ///     All pending contributions and the current product contribution
-        /// </summary>
-        public List<ProductContribution> Contributions { get; set; } = new List<ProductContribution>();
 
         public DateTimeOffset CreatedOn { get; private set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset ModifiedOn { get; private set; } = DateTimeOffset.UtcNow;

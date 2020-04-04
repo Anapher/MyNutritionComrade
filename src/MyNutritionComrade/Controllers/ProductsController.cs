@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Elasticsearch;
+using MyNutritionComrade.Infrastructure.Extensions;
 using MyNutritionComrade.Infrastructure.Helpers;
 using MyNutritionComrade.Models.Response;
 using Nest;
@@ -54,27 +56,28 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> AddProduct(ProductInfo productInfo, [FromServices] IAddOrUpdateProductUseCase useCase)
+        public async Task<ActionResult<Product>> AddProduct(ProductInfo productInfo, [FromServices] IAddProductUseCase useCase)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var response = await useCase.Handle(new AddOrUpdateProductRequest(productInfo, null, null, userId));
+            var response = await useCase.Handle(new AddProductRequest(productInfo, userId));
             if (useCase.HasError)
                 return useCase.Error!.ToActionResult();
 
             return CreatedAtAction(nameof(GetProduct), new {id = response!.Product.Id}, response!.Product);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Product>> UpdateProduct(string id, [FromQuery] int? version, ProductInfo productInfo, [FromServices] IAddOrUpdateProductUseCase useCase)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<Product>> PatchProduct(string id, [FromQuery] int? version, List<PatchOperation> operations, [FromServices] IAddProductUseCase useCase)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var response = await useCase.Handle(new AddOrUpdateProductRequest(productInfo, id, version, userId));
-            if (useCase.HasError)
-                return useCase.Error!.ToActionResult();
+            throw new NotImplementedException();
+            //var response = await useCase.Handle(new AddProductRequest());
+            //if (useCase.HasError)
+            //    return useCase.Error!.ToActionResult();
 
-            return Ok(response!.Product);
+            //return Ok(response!.Product);
         }
 
         [HttpGet("{id}"), AllowAnonymous]

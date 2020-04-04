@@ -13,6 +13,16 @@ namespace MyNutritionComrade.Core.Domain
         private List<ProductLabel> _label = new List<ProductLabel>();
         private Dictionary<ServingType, double> _servings = new Dictionary<ServingType, double>();
 
+        /// <summary>
+        ///     This tag defines this product as a liquid substance
+        /// </summary>
+        public const string TagLiquid = "liquid";
+
+        /// <summary>
+        ///     Get all allowed tags for a product
+        /// </summary>
+        public static readonly ISet<string> AllowedTags = new HashSet<string>(new List<string> { TagLiquid });
+
         public ProductInfo()
         {
             NutritionalInfo = NutritionalInfo.Empty;
@@ -61,9 +71,11 @@ namespace MyNutritionComrade.Core.Domain
         /// </summary>
         public ISet<string> Tags { get; private set; } = new HashSet<string>();
 
-        public void AddProductLabel(string name, CultureInfo cultureInfo)
+        public void AddProductLabel(string name, string languageCode)
         {
-            var label = new ProductLabel(name, cultureInfo.TwoLetterISOLanguageName);
+            var _ = CultureInfo.GetCultureInfo(languageCode);
+
+            var label = new ProductLabel(name, languageCode);
             if (_label.Any(x => x.LanguageCode == label.LanguageCode && x.Value.NormalizeString() == label.Value.NormalizeString()))
                 throw new ArgumentException("This product label already exists.");
 

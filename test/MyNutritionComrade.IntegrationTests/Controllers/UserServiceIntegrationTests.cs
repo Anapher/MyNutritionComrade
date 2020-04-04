@@ -60,10 +60,10 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
                 appDb.SaveChanges();
 
                 var product = new Product("1", 1);
-                product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
+                product.AddProductLabel("Haferflocken", "de");
 
                 var product2 = new Product("2", 1);
-                product.AddProductLabel("Milch", CultureInfo.GetCultureInfo("de"));
+                product.AddProductLabel("Milch", "de");
 
                 var mockRepo = sp.GetRequiredService<MockProductRepository>();
                 mockRepo.EnsureProductExists(product);

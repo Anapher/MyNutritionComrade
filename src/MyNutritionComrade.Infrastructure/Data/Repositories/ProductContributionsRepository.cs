@@ -35,7 +35,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 
             UpdateResult result;
 
-            var patch = BsonDocument.Parse(productContribution.Patch);
+            var patch = BsonDocument.Parse(productContribution.Patch.ToString());
 
             try
             {

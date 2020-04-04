@@ -8,9 +8,6 @@ namespace MyNutritionComrade.Models.Validation
 {
     public class ProductInfoValidator : AbstractValidator<ProductInfo>
     {
-        private const string TagLiquid = "liquid";
-        private static readonly ISet<string> Tags = new HashSet<string>(new List<string> {TagLiquid});
-
         public ProductInfoValidator()
         {
             RuleFor(x => x.NutritionalInfo.Volume).Equal(100);
@@ -34,7 +31,7 @@ namespace MyNutritionComrade.Models.Validation
                 labels.RuleFor(x => x.Value).NotEmpty();
                 labels.RuleFor(x => x.LanguageCode).NotEmpty().IsCulture();
             });
-            RuleForEach(x => x.Tags).OneOf(Tags);
+            RuleForEach(x => x.Tags).OneOf(ProductInfo.AllowedTags);
             RuleFor(x => x.Servings).NotEmpty();
             RuleForEach(x => x.Servings).ChildRules(serving =>
             {
@@ -43,7 +40,7 @@ namespace MyNutritionComrade.Models.Validation
             });
             RuleFor(x => x).Must(x =>
             {
-                if (x.Tags.Contains(TagLiquid))
+                if (x.Tags.Contains(ProductInfo.TagLiquid))
                 {
                     return x.Servings.TryGetValue(ServingType.Milliliter, out var baseValue) && baseValue == 1 && !x.Servings.ContainsKey(ServingType.Gram);
                 }

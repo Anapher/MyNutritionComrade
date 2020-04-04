@@ -25,7 +25,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
 
             var productInfo = new ProductInfo();
             productInfo.DefaultServing = ServingType.Gram;
-            productInfo.AddProductLabel("Haferflocken", CultureInfo.CurrentCulture);
+            productInfo.AddProductLabel("Haferflocken", "de");
             productInfo.AddProductServing(ServingType.Gram, 1);
             productInfo.NutritionalInfo = new NutritionalInfo(100, 300, 0, 0, 80, 0, 20, 0, 0);
             productInfo.Tags.Add("liquid");

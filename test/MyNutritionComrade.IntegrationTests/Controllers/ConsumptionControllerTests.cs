@@ -58,7 +58,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
                 appDb.SaveChanges();
 
                 var product = new Product("1", 1);
-                product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
+                product.AddProductLabel("Haferflocken", "de");
 
                 var mockRepo = sp.GetRequiredService<MockProductRepository>();
                 mockRepo.EnsureProductExists(product);
@@ -87,7 +87,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
                 var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
                 var product = new Product("1", 1) {NutritionalInfo = nutritionInfo};
-                product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
+                product.AddProductLabel("Haferflocken", "de");
 
                 var mockRepo = scope.ServiceProvider.GetRequiredService<MockProductRepository>();
                 mockRepo.EnsureProductExists(product);
@@ -126,7 +126,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
                 var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
                 var product = new Product("1", 1) { NutritionalInfo = nutritionInfo };
-                product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
+                product.AddProductLabel("Haferflocken", "de");
 
                 var mockRepo = scope.ServiceProvider.GetRequiredService<MockProductRepository>();
                 mockRepo.EnsureProductExists(product);
@@ -170,7 +170,7 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
                 var nutritionInfo = new NutritionalInfo(100, 240, 0, 0, 60, 0, 20, 0, 0);
 
                 var product = new Product("1", 1) { NutritionalInfo = nutritionInfo };
-                product.AddProductLabel("Haferflocken", CultureInfo.GetCultureInfo("de"));
+                product.AddProductLabel("Haferflocken", "de");
 
                 var mockRepo = scope.ServiceProvider.GetRequiredService<MockProductRepository>();
                 mockRepo.EnsureProductExists(product);
