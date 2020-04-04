@@ -3,7 +3,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import Color from 'color';
 import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useTheme, Appbar } from 'react-native-paper';
+import { useTheme, Appbar, Surface } from 'react-native-paper';
 import { RootStackParamList } from 'src/RootNavigator';
 import getPatchView from './patch/get-patch-view';
 import OperationHeader from './patch/OperationHeader';
@@ -25,7 +25,7 @@ function ReviewChanges({
     );
 
     const { colors } = useTheme();
-    const headerColor = Color(colors.background).lighten(2).string();
+    const background = Color(colors.background).lighten(1).string();
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -51,12 +51,12 @@ function ReviewChanges({
     });
 
     return (
-        <ScrollView style={{ backgroundColor: colors.background }}>
+        <ScrollView style={{ backgroundColor: colors.background, paddingVertical: 8 }}>
             {changeViews.map(({ propertyName, type, view }, i) => (
-                <View key={i} style={[styles.card, { backgroundColor: colors.surface }]}>
-                    <View style={[styles.cardHeader, { backgroundColor: headerColor }]}>
+                <View key={i} style={[styles.card, { backgroundColor: background }]}>
+                    <Surface style={[styles.cardHeader]}>
                         <OperationHeader propertyName={propertyName} type={type} />
-                    </View>
+                    </Surface>
                     <View style={styles.cardContent}>{view}</View>
                 </View>
             ))}
@@ -72,14 +72,15 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     card: {
-        marginBottom: 16,
-        paddingBottom: 8,
+        marginBottom: 8,
+        marginTop: 8,
     },
     cardHeader: {
         paddingHorizontal: 8,
         paddingVertical: 4,
+        elevation: 14,
     },
     cardContent: {
-        padding: 8,
+        padding: 16,
     },
 });

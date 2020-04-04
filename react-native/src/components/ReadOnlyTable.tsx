@@ -16,10 +16,11 @@ type RowProps = {
     label?: string;
     alternate?: boolean;
     showDivider?: boolean;
+    inset?: boolean;
     children?: React.ReactNode;
 };
 
-export function ReadOnlyTableRow({ label, alternate, showDivider, children }: RowProps) {
+export function ReadOnlyTableRow({ label, alternate, showDivider, children, inset }: RowProps) {
     const theme = useTheme();
     const rowStyle = alternate
         ? {
@@ -34,10 +35,10 @@ export function ReadOnlyTableRow({ label, alternate, showDivider, children }: Ro
             style={[
                 styles.row,
                 rowStyle,
-                showDivider && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: theme.colors.text },
+                showDivider && { borderTopWidth: StyleSheet.hairlineWidth, borderBottomColor: theme.colors.text },
             ]}
         >
-            <Text>{label}</Text>
+            <Text style={inset && { marginLeft: 16 }}>{label}</Text>
             {children}
         </View>
     );

@@ -40,6 +40,8 @@ function ChangeProduct({
         actions.updateAsync.failure,
     )!;
 
+    const [showLoadingIndicator, setShowLoadingIndicator] = useState(true);
+
     const changeProduct = async (values: ProductInfo, formikActions: FormikHelpers<ProductInfo>) => {
         const currentProduct = await productsApi.getById(product.id);
         const productInfo = mapToProductInfo(currentProduct);
@@ -56,6 +58,7 @@ function ChangeProduct({
         const reviewPromise = new Promise<boolean>((resolve) => (promiseResolve = resolve));
         const unsubscribe = navigation.addListener('focus', () => promiseResolve(false));
 
+        setShowLoadingIndicator(false);
         navigation.navigate('ReviewProductChanges', {
             changes: changesets,
             product: currentProduct,
@@ -66,6 +69,8 @@ function ChangeProduct({
         unsubscribe();
 
         if (!result) return;
+        setShowLoadingIndicator(true);
+
         setLoadingText('Uploading changes...');
         await updateAction({ productId: product.id, patch: changesets });
     };
@@ -75,6 +80,7 @@ function ChangeProduct({
             loadingTitle={loadingText}
             title="Change product"
             titleIcon="sync"
+            disableLoadingIndicator={!showLoadingIndicator}
             initialValue={mapToProductInfo(product)}
             onSubmit={changeProduct}
             navigation={navigation}

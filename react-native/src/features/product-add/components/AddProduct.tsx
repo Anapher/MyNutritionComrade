@@ -13,6 +13,7 @@ import ServingSelection from './ServingSelection';
 import { TagLiquid } from 'src/consts';
 import selectLabel from 'src/utils/product-utils';
 import FlatButton from 'src/components/FlatButton';
+import * as productsApi from 'src/services/api/products';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -113,7 +114,15 @@ function AddProduct({
                 </View>
             </View>
             <View>
-                <FlatButton text="Suggest changes" icon="flag" onPress={() => {}} center />
+                <FlatButton
+                    text="Suggest changes"
+                    icon="flag"
+                    onPress={async () => {
+                        const productDto = await productsApi.getById(product.id);
+                        navigation.navigate('ChangeProduct', { product: productDto });
+                    }}
+                    center
+                />
             </View>
         </View>
     );

@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import ChangedValue from 'src/components/ChangedValue';
 import ReadOnlyTable, { ReadOnlyTableRow } from 'src/components/ReadOnlyTable';
 import { formatNumber } from 'src/utils/string-utils';
-import { nutritionalInfo, getServings, ServingInfo } from '../../data';
+import { nutritionalInfo, getServings, ServingInfo, NutritionRow } from '../../data';
 import { TagLiquid } from 'src/consts';
 import { Text as PaperText } from 'react-native-paper';
 import { isProductLiquid, getBaseUnit } from 'src/utils/product-utils';
@@ -43,20 +43,18 @@ function getPatchView(props: Props): PatchView {
             view: (
                 <View>
                     {defaultServingOp && (
-                        <View style={styles.linearView}>
-                            <Text>Default Serving: </Text>
+                        <View style={[styles.linearView, { marginBottom: 4 }]}>
+                            <PaperText>Default Serving: </PaperText>
                             <ValuePatch<string> patch={defaultServingOp} currentValue={currentProduct.defaultServing} />
                         </View>
                     )}
                     {servingsOp.map((x) => (
-                        <View style={styles.linearView} key={x.path}>
-                            <Text>Serving: </Text>
+                        <View style={[styles.linearView, { marginBottom: 4 }]} key={x.path}>
+                            <PaperText>Serving: </PaperText>
                             <ValuePatch<number>
                                 patch={x}
                                 currentValue={currentProduct.servings[x.path.substring(x.path.indexOf('.') + 1)]}
-                                formatValue={(v) =>
-                                    currentProduct.servings[x.path.substring(x.path.indexOf('.') + 1)] + ': ' + v
-                                }
+                                formatValue={(v) => x.path.substring(x.path.indexOf('.') + 1) + ': ' + v}
                             />
                         </View>
                     ))}
@@ -125,12 +123,9 @@ function getPatchView(props: Props): PatchView {
                         <ChangedValue
                             removed
                             value={(removeOp.item as ProductLabel).value}
-                            style={{ marginRight: patch.type === 'set' ? 2 : 0 }}
+                            style={{ marginRight: 8 }}
                         />
-                        <ChangedValue
-                            value={(addOp.item as ProductLabel).value}
-                            style={{ marginRight: patch.type === 'set' ? 2 : 0 }}
-                        />
+                        <ChangedValue value={(addOp.item as ProductLabel).value} />
                     </View>
                 ),
             };
@@ -140,14 +135,22 @@ function getPatchView(props: Props): PatchView {
                 return {
                     type: 'add',
                     propertyName: `Label (Language: ${(patch.item as ProductLabel).languageCode})`,
-                    view: <ChangedValue value={(patch.item as ProductLabel).value} />,
+                    view: (
+                        <View style={styles.linearView}>
+                            <ChangedValue value={(patch.item as ProductLabel).value} />
+                        </View>
+                    ),
                 };
             }
             if (patch.type === 'remove') {
                 return {
                     type: 'remove',
                     propertyName: `Label (Language: ${(patch.item as ProductLabel).languageCode})`,
-                    view: <ChangedValue removed value={(patch.item as ProductLabel).value} />,
+                    view: (
+                        <View style={styles.linearView}>
+                            <ChangedValue removed value={(patch.item as ProductLabel).value} />
+                        </View>
+                    ),
                 };
             }
         }
@@ -167,15 +170,29 @@ function NutritionalInfo({ patchOperation, currentProduct }: Props) {
         info: nutritionalInfo.find((x) => x.name === extractName(patch))!,
     }));
 
+    const rowView = (row: NutritionRow) => {
+        const patch = patchOperation.find((x) => extractName(x) === row.name);
+        const currentValue = currentProduct.nutritionalInfo[row.name];
+        const formatValue = (n: number) => formatNumber(n, 2) + row.unit;
+
+        return patch ? (
+            <ValuePatch<number> patch={patch} currentValue={currentValue} formatValue={formatValue} />
+        ) : (
+            <PaperText>{formatValue(currentValue)}</PaperText>
+        );
+    };
+
     return (
         <ReadOnlyTable>
-            {_.sortBy(data, (x) => nutritionalInfo.indexOf(x.info)).map(({ patch, info }) => (
-                <ReadOnlyTableRow label={info.label}>
-                    <ValuePatch<number>
-                        patch={patch}
-                        currentValue={currentProduct.nutritionalInfo[info.name]}
-                        formatValue={(x) => formatNumber(x, 2) + info.unit}
-                    />
+            {nutritionalInfo.map((x, i) => (
+                <ReadOnlyTableRow
+                    showDivider={i > 0}
+                    alternate={i % 2 === 1}
+                    label={x.label}
+                    key={x.name}
+                    inset={x.inset}
+                >
+                    {rowView(x)}
                 </ReadOnlyTableRow>
             ))}
         </ReadOnlyTable>

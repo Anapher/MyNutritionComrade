@@ -15,37 +15,6 @@ import Properties from './tabs/properties';
 import Servings from './tabs/Servings';
 import LinearMobileStepper from 'src/components/LinearMobileStepper';
 
-const stepperStyles = (theme: Theme) => {
-    // const dark = Color(theme.colors.)
-    const lineColor = Color(theme.colors.text).darken(0.6).string();
-
-    const accent = '#2980b9';
-
-    return {
-        stepIndicatorSize: 25,
-        currentStepIndicatorSize: 30,
-        separatorStrokeWidth: 2,
-        currentStepStrokeWidth: 3,
-        stepStrokeCurrentColor: accent,
-        stepStrokeWidth: 3,
-        stepStrokeFinishedColor: 'transparent',
-        stepStrokeUnFinishedColor: lineColor,
-        separatorFinishedColor: accent,
-        separatorUnFinishedColor: lineColor,
-        stepIndicatorFinishedColor: accent,
-        stepIndicatorUnFinishedColor: '#2c3e50',
-        stepIndicatorCurrentColor: '#2c3e50',
-        stepIndicatorLabelFontSize: 0,
-        currentStepIndicatorLabelFontSize: 0,
-        stepIndicatorLabelCurrentColor: 'transparent',
-        stepIndicatorLabelFinishedColor: 'transparent',
-        stepIndicatorLabelUnFinishedColor: 'transparent',
-        labelColor: '#999999',
-        labelSize: 13,
-        currentStepLabelColor: theme.colors.text,
-    };
-};
-
 const isIOS = Platform.OS === 'ios';
 
 type Props = {
@@ -55,9 +24,18 @@ type Props = {
     title: string;
     titleIcon: string;
     loadingTitle: string;
+    disableLoadingIndicator?: boolean;
 };
 
-function ProductEditor({ navigation, initialValue, onSubmit, title, titleIcon, loadingTitle }: Props) {
+function ProductEditor({
+    navigation,
+    initialValue,
+    onSubmit,
+    title,
+    titleIcon,
+    loadingTitle,
+    disableLoadingIndicator,
+}: Props) {
     const [currentPage, setCurrentPage] = useState(0);
     const viewPagerRef = useRef<ViewPager>(null);
     const theme = useTheme();
@@ -68,6 +46,11 @@ function ProductEditor({ navigation, initialValue, onSubmit, title, titleIcon, l
             validateOnMount
             onSubmit={(values, helpers) => {
                 Keyboard.dismiss();
+
+                values.nutritionalInfo = Object.fromEntries(
+                    Object.keys(values.nutritionalInfo).map((x) => [x, Number((values.nutritionalInfo as any)[x])]),
+                ) as any;
+
                 return onSubmit(values, helpers);
             }}
             validationSchema={productInfoValidationSchema}
@@ -124,7 +107,7 @@ function ProductEditor({ navigation, initialValue, onSubmit, title, titleIcon, l
                             onChangeActiveStep={(s) => viewPagerRef.current?.setPage(s)}
                         />
                         <Portal>
-                            <Dialog visible={props.isSubmitting} dismissable={false}>
+                            <Dialog visible={props.isSubmitting && !disableLoadingIndicator} dismissable={false}>
                                 <Dialog.Title>{loadingTitle}</Dialog.Title>
                                 <Dialog.Content>
                                     <View style={styles.dialogContent}>

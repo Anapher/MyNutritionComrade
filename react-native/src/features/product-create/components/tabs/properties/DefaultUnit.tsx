@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import TextToggleButton from 'src/components/TextToggleButton';
 import { TagLiquid } from 'src/consts';
+import { getServings, ServingInfo } from 'src/features/product-create/data';
 
 type Props = {
     formik: FormikProps<ProductInfo>;
@@ -21,7 +22,11 @@ function DefaultUnit({ formik }: Props) {
             tags: [...values.tags, TagLiquid],
             defaultServing: 'ml',
             servings: Object.fromEntries(
-                Object.keys(values.servings).map((x) => (x === 'g' ? ['ml', 1] : [x, values.servings[x]])),
+                Object.keys(values.servings)
+                    .filter(
+                        (x) => (getServings(true) as { [key: string]: ServingInfo })[x].predefinedValue === undefined,
+                    )
+                    .map((x) => (x === 'g' ? ['ml', 1] : [x, values.servings[x]])),
             ),
         });
 

@@ -73,14 +73,8 @@ function LinearMobileStepper({ activeStep, steps, onChangeActiveStep, errors = {
 
     useEffect(() => {
         if (hideOnKeyboardOpening) {
-            const subscription = Keyboard.addListener('keyboardDidShow', () => {
-                setIsShown(false);
-                console.log('will show');
-            });
-
-            const subscription2 = Keyboard.addListener('keyboardDidHide', () => {
-                setIsShown(true);
-            });
+            const subscription = Keyboard.addListener('keyboardDidShow', () => setIsShown(false));
+            const subscription2 = Keyboard.addListener('keyboardDidHide', () => setIsShown(true));
 
             return () => {
                 subscription.remove();

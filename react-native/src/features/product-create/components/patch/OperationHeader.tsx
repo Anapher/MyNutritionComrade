@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
 export type OperationType = 'add' | 'modify' | 'remove';
 const operationTypeStyles: {
@@ -23,12 +24,13 @@ const operationTypeStyles: {
 };
 
 function OperationHeader({ type, propertyName }: { type: OperationType; propertyName: string }) {
+    const theme = useTheme();
     return (
         <View style={styles.operationHeader}>
             <View style={[styles.chip, { backgroundColor: operationTypeStyles[type].color }]}>
                 <Text style={styles.chipText}>{operationTypeStyles[type].title}</Text>
             </View>
-            <Text style={styles.operationHeaderPropertyName}>{propertyName}</Text>
+            <Text style={[styles.operationHeaderPropertyName, { color: theme.colors.text }]}>{propertyName}</Text>
         </View>
     );
 }
