@@ -1,7 +1,5 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
-
-using System.Collections.Generic;
 using System.Linq;
 using MyNutritionComrade.Core.Domain.Entities;
 using Raven.Client.Documents.Indexes;
@@ -15,13 +13,15 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
             Map = products => from product in products
                 select new
                 {
-                    ProductName = product.DefaultServing
+                    ProductName = product.Label.Select(x => x.Value).ToArray(),
+                    Tags = product.Tags.ToArray(),
+                    Servings = product.Servings.Select(x => x.Key).ToArray()
                 };
         }
 
         public class Result
         {
-            public string ProductName { get; set; }
+            public string[] ProductName { get; set; }
             public string[] Tags { get; set; }
             public string[] Servings { get; set; }
         }

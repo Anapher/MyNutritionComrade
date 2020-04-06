@@ -17,10 +17,10 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         {
         }
 
-        public Task<ProductContribution?> FindById(string productContributionId)
+        public async Task<ProductContribution?> FindById(string productContributionId)
         {
             using var session = OpenReadOnlySession();
-            return session.LoadAsync<ProductContribution?>(productContributionId);
+            return await session.LoadAsync<ProductContribution?>(productContributionId);
         }
 
         public async Task<bool> Add(ProductContribution productContribution)
@@ -53,11 +53,11 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             return await session.LoadAsync<ProductContribution>(exchangeValue.Value);
         }
 
-        public Task<List<ProductContribution>> GetActiveProductContributions(string productId)
+        public async Task<List<ProductContribution>> GetActiveProductContributions(string productId)
         {
             using var session = OpenReadOnlySession();
 
-            return session.Query<ProductContribution>().Where(x => x.Id == productId && x.Status == ProductContributionStatus.Pending, true).ToListAsync();
+            return await session.Query<ProductContribution>().Where(x => x.Id == productId && x.Status == ProductContributionStatus.Pending, true).ToListAsync();
         }
 
         public async Task<bool> UpdateProductContribution(ProductContribution contribution)

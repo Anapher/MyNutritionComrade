@@ -17,22 +17,20 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
     public class ProductRepository : RavenRepo, IProductRepository
     {
-        private const string CollectionName = "product";
-
         public ProductRepository(IDocumentStore store) : base(store)
         {
         }
 
-        public Task<Product?> FindById(string productId)
+        public async Task<Product?> FindById(string productId)
         {
             using var session = OpenReadOnlySession();
-            return session.LoadAsync<Product>($"{CollectionName}/{productId}");
+            return await session.LoadAsync<Product>(productId);
         }
 
-        public Task<Product?> FindByBarcode(string code)
+        public async Task<Product?> FindByBarcode(string code)
         {
             using var session = OpenReadOnlySession();
-            return session.Query<Product_ByCode.Result, Product_ByCode>().Where(x => x.Code == code).OfType<Product>().FirstOrDefaultAsync();
+            return await session.Query<Product_ByCode.Result, Product_ByCode>().Where(x => x.Code == code).OfType<Product>().FirstOrDefaultAsync();
         }
 
         public async Task<bool> Add(Product product, ProductContribution contribution)

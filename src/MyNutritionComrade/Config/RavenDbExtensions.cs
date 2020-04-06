@@ -2,9 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyNutritionComrade.Infrastructure.Data.Indexes;
-using MyNutritionComrade.Infrastructure.Extensions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Session;
@@ -32,10 +30,9 @@ namespace MyNutritionComrade.Config
                 Database = options.DatabaseName,
                 Conventions =
                 {
-                    FindCollectionName = type => type.Name.ToCamelCase(),
-                    JsonContractResolver = new CamelCasePropertyNamesContractResolver(),
                     CustomizeJsonDeserializer = CustomizeJsonSerializer,
-                    CustomizeJsonSerializer = CustomizeJsonSerializer
+                    CustomizeJsonSerializer = CustomizeJsonSerializer,
+                    FindCollectionName = type => type.Name,
                 }
             };
 

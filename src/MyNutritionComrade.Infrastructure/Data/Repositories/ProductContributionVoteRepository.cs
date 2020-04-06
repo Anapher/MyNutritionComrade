@@ -34,11 +34,11 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             }
         }
 
-        public Task<ProductContributionVoting> GetVoting(string productContributionId)
+        public async Task<ProductContributionVoting> GetVoting(string productContributionId)
         {
             using var session = OpenReadOnlySession();
 
-            return session.Query<ProductContributionVoting, ProductContributionVote_ByProductContribution>()
+            return await session.Query<ProductContributionVoting, ProductContributionVote_ByProductContribution>()
                 .FirstOrDefaultAsync(x => x.ProductContributionId == productContributionId);
         }
     }

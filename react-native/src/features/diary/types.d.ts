@@ -19,5 +19,5 @@ declare module 'Models' {
         recentlyConsumedVolume: number;
     }
 
-    export type FrequentlyUsedProducts = { [time in ConsumptionTime]: FrequentlyUsedProductDto[] };
+    export type FrequentlyUsedProducts = { [time in ConsumptionTime]: ?FrequentlyUsedProductDto[] };
 }

@@ -9,7 +9,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
     public class ConsumedProductRepository : RavenRepo, IConsumedProductRepository
     {
-        private const string CollectionName = "consumedProduct/";
+        private const string CollectionName = "consumedProduct";
 
         public ConsumedProductRepository(IDocumentStore store) : base(store)
         {
@@ -37,12 +37,12 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             await session.SaveChangesAsync();
         }
 
-        public Task Delete(ConsumedProduct consumedProduct)
+        public async Task Delete(ConsumedProduct consumedProduct)
         {
             using var session = OpenWriteSession();
 
             session.Delete(GetId(consumedProduct));
-            return session.SaveChangesAsync();
+            await session.SaveChangesAsync();
         }
 
         private static string GetId(ConsumedProduct consumed) => GetId(consumed.UserId, consumed.Date, consumed.Time, consumed.ProductId);

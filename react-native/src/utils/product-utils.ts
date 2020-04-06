@@ -46,7 +46,7 @@ export function* flattenProductsPrioritize(
     yield* frequentlyUsedProducts[priorizedTime];
 
     const lists = ConsumptionTimes.filter((x) => x !== priorizedTime).map((x) => ({
-        list: frequentlyUsedProducts[x],
+        list: frequentlyUsedProducts[x] || [],
         i: 0,
     }));
 
