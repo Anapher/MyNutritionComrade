@@ -1,45 +1,137 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
+using MyNutritionComrade.Infrastructure.Data.CompareExchange;
+using MyNutritionComrade.Infrastructure.Data.Indexes;
+using MyNutritionComrade.Infrastructure.Shared;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Operations.CompareExchange;
+using Raven.Client.Exceptions;
+
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
 
 namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : RavenRepo, IProductRepository
     {
-        private readonly IProductsCollection _productsCollection;
+        private const string CollectionName = "product";
 
-        public ProductRepository(IProductsCollection productsCollection)
+        public ProductRepository(IDocumentStore store) : base(store)
         {
-            _productsCollection = productsCollection;
         }
 
-        public async Task<Product?> FindById(string productId)
+        public Task<Product?> FindById(string productId)
         {
-            return await _productsCollection.Products.Find(Builders<Product>.Filter.Eq(x => x.Id, productId)).FirstOrDefaultAsync();
+            using var session = OpenReadOnlySession();
+            return session.LoadAsync<Product>($"{CollectionName}/{productId}");
         }
 
-        public async Task<Product?> FindByBarcode(string code)
+        public Task<Product?> FindByBarcode(string code)
         {
-            return await _productsCollection.Products.Find(Builders<Product>.Filter.Eq(x => x.Code, code)).FirstOrDefaultAsync();
+            using var session = OpenReadOnlySession();
+            return session.Query<Product_ByCode.Result, Product_ByCode>().Where(x => x.Code == code).OfType<Product>().FirstOrDefaultAsync();
         }
 
-        public Task Add(Product product) => _productsCollection.Products.InsertOneAsync(product);
-
-        public Task Update(Product product)
+        public async Task<bool> Add(Product product, ProductContribution contribution)
         {
-            return _productsCollection.Products.ReplaceOneAsync(Builders<Product>.Filter.Eq(x => x.Id, product.Id), product);
+            using var session = OpenWriteClusterSession();
+
+            if (!string.IsNullOrEmpty(product.Code))
+                ProductCompareExchange.CreateProductCode(session, product);
+
+            ProductCompareExchange.CreateProductVersion(session, product);
+
+            SetGuidId(contribution);
+
+            await session.StoreAsync(product);
+            await session.StoreAsync(contribution);
+
+            try
+            {
+                await session.SaveChangesAsync();
+                return true;
+            }
+            catch (ConcurrencyException)
+            {
+                // code already assigned to a different product
+                return false;
+            }
         }
 
-        public Task Delete(string productId)
+        public async Task<bool> SaveProductChanges(Product product, int sourceVersion, ProductContribution productContribution)
         {
-            return _productsCollection.Products.DeleteOneAsync(Builders<Product>.Filter.Eq(x => x.Id, productId));
+            if (productContribution.Status != ProductContributionStatus.Applied)
+                throw new ArgumentException("The product contribution must have the status applied.");
+
+            if (productContribution.AppliedVersion != product.Version)
+                throw new ArgumentException("The product contribution must have the same applied version as the product.");
+
+            // find current product
+            var currentProduct = await FindById(product.Id);
+            if (currentProduct == null)
+                throw new ArgumentException("The product does not exist.");
+
+            // if the version mismatches with the stored values
+            if (currentProduct.Version != sourceVersion) return false;
+            if (currentProduct.Version >= product.Version)
+                throw new ArgumentException("The product version must be incremented.");
+
+            using var session = OpenWriteClusterSession();
+
+            // get version unique value
+            var productVersion = await ProductCompareExchange.GetProductVersion(session, currentProduct);
+            if (productVersion.Value != product.Version) return false;
+
+            // update version
+            session.Advanced.ClusterTransaction.UpdateCompareExchangeValue(new CompareExchangeValue<int>(productVersion.Key, productVersion.Index,
+                product.Version));
+
+            // update product
+            await session.StoreAsync(product);
+
+            // update product code
+            if (product.Code != currentProduct.Code)
+            {
+                if (currentProduct.Code != null)
+                {
+                    var currentProductCode = await ProductCompareExchange.GetProductCode(session, currentProduct);
+                    if (currentProductCode.Value != currentProduct.Id)
+                        throw new InvalidOperationException("The code compare exchange value does not match the current product.");
+
+                    session.Advanced.ClusterTransaction.DeleteCompareExchangeValue(currentProductCode.Key, currentProductCode.Index);
+                }
+
+                if (product.Code != null) ProductCompareExchange.CreateProductCode(session, product);
+            }
+
+            // update product contribution
+            var contributionPatchHash =
+                await ProductContributionCompareExchange.GetPatchHash(session, productContribution.ProductId, productContribution.PatchHash);
+            if (contributionPatchHash != null)
+                session.Advanced.ClusterTransaction.DeleteCompareExchangeValue(contributionPatchHash.Key, contributionPatchHash.Index);
+
+            await session.StoreAsync(productContribution);
+
+            try
+            {
+                await session.SaveChangesAsync();
+                return true;
+            }
+            catch (ConcurrencyException)
+            {
+                return false;
+            }
         }
 
-        public Task<List<Product>> BulkFindProductsByIds(IEnumerable<string> ids)
+        public async Task<ICollection<Product>> FindByIds(IEnumerable<string> ids)
         {
-            return _productsCollection.Products.Find(Builders<Product>.Filter.In(x => x.Id, ids)).ToListAsync();
+            using var session = OpenReadOnlySession();
+
+            var result = await session.LoadAsync<Product>(ids);
+            return result.Values;
         }
     }
 }

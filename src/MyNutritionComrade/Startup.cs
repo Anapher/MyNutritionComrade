@@ -6,7 +6,6 @@ using MyNutritionComrade.Core.Errors;
 using MyNutritionComrade.Hubs;
 using MyNutritionComrade.Infrastructure;
 using MyNutritionComrade.Infrastructure.Auth;
-using MyNutritionComrade.Infrastructure.Data;
 using MyNutritionComrade.Infrastructure.Helpers;
 using MyNutritionComrade.Infrastructure.Identity;
 using FluentValidation.AspNetCore;
@@ -31,8 +30,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
-using MyNutritionComrade.Infrastructure.MongoDb;
-using MyNutritionComrade.Infrastructure.Options;
+using MyNutritionComrade.Core.Domain.Validation;
+using MyNutritionComrade.Core.Options;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
@@ -54,12 +53,11 @@ namespace MyNutritionComrade
 
             // Add framework services.
             services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("MyNutritionComrade.Infrastructure")));
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("MyNutritionComrade.Infrastructure")));
 
             // Register the ConfigurationBuilder instance of AuthSettings
             var authSettings = Configuration.GetSection(nameof(AuthSettings));
             services.Configure<AuthSettings>(authSettings);
-            services.Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
+            services.Configure<VotingOptions>(Configuration.GetSection("ProductVoting"));
 
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
 
@@ -125,7 +123,7 @@ namespace MyNutritionComrade
             // use BCrypt to hash passwords
             services.AddScoped<IPasswordHasher<AppUser>, BCryptPasswordHasher<AppUser>>();
 
-            services.AddElasticsearch(Configuration);
+            services.AddRavenDb(Configuration.GetSection("RavenDb"));
 
             // add identity
             var identityBuilder = services.AddIdentityCore<AppUser>(o =>
@@ -153,13 +151,18 @@ namespace MyNutritionComrade
                     logger.LogDebug("Invalid Model State: {@error}", error);
                     return new BadRequestObjectResult(error);
                 };
-            }).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>()).AddNewtonsoftJson(x =>
+            }).AddFluentValidation(fv =>
             {
-                x.SerializerSettings.Converters.Add(new ServingTypeJsonConverter());
-                x.SerializerSettings.Converters.Add(new PatchOperationJsonConverter());
+                fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+                fv.RegisterValidatorsFromAssemblyContaining<ProductInfoValidator>();
+            }).AddNewtonsoftJson(x =>
+            {
+                x.SerializerSettings.Converters.AddRequiredConverters();
                 x.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
                 x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
+
+            services.AddDefaultJsonSettings();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(InfrastructureModule).Assembly);
 
@@ -212,9 +215,6 @@ namespace MyNutritionComrade
 
             builder.Populate(services);
             var container = builder.Build();
-
-            var initializer = container.Resolve<IMongoDbInitializer>();
-            initializer.Setup().Wait();
 
             // Create the IServiceProvider based on the container.
             return new AutofacServiceProvider(container);

@@ -29,8 +29,19 @@ namespace MyNutritionComrade.Core.Errors
         Identity_PasswordRequiresLower,
         Identity_PasswordRequiresUpper,
 
-        Product_NotFound,
+        Product_NotFound = 1600,
         Product_VersionMismatch,
-        Product_DuplicateKeyInserted
+        Product_DuplicateKeyInserted,
+        Product_Validation,
+        Product_CodeAlreadyExists,
+        Product_ExecutionRaceCondition,
+
+
+        ProductContribution_NotFound = 1700,
+        ProductContribution_InvalidStatus,
+        ProductContribution_PatchExecutionFailed,
+        ProductContribution_UserIsCreator,
+        ProductContribution_AlreadyVoted,
+
     }
 }

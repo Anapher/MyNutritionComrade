@@ -26,10 +26,7 @@ namespace MyNutritionComrade
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
-            .ReadFrom.Configuration(hostingContext.Configuration)
-            .Enrich.FromLogContext().WriteTo.Console());
+            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().UseSerilog((hostingContext, loggerConfiguration) =>
+                loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
     }
 }

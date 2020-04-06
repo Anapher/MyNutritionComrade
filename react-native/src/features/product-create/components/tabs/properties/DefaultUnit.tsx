@@ -16,19 +16,19 @@ function DefaultUnit({ formik }: Props) {
 
     const isLiquid = values.tags.includes(TagLiquid);
 
-    const makeLiquid = () =>
+    const makeLiquid = () => {
+        const servingInfo = getServings(true) as { [key: string]: ServingInfo };
         setValues({
             ...values,
             tags: [...values.tags, TagLiquid],
             defaultServing: 'ml',
             servings: Object.fromEntries(
                 Object.keys(values.servings)
-                    .filter(
-                        (x) => (getServings(true) as { [key: string]: ServingInfo })[x].predefinedValue === undefined,
-                    )
+                    .filter((x) => servingInfo[x]?.predefinedValue === undefined)
                     .map((x) => (x === 'g' ? ['ml', 1] : [x, values.servings[x]])),
             ),
         });
+    };
 
     const makeSolid = () =>
         setValues({

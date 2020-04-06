@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using MyNutritionComrade.Config;
+using MyNutritionComrade.Config.Converter;
 using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
 using Newtonsoft.Json;

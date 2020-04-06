@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Utilities;
 using MyNutritionComrade.Infrastructure.Extensions;
 using MyNutritionComrade.Infrastructure.Patch;
 using Newtonsoft.Json;

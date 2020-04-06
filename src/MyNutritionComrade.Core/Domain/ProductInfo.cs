@@ -9,7 +9,7 @@ namespace MyNutritionComrade.Core.Domain
 {
     public class ProductInfo
     {
-        private string _defaultServing = "g";
+        private string _defaultServing = string.Empty;
         private List<ProductLabel> _label = new List<ProductLabel>();
         private Dictionary<ServingType, double> _servings = new Dictionary<ServingType, double>();
 

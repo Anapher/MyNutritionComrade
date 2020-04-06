@@ -1,11 +1,12 @@
 import { FoodSuggestion } from 'Models';
 import { RootEpic } from 'MyNutritionComrade';
-import { empty, from } from 'rxjs';
+import { empty, from, of } from 'rxjs';
 import { catchError, debounceTime, filter, ignoreElements, map, switchMap } from 'rxjs/operators';
 import { tryParseServingSize } from 'src/utils/input-parser';
 import { isActionOf } from 'typesafe-actions';
 import * as actions from './actions';
 import { mapToFoodSuggestion, querySuggestions } from './helpers';
+import toErrorResult from 'src/utils/error-result';
 
 export const initSuggestionsEpic: RootEpic = (action$, state$) =>
     action$.pipe(
@@ -54,7 +55,7 @@ export const apiSearchEpic: RootEpic = (action$, _, { api }) =>
                         response.map<FoodSuggestion>((x) => mapToFoodSuggestion(x, result.serving)),
                     ),
                 ),
-                catchError(() => ignoreElements()),
+                catchError((e) => of(actions.suggestionRequestFailed(toErrorResult(e)))),
             );
         }),
     );

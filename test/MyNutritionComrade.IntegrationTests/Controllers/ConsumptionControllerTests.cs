@@ -49,11 +49,11 @@ namespace MyNutritionComrade.IntegrationTests.Controllers
                 var scopedServices = scope.ServiceProvider;
                 var appDb = scopedServices.GetRequiredService<AppDbContext>();
                 appDb.Set<ConsumedProduct>().Add(new ConsumedProduct("41532945-599e-4910-9599-0e7402017fbe", new DateTime(2020, 2, 22),
-                    ConsumptionTime.Breakfast, "1", nutritionInfo.ChangeMass(50), ImmutableHashSet<string>.Empty));
+                    ConsumptionTime.Breakfast, "1", nutritionInfo.ChangeVolume(50), ImmutableHashSet<string>.Empty));
                 appDb.Set<ConsumedProduct>().Add(new ConsumedProduct("41532945-599e-4910-9599-0e7402017fbf", new DateTime(2020, 2, 22), ConsumptionTime.Lunch,
-                    "1", nutritionInfo.ChangeMass(70), ImmutableHashSet<string>.Empty));
+                    "1", nutritionInfo.ChangeVolume(70), ImmutableHashSet<string>.Empty));
                 appDb.Set<ConsumedProduct>().Add(new ConsumedProduct("41532945-599e-4910-9599-0e7402017fbe", new DateTime(2020, 2, 21),
-                    ConsumptionTime.Breakfast, "1", nutritionInfo.ChangeMass(200), ImmutableHashSet<string>.Empty));
+                    ConsumptionTime.Breakfast, "1", nutritionInfo.ChangeVolume(200), ImmutableHashSet<string>.Empty));
 
                 appDb.SaveChanges();
 

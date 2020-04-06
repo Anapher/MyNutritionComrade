@@ -1,4 +1,3 @@
-using MyNutritionComrade.Infrastructure.Data;
 using MyNutritionComrade.Infrastructure.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -19,25 +18,10 @@ namespace MyNutritionComrade
                 var serviceProvider = scope.ServiceProvider;
                 var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
 
-                InitializeAppDbContext(serviceProvider, logger);
                 InitializeAppIdentityDbContext(serviceProvider, logger);
             }
 
             return webHost;
-        }
-
-        private static void InitializeAppDbContext(IServiceProvider serviceProvider, ILogger logger)
-        {
-            var context = serviceProvider.GetRequiredService<AppDbContext>();
-            try
-            {
-                context.Database.Migrate();
-            }
-            catch (Exception ex)
-            {
-                logger.LogCritical(ex, "An error occurred migrating AppDbContext.");
-                throw;
-            }
         }
 
         private static void InitializeAppIdentityDbContext(IServiceProvider serviceProvider, ILogger logger)

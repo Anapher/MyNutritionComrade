@@ -1,43 +1,53 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
+using MyNutritionComrade.Infrastructure.Shared;
+using Raven.Client.Documents;
 
 namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
-    public class ConsumedProductRepository : IConsumedProductRepository
+    public class ConsumedProductRepository : RavenRepo, IConsumedProductRepository
     {
-        private readonly AppDbContext _context;
+        private const string CollectionName = "consumedProduct/";
 
-        public ConsumedProductRepository(AppDbContext context)
+        public ConsumedProductRepository(IDocumentStore store) : base(store)
         {
-            _context = context;
         }
 
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-
-        public ValueTask<ConsumedProduct?> FindExistingConsumedProduct(string userId, DateTime date, ConsumptionTime time, string productId) =>
-            _context.Set<ConsumedProduct>().FindAsync(userId, date, time, productId);
-
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
-
-        public Task Add(ConsumedProduct consumedProduct)
+        public async ValueTask<ConsumedProduct?> FindExistingConsumedProduct(string userId, DateTime date, ConsumptionTime time, string productId)
         {
-            _context.Add(consumedProduct);
-            return _context.SaveChangesAsync();
+            using var session = OpenReadOnlySession();
+
+            return await session.LoadAsync<ConsumedProduct?>(GetId(userId, date, time, productId));
         }
 
-        public Task Update(ConsumedProduct consumedProduct)
+        public async Task Add(ConsumedProduct consumedProduct)
         {
-            _context.Entry(consumedProduct).State = EntityState.Modified;
-            return _context.SaveChangesAsync();
+            using var session = OpenWriteSession();
+            await session.StoreAsync(consumedProduct, GetId(consumedProduct));
+            await session.SaveChangesAsync();
+        }
+
+        public async Task Update(ConsumedProduct consumedProduct)
+        {
+            using var session = OpenWriteSession();
+
+            await session.StoreAsync(consumedProduct, GetId(consumedProduct));
+            await session.SaveChangesAsync();
         }
 
         public Task Delete(ConsumedProduct consumedProduct)
         {
-            _context.Set<ConsumedProduct>().Remove(consumedProduct);
-            return _context.SaveChangesAsync();
+            using var session = OpenWriteSession();
+
+            session.Delete(GetId(consumedProduct));
+            return session.SaveChangesAsync();
         }
+
+        private static string GetId(ConsumedProduct consumed) => GetId(consumed.UserId, consumed.Date, consumed.Time, consumed.ProductId);
+
+        private static string GetId(string userId, DateTime date, ConsumptionTime time, string productId) =>
+            $"{CollectionName}/{userId}/{date:yyyy-MM-dd}/{(int) time}/{productId}";
     }
 }

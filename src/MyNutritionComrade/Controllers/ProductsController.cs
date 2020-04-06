@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,12 +11,11 @@ using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Errors;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.UseCases;
+using MyNutritionComrade.Core.Utilities;
 using MyNutritionComrade.Extensions;
-using MyNutritionComrade.Infrastructure.Elasticsearch;
-using MyNutritionComrade.Infrastructure.Extensions;
 using MyNutritionComrade.Infrastructure.Helpers;
 using MyNutritionComrade.Models.Response;
-using Nest;
+using MyNutritionComrade.Selectors;
 
 namespace MyNutritionComrade.Controllers
 {
@@ -28,31 +26,30 @@ namespace MyNutritionComrade.Controllers
     {
         [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([FromQuery] string? term, [FromQuery] string? barcode,
-            [FromQuery] string? units, [FromServices] IElasticClient client, [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
+        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([RequiredFromQuery] string barcode,
+            [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
         {
-            if (!string.IsNullOrEmpty(barcode))
-            {
-                var product = await repository.FindByBarcode(barcode);
-                if (product == null) return ImmutableList<ProductSearchDto>.Empty;
+            if (string.IsNullOrEmpty(barcode))
+                return new FieldValidationError("The query parameter barcode is required.", "query").ToActionResult();
 
-                return mapper.Map<ProductSearchDto>(product).Yield().ToList();
-            }
+            var product = await repository.FindByBarcode(barcode);
+            if (product == null) return ImmutableList<ProductSearchDto>.Empty;
 
+            return mapper.Map<ProductSearchDto>(product).Yield().ToList();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([RequiredFromQuery] string term, [FromQuery] string? units,
+            [FromServices] ISearchProductSelector searchProductSelector, [FromServices] IMapper mapper)
+        {
             if (string.IsNullOrEmpty(term))
-                return new FieldValidationError("The query parameter term or barcode is required.", "query").ToActionResult();
+                return new FieldValidationError("The query parameter term is required.", "query").ToActionResult();
 
             var unitsArray = units?.Split(',');
-            var response = await client.SearchAsync<ProductSearchEntry>(x => x.Size(8).Query(q =>
-            {
-                var q2 = q.QueryString(m => m.DefaultField(f => f.ProductName).Query($"*{term}*"));
-                if (units?.Any() == true)
-                    q2 = q2 && +q.Terms(t => t.Field(f => f.ServingTypes).Terms(unitsArray));
+            var result = await searchProductSelector.SearchProducts(term, unitsArray);
 
-                return q2;
-            }));
-
-            return response.Documents.Select(mapper.Map<ProductSearchDto>).ToList();
+            return result.Select(mapper.Map<ProductSearchDto>).ToList();
         }
 
         [HttpPost]
@@ -68,19 +65,20 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<Product>> PatchProduct(string id, [FromQuery] int? version, List<PatchOperation> operations, [FromServices] IAddProductUseCase useCase)
+        public async Task<ActionResult> PatchProduct(string id, [FromQuery] int? version, List<PatchOperation> operations,
+            [FromServices] IPatchProductUseCase useCase)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            throw new NotImplementedException();
-            //var response = await useCase.Handle(new AddProductRequest());
-            //if (useCase.HasError)
-            //    return useCase.Error!.ToActionResult();
+            var response = await useCase.Handle(new PatchProductRequest(id, operations, userId));
+            if (useCase.HasError)
+                return useCase.Error!.ToActionResult();
 
-            //return Ok(response!.Product);
+            return Ok();
         }
 
-        [HttpGet("{id}"), AllowAnonymous]
+        [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Product>> GetProduct(string id, [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
         {
             var product = await repository.FindById(id);

@@ -9,8 +9,7 @@ namespace MyNutritionComrade.Config
         {
             base.Load(builder);
 
-            builder.RegisterType<FrequentlyUsedProducts>().As<IFrequentlyUsedProducts>();
-            builder.RegisterType<ConsumedProductsOfTheDay>().As<IConsumedProductsOfTheDay>();
+            builder.RegisterAssemblyTypes(ThisAssembly).AssignableTo<IDataSelector>().AsImplementedInterfaces().InstancePerDependency();
         }
     }
 }

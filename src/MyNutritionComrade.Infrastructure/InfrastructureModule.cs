@@ -1,19 +1,11 @@
 using Autofac;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.IdGenerators;
-using MyNutritionComrade.Core.Domain;
-using MyNutritionComrade.Core.Domain.Entities;
-using MyNutritionComrade.Core.Interfaces.Gateways;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Infrastructure.Auth;
-using MyNutritionComrade.Infrastructure.Config;
-using MyNutritionComrade.Infrastructure.Data;
 using MyNutritionComrade.Infrastructure.Data.Repositories;
-using MyNutritionComrade.Infrastructure.Elasticsearch;
 using MyNutritionComrade.Infrastructure.Identity.Repositories;
 using MyNutritionComrade.Infrastructure.Interfaces;
-using MyNutritionComrade.Infrastructure.MongoDb;
+using MyNutritionComrade.Infrastructure.Patch;
 
 namespace MyNutritionComrade.Infrastructure
 {
@@ -27,37 +19,12 @@ namespace MyNutritionComrade.Infrastructure
             builder.RegisterType<TokenFactory>().As<ITokenFactory>().SingleInstance();
             builder.RegisterType<JwtValidator>().As<IJwtValidator>().SingleInstance();
 
-            builder.RegisterAssemblyTypes(ThisAssembly).AsClosedTypesOf(typeof(IRepository<>)).AsImplementedInterfaces();
-            builder.RegisterType<ProductsCollection>().AsSelf().As<IProductsCollection>().InstancePerLifetimeScope();
-            builder.RegisterType<ElasticsearchUpdateHandler>().As<IProductsChangedEventHandler>();
-            builder.RegisterType<ObjectPatchFactory>().As<IObjectPatchFactory>().SingleInstance();
+            builder.RegisterAssemblyTypes(ThisAssembly).AssignableTo<IRepository>().AsImplementedInterfaces();
+
             builder.RegisterType<ProductRepository>().As<IProductRepository>().SingleInstance();
-            builder.RegisterType<ProductContributionsRepository>().As<IProductContributionsRepository>().SingleInstance();
-            builder.RegisterType<MongoDbInitializer>().As<IMongoDbInitializer>();
+            builder.RegisterType<ProductContributionRepository>().As<IProductContributionRepository>().SingleInstance();
             builder.RegisterType<ConsumedProductRepository>().As<IConsumedProductRepository>();
-        }
-
-        static InfrastructureModule()
-        {
-            BsonSerializer.RegisterSerializer(typeof(ServingType), new ServingTypeBsonSerializer());
-
-            BsonClassMap.RegisterClassMap<Product>(x =>
-            {
-                x.AutoMap();
-                x.MapIdMember(x => x.Id).SetIdGenerator(new StringObjectIdGenerator());
-            });
-
-            BsonClassMap.RegisterClassMap<ProductInfo>(x =>
-            {
-                x.AutoMap();
-                x.MapProperty(x => x.Code).SetIgnoreIfNull(true); // VERY IMPORTANT, else the sparse index on this property won't work
-            });
-
-            BsonClassMap.RegisterClassMap<ProductContribution>(x =>
-            {
-                x.AutoMap();
-                x.MapIdMember(x => x.Id).SetIdGenerator(new StringObjectIdGenerator());
-            });
+            builder.RegisterType<PatchFactory>().As<IObjectPatchFactory>().SingleInstance();
         }
     }
 }

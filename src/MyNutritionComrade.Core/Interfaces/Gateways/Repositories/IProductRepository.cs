@@ -7,10 +7,10 @@ namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
     public interface IProductRepository
     {
         Task<Product?> FindById(string productId);
+        Task<ICollection<Product>> FindByIds(IEnumerable<string> ids);
+
         Task<Product?> FindByBarcode(string code);
-        Task Add(Product product);
-        Task Update(Product product);
-        Task Delete(string productId);
-        Task<List<Product>> BulkFindProductsByIds(IEnumerable<string> ids);
+        Task<bool> Add(Product product, ProductContribution initialContribution);
+        Task<bool> SaveProductChanges(Product product, int sourceVersion, ProductContribution productContribution);
     }
 }
