@@ -11,18 +11,18 @@ namespace MyNutritionComrade.Core.Services
     public class ProductPatchValidator : IProductPatchValidator
     {
         private readonly ILogger<ProductPatchValidator> _logger;
-        private readonly IObjectPatchFactory _patchFactory;
+        private readonly IObjectManipulationUtils _manipulationUtils;
 
-        public ProductPatchValidator(IObjectPatchFactory patchFactory, ILogger<ProductPatchValidator> logger)
+        public ProductPatchValidator(IObjectManipulationUtils manipulationUtils, ILogger<ProductPatchValidator> logger)
         {
-            _patchFactory = patchFactory;
+            _manipulationUtils = manipulationUtils;
             _logger = logger;
         }
 
         public ValidationResult Validate(IEnumerable<PatchOperation> patch, ProductInfo productInfo)
         {
-            var copied = _patchFactory.Copy(productInfo);
-            _patchFactory.ExecutePatch(patch, copied);
+            var copied = _manipulationUtils.Clone(productInfo);
+            _manipulationUtils.ExecutePatch(patch, copied);
 
             var validationResult = new ProductInfoValidator().Validate(copied);
             if (!validationResult.IsValid)
@@ -31,7 +31,7 @@ namespace MyNutritionComrade.Core.Services
                 return validationResult;
             }
 
-            if (_patchFactory.Compare(productInfo, copied))
+            if (_manipulationUtils.Compare(productInfo, copied))
                 return new ValidationResult(new[] {new ValidationFailure("", "The patch doesn't change the object.")});
 
             return validationResult;

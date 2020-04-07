@@ -14,16 +14,16 @@ namespace MyNutritionComrade.Core.UseCases
     public class AddProductUseCase : UseCaseStatus<AddProductResponse>, IAddProductUseCase
     {
         private readonly IApplyProductContributionUseCase _applyProductContributionUseCase;
-        private readonly IObjectPatchFactory _objectPatchFactory;
+        private readonly IObjectManipulationUtils _manipulationUtils;
         private readonly IProductRepository _productRepository;
         private readonly IUserRepository _userRepository;
 
-        public AddProductUseCase(IProductRepository productRepository, IUserRepository userRepository, IObjectPatchFactory objectPatchFactory,
+        public AddProductUseCase(IProductRepository productRepository, IUserRepository userRepository, IObjectManipulationUtils manipulationUtils,
             IApplyProductContributionUseCase applyProductContributionUseCase)
         {
             _productRepository = productRepository;
             _userRepository = userRepository;
-            _objectPatchFactory = objectPatchFactory;
+            _manipulationUtils = manipulationUtils;
             _applyProductContributionUseCase = applyProductContributionUseCase;
         }
 
@@ -36,7 +36,7 @@ namespace MyNutritionComrade.Core.UseCases
             var productId = Guid.NewGuid().ToString("N");
             var product = new Product(productId);
 
-            var patch = _objectPatchFactory.CreatePatch(product, message.Product);
+            var patch = _manipulationUtils.CreatePatch(product, message.Product);
             var contribution = new ProductContribution(user.Id, productId, patch);
 
             await _applyProductContributionUseCase.Handle(new ApplyProductContributionRequest(contribution, product, "Initialize product", false));

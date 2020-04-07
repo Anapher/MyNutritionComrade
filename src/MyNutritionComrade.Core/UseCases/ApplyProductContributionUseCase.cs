@@ -17,16 +17,16 @@ namespace MyNutritionComrade.Core.UseCases
     {
         private readonly IProductContributionRepository _contributionRepository;
         private readonly ILogger<ApplyProductContributionUseCase> _logger;
-        private readonly IObjectPatchFactory _patchFactory;
+        private readonly IObjectManipulationUtils _manipulationUtils;
         private readonly IProductPatchValidator _patchValidator;
         private readonly IProductRepository _productRepository;
 
         public ApplyProductContributionUseCase(IProductRepository productRepository, IProductContributionRepository contributionRepository,
-            IObjectPatchFactory patchFactory, IProductPatchValidator patchValidator, ILogger<ApplyProductContributionUseCase> logger)
+            IObjectManipulationUtils manipulationUtils, IProductPatchValidator patchValidator, ILogger<ApplyProductContributionUseCase> logger)
         {
             _productRepository = productRepository;
             _contributionRepository = contributionRepository;
-            _patchFactory = patchFactory;
+            _manipulationUtils = manipulationUtils;
             _patchValidator = patchValidator;
             _logger = logger;
         }
@@ -45,7 +45,7 @@ namespace MyNutritionComrade.Core.UseCases
             // execute patch
             try
             {
-                _patchFactory.ExecutePatch(contribution.Patch, product);
+                _manipulationUtils.ExecutePatch(contribution.Patch, product);
             }
             catch (Exception e)
             {
@@ -71,7 +71,7 @@ namespace MyNutritionComrade.Core.UseCases
             contribution.Apply(newVersion, message.Description);
             product.Version = newVersion;
 
-            if (!message.WriteChanges) 
+            if (!message.WriteChanges)
                 return new ApplyProductContributionResponse(contribution, product);
 
             if (!await _productRepository.SaveProductChanges(product, sourceVersion, contribution))

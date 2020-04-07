@@ -9,14 +9,17 @@ namespace MyNutritionComrade.Infrastructure.Utilities
     {
         private readonly Type _interfaceType;
 
-        public InterfaceContractResolver(Type interfaceType)
+        public InterfaceContractResolver( Type interfaceType)
         {
             _interfaceType = interfaceType;
         }
 
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
-            return base.CreateProperties(_interfaceType, memberSerialization);
+            if (_interfaceType.IsAssignableFrom(type))
+                return base.CreateProperties(_interfaceType, memberSerialization);
+
+            return base.CreateProperties(type, memberSerialization);
         }
     }
 }

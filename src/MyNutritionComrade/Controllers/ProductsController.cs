@@ -9,6 +9,7 @@ using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Errors;
+using MyNutritionComrade.Core.Extensions;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Core.Utilities;

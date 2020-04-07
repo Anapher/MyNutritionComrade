@@ -32,6 +32,7 @@ using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
 using MyNutritionComrade.Core.Domain.Validation;
 using MyNutritionComrade.Core.Options;
+using MyNutritionComrade.Infrastructure.Converter;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 

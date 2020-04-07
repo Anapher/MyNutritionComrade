@@ -2,7 +2,7 @@
 using MyNutritionComrade.Core.Domain.Entities;
 using Newtonsoft.Json;
 
-namespace MyNutritionComrade.Config.Converter
+namespace MyNutritionComrade.Infrastructure.Converter
 {
     public class ServingTypeJsonConverter : JsonConverter<ServingType>
     {

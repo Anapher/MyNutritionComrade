@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MyNutritionComrade.Core.Domain.Entities;
-using MyNutritionComrade.Core.Utilities;
+using MyNutritionComrade.Core.Extensions;
 
 namespace MyNutritionComrade.Core.Domain.Validation
 {
@@ -23,6 +23,7 @@ namespace MyNutritionComrade.Core.Domain.Validation
             RuleFor(x => x.NutritionalInfo).Must(x => x.Carbohydrates + x.Fat + x.Protein + x.Sodium <= 100)
                 .WithMessage("The nutritions must not exceed 100g.");
 
+            RuleFor(x => x.Code).NotEqual("");
             RuleFor(x => x.Label).NotEmpty().UniqueItems();
             RuleForEach(x => x.Label).NotNull().ChildRules(labels =>
             {

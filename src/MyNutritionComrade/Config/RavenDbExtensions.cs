@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyNutritionComrade.Infrastructure.Converter;
 using MyNutritionComrade.Infrastructure.Data.Indexes;
 using Newtonsoft.Json;
 using Raven.Client.Documents;

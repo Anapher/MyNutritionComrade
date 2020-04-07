@@ -1,6 +1,7 @@
 ﻿using System;
 using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Services;
 using MyNutritionComrade.Infrastructure.Patch;
 using Newtonsoft.Json;
 using Xunit;

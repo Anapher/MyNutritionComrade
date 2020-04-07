@@ -11,6 +11,7 @@ namespace MyNutritionComrade.Core
         {
             builder.RegisterAssemblyTypes(ThisAssembly).AsClosedTypesOf(typeof(IUseCaseRequestHandler<,>)).AsImplementedInterfaces();
             builder.RegisterType<ProductPatchValidator>().As<IProductPatchValidator>().SingleInstance();
+            builder.RegisterType<ProductPatchGrouper>().As<IProductPatchGrouper>().SingleInstance();
         }
     }
 }

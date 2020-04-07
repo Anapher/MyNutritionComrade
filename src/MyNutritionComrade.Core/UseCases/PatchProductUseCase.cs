@@ -8,11 +8,11 @@ using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
 using MyNutritionComrade.Core.Errors;
+using MyNutritionComrade.Core.Extensions;
 using MyNutritionComrade.Core.Interfaces;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Core.Interfaces.UseCases;
-using MyNutritionComrade.Core.Utilities;
 using Newtonsoft.Json;
 
 namespace MyNutritionComrade.Core.UseCases
@@ -22,20 +22,23 @@ namespace MyNutritionComrade.Core.UseCases
         private readonly IUserRepository _userRepository;
         private readonly IProductRepository _productRepository;
         private readonly IProductContributionRepository _contributionRepository;
-        private readonly IObjectPatchFactory _patchFactory;
+        private readonly IObjectManipulationUtils _manipulationUtils;
         private readonly IComponentContext _serviceProvider;
         private readonly IProductPatchValidator _patchValidator;
+        private readonly IProductPatchGrouper _productPatchGrouper;
         private readonly ILogger<PatchProductUseCase> _logger;
 
         public PatchProductUseCase(IUserRepository userRepository, IProductRepository productRepository, IProductContributionRepository contributionRepository,
-            IObjectPatchFactory patchFactory, IComponentContext serviceProvider, IProductPatchValidator patchValidator, ILogger<PatchProductUseCase> logger)
+            IObjectManipulationUtils manipulationUtils, IComponentContext serviceProvider, IProductPatchValidator patchValidator,
+            IProductPatchGrouper productPatchGrouper, ILogger<PatchProductUseCase> logger)
         {
             _userRepository = userRepository;
             _productRepository = productRepository;
             _contributionRepository = contributionRepository;
-            _patchFactory = patchFactory;
+            _manipulationUtils = manipulationUtils;
             _serviceProvider = serviceProvider;
             _patchValidator = patchValidator;
+            _productPatchGrouper = productPatchGrouper;
             _logger = logger;
         }
 
@@ -52,11 +55,11 @@ namespace MyNutritionComrade.Core.UseCases
             var operations = new List<PatchOperation>();
             foreach (var operation in message.PatchOperations)
             {
-                var copied = _patchFactory.Copy(product);
+                var copied = _manipulationUtils.Clone(product);
 
                 try
                 {
-                    _patchFactory.ExecutePatch(operation.Yield(), copied);
+                    _manipulationUtils.ExecutePatch(operation.Yield(), copied);
                 }
                 catch (Exception e)
                 {
@@ -64,7 +67,7 @@ namespace MyNutritionComrade.Core.UseCases
                     return ReturnError(new FieldValidationError("patchOperations", $"Applying patch operation {operation.Type}::{operation.Path} failed."));
                 }
 
-                if (!_patchFactory.Compare(product, copied))
+                if (!_manipulationUtils.Compare(product, copied))
                 {
                     // if the patch operation actually changed something
                     operations.Add(operation);
@@ -88,7 +91,7 @@ namespace MyNutritionComrade.Core.UseCases
                 return new PatchProductResponse();
             }
 
-            var groupedPatches = _patchFactory.GroupPatches(operations).ToList();
+            var groupedPatches = _productPatchGrouper.GroupPatch(operations).ToList();
             foreach (var patchGroup in groupedPatches)
             {
                 var result = _patchValidator.Validate(patchGroup, product);

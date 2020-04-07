@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MyNutritionComrade.Core.Utilities
+namespace MyNutritionComrade.Core.Extensions
 {
     public static class EnumerableExtensions
     {

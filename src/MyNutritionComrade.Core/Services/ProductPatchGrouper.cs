@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Core.Utilities;
 using Newtonsoft.Json.Linq;
 
-namespace MyNutritionComrade.Infrastructure.Patch
+namespace MyNutritionComrade.Core.Services
 {
-    public static class ProductPatchReducer
+    public class ProductPatchGrouper : IProductPatchGrouper
     {
-        public static IEnumerable<PatchOperation[]> ReducePatch(IEnumerable<PatchOperation> operations)
+        public IEnumerable<PatchOperation[]> GroupPatch(IEnumerable<PatchOperation> operations)
         {
             var ops = operations.ToList();
 
@@ -29,7 +30,7 @@ namespace MyNutritionComrade.Infrastructure.Patch
                         ops.Remove(addedLabel);
                         ops.Remove(replacedElement);
 
-                        yield return new PatchOperation[] {replacedElement, addedLabel};
+                        yield return new PatchOperation[] { replacedElement, addedLabel };
                     }
                 }
 
@@ -38,7 +39,7 @@ namespace MyNutritionComrade.Infrastructure.Patch
                                           (x is OpRemoveItem removeItem && removeItem.Item.GetValue<string>() == ProductInfo.TagLiquid)));
             if (liquidTagOp != null)
             {
-                var list = new List<PatchOperation> {liquidTagOp};
+                var list = new List<PatchOperation> { liquidTagOp };
 
                 var newUnit = liquidTagOp.Type == PatchOperationType.Add ? "ml" : "g";
                 var oldUnit = liquidTagOp.Type == PatchOperationType.Add ? "g" : "ml";
@@ -58,10 +59,10 @@ namespace MyNutritionComrade.Infrastructure.Patch
             }
 
             foreach (var patchOperation in ops)
-                yield return new[] {patchOperation};
+                yield return new[] { patchOperation };
         }
 
-        private static T? MoveItemIfFound<T>(IList<T> items, IList<T> target, Func<T, bool> predicate) where T: class
+        private static T? MoveItemIfFound<T>(IList<T> items, IList<T> target, Func<T, bool> predicate) where T : class
         {
             var item = items.FirstOrDefault(predicate);
             if (item != null)
@@ -79,12 +80,12 @@ namespace MyNutritionComrade.Infrastructure.Patch
     {
         public static T GetValue<T>(this JToken token, string key)
         {
-            return ((JValue) token[key]!).Value<T>();
+            return ((JValue)token[key]!).Value<T>();
         }
 
         public static T GetValue<T>(this JToken token)
         {
-            return ((JValue) token).Value<T>();
+            return ((JValue)token).Value<T>();
         }
     }
 }

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MyNutritionComrade.Core\MyNutritionComrade.Core.csproj" />
+    <ProjectReference Include="..\..\src\MyNutritionComrade.Infrastructure\MyNutritionComrade.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

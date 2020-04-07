@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using FluentValidation;
 
-namespace MyNutritionComrade.Core.Utilities
+namespace MyNutritionComrade.Core.Extensions
 {
     public static class FluentValidatorExtensions
     {
@@ -12,6 +12,9 @@ namespace MyNutritionComrade.Core.Utilities
         {
             return ruleBuilder.Must(x =>
             {
+                if (string.IsNullOrEmpty(x))
+                    return true;
+
                 try
                 {
                     var _ = CultureInfo.GetCultureInfo(x);
@@ -31,7 +34,7 @@ namespace MyNutritionComrade.Core.Utilities
 
         public static IRuleBuilderOptions<T, IEnumerable<TProperty>> UniqueItems<T, TProperty>(this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder)
         {
-            return ruleBuilder.Must(x => x.Distinct().Count() == x.Count()).WithMessage("The list must not contain duplicate items.");
+            return ruleBuilder.Must(x => x == null || x.Distinct().Count() == x.Count()).WithMessage("The list must not contain duplicate items.");
         }
     }
 }
