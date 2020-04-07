@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Extensions;
-using MyNutritionComrade.Core.Utilities;
 
 namespace MyNutritionComrade.Core.Domain
 {

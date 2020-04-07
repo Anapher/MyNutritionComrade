@@ -26,7 +26,7 @@ namespace MyNutritionComrade.Core.Domain
         {
         }
 
-        public static NutritionalInfo Empty { get; } = new NutritionalInfo();
+        public static NutritionalInfo Empty => new NutritionalInfo();
 
         /// <summary>
         ///     <inheritdoc />

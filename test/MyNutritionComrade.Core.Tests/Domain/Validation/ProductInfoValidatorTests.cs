@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MyNutritionComrade.Core.Domain;
-using MyNutritionComrade.Core.Domain.Entities;
+﻿using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Validation;
 using Newtonsoft.Json;
 using Xunit;
@@ -120,7 +116,7 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""Volume"": 100.0,
     ""Fat"": 0.0,
     ""SaturatedFat"": 0.0,
-    ""Carbohydrates"": 20.0,
+    ""Carbohydrates"": 32.0,
     ""Sugars"": 0.0,
     ""Protein"": 12.0,
     ""DietaryFiber"": 0.0,
@@ -512,7 +508,7 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
 
         private void TestProduct(string json, bool isValid)
         {
-            var product = JsonConvert.DeserializeObject<ProductInfo>(json);
+            var product = JsonConvert.DeserializeObject<ProductInfo>(json, new JsonSerializerSettings());
             var result = new ProductInfoValidator().Validate(product);
             Assert.Equal(isValid, result.IsValid);
         }
