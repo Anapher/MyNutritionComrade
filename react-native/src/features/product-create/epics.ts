@@ -11,8 +11,19 @@ export const createProductEpic: RootEpic = (action$, _, { api }) =>
         filter(isActionOf(actions.createAsync.request)),
         switchMap(({ payload }) =>
             from(api.products.create(payload)).pipe(
-                map(response => actions.createAsync.success(response)),
+                map((response) => actions.createAsync.success(response)),
                 catchError((error: AxiosError) => of(actions.createAsync.failure(toErrorResult(error)))),
+            ),
+        ),
+    );
+
+export const changeProductEpic: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(isActionOf(actions.updateAsync.request)),
+        switchMap(({ payload }) =>
+            from(api.products.patch(payload.productId, payload.patch)).pipe(
+                map(() => actions.updateAsync.success(undefined)),
+                catchError((error: AxiosError) => of(actions.updateAsync.failure(toErrorResult(error)))),
             ),
         ),
     );

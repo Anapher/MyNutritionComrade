@@ -9,6 +9,10 @@ export function* createPatch(source: any, target: any, path: string = ''): Gener
         const targetValue = target[key];
         const sourceValue = source[key];
 
+        if (targetValue === sourceValue) {
+            continue;
+        }
+
         if (typeof targetValue !== typeof sourceValue) {
             yield { type: 'set', path: path + key, value: targetValue };
             continue;

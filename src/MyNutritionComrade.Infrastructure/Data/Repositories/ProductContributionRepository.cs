@@ -11,8 +11,6 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
     public class ProductContributionRepository : RavenRepo, IProductContributionRepository
     {
-        private const string CollectionName = "productContribution";
-
         public ProductContributionRepository(IDocumentStore store): base(store)
         {
         }
@@ -26,6 +24,8 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         public async Task<bool> Add(ProductContribution productContribution)
         {
             using var session = OpenWriteClusterSession();
+
+            SetGuidId(productContribution);
 
             await session.StoreAsync(productContribution);
 

@@ -1,9 +1,13 @@
 import Axios from 'axios';
-import { ProductInfo, Product, ProductSearchDto, ProductDto } from 'Models';
+import { ProductInfo, Product, ProductSearchDto, ProductDto, PatchOperation } from 'Models';
 
 export async function create(productInfo: ProductInfo): Promise<Product> {
     const response = await Axios.post<Product>('/api/v1/products', productInfo);
     return response.data;
+}
+
+export async function patch(id: string, operations: PatchOperation[]): Promise<void> {
+    return await Axios.patch(`/api/v1/products/${id}`, operations);
 }
 
 export async function search(term: string, units?: string[]): Promise<ProductSearchDto[]> {

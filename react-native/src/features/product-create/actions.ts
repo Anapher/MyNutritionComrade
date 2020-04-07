@@ -12,4 +12,4 @@ export const updateAsync = createAsyncAction(
     'PRODUCTCREATE/UPDATE_REQUEST',
     'PRODUCTCREATE/UPDATE_SUCCESS',
     'PRODUCTCREATE/UPDATE_FAILURE',
-)<{ productId: string; patch: PatchOperation[][] }, Product, RequestErrorResponse>();
+)<{ productId: string; patch: PatchOperation[] }, any, RequestErrorResponse>();

@@ -1,6 +1,5 @@
 import ViewPager from '@react-native-community/viewpager';
 import { StackNavigationProp } from '@react-navigation/stack';
-import Color from 'color';
 import { Formik, FormikHelpers } from 'formik';
 import { ProductInfo } from 'Models';
 import React, { useRef, useState } from 'react';

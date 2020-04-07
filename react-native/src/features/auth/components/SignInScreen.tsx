@@ -19,10 +19,7 @@ const styles = StyleSheet.create({
 const initialValues: SignInRequest = { userName: '', password: '', rememberMe: true };
 
 const scheme = yup.object().shape({
-    userName: yup
-        .string()
-        .email('Please insert a valid email address.')
-        .required('E-mail is required!'),
+    userName: yup.string().email('Please insert a valid email address.').required('E-mail is required!'),
     password: yup.string().required('Password is required!'),
 });
 
@@ -47,8 +44,6 @@ function SignInScreen({ signIn }: Props) {
                 await signInAction!(values);
                 // the view will automatically change when the user is authenticated
             } catch (error) {
-                console.log(error);
-
                 applyError(error, formikActions);
             } finally {
                 setSubmitting(false);

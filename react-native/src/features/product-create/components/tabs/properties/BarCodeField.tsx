@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function BarCodeField({ navigation, formik }: Props) {
-    const { values, handleChange, setFieldValue } = formik;
+    const { values, setFieldValue } = formik;
 
     const handleScanBarcode = () => {
         navigation.push('ScanBarcode', { onBarcodeScanned: async ({ data }) => setFieldValue('code', data) });
@@ -28,8 +28,8 @@ export default function BarCodeField({ navigation, formik }: Props) {
                 autoCompleteType="off"
                 keyboardType="visible-password"
                 autoCapitalize="characters"
-                value={values.code}
-                onChangeText={handleChange('code')}
+                value={values.code || ''}
+                onChangeText={(x) => setFieldValue('code', x || null)}
             />
             <Button icon="camera" mode="outlined" onPress={handleScanBarcode}>
                 Scan

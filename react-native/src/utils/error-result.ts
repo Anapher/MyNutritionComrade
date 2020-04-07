@@ -44,8 +44,8 @@ export function toString(error: RequestErrorResponse): string {
         return `The server responded with status code ${status} and an unexpected body: ${response}`;
     }
 
-    if (response.type === 'ValidationError') {
-        return `The server responded with validation errors. Invalid fields: ${Object.keys(response.fields!).join(
+    if (response.type === 'ValidationError' && response.fields) {
+        return `The server responded with validation errors. Invalid fields: ${Object.keys(response.fields).join(
             ', ',
         )}.`;
     }

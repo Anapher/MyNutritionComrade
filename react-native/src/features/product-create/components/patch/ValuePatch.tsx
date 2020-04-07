@@ -10,9 +10,6 @@ type Props<T> = {
 };
 
 function ValuePatch<T>({ patch, currentValue, formatValue }: Props<T>) {
-    console.log(patch);
-    console.log(currentValue);
-
     return (
         <View style={styles.linearView}>
             {currentValue === undefined || currentValue === null ? undefined : (

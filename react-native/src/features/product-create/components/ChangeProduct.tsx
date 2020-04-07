@@ -11,6 +11,8 @@ import * as productsApi from 'src/services/api/products';
 import * as actions from '../actions';
 import { createPatch, reducePatch } from '../utils';
 import ProductEditor from './ProductEditor';
+import _ from 'lodash';
+import { RequestErrorResponse, toString } from 'src/utils/error-result';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -42,7 +44,7 @@ function ChangeProduct({
 
     const [showLoadingIndicator, setShowLoadingIndicator] = useState(true);
 
-    const changeProduct = async (values: ProductInfo, formikActions: FormikHelpers<ProductInfo>) => {
+    const changeProduct = async (values: ProductInfo) => {
         const currentProduct = await productsApi.getById(product.id);
         const productInfo = mapToProductInfo(currentProduct);
 
@@ -72,7 +74,15 @@ function ChangeProduct({
         setShowLoadingIndicator(true);
 
         setLoadingText('Uploading changes...');
-        await updateAction({ productId: product.id, patch: changesets });
+        try {
+            await updateAction({ productId: product.id, patch: _.flatMap(changesets) });
+        } catch (error) {
+            const restError: RequestErrorResponse = error;
+            ToastAndroid.show(toString(restError), 3000);
+            return;
+        }
+
+        navigation.goBack();
     };
 
     return (

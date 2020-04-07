@@ -8,7 +8,7 @@ declare module 'Models' {
     }
 
     export interface ProductInfo extends ProductProperties {
-        code?: string;
+        code?: string | null;
     }
 
     export interface Product extends ProductInfo {

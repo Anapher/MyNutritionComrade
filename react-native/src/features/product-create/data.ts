@@ -120,7 +120,7 @@ export const emptyProductInfo: ProductInfo = {
     servings: {
         g: 1,
     },
-    code: '',
+    code: null,
 };
 
 const nutritionalValue = yup.number().min(0).required();
@@ -170,7 +170,7 @@ export const productInfoValidationSchema = yup.object().shape({
         sodium: nutritionalValue,
     }),
     tags: yup.array().of(yup.string()),
-    code: yup.string(),
+    code: yup.string().nullable(),
     servings: yup.lazy((value: any) =>
         yup.object().shape(Object.fromEntries(Object.keys(value).map((x) => [x, yup.number().positive()]))),
     ),

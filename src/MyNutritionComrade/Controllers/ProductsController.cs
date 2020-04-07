@@ -66,12 +66,11 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> PatchProduct(string id, [FromQuery] int? version, List<PatchOperation> operations,
-            [FromServices] IPatchProductUseCase useCase)
+        public async Task<ActionResult> PatchProduct(string id, List<PatchOperation> operations, [FromServices] IPatchProductUseCase useCase)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var response = await useCase.Handle(new PatchProductRequest(id, operations, userId));
+            await useCase.Handle(new PatchProductRequest(id, operations, userId));
             if (useCase.HasError)
                 return useCase.Error!.ToActionResult();
 
