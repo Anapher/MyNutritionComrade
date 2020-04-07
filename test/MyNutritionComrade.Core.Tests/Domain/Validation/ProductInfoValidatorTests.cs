@@ -508,7 +508,7 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
 
         private void TestProduct(string json, bool isValid)
         {
-            var product = JsonConvert.DeserializeObject<ProductInfo>(json, new JsonSerializerSettings());
+            var product = JsonConvert.DeserializeObject<ProductInfo>(json);
             var result = new ProductInfoValidator().Validate(product);
             Assert.Equal(isValid, result.IsValid);
         }

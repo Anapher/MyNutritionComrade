@@ -58,30 +58,67 @@ namespace MyNutritionComrade.Core.UseCases
 
             var voting = await _voteRepository.GetVoting(contribution.Id);
             var totalVotes = voting.ApproveVotes + voting.DisapproveVotes;
-            var proportion = totalVotes / (double) voting.ApproveVotes;
+            var proportion = voting.ApproveVotes / (double) totalVotes;
+            var apply = message.Approve;
 
             if (!user.IsTrustworthy)
             {
-                if (totalVotes < _options.MinVotesRequired || proportion < _options.ApproveVoteProportionRequired)
-                {
+                if (totalVotes < _options.MinVotesRequired)
                     return new VoteProductContributionResponse(contribution, vote, voting);
+
+                if (1 - proportion < _options.EffectProportionMargin)
+                    apply = true;
+                else if (proportion < _options.EffectProportionMargin)
+                    apply = false;
+                else
+                    return new VoteProductContributionResponse(contribution, vote, voting);
+            }
+
+            var statistics = $"votes: {totalVotes}, approvement percentage: {proportion:P}";
+            if (!await ExecuteOperation(contribution, apply, statistics))
+            {
+                // the operation failed, we revert the vote
+                await _voteRepository.RemoveVote(vote);
+                return null;
+            }
+
+            return new VoteProductContributionResponse(contribution, vote, voting);
+        }
+
+        private async Task<bool> ExecuteOperation(ProductContribution contribution, bool apply, string descriptionStatistics)
+        {
+            if (apply)
+            {
+                // apply contribution on product
+                var product = await _productRepository.FindById(contribution.ProductId);
+                if (product == null)
+                {
+                    _logger.LogError("The product contribution {productContributionId} relates to a product {productId} that does not exist. That must not happen.",
+                        contribution.Id, contribution.ProductId);
+                    SetError(new InternalError($"The product with id {contribution.ProductId} was not found.", ErrorCode.Product_NotFound));
+                    return false;
+                }
+
+                await _applyProductContributionUseCase.Handle(new ApplyProductContributionRequest(contribution, product,
+                    $"Automatically applied ({descriptionStatistics})"));
+                if (_applyProductContributionUseCase.HasError)
+                {
+                    SetError(_applyProductContributionUseCase.Error!);
+                    return false;
+                }
+            }
+            else
+            {
+                // reject contribution
+                contribution.Reject($"Automatically rejected ({descriptionStatistics})");
+                if (!await _contributionRepository.UpdateProductContribution(contribution))
+                {
+                    SetError(new RaceConditionError("Cannot update product contribution", ErrorCode.ProductContribution_UpdatedFailed));
+                    return false;
                 }
             }
 
-            var product = await _productRepository.FindById(contribution.ProductId);
-            if (product == null)
-            {
-                _logger.LogError("The product contribution {productContributionId} relates to a product {productId} that does not exist. That must not happen.",
-                    contribution.Id, contribution.ProductId);
-                return ReturnError(new InternalError($"The product with id {contribution.ProductId} was not found.", ErrorCode.Product_NotFound));
-            }
-
-            await _applyProductContributionUseCase.Handle(new ApplyProductContributionRequest(contribution, product,
-                $"Automatically applied (votes: {totalVotes}, approvement percentage: {proportion:P})"));
-            if (_applyProductContributionUseCase.HasError)
-                return ReturnError(_applyProductContributionUseCase.Error!);
-
-            return new VoteProductContributionResponse(contribution, vote, voting);
+            return true;
         }
     }
 }

@@ -3,6 +3,6 @@
     public class VotingOptions
     {
         public int MinVotesRequired { get; set; } = 10;
-        public double ApproveVoteProportionRequired { get; set; } = 0.8;
+        public double EffectProportionMargin { get; set; } = 2;
     }
 }

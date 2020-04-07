@@ -43,6 +43,14 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             }
         }
 
+        public async Task Remove(string productContributionId)
+        {
+            using var session = OpenWriteClusterSession();
+
+            session.Delete(productContributionId);
+            await session.SaveChangesAsync();
+        }
+
         public async Task<ProductContribution?> FindByPatchHash(string productId, string patchHash)
         {
             using var session = OpenReadOnlySession();

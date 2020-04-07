@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
 using Microsoft.Extensions.Logging;
+using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
@@ -23,13 +23,13 @@ namespace MyNutritionComrade.Core.UseCases
         private readonly IProductRepository _productRepository;
         private readonly IProductContributionRepository _contributionRepository;
         private readonly IObjectManipulationUtils _manipulationUtils;
-        private readonly IComponentContext _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IProductPatchValidator _patchValidator;
         private readonly IProductPatchGrouper _productPatchGrouper;
         private readonly ILogger<PatchProductUseCase> _logger;
 
         public PatchProductUseCase(IUserRepository userRepository, IProductRepository productRepository, IProductContributionRepository contributionRepository,
-            IObjectManipulationUtils manipulationUtils, IComponentContext serviceProvider, IProductPatchValidator patchValidator,
+            IObjectManipulationUtils manipulationUtils, IServiceProvider serviceProvider, IProductPatchValidator patchValidator,
             IProductPatchGrouper productPatchGrouper, ILogger<PatchProductUseCase> logger)
         {
             _userRepository = userRepository;
@@ -55,7 +55,7 @@ namespace MyNutritionComrade.Core.UseCases
             var operations = new List<PatchOperation>();
             foreach (var operation in message.PatchOperations)
             {
-                var copied = _manipulationUtils.Clone(product);
+                var copied = _manipulationUtils.Clone<ProductInfo>(product);
 
                 try
                 {
@@ -81,12 +81,16 @@ namespace MyNutritionComrade.Core.UseCases
             if (user.IsTrustworthy)
             {
                 var contribution = new ProductContribution(user.Id, product.Id, operations);
-                await _contributionRepository.Add(contribution);
+                if (!await _contributionRepository.Add(contribution))
+                    return ReturnError(new RaceConditionError("The product contribution could not be added", ErrorCode.ProductContribution_CreationFailed));
 
-                var applyUseCase = _serviceProvider.Resolve<IApplyProductContributionUseCase>();
+                var applyUseCase = _serviceProvider.GetRequiredService<IApplyProductContributionUseCase>();
                 await applyUseCase.Handle(new ApplyProductContributionRequest(contribution, product, "Immediately executed patch"));
                 if (applyUseCase.HasError)
+                {
+                    await _contributionRepository.Remove(contribution.Id);
                     return ReturnError(applyUseCase.Error!);
+                }
 
                 return new PatchProductResponse();
             }
@@ -116,7 +120,7 @@ namespace MyNutritionComrade.Core.UseCases
                     }
 
                     // the contribution already exists. We add a vote to the existing contribution
-                    var voteUseCase = _serviceProvider.Resolve<IVoteProductContributionUseCase>();
+                    var voteUseCase = _serviceProvider.GetRequiredService<IVoteProductContributionUseCase>();
                     await voteUseCase.Handle(new VoteProductContributionRequest(user.Id, existingContribution.Id, true));
                 }
             }

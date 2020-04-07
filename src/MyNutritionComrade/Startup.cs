@@ -163,8 +163,6 @@ namespace MyNutritionComrade
                 x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
 
-            services.AddDefaultJsonSettings();
-
             services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(InfrastructureModule).Assembly);
 
             // In production, the React files will be served from this directory

@@ -26,9 +26,5 @@ namespace MyNutritionComrade.IntegrationTests
 
             dbContext.SaveChanges();
         }
-
-        public static void PopulateTestData(AppDbContext dbContext)
-        {
-        }
     }
 }

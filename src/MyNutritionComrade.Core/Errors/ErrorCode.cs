@@ -42,6 +42,8 @@ namespace MyNutritionComrade.Core.Errors
         ProductContribution_PatchExecutionFailed,
         ProductContribution_UserIsCreator,
         ProductContribution_AlreadyVoted,
+        ProductContribution_UpdatedFailed,
+        ProductContribution_CreationFailed,
 
     }
 }

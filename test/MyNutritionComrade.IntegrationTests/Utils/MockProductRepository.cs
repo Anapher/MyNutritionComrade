@@ -22,10 +22,16 @@ namespace MyNutritionComrade.IntegrationTests.Utils
             return Task.FromResult<Product>(null);
         }
 
+        public Task<ICollection<Product>> FindByIds(IEnumerable<string> ids) => throw new NotImplementedException();
+
         public Task<Product> FindByBarcode(string code)
         {
             return Task.FromResult(_products.FirstOrDefault(x => x.Value.Code == code).Value);
         }
+
+        public Task<bool> Add(Product product, ProductContribution initialContribution) => throw new NotImplementedException();
+
+        public Task<bool> SaveProductChanges(Product product, int sourceVersion, ProductContribution productContribution) => throw new NotImplementedException();
 
         public void EnsureProductExists(Product product)
         {

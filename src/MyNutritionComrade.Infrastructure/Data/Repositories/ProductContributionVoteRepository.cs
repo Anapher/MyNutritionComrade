@@ -34,6 +34,15 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             }
         }
 
+        public async Task RemoveVote(ProductContributionVote vote)
+        {
+            using var session = OpenWriteClusterSession();
+            await ProductContributionVoteCompareExchange.DeleteProductContributionVote(session, vote);
+            session.Delete(vote);
+
+            await session.SaveChangesAsync();
+        }
+
         public async Task<ProductContributionVoting> GetVoting(string productContributionId)
         {
             using var session = OpenReadOnlySession();

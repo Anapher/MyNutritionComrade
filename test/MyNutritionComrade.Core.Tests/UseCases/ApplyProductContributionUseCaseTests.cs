@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -13,7 +12,6 @@ using MyNutritionComrade.Core.Errors;
 using MyNutritionComrade.Core.Extensions;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.Services;
-using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Core.UseCases;
 using MyNutritionComrade.Infrastructure.Patch;
 using Newtonsoft.Json.Linq;
@@ -77,7 +75,7 @@ namespace MyNutritionComrade.Core.Tests.UseCases
 
             // assert
             Assert.True(useCase.HasError);
-            Assert.Equal(ErrorCode.ProductContribution_InvalidStatus, (ErrorCode)useCase.Error.Code);
+            Assert.Equal(ErrorCode.ProductContribution_InvalidStatus, (ErrorCode) useCase.Error.Code);
         }
 
         [Fact]
@@ -99,25 +97,6 @@ namespace MyNutritionComrade.Core.Tests.UseCases
             // assert
             Assert.True(useCase.HasError);
             Assert.Equal(ErrorCode.ProductContribution_PatchExecutionFailed, (ErrorCode) useCase.Error.Code);
-        }
-
-        [Fact]
-        public async Task TestPatchProducesInvalidProduct()
-        {
-            // arrange
-            var useCase = new ApplyProductContributionUseCase(MockProductRepo.Object, MockContributionRepo.Object, ManipulationUtils, MockValidator.Object,
-                Logger);
-
-            var product = GetValidProduct();
-            var operations = new[] {new OpSetProperty("defaultServing", JToken.FromObject("piece")),};
-            var contribution = new ProductContribution("123", "1", operations);
-
-            // act
-            await useCase.Handle(new ApplyProductContributionRequest(contribution, product));
-
-            // assert
-            Assert.True(useCase.HasError);
-            Assert.Equal(ErrorCode.ProductContribution_PatchExecutionFailed, (ErrorCode)useCase.Error.Code);
         }
 
         [Fact]
@@ -146,6 +125,55 @@ namespace MyNutritionComrade.Core.Tests.UseCases
             Assert.Equal(6, product.Version);
             Assert.Equal("123456", product.Code);
             Assert.Equal(45, product.Servings[ServingType.Piece]);
+
+            MockProductRepo.VerifyNoOtherCalls();
+            MockContributionRepo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task TestPatchProducesInvalidProduct()
+        {
+            // arrange
+            var useCase = new ApplyProductContributionUseCase(MockProductRepo.Object, MockContributionRepo.Object, ManipulationUtils, MockValidator.Object,
+                Logger);
+
+            var product = GetValidProduct();
+            var operations = new[] {new OpSetProperty("defaultServing", JToken.FromObject("piece"))};
+            var contribution = new ProductContribution("123", "1", operations);
+
+            // act
+            await useCase.Handle(new ApplyProductContributionRequest(contribution, product));
+
+            // assert
+            Assert.True(useCase.HasError);
+            Assert.Equal(ErrorCode.ProductContribution_PatchExecutionFailed, (ErrorCode) useCase.Error.Code);
+        }
+
+        [Fact]
+        public async Task TestWriteChanges()
+        {
+            // arrange
+            var useCase = new ApplyProductContributionUseCase(MockProductRepo.Object, MockContributionRepo.Object, ManipulationUtils, MockValidator.Object,
+                Logger);
+
+            var product = GetValidProduct();
+            product.Version = 5;
+            var operations = GetValidPatchOperations();
+            var contribution = new ProductContribution("123", "1", operations);
+
+            MockProductRepo.Setup(x => x.SaveProductChanges(product, It.IsAny<int>(), contribution)).ReturnsAsync(true);
+            MockContributionRepo.Setup(x => x.GetActiveProductContributions("1")).ReturnsAsync(new List<ProductContribution>());
+
+            // act
+            var response = await useCase.Handle(new ApplyProductContributionRequest(contribution, product, "test"));
+
+            // assert
+            Assert.False(useCase.HasError);
+            Assert.Equal(product, response.Product);
+            Assert.Equal(contribution, response.ProductContribution);
+
+            MockProductRepo.Verify(x => x.SaveProductChanges(product, It.IsAny<int>(), contribution), Times.Once);
+            MockContributionRepo.Verify(x => x.GetActiveProductContributions("1"), Times.Once);
 
             MockProductRepo.VerifyNoOtherCalls();
             MockContributionRepo.VerifyNoOtherCalls();
@@ -184,36 +212,6 @@ namespace MyNutritionComrade.Core.Tests.UseCases
             Assert.Equal(ErrorCode.Product_ExecutionRaceCondition, (ErrorCode) useCase.Error.Code);
 
             MockProductRepo.Verify(x => x.SaveProductChanges(product, It.IsAny<int>(), contribution), Times.Once);
-
-            MockProductRepo.VerifyNoOtherCalls();
-            MockContributionRepo.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task TestWriteChanges()
-        {
-            // arrange
-            var useCase = new ApplyProductContributionUseCase(MockProductRepo.Object, MockContributionRepo.Object, ManipulationUtils, MockValidator.Object,
-                Logger);
-
-            var product = GetValidProduct();
-            product.Version = 5;
-            var operations = GetValidPatchOperations();
-            var contribution = new ProductContribution("123", "1", operations);
-
-            MockProductRepo.Setup(x => x.SaveProductChanges(product, It.IsAny<int>(), contribution)).ReturnsAsync(true);
-            MockContributionRepo.Setup(x => x.GetActiveProductContributions("1")).ReturnsAsync(new List<ProductContribution>());
-
-            // act
-            var response = await useCase.Handle(new ApplyProductContributionRequest(contribution, product, "test"));
-
-            // assert
-            Assert.False(useCase.HasError);
-            Assert.Equal(product, response.Product);
-            Assert.Equal(contribution, response.ProductContribution);
-
-            MockProductRepo.Verify(x => x.SaveProductChanges(product, It.IsAny<int>(), contribution), Times.Once);
-            MockContributionRepo.Verify(x => x.GetActiveProductContributions("1"), Times.Once);
 
             MockProductRepo.VerifyNoOtherCalls();
             MockContributionRepo.VerifyNoOtherCalls();
@@ -319,8 +317,7 @@ namespace MyNutritionComrade.Core.Tests.UseCases
                 new ProductContribution("143", "1", new List<PatchOperation> {new OpSetProperty("code", JToken.FromObject("123456"))})
             });
 
-            MockValidator.Setup(x => x.Validate(It.IsAny<IEnumerable<PatchOperation>>(), It.IsAny<ProductInfo>()))
-                .Returns(new ValidationResult());
+            MockValidator.Setup(x => x.Validate(It.IsAny<IEnumerable<PatchOperation>>(), It.IsAny<ProductInfo>())).Returns(new ValidationResult());
 
             // act
             var response = await useCase.Handle(new ApplyProductContributionRequest(contribution, product, "test"));
