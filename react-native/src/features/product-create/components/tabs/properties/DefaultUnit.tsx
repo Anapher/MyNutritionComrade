@@ -1,5 +1,5 @@
 import { FormikProps } from 'formik';
-import { ProductInfo } from 'Models';
+import { ProductProperties } from 'Models';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
@@ -8,7 +8,7 @@ import { TagLiquid } from 'src/consts';
 import { getServings, ServingInfo } from 'src/features/product-create/data';
 
 type Props = {
-    formik: FormikProps<ProductInfo>;
+    formik: FormikProps<ProductProperties>;
 };
 
 function DefaultUnit({ formik }: Props) {

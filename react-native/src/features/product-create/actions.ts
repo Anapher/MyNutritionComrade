@@ -1,12 +1,12 @@
-import { createAsyncAction, createAction } from 'typesafe-actions';
+import { PatchOperation, Product, ProductProperties } from 'Models';
 import { RequestErrorResponse } from 'src/utils/error-result';
-import { ProductInfo, Product, PatchOperation } from 'Models';
+import { createAsyncAction } from 'typesafe-actions';
 
 export const createAsync = createAsyncAction(
     'PRODUCTCREATE/CREATE_REQUEST',
     'PRODUCTCREATE/CREATE_SUCCESS',
     'PRODUCTCREATE/CREATE_FAILURE',
-)<ProductInfo, Product, RequestErrorResponse>();
+)<ProductProperties, Product, RequestErrorResponse>();
 
 export const updateAsync = createAsyncAction(
     'PRODUCTCREATE/UPDATE_REQUEST',

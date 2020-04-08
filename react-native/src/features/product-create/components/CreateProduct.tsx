@@ -1,16 +1,16 @@
-import React from 'react';
-import { StyleSheet, Text, View, ToastAndroid } from 'react-native';
-import { RestError } from 'src/utils/error-result';
-import { ProductInfo } from 'Models';
-import { FormikHelpers } from 'formik';
-import ProductEditor from './ProductEditor';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from 'src/RootNavigator';
 import { RouteProp } from '@react-navigation/native';
-import { emptyProductInfo } from '../data';
-import useAsyncFunction from 'src/hooks/use-async-function';
-import * as actions from '../actions';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { AxiosError } from 'axios';
+import { FormikHelpers } from 'formik';
+import { ProductProperties } from 'Models';
+import React from 'react';
+import { ToastAndroid } from 'react-native';
+import useAsyncFunction from 'src/hooks/use-async-function';
+import { RootStackParamList } from 'src/RootNavigator';
+import { RestError } from 'src/utils/error-result';
+import * as actions from '../actions';
+import { emptyProductInfo } from '../data';
+import ProductEditor from './ProductEditor';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -29,7 +29,7 @@ function CreateProduct({
         actions.createAsync.failure,
     )!;
 
-    const createProduct = async (values: ProductInfo, formikActions: FormikHelpers<ProductInfo>) => {
+    const createProduct = async (values: ProductProperties, formikActions: FormikHelpers<ProductProperties>) => {
         const { setSubmitting, setErrors } = formikActions;
 
         try {

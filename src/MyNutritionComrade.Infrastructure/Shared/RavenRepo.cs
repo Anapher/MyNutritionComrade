@@ -15,7 +15,10 @@ namespace MyNutritionComrade.Infrastructure.Shared
         }
 
         protected IAsyncDocumentSession OpenReadOnlySession() => Store.OpenAsyncSession(new SessionOptions {NoTracking = true});
-        protected IAsyncDocumentSession OpenWriteClusterSession() => Store.OpenAsyncSession(new SessionOptions {TransactionMode = TransactionMode.ClusterWide});
+
+        protected IAsyncDocumentSession OpenWriteClusterSession() =>
+            Store.OpenAsyncSession(new SessionOptions {TransactionMode = TransactionMode.ClusterWide});
+
         protected IAsyncDocumentSession OpenWriteSession() => Store.OpenAsyncSession();
 
         protected void SetGuidId(object o)

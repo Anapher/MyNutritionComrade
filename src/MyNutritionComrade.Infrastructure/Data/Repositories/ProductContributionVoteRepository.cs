@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.GatewayResponses.Repositories;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
@@ -26,6 +27,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             try
             {
                 await session.SaveChangesAsync();
+                session.Advanced.WaitForIndexesAfterSaveChanges(TimeSpan.FromSeconds(20), false, new[] {"ProductContributionVote/ByProductContribution"});
                 return true;
             }
             catch (ConcurrencyException)

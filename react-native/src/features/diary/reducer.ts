@@ -1,4 +1,4 @@
-import { ConsumedProduct, ConsumptionTime, FrequentlyUsedProducts, ProductSearchDto } from 'Models';
+import { ConsumedProduct, ConsumptionTime, FrequentlyUsedProducts, ProductInfo } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
@@ -7,7 +7,7 @@ import { patchConsumedProducts } from './utils';
 export type ConsumeProductData = {
     date: string;
     time: ConsumptionTime;
-    product: ProductSearchDto;
+    product: ProductInfo;
     value: number;
 
     requestId: string;

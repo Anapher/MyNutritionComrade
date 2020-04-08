@@ -19,8 +19,8 @@ namespace MyNutritionComrade.Infrastructure.Converter
         {
             var obj = JObject.Load(reader);
 
-            var typeToken = obj["type"];
-            var pathToken = obj["path"];
+            var typeToken = obj["type"] ?? obj["Type"];
+            var pathToken = obj["path"] ?? obj["Path"];
 
             if (typeToken == null) throw new JsonException("The object must contain a type property");
             if (pathToken == null) throw new JsonException("The object must contain a path property");
@@ -31,13 +31,13 @@ namespace MyNutritionComrade.Infrastructure.Converter
             switch (type)
             {
                 case PatchOperationType.Set:
-                    return new OpSetProperty(path, obj["value"] ?? throw new JsonException("A set operation must have a value property"));
+                    return new OpSetProperty(path, obj["value"] ?? obj["Value"] ?? throw new JsonException("A set operation must have a value property"));
                 case PatchOperationType.Unset:
                     return new OpUnsetProperty(path);
                 case PatchOperationType.Add:
-                    return new OpAddItem(path, obj["item"] ?? throw new JsonException("An add operation must have an item property"));
+                    return new OpAddItem(path, obj["item"] ?? obj["Item"] ?? throw new JsonException("An add operation must have an item property"));
                 case PatchOperationType.Remove:
-                    return new OpRemoveItem(path, obj["item"] ?? throw new JsonException("A remove operation must have an item property"));
+                    return new OpRemoveItem(path, obj["item"] ?? obj["Item"] ?? throw new JsonException("A remove operation must have an item property"));
                 default:
                     throw new ArgumentOutOfRangeException();
             }

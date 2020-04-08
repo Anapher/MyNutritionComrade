@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Moq;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto;
@@ -24,7 +25,10 @@ namespace MyNutritionComrade.Core.Tests.UseCases
         protected readonly Mock<IProductContributionVoteRepository> VoteRepo = new Mock<IProductContributionVoteRepository>();
         protected readonly Mock<IProductContributionRepository> ContributionRepo = new Mock<IProductContributionRepository>();
         protected readonly Mock<IProductRepository> ProductRepo = new Mock<IProductRepository>();
-        protected readonly VotingOptions VotingOptions = new VotingOptions {MinVotesRequired = 5, EffectProportionMargin = 0.2};
+
+        protected readonly IOptions<VotingOptions> VotingOptions =
+            new OptionsWrapper<VotingOptions>(new VotingOptions {MinVotesRequired = 5, EffectProportionMargin = 0.2});
+
         protected readonly Mock<IApplyProductContributionUseCase> ApplyContributionUseCase = new Mock<IApplyProductContributionUseCase>();
         protected readonly ILogger<VoteProductContributionUseCase> Logger = new NullLogger<VoteProductContributionUseCase>();
 

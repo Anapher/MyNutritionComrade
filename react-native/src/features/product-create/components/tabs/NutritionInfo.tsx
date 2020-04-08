@@ -1,15 +1,15 @@
 import Color from 'color';
 import { FormikProps } from 'formik';
-import { ProductInfo } from 'Models';
+import { ProductProperties } from 'Models';
 import React, { useRef } from 'react';
-import { FlatList, TextInput, View, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 import { Subheading, Surface, Text, useTheme } from 'react-native-paper';
 import Row from 'src/components/Row';
 import { TagLiquid } from 'src/consts';
 import { nutritionalInfo } from '../../data';
 
 type Props = {
-    formik: FormikProps<ProductInfo>;
+    formik: FormikProps<ProductProperties>;
     onShowNextPage: () => void;
 };
 

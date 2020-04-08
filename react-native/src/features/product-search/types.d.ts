@@ -1,11 +1,7 @@
 declare module 'Models' {
     export interface FoodSuggestion {
-        model: ProductSearchDto;
+        model: ProductInfo;
         servingSize?: ServingSize;
-    }
-
-    export interface ProductSearchDto extends ProductProperties {
-        id: string;
     }
 
     export interface ServingSize {

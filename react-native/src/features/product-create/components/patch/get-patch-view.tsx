@@ -1,16 +1,15 @@
-import _ from 'lodash';
-import { PatchOperation, ProductInfo, ProductLabel, OpRemoveItem, OpAddItem } from 'Models';
+import { OpAddItem, OpRemoveItem, PatchOperation, ProductLabel, ProductProperties } from 'Models';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Text as PaperText } from 'react-native-paper';
 import ChangedValue from 'src/components/ChangedValue';
 import ReadOnlyTable, { ReadOnlyTableRow } from 'src/components/ReadOnlyTable';
-import { formatNumber } from 'src/utils/string-utils';
-import { nutritionalInfo, getServings, ServingInfo, NutritionRow } from '../../data';
 import { TagLiquid } from 'src/consts';
-import { Text as PaperText } from 'react-native-paper';
-import { isProductLiquid, getBaseUnit } from 'src/utils/product-utils';
-import ValuePatch from './ValuePatch';
+import { getBaseUnit, isProductLiquid } from 'src/utils/product-utils';
+import { formatNumber } from 'src/utils/string-utils';
+import { getServings, nutritionalInfo, NutritionRow, ServingInfo } from '../../data';
 import { OperationType } from './OperationHeader';
+import ValuePatch from './ValuePatch';
 
 export type PatchView = {
     type: OperationType;
@@ -20,7 +19,7 @@ export type PatchView = {
 
 type Props = {
     patchOperation: PatchOperation[];
-    currentProduct: ProductInfo;
+    currentProduct: ProductProperties;
 };
 
 function getPatchView(props: Props): PatchView {
@@ -76,7 +75,7 @@ function getPatchView(props: Props): PatchView {
         return {
             type: getPropertyOperationType(patch, currentProduct.code),
             propertyName: 'Barcode',
-            view: <ValuePatch<string> patch={patch} currentValue={currentProduct.code} />,
+            view: <ValuePatch<string> patch={patch} currentValue={currentProduct.code || undefined} />,
         };
     }
 

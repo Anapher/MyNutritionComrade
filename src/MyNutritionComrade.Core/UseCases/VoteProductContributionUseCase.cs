@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
@@ -22,14 +23,14 @@ namespace MyNutritionComrade.Core.UseCases
         private readonly ILogger<VoteProductContributionUseCase> _logger;
 
         public VoteProductContributionUseCase(IUserRepository userRepository, IProductContributionVoteRepository voteRepository,
-            IProductContributionRepository contributionRepository, IProductRepository productRepository, VotingOptions options,
+            IProductContributionRepository contributionRepository, IProductRepository productRepository, IOptions<VotingOptions> options,
             IApplyProductContributionUseCase applyProductContributionUseCase, ILogger<VoteProductContributionUseCase> logger)
         {
             _userRepository = userRepository;
             _voteRepository = voteRepository;
             _contributionRepository = contributionRepository;
             _productRepository = productRepository;
-            _options = options;
+            _options = options.Value;
             _applyProductContributionUseCase = applyProductContributionUseCase;
             _logger = logger;
         }

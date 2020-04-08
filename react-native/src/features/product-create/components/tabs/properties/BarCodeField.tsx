@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FormikProps } from 'formik';
-import { ProductInfo } from 'Models';
+import { ProductProperties } from 'Models';
 import React from 'react';
 import { View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
@@ -8,7 +8,7 @@ import { RootStackParamList } from 'src/RootNavigator';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
-    formik: FormikProps<ProductInfo>;
+    formik: FormikProps<ProductProperties>;
 };
 
 export default function BarCodeField({ navigation, formik }: Props) {

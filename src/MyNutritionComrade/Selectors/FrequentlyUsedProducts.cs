@@ -35,18 +35,15 @@ namespace MyNutritionComrade.Selectors
             // get frequently used product ids of every consumption time
             var result = new Dictionary<ConsumptionTime, FrequentlyUsedProductDto[]>();
 
-            var consumedProducts = await _session.Query<ConsumedProduct_ByMonth.Result, ConsumedProduct_ByMonth>()
+            var consumedProducts = await _session.Query<ConsumedProduct_ByMonth.Result, ConsumedProduct_ByMonth>().Include(x => x.ProductId)
                 .Where(x => x.UserId == userId && x.Date >= startingDate).ToListAsync();
-
-            var uniqueProductIds = consumedProducts.Select(x => x.ProductId).Distinct().ToList();
-            var products = await _session.LoadAsync<Product>(uniqueProductIds);
 
             foreach (var productStatistics in consumedProducts.GroupBy(x => x.Time))
             {
                 var list = new List<FrequentlyUsedProductDto>();
                 foreach (var product in productStatistics.OrderByDescending(x => x.Count))
                 {
-                    var p = products[product.ProductId];
+                    var p = await _session.LoadAsync<Product>(product.ProductId);
                     var frequentProduct = _mapper.Map<FrequentlyUsedProductDto>(p);
                     list.Add(frequentProduct);
                 }

@@ -1,9 +1,9 @@
 import { TagLiquid } from 'src/consts';
 import itiriri from 'itiriri';
-import { ProductInfo, NutritionalInfo, PatchOperation } from 'Models';
+import { ProductProperties, NutritionalInfo, PatchOperation, ProductProperties } from 'Models';
 import { createPatch, reducePatch } from './utils';
 
-const emptyProduct: ProductInfo = {
+const emptyProduct: ProductProperties = {
     defaultServing: 'g',
     nutritionalInfo: {
         volume: 0,
@@ -31,8 +31,8 @@ test('should create empty patch with no changed properties', () => {
 });
 
 test('should create patch with new barcode correctly', () => {
-    const product1: ProductInfo = emptyProduct;
-    const product2: ProductInfo = { ...emptyProduct, code: '123456' };
+    const product1: ProductProperties = emptyProduct;
+    const product2: ProductProperties = { ...emptyProduct, code: '123456' };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -49,8 +49,8 @@ test('should create patch with new barcode correctly', () => {
 });
 
 test('should create patch with no barcode correctly', () => {
-    const product1: ProductInfo = { ...emptyProduct, code: '123456' };
-    const product2: ProductInfo = emptyProduct;
+    const product1: ProductProperties = { ...emptyProduct, code: '123456' };
+    const product2: ProductProperties = emptyProduct;
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -63,8 +63,8 @@ test('should create patch with no barcode correctly', () => {
 });
 
 test('should create patch with changed barcode correctly', () => {
-    const product1: ProductInfo = { ...emptyProduct, code: '123456' };
-    const product2: ProductInfo = { ...emptyProduct, code: '654321' };
+    const product1: ProductProperties = { ...emptyProduct, code: '123456' };
+    const product2: ProductProperties = { ...emptyProduct, code: '654321' };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -94,8 +94,8 @@ test('should create patch with changed nutrition info correctly', () => {
     };
     const changedNutritionInfo = { ...nutritionalInfo, carbohydrates: 62 };
 
-    const product1: ProductInfo = { ...emptyProduct, nutritionalInfo: nutritionalInfo };
-    const product2: ProductInfo = {
+    const product1: ProductProperties = { ...emptyProduct, nutritionalInfo: nutritionalInfo };
+    const product2: ProductProperties = {
         ...emptyProduct,
         nutritionalInfo: changedNutritionInfo,
     };
@@ -115,8 +115,8 @@ test('should create patch with changed nutrition info correctly', () => {
 });
 
 test('should create patch with changed default serving correctly', () => {
-    const product1: ProductInfo = emptyProduct;
-    const product2: ProductInfo = { ...emptyProduct, defaultServing: 'piece' };
+    const product1: ProductProperties = emptyProduct;
+    const product2: ProductProperties = { ...emptyProduct, defaultServing: 'piece' };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -133,8 +133,8 @@ test('should create patch with changed default serving correctly', () => {
 });
 
 test('should create patch with added tag correctly', () => {
-    const product1: ProductInfo = emptyProduct;
-    const product2: ProductInfo = { ...emptyProduct, tags: ['test'] };
+    const product1: ProductProperties = emptyProduct;
+    const product2: ProductProperties = { ...emptyProduct, tags: ['test'] };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -151,8 +151,8 @@ test('should create patch with added tag correctly', () => {
 });
 
 test('should create patch with added tag correctly when tags already exist', () => {
-    const product1: ProductInfo = { ...emptyProduct, tags: ['test'] };
-    const product2: ProductInfo = { ...emptyProduct, tags: ['test', 'hello'] };
+    const product1: ProductProperties = { ...emptyProduct, tags: ['test'] };
+    const product2: ProductProperties = { ...emptyProduct, tags: ['test', 'hello'] };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -169,8 +169,8 @@ test('should create patch with added tag correctly when tags already exist', () 
 });
 
 test('should create patch with removed tag correctly', () => {
-    const product1: ProductInfo = { ...emptyProduct, tags: ['test'] };
-    const product2: ProductInfo = { ...emptyProduct, tags: [] };
+    const product1: ProductProperties = { ...emptyProduct, tags: ['test'] };
+    const product2: ProductProperties = { ...emptyProduct, tags: [] };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -187,8 +187,8 @@ test('should create patch with removed tag correctly', () => {
 });
 
 test('should create patch with removed tag correctly when other items exist', () => {
-    const product1: ProductInfo = { ...emptyProduct, tags: ['hello', 'test'] };
-    const product2: ProductInfo = { ...emptyProduct, tags: ['hello'] };
+    const product1: ProductProperties = { ...emptyProduct, tags: ['hello', 'test'] };
+    const product2: ProductProperties = { ...emptyProduct, tags: ['hello'] };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -205,8 +205,8 @@ test('should create patch with removed tag correctly when other items exist', ()
 });
 
 test('should create patch with added label', () => {
-    const product1: ProductInfo = { ...emptyProduct };
-    const product2: ProductInfo = { ...emptyProduct, label: [{ languageCode: 'de', value: 'test label' }] };
+    const product1: ProductProperties = { ...emptyProduct };
+    const product2: ProductProperties = { ...emptyProduct, label: [{ languageCode: 'de', value: 'test label' }] };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -223,8 +223,8 @@ test('should create patch with added label', () => {
 });
 
 test('should create patch with removed label', () => {
-    const product1: ProductInfo = { ...emptyProduct, label: [{ languageCode: 'de', value: 'test label' }] };
-    const product2: ProductInfo = { ...emptyProduct };
+    const product1: ProductProperties = { ...emptyProduct, label: [{ languageCode: 'de', value: 'test label' }] };
+    const product2: ProductProperties = { ...emptyProduct };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -241,8 +241,8 @@ test('should create patch with removed label', () => {
 });
 
 test('should create patch with added serving', () => {
-    const product1: ProductInfo = { ...emptyProduct };
-    const product2: ProductInfo = { ...emptyProduct, servings: { ...emptyProduct.servings, piece: 27 } };
+    const product1: ProductProperties = { ...emptyProduct };
+    const product2: ProductProperties = { ...emptyProduct, servings: { ...emptyProduct.servings, piece: 27 } };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -259,8 +259,8 @@ test('should create patch with added serving', () => {
 });
 
 test('should create patch with removed serving', () => {
-    const product1: ProductInfo = { ...emptyProduct };
-    const product2: ProductInfo = { ...emptyProduct, servings: {} };
+    const product1: ProductProperties = { ...emptyProduct };
+    const product2: ProductProperties = { ...emptyProduct, servings: {} };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 
@@ -276,8 +276,8 @@ test('should create patch with removed serving', () => {
 });
 
 test('should create patch with changed serving', () => {
-    const product1: ProductInfo = { ...emptyProduct };
-    const product2: ProductInfo = { ...emptyProduct, servings: { g: 2 } };
+    const product1: ProductProperties = { ...emptyProduct };
+    const product2: ProductProperties = { ...emptyProduct, servings: { g: 2 } };
 
     const result = itiriri(createPatch(product1, product2)).toArray();
 

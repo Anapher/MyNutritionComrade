@@ -12,7 +12,6 @@ using MyNutritionComrade.Core.Errors;
 using MyNutritionComrade.Core.Extensions;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.UseCases;
-using MyNutritionComrade.Core.Utilities;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Helpers;
 using MyNutritionComrade.Models.Response;
@@ -65,6 +64,29 @@ namespace MyNutritionComrade.Controllers
             return CreatedAtAction(nameof(GetProduct), new {id = response!.Product.Id}, response!.Product);
         }
 
+        [HttpGet("{id}/pending")]
+        public async Task<ActionResult<ProductContributionDto>> GetPendingContributions(string id, [FromServices] IPendingContributionsSelector selector)
+        {
+            var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
+            var data = await selector.GetPendingContributions(id, userId);
+
+            return Ok(data);
+        }
+
+        [HttpPost("contributions/{id}/vote")]
+        public async Task<ActionResult<ProductContributionDto>> VoteForContribution(string id, [FromBody] ApproveInfo approve,
+            [FromServices] IVoteProductContributionUseCase useCase, [FromServices] IMapper mapper)
+        {
+            var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
+
+            var response = await useCase.Handle(new VoteProductContributionRequest(userId, id, approve.Approve));
+            if (useCase.HasError)
+                return useCase.ToActionResult();
+
+            var dto = PendingContributionsSelector.MapToDto(response!.ProductContribution, response.Voting, response.Vote, userId, mapper);
+            return Ok(dto);
+        }
+
         [HttpPatch("{id}")]
         public async Task<ActionResult> PatchProduct(string id, List<PatchOperation> operations, [FromServices] IPatchProductUseCase useCase)
         {
@@ -86,6 +108,11 @@ namespace MyNutritionComrade.Controllers
                 return new EntityNotFoundError("The product could not be found.", ErrorCode.Product_NotFound).ToActionResult();
 
             return Ok(mapper.Map<ProductDto>(product));
+        }
+
+        public class ApproveInfo
+        {
+            public bool Approve { get; set; }
         }
     }
 }

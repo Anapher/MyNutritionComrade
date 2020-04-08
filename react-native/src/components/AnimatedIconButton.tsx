@@ -1,7 +1,7 @@
+import React, { useCallback, useRef } from 'react';
 import { Animated, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useRef, useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 
@@ -36,6 +36,7 @@ export default function AnimatedIconButton({ name, size, onPress, color = 'black
                         position: 'absolute',
                         left: 0,
                         top: 0,
+                        zIndex: 100000,
                         transform: [
                             {
                                 scale: animation.interpolate({

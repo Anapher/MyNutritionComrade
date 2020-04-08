@@ -1,9 +1,9 @@
 import Color from 'color';
 import { FormikProps } from 'formik';
-import { ProductInfo } from 'Models';
+import { ProductProperties } from 'Models';
 import React, { useRef } from 'react';
-import { SectionList, SectionListData, TextInput, View, StyleSheet } from 'react-native';
-import { Subheading, Surface, Text, Theme, useTheme } from 'react-native-paper';
+import { SectionList, SectionListData, StyleSheet, TextInput, View } from 'react-native';
+import { Subheading, Surface, Text, useTheme } from 'react-native-paper';
 import CheckableRow from 'src/components/CheckableRow';
 import Row from 'src/components/Row';
 import { TagLiquid } from 'src/consts';
@@ -33,7 +33,7 @@ const servingsFactory: (isLiquid: boolean) => SectionListData<ServingInfo>[] = (
 };
 
 type Props = {
-    formik: FormikProps<ProductInfo>;
+    formik: FormikProps<ProductProperties>;
 };
 
 function Servings({ formik: { values, setFieldValue, errors } }: Props) {

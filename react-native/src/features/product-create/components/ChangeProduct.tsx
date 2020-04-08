@@ -1,25 +1,24 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { FormikHelpers } from 'formik';
 import itiriri from 'itiriri';
-import { ProductInfo } from 'Models';
+import _ from 'lodash';
 import React, { useState } from 'react';
 import { ToastAndroid } from 'react-native';
 import useAsyncFunction from 'src/hooks/use-async-function';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as productsApi from 'src/services/api/products';
+import { RequestErrorResponse, toString } from 'src/utils/error-result';
 import * as actions from '../actions';
 import { createPatch, reducePatch } from '../utils';
 import ProductEditor from './ProductEditor';
-import _ from 'lodash';
-import { RequestErrorResponse, toString } from 'src/utils/error-result';
+import { ProductProperties } from 'Models';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
     route: RouteProp<RootStackParamList, 'ChangeProduct'>;
 };
 
-const mapToProductInfo: (p: ProductInfo) => ProductInfo = (p: ProductInfo) => ({
+const mapToProductInfo: (p: ProductProperties) => ProductProperties = (p: ProductProperties) => ({
     code: p.code,
     defaultServing: p.defaultServing,
     label: p.label,
@@ -44,7 +43,7 @@ function ChangeProduct({
 
     const [showLoadingIndicator, setShowLoadingIndicator] = useState(true);
 
-    const changeProduct = async (values: ProductInfo) => {
+    const changeProduct = async (values: ProductProperties) => {
         const currentProduct = await productsApi.getById(product.id);
         const productInfo = mapToProductInfo(currentProduct);
 

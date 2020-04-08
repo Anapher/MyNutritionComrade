@@ -1,4 +1,4 @@
-import { NutritionalInfo, ProductInfo } from 'Models';
+import { NutritionalInfo, ProductProperties } from 'Models';
 import { CurrentLanguage, SupportedLanguages } from 'src/consts';
 import * as yup from 'yup';
 
@@ -102,7 +102,7 @@ export const getServings: (
     isLiquid: boolean,
 ) => { [name in keyof ReturnType<typeof servings>]: ServingInfo } = servings;
 
-export const emptyProductInfo: ProductInfo = {
+export const emptyProductInfo: ProductProperties = {
     defaultServing: 'g',
     nutritionalInfo: {
         volume: 100,

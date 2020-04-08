@@ -1,6 +1,13 @@
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
-import { ConsumptionTime, ProductInfo, ProductSearchDto, ProductDto, PatchOperation } from 'Models';
+import {
+    ConsumptionTime,
+    PatchOperation,
+    ProductContributionDto,
+    ProductDto,
+    ProductInfo,
+    ProductProperties,
+} from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
@@ -8,13 +15,13 @@ import { connect } from 'react-redux';
 import SignInScreen from 'src/features/auth/components/SignInScreen';
 import BarcodeScanner from './features/barcode-scanner/BarcodeScanner';
 import AddProduct from './features/product-add/components/AddProduct';
+import ChangeProduct from './features/product-create/components/ChangeProduct';
 import CreateProduct from './features/product-create/components/CreateProduct';
+import ReviewChanges from './features/product-create/components/ReviewChanges';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearch from './features/product-search/components/ProductSearchScreen';
+import VoteProductChanges from './features/product-vote-changes/components/VoteProductChanges';
 import HomeScreen from './HomeScreen';
-import ChangeProduct from './features/product-create/components/ChangeProduct';
-import ReviewChanges from './features/product-create/components/ReviewChanges';
-import { View } from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -28,7 +35,7 @@ type Props = ReturnType<typeof mapStateToProps>;
 export type RootStackParamList = {
     Home: undefined;
     SearchProduct: { consumptionTime: ConsumptionTime; date: string };
-    CreateProduct: { initialValues?: Partial<ProductInfo> };
+    CreateProduct: { initialValues?: Partial<ProductProperties> };
     ChangeProduct: { product: ProductDto };
     ReviewProductChanges: { product: ProductDto; changes: PatchOperation[][]; acceptChanges: () => void };
     ScanBarcode: {
@@ -37,7 +44,8 @@ export type RootStackParamList = {
             navigation: StackNavigationProp<RootStackParamList>,
         ) => Promise<boolean | void>;
     };
-    AddProduct: { product: ProductSearchDto; volume?: number; onSubmit: (volume: number) => void };
+    AddProduct: { product: ProductInfo; volume?: number; onSubmit: (volume: number) => void };
+    VoteProductChanges: { contributions: ProductContributionDto[]; product: ProductInfo };
 };
 
 function RootNavigator({ isAuthenticated, isSignOut }: Props) {
@@ -91,6 +99,7 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                         }}
                     />
                     <Stack.Screen name="AddProduct" component={AddProduct} />
+                    <Stack.Screen name="VoteProductChanges" component={VoteProductChanges} />
                 </>
             )}
         </Stack.Navigator>

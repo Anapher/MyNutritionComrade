@@ -3,7 +3,7 @@ import {
     FrequentlyUsedProducts,
     ConsumptionTime,
     FrequentlyUsedProductDto,
-    ProductInfo,
+    ProductProperties,
     NutritionalInfo,
     ProductLabel,
 } from 'Models';
@@ -63,7 +63,7 @@ export function* flattenProductsPrioritize(
  * Return true if the product is a liquid
  * @param product the product
  */
-export function isProductLiquid(product: ProductInfo): boolean {
+export function isProductLiquid(product: ProductProperties): boolean {
     return product.tags.includes(TagLiquid);
 }
 
@@ -71,7 +71,7 @@ export function isProductLiquid(product: ProductInfo): boolean {
  * Return the base unit for the product. 'ml' for liquids, 'g' else
  * @param product the product
  */
-export function getBaseUnit(product: ProductInfo): string {
+export function getBaseUnit(product: ProductProperties): string {
     return isProductLiquid(product) ? 'ml' : 'g';
 }
 

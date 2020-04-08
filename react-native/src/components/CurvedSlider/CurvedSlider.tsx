@@ -136,7 +136,7 @@ export default function CurvedSlider({
             duration: 100,
             easing: Easing.linear,
         }).start();
-    }, [value, thumbPosition, minValue, maxValue, radius, arcWidth]);
+    }, [value, thumbPosition, minValue, maxValue, radius, arcWidth, scalePoints]);
 
     const arcRef = useRef<any>(null);
 

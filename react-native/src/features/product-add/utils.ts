@@ -1,3 +1,4 @@
+import { CurveScale } from './reducer';
 import { NutritionalInfo } from 'Models';
 import { changeVolume } from 'src/utils/product-utils';
 
@@ -13,11 +14,7 @@ const scales = [
     { max: 5, step: 1, labelStep: 1 },
 ];
 
-export function selectScale(
-    servingType: string,
-    servingVolume: number,
-    nutritionInfo: NutritionalInfo,
-): { max: number; step: number; labelStep: number } {
+export function selectScale(servingType: string, servingVolume: number, nutritionInfo: NutritionalInfo): CurveScale {
     const oneServingNutritions = changeVolume(nutritionInfo, servingVolume);
     for (const scale of scales) {
         if (scale.max * oneServingNutritions.energy <= maxSelectableCalories) {

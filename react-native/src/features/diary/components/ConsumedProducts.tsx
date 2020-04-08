@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import FoodList from './FoodList';
-import { ConsumptionTime, ProductSearchDto, ProductDto, ConsumedProduct } from 'Models';
+import { ConsumptionTime, ProductDto, ConsumedProduct, ProductInfo } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import { connect } from 'react-redux';
 import * as selectors from '../selectors';
@@ -52,7 +52,7 @@ function ConsumedProducts({
     const scanBarcode = useCallback(() => {
         navigation.navigate('ScanBarcode', {
             onBarcodeScanned: async ({ data: barcode }, nav) => {
-                let product: ProductSearchDto | undefined = itiriri(
+                let product: ProductInfo | undefined = itiriri(
                     flattenProductsPrioritize(frequentlyUsedProducts, time),
                 ).find((x) => x.code === barcode);
 

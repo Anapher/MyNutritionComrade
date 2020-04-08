@@ -1,8 +1,8 @@
 import Color from 'color';
 import { FormikProps } from 'formik';
-import { ProductInfo } from 'Models';
+import { ProductProperties } from 'Models';
 import React, { useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, View, Keyboard } from 'react-native';
+import { FlatList, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
 import {
     Button,
     Caption,
@@ -14,14 +14,13 @@ import {
     Subheading,
     Surface,
     TextInput,
-    Theme,
     TouchableRipple,
     useTheme,
 } from 'react-native-paper';
-import { SupportedLanguages, errorColor } from 'src/consts';
+import { errorColor, SupportedLanguages } from 'src/consts';
 
 type Props = {
-    formik: FormikProps<ProductInfo>;
+    formik: FormikProps<ProductProperties>;
 };
 
 function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {

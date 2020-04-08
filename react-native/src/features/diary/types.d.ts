@@ -2,7 +2,6 @@ declare module 'Models' {
     export type ConsumptionTime = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
     export interface ProductDto extends ProductInfo {
-        id: string;
         version: number;
     }
 

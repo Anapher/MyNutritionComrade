@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FormikProps } from 'formik';
-import { ProductInfo } from 'Models';
+import { ProductProperties } from 'Models';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -9,7 +9,7 @@ import BarCodeField from './BarCodeField';
 import DefaultUnit from './DefaultUnit';
 
 type Props = {
-    formik: FormikProps<ProductInfo>;
+    formik: FormikProps<ProductProperties>;
     navigation: StackNavigationProp<RootStackParamList>;
 };
 

@@ -1,6 +1,5 @@
 import cuid from 'cuid';
 import { ConsumedProduct, FrequentlyUsedProducts } from 'Models';
-import { withTheme } from 'react-native-paper';
 import { RequestErrorResponse } from 'src/utils/error-result';
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { ConsumeProductData } from './reducer';
@@ -25,5 +24,3 @@ export const changeProductConsumption = {
     success: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_SUCCESS')<ConsumeProductData>(),
     failure: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_FAILURE')<RequestErrorResponse & { requestId: string }>(),
 };
-
-withTheme;

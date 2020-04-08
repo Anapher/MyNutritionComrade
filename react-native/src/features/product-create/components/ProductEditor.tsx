@@ -1,10 +1,11 @@
 import ViewPager from '@react-native-community/viewpager';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Formik, FormikHelpers } from 'formik';
-import { ProductInfo } from 'Models';
+import { ProductProperties } from 'Models';
 import React, { useRef, useState } from 'react';
 import { Keyboard, Platform, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Colors, Dialog, Paragraph, Portal, Theme, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Colors, Dialog, Paragraph, Portal, useTheme } from 'react-native-paper';
+import LinearMobileStepper from 'src/components/LinearMobileStepper';
 import { RootStackParamList } from 'src/RootNavigator';
 import { productInfoValidationSchema } from '../data';
 import ProductEditorHeader from './ProductEditorHeader';
@@ -12,14 +13,13 @@ import NutritionInfo from './tabs/NutritionInfo';
 import ProductLabel from './tabs/ProductLabel';
 import Properties from './tabs/properties';
 import Servings from './tabs/Servings';
-import LinearMobileStepper from 'src/components/LinearMobileStepper';
 
 const isIOS = Platform.OS === 'ios';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
-    initialValue: ProductInfo;
-    onSubmit: (values: ProductInfo, formikHelpers: FormikHelpers<ProductInfo>) => void | Promise<any>;
+    initialValue: ProductProperties;
+    onSubmit: (values: ProductProperties, formikHelpers: FormikHelpers<ProductProperties>) => void | Promise<any>;
     title: string;
     titleIcon: string;
     loadingTitle: string;
@@ -40,7 +40,7 @@ function ProductEditor({
     const theme = useTheme();
 
     return (
-        <Formik<ProductInfo>
+        <Formik<ProductProperties>
             initialValues={initialValue}
             validateOnMount
             onSubmit={(values, helpers) => {

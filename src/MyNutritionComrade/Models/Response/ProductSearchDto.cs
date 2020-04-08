@@ -9,6 +9,7 @@ namespace MyNutritionComrade.Models.Response
     public class ProductSearchDto
     {
         public string Id { get; set; }
+        public string? Code { get; set; }
         public string[] Tags { get; set; }
         public NutritionalInfo NutritionalInfo { get; set; }
         public Dictionary<string, double> Servings { get; set; }
