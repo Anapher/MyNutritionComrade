@@ -5,14 +5,11 @@ declare module 'Models' {
         version: number;
     }
 
-    export type ConsumedProduct = {
+    export interface ConsumedProduct extends ProductEssentials {
         date: string;
         time: ConsumptionTime;
         productId: string;
-        nutritionalInfo: NutritionalInfo;
-        tags: string[];
-        label: ProductLabel[];
-    };
+    }
 
     export interface FrequentlyUsedProductDto extends ProductDto {
         recentlyConsumedVolume: number;

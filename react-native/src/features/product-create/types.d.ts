@@ -1,11 +1,14 @@
 declare module 'Models' {
-    export interface ProductProperties {
+    export interface ProductEssentials {
         nutritionalInfo: NutritionalInfo;
-        code?: string | null;
+        tags: string[];
         label: ProductLabel[];
+    }
+
+    export interface ProductProperties extends ProductEssentials {
+        code?: string | null;
         servings: { [key: string]: number };
         defaultServing: string;
-        tags: string[];
     }
 
     export interface ProductInfo extends ProductProperties {

@@ -43,6 +43,7 @@ function ProductSearchScreen({ suggestions, navigation, route, changeProductCons
                                 date: route.params.date,
                                 time: route.params.consumptionTime,
                                 product: item.model,
+                                productId: item.model.id,
                                 value,
                                 append: true,
                             });

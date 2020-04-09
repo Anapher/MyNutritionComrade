@@ -1,4 +1,4 @@
-import { ConsumedProduct, ConsumptionTime, FrequentlyUsedProducts, ProductInfo } from 'Models';
+import { ConsumedProduct, ConsumptionTime, FrequentlyUsedProducts, ProductEssentials } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
@@ -7,7 +7,8 @@ import { patchConsumedProducts } from './utils';
 export type ConsumeProductData = {
     date: string;
     time: ConsumptionTime;
-    product: ProductInfo;
+    product: ProductEssentials;
+    productId: string;
     value: number;
 
     requestId: string;
@@ -43,6 +44,7 @@ export default function (state: DiaryState = initialState, action: RootAction): 
             return { ...state, currentDate: action.payload };
         case getType(actions.loadDate.success):
             if (state.currentDate !== action.payload.date) return state;
+
             return { ...state, consumedProducts: action.payload.value, pendingConsumedProducts: [] };
         case getType(actions.changeProductConsumption.request):
             return {
@@ -58,6 +60,13 @@ export default function (state: DiaryState = initialState, action: RootAction): 
                 consumedProducts: patchConsumedProducts(state.consumedProducts, action.payload),
                 pendingConsumedProducts: state.pendingConsumedProducts.filter(
                     (x) => x.requestId !== action.payload.requestId,
+                ),
+            };
+        case getType(actions.changeProductConsumption.failure):
+            return {
+                ...state,
+                pendingConsumedProducts: state.pendingConsumedProducts.filter(
+                    (x) => x.requestId === action.payload.requestId,
                 ),
             };
         default:

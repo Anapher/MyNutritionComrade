@@ -38,7 +38,7 @@ export const changeProductConsumptionEpic: RootEpic = (action$, state$, { api })
                       0) + payload.value
                 : payload.value;
 
-            return from(api.consumption.setConsumption(payload.date, payload.time, payload.product.id, newValue)).pipe(
+            return from(api.consumption.setConsumption(payload.date, payload.time, payload.productId, newValue)).pipe(
                 map(() => actions.changeProductConsumption.success(payload)),
                 catchError((error: AxiosError) =>
                     of(

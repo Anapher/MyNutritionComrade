@@ -15,9 +15,10 @@ import DiaryHeader from './DiaryHeader';
 import { AxiosError } from 'axios';
 import { ConsumedProduct, ProductDto, ProductInfo, ConsumptionTime } from 'Models';
 import itiriri from 'itiriri';
-import { flattenProductsPrioritize } from 'src/utils/product-utils';
+import selectLabel, { flattenProductsPrioritize } from 'src/utils/product-utils';
 import * as productApi from 'src/services/api/products';
 import { TagLiquid } from 'src/consts';
+import FlatButton from 'src/components/FlatButton';
 
 const mapStateToProps = (state: RootState) => ({
     sections: selectors.getConsumedProductsSections(state),
@@ -51,6 +52,7 @@ function TabDiary({
     }, []);
 
     const [unlistedProduct, setUnlistedProduct] = useState<string | undefined>();
+    const [productOptions, setProductOptions] = useState<ConsumedProduct | undefined>();
 
     const scanBarcode = (time: ConsumptionTime) => {
         navigation.navigate('ScanBarcode', {
@@ -75,6 +77,7 @@ function TabDiary({
                                 date: currentDate,
                                 time,
                                 product: product!,
+                                productId: product!.id,
                                 value: volume,
                                 append: true,
                             });
@@ -126,6 +129,7 @@ function TabDiary({
                     date: currentDate,
                     time: item.time,
                     product: product!,
+                    productId: product!.id,
                     value: volume,
                     append: false,
                 });
@@ -139,7 +143,13 @@ function TabDiary({
             <SectionList
                 sections={sections}
                 keyExtractor={({ time, productId }) => `${time}/${productId}`}
-                renderItem={({ item }) => <ConsumedProductItem product={item} onPress={() => editItem(item)} />}
+                renderItem={({ item }) => (
+                    <ConsumedProductItem
+                        product={item}
+                        onPress={() => editItem(item)}
+                        onLongPress={() => setProductOptions(item)}
+                    />
+                )}
                 ItemSeparatorComponent={() => <Divider />}
                 renderSectionHeader={({ section }) => (
                     <ConsumptionTimeHeader section={section} style={{ marginTop: 8 }} />
@@ -179,6 +189,54 @@ function TabDiary({
                             Create
                         </Button>
                     </Dialog.Actions>
+                </Dialog>
+
+                <Dialog visible={!!productOptions} onDismiss={() => setProductOptions(undefined)}>
+                    <Dialog.Title numberOfLines={1} lineBreakMode="tail">
+                        {productOptions && selectLabel(productOptions.label)}
+                    </Dialog.Title>
+                    <Dialog.Content>
+                        <Button onPress={() => {}} contentStyle={{ justifyContent: 'flex-start' }} color="#fff">
+                            Show Product
+                        </Button>
+                        <Divider />
+                        <Button
+                            onPress={() => {
+                                editItem(productOptions!);
+                                setProductOptions(undefined);
+                            }}
+                            contentStyle={{ justifyContent: 'flex-start' }}
+                            color="#fff"
+                        >
+                            Change volume
+                        </Button>
+                        <Divider />
+                        <Button onPress={() => {}} contentStyle={{ justifyContent: 'flex-start' }} color="#fff">
+                            Suggest Changes
+                        </Button>
+                        <Divider />
+                        <Button onPress={() => {}} contentStyle={{ justifyContent: 'flex-start' }} color="#fff">
+                            Show Pending Changes
+                        </Button>
+                        <Divider />
+                        <Button
+                            color="#e74c3c"
+                            onPress={() => {
+                                changeProductConsumption({
+                                    append: false,
+                                    date: currentDate,
+                                    product: productOptions!,
+                                    productId: productOptions!.productId,
+                                    time: productOptions!.time,
+                                    value: 0,
+                                });
+                                setProductOptions(undefined);
+                            }}
+                            contentStyle={{ justifyContent: 'flex-start' }}
+                        >
+                            Remove
+                        </Button>
+                    </Dialog.Content>
                 </Dialog>
             </Portal>
         </Surface>

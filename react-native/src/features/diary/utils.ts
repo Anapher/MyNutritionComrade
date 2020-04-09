@@ -3,12 +3,12 @@ import { ConsumeProductData } from './reducer';
 import { changeVolume } from 'src/utils/product-utils';
 
 export const matchProduct = (o1: ConsumedProduct, o2: ConsumeProductData) =>
-    o1.date === o2.date && o1.time === o2.time && o1.productId === o2.product.id;
+    o1.date === o2.date && o1.time === o2.time && o1.productId === o2.productId;
 
 export const mapToProduct = (x: ConsumeProductData, newValue?: number): ConsumedProduct => ({
     date: x.date,
     time: x.time,
-    productId: x.product.id,
+    productId: x.productId,
     label: x.product.label,
     nutritionalInfo: changeVolume(x.product.nutritionalInfo, newValue ?? x.value),
     tags: x.product.tags,

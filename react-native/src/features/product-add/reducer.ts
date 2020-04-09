@@ -43,6 +43,7 @@ export default combineReducers<AddProductState, RootAction>({
                 let volume = curve.labelStep;
                 if (startVolume) {
                     volume = startVolume - (startVolume % curve.step);
+                    volume = volume / product.servings[selectedServing];
                 }
 
                 return { curve, volume, product, selectedServing };
