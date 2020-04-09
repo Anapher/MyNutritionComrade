@@ -26,6 +26,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 function ProductSearchScreen({ suggestions, navigation, route, changeProductConsumption }: Props) {
     const theme = useTheme();
+
     return (
         <FlatList
             data={suggestions}

@@ -26,17 +26,3 @@ export function formatNumber(num: number, decimals: number = 1): string {
 export function capitalizeFirstLetter(s: string): string {
     return s[0].toUpperCase() + s.slice(1);
 }
-
-/**
- * Format a date to yyyy-MM-dd and pad with zeros if necessary
- * @param date the date
- */
-export function toDateString(date: Date): string {
-    return (
-        date.getFullYear() +
-        '-' +
-        _.padStart((date.getMonth() + 1).toString(), 2, '0') +
-        '-' +
-        _.padStart(date.getDate().toString(), 2, '0')
-    );
-}

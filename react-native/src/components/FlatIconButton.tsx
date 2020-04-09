@@ -19,6 +19,7 @@ type FlatIconButtonProps = {
     margin: number;
     onPress?: () => void | null;
     longPressInfo?: string;
+    disabled?: boolean;
 };
 
 function getToastCallback(text?: string) {
@@ -26,12 +27,16 @@ function getToastCallback(text?: string) {
     return () => ToastAndroid.show(text, ToastAndroid.SHORT);
 }
 
-export default function FlatIconButton({ icon, margin, onPress, longPressInfo }: FlatIconButtonProps) {
+export default function FlatIconButton({ icon, margin, onPress, longPressInfo, disabled }: FlatIconButtonProps) {
     const theme = useTheme();
 
     return (
-        <TouchableRipple onPress={onPress} borderless onLongPress={getToastCallback(longPressInfo)}>
-            <View style={styles.buttonContent}>
+        <TouchableRipple
+            onPress={disabled ? undefined : onPress}
+            borderless
+            onLongPress={disabled ? undefined : getToastCallback(longPressInfo)}
+        >
+            <View style={[styles.buttonContent, { opacity: disabled ? 0.3 : 1 }]}>
                 <Icon
                     name={icon}
                     size={20}

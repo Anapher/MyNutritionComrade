@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import TextToggleButton from 'src/components/TextToggleButton';
 import _ from 'lodash';
-import { ProductSearchDto } from 'Models';
+import { ProductProperties } from 'Models';
 import { TagLiquid } from 'src/consts';
 import { Text, Caption } from 'react-native-paper';
 import { capitalizeFirstLetter } from 'src/utils/string-utils';
@@ -10,7 +10,7 @@ import { capitalizeFirstLetter } from 'src/utils/string-utils';
 type Props = {
     value: string;
     onChange: (v: string) => void;
-    product: ProductSearchDto;
+    product: ProductProperties;
 };
 
 export default function ServingSelection({ value, onChange, product }: Props) {

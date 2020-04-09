@@ -46,11 +46,15 @@ function ProductEditor({
             onSubmit={(values, helpers) => {
                 Keyboard.dismiss();
 
-                values.nutritionalInfo = Object.fromEntries(
-                    Object.keys(values.nutritionalInfo).map((x) => [x, Number((values.nutritionalInfo as any)[x])]),
-                ) as any;
+                const patchedValues: ProductProperties = {
+                    ...values,
+                    nutritionalInfo: Object.fromEntries(
+                        Object.keys(values.nutritionalInfo).map((x) => [x, Number((values.nutritionalInfo as any)[x])]),
+                    ) as any,
+                    label: values.label.map((x) => ({ languageCode: x.languageCode, value: x.value })),
+                };
 
-                return onSubmit(values, helpers);
+                return onSubmit(patchedValues, helpers);
             }}
             validationSchema={productInfoValidationSchema}
         >

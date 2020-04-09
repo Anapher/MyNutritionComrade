@@ -1,7 +1,9 @@
-import { ConsumptionTime } from 'Models';
+import { ConsumptionTimes } from 'src/consts';
+import { ConsumptionTime, ConsumedProduct } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import { createSelector } from 'reselect';
 import { patchConsumedProducts } from './utils';
+import { SectionListData } from 'react-native';
 
 type TimeProps = {
     time: ConsumptionTime;
@@ -9,11 +11,9 @@ type TimeProps = {
 
 const currentDateSelector = (state: RootState) => state.diary.currentDate;
 
-const consumedProductsSelector = (state: RootState, { time }: TimeProps) =>
-    state.diary.consumedProducts.filter((x) => x.time === time);
+const consumedProductsSelector = (state: RootState) => state.diary.consumedProducts;
 
-const pendingConsumedProductsSelector = (state: RootState, { time }: TimeProps) =>
-    state.diary.pendingConsumedProducts.filter((x) => x.time === time);
+const pendingConsumedProductsSelector = (state: RootState) => state.diary.pendingConsumedProducts;
 
 export const getConsumedProducts = createSelector(
     [currentDateSelector, consumedProductsSelector, pendingConsumedProductsSelector],
@@ -32,3 +32,12 @@ export const getConsumedProducts = createSelector(
         return result;
     },
 );
+
+export const getConsumedProductsSections = createSelector([getConsumedProducts], (products) => {
+    const result: SectionListData<ConsumedProduct>[] = ConsumptionTimes.map((time) => ({
+        time,
+        data: products.filter((x) => x.time === time),
+    }));
+
+    return result;
+});

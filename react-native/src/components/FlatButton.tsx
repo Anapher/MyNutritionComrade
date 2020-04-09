@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 });
 
 type FlatButtonProps = {
-    icon: string;
+    icon?: string;
     text: string;
     onPress?: () => void | null;
     center?: boolean;
@@ -30,8 +30,8 @@ export default function FlatButton({ icon, text, onPress, style, center = false 
     return (
         <TouchableRipple onPress={onPress} style={style}>
             <View style={[styles.buttonContent, { justifyContent: center ? 'center' : 'flex-start' }]}>
-                <Icon name={icon} size={20} color={theme.colors.text} />
-                <Text style={{ marginLeft: 8 }}>{text}</Text>
+                {icon && <Icon name={icon} size={20} color={theme.colors.text} style={{ marginRight: 8 }} />}
+                <Text>{text}</Text>
             </View>
         </TouchableRipple>
     );

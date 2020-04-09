@@ -34,6 +34,25 @@ export function changeVolume(info: NutritionalInfo, newVolume: number): Nutritio
 }
 
 /**
+ * Change the volume of a {@see NutritionalInfo} and calculate the new nutrtional values
+ * @param info the nutritional information
+ * @param newVolume the new volume
+ */
+export function sumNutritions(nutritions: NutritionalInfo[]): NutritionalInfo {
+    return {
+        volume: _.sumBy(nutritions, (x) => x.volume),
+        energy: _.sumBy(nutritions, (x) => x.energy),
+        fat: _.sumBy(nutritions, (x) => x.fat),
+        saturatedFat: _.sumBy(nutritions, (x) => x.saturatedFat),
+        carbohydrates: _.sumBy(nutritions, (x) => x.carbohydrates),
+        sugars: _.sumBy(nutritions, (x) => x.sugars),
+        protein: _.sumBy(nutritions, (x) => x.protein),
+        dietaryFiber: _.sumBy(nutritions, (x) => x.dietaryFiber),
+        sodium: _.sumBy(nutritions, (x) => x.sodium),
+    };
+}
+
+/**
  * Flatten {@see FrequentlyUsedProducts} by first returning all products of the priorizedTime
  * and then returning the first products of the other times until all products are returned
  * @param frequentlyUsedProducts the frequently used products

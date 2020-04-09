@@ -5,8 +5,8 @@ import {
     FoodSuggestion,
     FrequentlyUsedProducts,
     ProductLabel,
-    ProductSearchDto,
     ServingSize,
+    ProductInfo,
 } from 'Models';
 import { tryParseServingSize } from 'src/utils/input-parser';
 import selectLabel from 'src/utils/product-utils';
@@ -24,6 +24,7 @@ export function querySuggestions(
     if (input === '') {
         // return most frequent items from last days
         return itiriri(productsOrder)
+            .distinct((x) => x.id)
             .take(maxSearchResults)
             .map((x) => ({
                 model: x,
@@ -43,12 +44,13 @@ export function querySuggestions(
     }
 
     return entries
+        .distinct((x) => x.id)
         .take(maxSearchResults)
         .map<FoodSuggestion>((x) => mapToFoodSuggestion(x, result.serving))
         .toArray();
 }
 
-export function mapToFoodSuggestion(dto: ProductSearchDto, parsedServing?: Partial<ServingSize>[]): FoodSuggestion {
+export function mapToFoodSuggestion(dto: ProductInfo, parsedServing?: Partial<ServingSize>[]): FoodSuggestion {
     if (parsedServing) {
         const matchedServing = getMatchingServing(parsedServing, dto.servings)!;
         if (matchedServing.size) {

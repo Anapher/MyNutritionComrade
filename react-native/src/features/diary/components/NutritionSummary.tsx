@@ -1,8 +1,10 @@
-import { NutritionalInfo, ProductProperties } from 'Models';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { ConsumedProduct, NutritionalInfo } from 'Models';
 import { roundNumber } from 'src/utils/string-utils';
+import { sumNutritions } from 'src/utils/product-utils';
+import { Text } from 'react-native-paper';
+import _ from 'lodash';
 
 type TileProps = {
     caption: string;
@@ -32,30 +34,26 @@ type NutritionTile = {
 function NutritionTile({ info, name, volume }: NutritionTile) {
     return (
         <Tile
-            caption={((info[name] / info.volume) * 100).toFixed(1) + '%'}
-            value={roundNumber((info[name] / info.volume) * volume) + 'g'}
+            caption={((info[name] / (info.volume || 1)) * 100).toFixed(1) + '%'}
+            value={roundNumber((info[name] / (info.volume || 1)) * volume) + 'g'}
             text={name.charAt(0).toUpperCase() + name.slice(1)}
         />
     );
 }
 
 type Props = {
-    product: ProductProperties;
-    volume: number;
+    products: ConsumedProduct[];
 };
 
-function ServingInfo({ product: { nutritionalInfo }, volume }: Props) {
+function NutritionSummary({ products }: Props) {
+    const nutritions = sumNutritions(products.map((x) => x.nutritionalInfo));
+
     return (
         <View style={styles.root}>
-            <Tile
-                caption=" "
-                value={roundNumber((nutritionalInfo.energy / nutritionalInfo.volume) * volume) as any}
-                text="kcal"
-                fat
-            />
-            <NutritionTile volume={volume} info={nutritionalInfo} name="carbohydrates" />
-            <NutritionTile volume={volume} info={nutritionalInfo} name="fat" />
-            <NutritionTile volume={volume} info={nutritionalInfo} name="protein" />
+            <Tile caption=" " value={roundNumber(nutritions.energy) as any} text="kcal" fat />
+            <NutritionTile volume={nutritions.volume} info={nutritions} name="carbohydrates" />
+            <NutritionTile volume={nutritions.volume} info={nutritions} name="fat" />
+            <NutritionTile volume={nutritions.volume} info={nutritions} name="protein" />
         </View>
     );
 }
@@ -65,8 +63,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 8,
     },
 });
 
-export default ServingInfo;
+export default NutritionSummary;

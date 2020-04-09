@@ -18,6 +18,7 @@ import {
     useTheme,
 } from 'react-native-paper';
 import { errorColor, SupportedLanguages } from 'src/consts';
+import cuid from 'cuid';
 
 type Props = {
     formik: FormikProps<ProductProperties>;
@@ -40,7 +41,7 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
 
     const handleCreateLabel = () => {
         setAutoFocusTextField(true);
-        setFieldValue('label', [...values.label, { languageCode: selectedLanguage, label: '' }]);
+        setFieldValue('label', [...values.label, { languageCode: selectedLanguage, label: '', key: cuid() }]);
         setIsDialogOpen(false);
     };
 
@@ -70,7 +71,7 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                         <Caption style={{ color: errorColor, margin: 8 }}>{errors.label}</Caption>
                     ) : undefined
                 }
-                keyExtractor={(x, i) => `${x.languageCode}`}
+                keyExtractor={(x) => (x as any).key}
                 renderItem={({ item, index }) => (
                     <View
                         style={{

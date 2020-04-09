@@ -12,28 +12,6 @@ type Props = {
     onPress: () => void;
 };
 
-const styles = StyleSheet.create({
-    item: {
-        paddingVertical: 12,
-    },
-    itemContent: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    iconContent: {
-        width: 68,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 16,
-    },
-    description: {
-        fontSize: 12,
-    },
-});
-
 function SuggestionItem({ item, theme, onPress }: Props) {
     const iconColor = color(theme.colors.text).alpha(0.87).rgb().string();
     const descriptionColor = color(theme.colors.text).alpha(0.54).rgb().string();
@@ -58,5 +36,27 @@ function SuggestionItem({ item, theme, onPress }: Props) {
         </TouchableRipple>
     );
 }
+
+const styles = StyleSheet.create({
+    item: {
+        paddingVertical: 12,
+    },
+    itemContent: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    iconContent: {
+        width: 68,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 14,
+    },
+    description: {
+        fontSize: 12,
+    },
+});
 
 export default withTheme(SuggestionItem);

@@ -3,7 +3,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import Color from 'color';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect, useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, FlatList } from 'react-native';
 import { Surface, useTheme, Text } from 'react-native-paper';
 import { connect } from 'react-redux';
 import getPatchView from 'src/features/product-create/components/patch/get-patch-view';
@@ -11,6 +11,7 @@ import OperationHeader from 'src/features/product-create/components/patch/Operat
 import { RootStackParamList } from 'src/RootNavigator';
 import * as actions from '../actions';
 import VoteButtons from './VoteChangeButtons';
+import _ from 'lodash';
 
 const mapStateToProps = (state: RootState) => ({
     changes: state.voteProductChanges.changes,
@@ -46,7 +47,8 @@ function VoteProductChanges({
 
     const changeViews = useMemo(
         () =>
-            changes?.map((contribution) => ({
+            changes &&
+            _.orderBy(changes, [(x) => x.vote !== null, (x) => x.createdOn], ['asc', 'desc']).map((contribution) => ({
                 ...getPatchView({ currentProduct: product, patchOperation: contribution.patch }),
                 contribution,
             })),
@@ -60,8 +62,11 @@ function VoteProductChanges({
     const background = Color(colors.background).lighten(1).string();
 
     return (
-        <ScrollView style={{ backgroundColor: colors.background, paddingVertical: 8 }}>
-            {changeViews.map(({ propertyName, type, view, contribution }, i) => (
+        <FlatList
+            data={changeViews}
+            keyExtractor={(x) => x.contribution.id}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            renderItem={({ item: { contribution, propertyName, type, view } }) => (
                 <View key={contribution.id} style={[styles.card, { backgroundColor: background }]}>
                     <View>
                         <Surface style={[styles.cardHeader]}>
@@ -82,8 +87,8 @@ function VoteProductChanges({
                         )}
                     </View>
                 </View>
-            ))}
-        </ScrollView>
+            )}
+        ></FlatList>
     );
 }
 
@@ -92,10 +97,11 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
     },
-    card: {
+    separator: {
         marginBottom: 8,
         marginTop: 8,
     },
+    card: {},
     cardHeader: {
         paddingHorizontal: 8,
         paddingVertical: 4,
