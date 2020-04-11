@@ -7,8 +7,9 @@ import {
     ProductDto,
     ProductInfo,
     ProductProperties,
+    ProductContributionStatus,
 } from 'Models';
-import { RootState } from 'MyNutritionComrade';
+import { RootState, PagingResponse } from 'MyNutritionComrade';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
 import { connect } from 'react-redux';
@@ -22,6 +23,7 @@ import ProductSearchHeader from './features/product-search/components/ProductSea
 import ProductSearch from './features/product-search/components/ProductSearchScreen';
 import VoteProductChanges from './features/product-vote-changes/components/VoteProductChanges';
 import HomeScreen from './HomeScreen';
+import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -45,7 +47,12 @@ export type RootStackParamList = {
         ) => Promise<boolean | void>;
     };
     AddProduct: { product: ProductInfo; volume?: number; onSubmit: (volume: number) => void };
-    VoteProductChanges: { contributions: ProductContributionDto[]; product: ProductInfo };
+    VoteProductChanges: {
+        preloaded?: PagingResponse<ProductContributionDto>;
+        filter?: ProductContributionStatus;
+        product: ProductInfo;
+    };
+    ProductOverview: { product: ProductInfo };
 };
 
 function RootNavigator({ isAuthenticated, isSignOut }: Props) {
@@ -100,6 +107,7 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                     />
                     <Stack.Screen name="AddProduct" component={AddProduct} />
                     <Stack.Screen name="VoteProductChanges" component={VoteProductChanges} />
+                    <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
                 </>
             )}
         </Stack.Navigator>

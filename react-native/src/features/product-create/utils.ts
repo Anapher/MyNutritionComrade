@@ -1,6 +1,6 @@
 import itiriri from 'itiriri';
 import _ from 'lodash';
-import { OpAddItem, OpRemoveItem, PatchOperation } from 'Models';
+import { OpAddItem, OpRemoveItem, PatchOperation, ProductProperties } from 'Models';
 import { TagLiquid } from 'src/consts';
 import levenshteinDistance from 'src/utils/levenshtein-distance';
 
@@ -117,6 +117,57 @@ export function* reducePatch(patch: Generator<PatchOperation>): Generator<PatchO
     }
 
     yield* itiriri(ops).map((x) => [x]);
+}
+
+export function applyPatch(product: ProductProperties, patches: PatchOperation[]) {
+    const o = product as any;
+
+    for (const patch of patches) {
+        switch (patch.type) {
+            case 'set': {
+                const { parent, propName } = extractPathParent(o, patch.path);
+                parent[propName] = patch.value;
+                break;
+            }
+            case 'unset': {
+                const { parent, propName } = extractPathParent(o, patch.path);
+                parent[propName] = undefined;
+                break;
+            }
+            case 'add': {
+                const array = extractPathObject(o, patch.path) as any[];
+                array.push(patch.item);
+                break;
+            }
+            case 'remove': {
+                const array = extractPathObject(o, patch.path) as any[];
+                const existing = array.findIndex((x) => compareObjectProperties(x, patch.item));
+                if (existing !== -1) array.splice(existing, 1);
+                break;
+            }
+        }
+    }
+}
+
+function extractPathObject(o: any, path: string): any {
+    const segments = path.split('.');
+    let currentObject = o;
+    for (const s of segments) {
+        currentObject = currentObject[s];
+    }
+
+    return currentObject;
+}
+
+function extractPathParent(o: any, path: string): { parent: any; propName: string } {
+    const segments = path.split('.');
+    let currentObject = o;
+    for (let i = 0; i < segments.length - 1; i++) {
+        const s = segments[i];
+        currentObject = currentObject[s];
+    }
+
+    return { parent: currentObject, propName: segments[segments.length - 1] };
 }
 
 function moveItemIfFound<T>(

@@ -1,4 +1,5 @@
 import Color from 'color';
+import cuid from 'cuid';
 import { FormikProps } from 'formik';
 import { ProductProperties } from 'Models';
 import React, { useState } from 'react';
@@ -10,15 +11,13 @@ import {
     FAB,
     IconButton,
     Portal,
-    RadioButton,
     Subheading,
     Surface,
     TextInput,
-    TouchableRipple,
     useTheme,
 } from 'react-native-paper';
+import DialogRadioButton from 'src/components/DialogRadioButton';
 import { errorColor, SupportedLanguages } from 'src/consts';
-import cuid from 'cuid';
 
 type Props = {
     formik: FormikProps<ProductProperties>;
@@ -73,14 +72,8 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                 }
                 keyExtractor={(x) => (x as any).key}
                 renderItem={({ item, index }) => (
-                    <View
-                        style={{
-                            padding: 8,
-                            paddingTop: 8,
-                            paddingBottom: 8,
-                        }}
-                    >
-                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                    <View style={styles.itemContainer}>
+                        <View style={styles.row}>
                             <TextInput
                                 dense
                                 label={`Label (${item.languageCode})`}
@@ -118,22 +111,12 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                         <ScrollView>
                             <View>
                                 {SupportedLanguages.map((x) => (
-                                    <TouchableRipple
-                                        onPress={() => setSelectedLanguage(x.twoLetterCode)}
+                                    <DialogRadioButton
+                                        checked={selectedLanguage === x.twoLetterCode}
                                         key={x.twoLetterCode}
-                                    >
-                                        <View style={styles.row}>
-                                            <View pointerEvents="none">
-                                                <RadioButton
-                                                    value={x.twoLetterCode}
-                                                    status={
-                                                        selectedLanguage === x.twoLetterCode ? 'checked' : 'unchecked'
-                                                    }
-                                                />
-                                            </View>
-                                            <Subheading style={styles.text}>{x.name}</Subheading>
-                                        </View>
-                                    </TouchableRipple>
+                                        onPress={() => setSelectedLanguage(x.twoLetterCode)}
+                                        label={x.name}
+                                    />
                                 ))}
                             </View>
                         </ScrollView>
@@ -152,10 +135,13 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
 
 const styles = StyleSheet.create({
     row: {
+        display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+    },
+    itemContainer: {
+        padding: 8,
+        paddingTop: 8,
+        paddingBottom: 8,
     },
     text: {
         paddingLeft: 8,

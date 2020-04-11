@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
-export type OperationType = 'add' | 'modify' | 'remove';
+export type OperationType = 'add' | 'modify' | 'remove' | 'initialize';
 const operationTypeStyles: {
     [key in OperationType]: {
         title: string;
@@ -20,6 +20,10 @@ const operationTypeStyles: {
     modify: {
         title: 'Modify',
         color: '#2980b9',
+    },
+    initialize: {
+        title: 'Initialize',
+        color: '#8e44ad',
     },
 };
 
@@ -52,7 +56,7 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         paddingHorizontal: 8,
         paddingVertical: 2,
-        width: 60,
+        width: 64,
         display: 'flex',
         alignItems: 'center',
     },

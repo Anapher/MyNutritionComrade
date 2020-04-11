@@ -10,6 +10,8 @@ import { formatNumber } from 'src/utils/string-utils';
 import { getServings, nutritionalInfo, NutritionRow, ServingInfo } from '../../data';
 import { OperationType } from './OperationHeader';
 import ValuePatch from './ValuePatch';
+import { applyPatch } from '../../utils';
+import ProductOverview from 'src/features/product-overview/components/ProductOverview';
 
 export type PatchView = {
     type: OperationType;
@@ -24,6 +26,37 @@ type Props = {
 
 function getPatchView(props: Props): PatchView {
     const { patchOperation, currentProduct } = props;
+
+    if (
+        patchOperation.find((x) => x.path === 'label') &&
+        patchOperation.find((x) => x.path === 'nutritionalInfo.energy')
+    ) {
+        const product: ProductProperties = {
+            servings: {},
+            label: [],
+            tags: [],
+            nutritionalInfo: {
+                volume: 0,
+                energy: 0,
+                fat: 0,
+                saturatedFat: 0,
+                carbohydrates: 0,
+                sugars: 0,
+                protein: 0,
+                dietaryFiber: 0,
+                sodium: 0,
+            },
+            defaultServing: '',
+        };
+
+        applyPatch(product, patchOperation);
+
+        return {
+            type: 'initialize',
+            propertyName: 'Initialize Product',
+            view: <ProductOverview product={product} />,
+        };
+    }
 
     if (
         patchOperation.find(
@@ -164,11 +197,6 @@ function getPatchView(props: Props): PatchView {
 
 function NutritionalInfo({ patchOperation, currentProduct }: Props) {
     const extractName = (patch: PatchOperation) => patch.path.substring(patch.path.indexOf('.') + 1);
-    const data = patchOperation.map((patch) => ({
-        patch,
-        info: nutritionalInfo.find((x) => x.name === extractName(patch))!,
-    }));
-
     const rowView = (row: NutritionRow) => {
         const patch = patchOperation.find((x) => extractName(x) === row.name);
         const currentValue = currentProduct.nutritionalInfo[row.name];

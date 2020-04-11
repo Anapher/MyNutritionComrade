@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net;
+using MyNutritionComrade.Infrastructure.Extensions;
 
 namespace MyNutritionComrade.Extensions
 {

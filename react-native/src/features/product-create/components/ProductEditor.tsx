@@ -13,6 +13,7 @@ import NutritionInfo from './tabs/NutritionInfo';
 import ProductLabel from './tabs/ProductLabel';
 import Properties from './tabs/properties';
 import Servings from './tabs/Servings';
+import cuid from 'cuid';
 
 const isIOS = Platform.OS === 'ios';
 
@@ -41,7 +42,7 @@ function ProductEditor({
 
     return (
         <Formik<ProductProperties>
-            initialValues={initialValue}
+            initialValues={{ ...initialValue, label: initialValue.label.map((x) => ({ ...x, key: cuid() })) }}
             validateOnMount
             onSubmit={(values, helpers) => {
                 Keyboard.dismiss();

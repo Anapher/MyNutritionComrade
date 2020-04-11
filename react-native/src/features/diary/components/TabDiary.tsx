@@ -1,24 +1,26 @@
 import { StackNavigationProp } from '@react-navigation/stack';
+import { AxiosError } from 'axios';
+import itiriri from 'itiriri';
 import { DateTime } from 'luxon';
+import { ConsumedProduct, ConsumptionTime, ProductDto, ProductInfo } from 'Models';
 import { RootState } from 'MyNutritionComrade';
-import React, { useEffect, useCallback, useState } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
-import { Surface, Portal, Dialog, Paragraph, Button, Divider } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Button, Dialog, Divider, Paragraph, Portal, Surface } from 'react-native-paper';
 import { connect } from 'react-redux';
+import AnimatedSectionList from 'src/components/AnimatedSectionList';
+import AsyncDialogButton from 'src/components/AsyncDialogButton';
+import DialogButton from 'src/components/DialogButton';
+import { TagLiquid } from 'src/consts';
 import { RootStackParamList } from 'src/RootNavigator';
+import * as productApi from 'src/services/api/products';
+import selectLabel, { flattenProductsPrioritize } from 'src/utils/product-utils';
 import * as actions from '../actions';
 import * as selectors from '../selectors';
 import ConsumedProductItem from './ConsumedProductItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
 import ConsumptionTimeHeader from './ConsumptionTimeHeader';
 import DiaryHeader from './DiaryHeader';
-import { AxiosError } from 'axios';
-import { ConsumedProduct, ProductDto, ProductInfo, ConsumptionTime } from 'Models';
-import itiriri from 'itiriri';
-import selectLabel, { flattenProductsPrioritize } from 'src/utils/product-utils';
-import * as productApi from 'src/services/api/products';
-import { TagLiquid } from 'src/consts';
-import FlatButton from 'src/components/FlatButton';
 
 const mapStateToProps = (state: RootState) => ({
     sections: selectors.getConsumedProductsSections(state),
@@ -138,9 +140,12 @@ function TabDiary({
     };
 
     return (
-        <Surface>
+        <Surface style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <DiaryHeader />
-            <SectionList
+            <AnimatedSectionList
+                style={{ flex: 1 }}
+                duration={300}
+                rowHeight={56}
                 sections={sections}
                 keyExtractor={({ time, productId }) => `${time}/${productId}`}
                 renderItem={({ item }) => (
@@ -196,30 +201,55 @@ function TabDiary({
                         {productOptions && selectLabel(productOptions.label)}
                     </Dialog.Title>
                     <Dialog.Content>
-                        <Button onPress={() => {}} contentStyle={{ justifyContent: 'flex-start' }} color="#fff">
+                        <DialogButton
+                            onPress={async () => {
+                                const p = productOptions!;
+                                const product = await productApi.getById(p.productId);
+                                if (productOptions !== p) return;
+
+                                navigation.navigate('ProductOverview', { product });
+                                setProductOptions(undefined);
+                            }}
+                        >
                             Show Product
-                        </Button>
+                        </DialogButton>
                         <Divider />
-                        <Button
+                        <DialogButton
                             onPress={() => {
                                 editItem(productOptions!);
                                 setProductOptions(undefined);
                             }}
-                            contentStyle={{ justifyContent: 'flex-start' }}
-                            color="#fff"
                         >
                             Change volume
-                        </Button>
+                        </DialogButton>
                         <Divider />
-                        <Button onPress={() => {}} contentStyle={{ justifyContent: 'flex-start' }} color="#fff">
+                        <AsyncDialogButton
+                            onPress={async () => {
+                                const p = productOptions!;
+                                const product = await productApi.getById(p.productId);
+                                if (productOptions !== p) return;
+
+                                navigation.navigate('ChangeProduct', { product });
+                                setProductOptions(undefined);
+                            }}
+                        >
                             Suggest Changes
-                        </Button>
+                        </AsyncDialogButton>
                         <Divider />
-                        <Button onPress={() => {}} contentStyle={{ justifyContent: 'flex-start' }} color="#fff">
-                            Show Pending Changes
-                        </Button>
+                        <AsyncDialogButton
+                            onPress={async () => {
+                                const p = productOptions!;
+                                const product = await productApi.getById(p.productId);
+                                if (productOptions !== p) return;
+
+                                navigation.navigate('VoteProductChanges', { product });
+                                setProductOptions(undefined);
+                            }}
+                        >
+                            Show Changes
+                        </AsyncDialogButton>
                         <Divider />
-                        <Button
+                        <DialogButton
                             color="#e74c3c"
                             onPress={() => {
                                 changeProductConsumption({
@@ -232,10 +262,9 @@ function TabDiary({
                                 });
                                 setProductOptions(undefined);
                             }}
-                            contentStyle={{ justifyContent: 'flex-start' }}
                         >
                             Remove
-                        </Button>
+                        </DialogButton>
                     </Dialog.Content>
                 </Dialog>
             </Portal>

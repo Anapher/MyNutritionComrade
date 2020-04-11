@@ -14,6 +14,7 @@ using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Helpers;
+using MyNutritionComrade.Models.Paging;
 using MyNutritionComrade.Models.Response;
 using MyNutritionComrade.Selectors;
 
@@ -64,13 +65,14 @@ namespace MyNutritionComrade.Controllers
             return CreatedAtAction(nameof(GetProduct), new {id = response!.Product.Id}, response!.Product);
         }
 
-        [HttpGet("{id}/pending")]
-        public async Task<ActionResult<ProductContributionDto>> GetPendingContributions(string id, [FromServices] IPendingContributionsSelector selector)
+        [HttpGet("{id}/contributions")]
+        public async Task<ActionResult<ProductContributionDto>> GetContributions(string id, [FromQuery] PagingRequest request,
+            [FromQuery] ProductContributionStatus? status, [FromServices] IQueryContributionsSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
-            var data = await selector.GetPendingContributions(id, userId);
+            var pageResult = await selector.GetContributions(id, userId, status, request);
 
-            return Ok(data);
+            return Ok(pageResult.MapToController(this, nameof(GetContributions), new { id, status }));
         }
 
         [HttpPost("contributions/{id}/vote")]
@@ -83,7 +85,7 @@ namespace MyNutritionComrade.Controllers
             if (useCase.HasError)
                 return useCase.ToActionResult();
 
-            var dto = PendingContributionsSelector.MapToDto(response!.ProductContribution, response.Voting, response.Vote, userId, mapper);
+            var dto = QueryContributionsSelector.MapToDto(response!.ProductContribution, response.Voting, response.Vote, userId, mapper);
             return Ok(dto);
         }
 

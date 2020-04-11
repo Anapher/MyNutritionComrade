@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.GatewayResponses.Repositories;
+using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Data.Indexes;
+using MyNutritionComrade.Models.Paging;
 using MyNutritionComrade.Models.Response;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Linq;
@@ -12,28 +14,35 @@ using Raven.Client.Documents.Session;
 
 namespace MyNutritionComrade.Selectors
 {
-    public interface IPendingContributionsSelector : IDataSelector
+    public interface IQueryContributionsSelector : IDataSelector
     {
-        Task<IEnumerable<ProductContributionDto>> GetPendingContributions(string productId, string userId);
+        Task<PagingInternalResponse<ProductContributionDto>> GetContributions(string productId, string userId, ProductContributionStatus? status,
+            PagingRequest request);
     }
 
-    public class PendingContributionsSelector : IPendingContributionsSelector
+    public class QueryContributionsSelector : IQueryContributionsSelector
     {
         private readonly IMapper _mapper;
         private readonly IAsyncDocumentSession _session;
+        private const SortDirection DefaultSortDir = SortDirection.Descending;
 
-        public PendingContributionsSelector(IAsyncDocumentSession session, IMapper mapper)
+        public QueryContributionsSelector(IAsyncDocumentSession session, IMapper mapper)
         {
             _session = session;
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ProductContributionDto>> GetPendingContributions(string productId, string userId)
+        public async Task<PagingInternalResponse<ProductContributionDto>> GetContributions(string productId, string userId, ProductContributionStatus? status,
+            PagingRequest request)
         {
-            var pending = await _session.Query<ProductContribution, ProductContribution_ByProductAndStatus>()
-                .Where(x => x.Status == ProductContributionStatus.Pending && x.ProductId == productId).ToListAsync();
+            var query = _session.Query<ProductContribution, ProductContribution_ByProductAndStatus>().Where(x => x.ProductId == productId);
+            if (status != null)
+                query = query.Where(x => x.Status == status);
 
-            var contributionIds = pending.Select(x => x.Id).ToList();
+            var count = await query.CountAsync();
+
+            var contributions = await query.ToPageByDateTimeAsync(request, x => x.CreatedOn, DefaultSortDir);
+            var contributionIds = contributions.Select(x => x.Id).ToList();
 
             var voting = await _session.Query<ProductContributionVoting, ProductContributionVote_ByProductContribution>()
                 .Where(x => x.ProductContributionId.In(contributionIds)).ToListAsync();
@@ -42,11 +51,12 @@ namespace MyNutritionComrade.Selectors
                 .Where(x => x.UserId == userId && x.ProductContributionId.In(contributionIds)).ToListAsync();
 
             var result = new List<ProductContributionDto>();
-            foreach (var contribution in pending)
+            foreach (var contribution in contributions)
                 result.Add(MapToDto(contribution, voting.FirstOrDefault(x => x.ProductContributionId == contribution.Id),
                     votes.FirstOrDefault(x => x.ProductContributionId == contribution.Id), userId, _mapper));
 
-            return result;
+            var links = PagingExtensions.CreateLinks(result, x => x.CreatedOn, request.SortDirection ?? DefaultSortDir);
+            return new PagingInternalResponse<ProductContributionDto>(links, new PagingMetadata(count), result);
         }
 
         public static ProductContributionDto MapToDto(ProductContribution contribution, ProductContributionVoting? voting, ProductContributionVote? vote,

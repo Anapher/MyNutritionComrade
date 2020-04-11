@@ -25,7 +25,7 @@ export const getConsumedProducts = createSelector(
             const item = pending[pending.length - 1];
 
             // remove all with same product id, only the most recent (last) item should have an effect
-            pending = pending.filter((x) => x.product.id !== item.product.id);
+            pending = pending.filter((x) => x.productId !== item.productId);
             result = patchConsumedProducts(result, item);
         }
 
@@ -37,6 +37,7 @@ export const getConsumedProductsSections = createSelector([getConsumedProducts],
     const result: SectionListData<ConsumedProduct>[] = ConsumptionTimes.map((time) => ({
         time,
         data: products.filter((x) => x.time === time),
+        key: time,
     }));
 
     return result;

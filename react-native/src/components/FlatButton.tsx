@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 type FlatButtonProps = {
     icon?: string;
     text: string;
-    onPress?: () => void | null;
+    onPress?: () => void | null | any;
     center?: boolean;
     style?: StyleProp<ViewStyle>;
 };

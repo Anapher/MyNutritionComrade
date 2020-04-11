@@ -1,5 +1,14 @@
 import Axios from 'axios';
-import { PatchOperation, Product, ProductContributionDto, ProductDto, ProductInfo, ProductProperties } from 'Models';
+import {
+    PatchOperation,
+    Product,
+    ProductContributionDto,
+    ProductDto,
+    ProductInfo,
+    ProductProperties,
+    ProductContributionStatus,
+} from 'Models';
+import { PagingResponse } from 'MyNutritionComrade';
 
 export async function create(productInfo: ProductProperties): Promise<Product> {
     const response = await Axios.post<Product>('/api/v1/products', productInfo);
@@ -10,8 +19,20 @@ export async function patch(id: string, operations: PatchOperation[]): Promise<v
     return await Axios.patch(`/api/v1/products/${id}`, operations);
 }
 
-export async function getPendingContributions(id: string): Promise<ProductContributionDto[]> {
-    const response = await Axios.get(`/api/v1/products/${id}/pending`);
+export async function getContributions(
+    id: string,
+    statusFilter?: ProductContributionStatus,
+): Promise<PagingResponse<ProductContributionDto>> {
+    const response = await Axios.get(
+        statusFilter
+            ? `/api/v1/products/${id}/contributions?status=${statusFilter}`
+            : `/api/v1/products/${id}/contributions`,
+    );
+    return response.data;
+}
+
+export async function getContributionsByUrl(url: string): Promise<PagingResponse<ProductContributionDto>> {
+    const response = await Axios.get(url);
     return response.data;
 }
 

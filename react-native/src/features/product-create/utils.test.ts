@@ -1,7 +1,7 @@
 import { TagLiquid } from 'src/consts';
 import itiriri from 'itiriri';
-import { ProductProperties, NutritionalInfo, PatchOperation, ProductProperties } from 'Models';
-import { createPatch, reducePatch } from './utils';
+import { ProductProperties, NutritionalInfo, PatchOperation } from 'Models';
+import { createPatch, reducePatch, applyPatch } from './utils';
 
 const emptyProduct: ProductProperties = {
     defaultServing: 'g',
@@ -404,4 +404,40 @@ test('should reduce changes to nutritional information', () => {
         ]),
     );
     expect(result[1]).toEqual([{ path: 'code', type: 'set', value: '123456' }]);
+});
+
+test('should apply patch', () => {
+    const product: ProductProperties = {
+        servings: {},
+        label: [],
+        tags: ['test'],
+        nutritionalInfo: {
+            volume: 0,
+            energy: 0,
+            fat: 0,
+            saturatedFat: 0,
+            carbohydrates: 0,
+            sugars: 0,
+            protein: 0,
+            dietaryFiber: 0,
+            sodium: 0,
+        },
+        defaultServing: 'g',
+    };
+
+    const patch: PatchOperation[] = [
+        { type: 'set', path: 'code', value: '123456' },
+        { type: 'set', path: 'nutritionalInfo.energy', value: 200 },
+        { type: 'unset', path: 'defaultServing' },
+        { type: 'add', path: 'label', item: { languageCode: 'en', value: 'Hello World' } },
+        { type: 'remove', path: 'tags', item: 'test' },
+    ];
+
+    applyPatch(product, patch);
+
+    expect(product.code).toBe('123456');
+    expect(product.nutritionalInfo.energy).toBe(200);
+    expect(product.defaultServing).toBeUndefined();
+    expect(product.label).toEqual([{ languageCode: 'en', value: 'Hello World' }]);
+    expect(product.tags).toEqual([]);
 });

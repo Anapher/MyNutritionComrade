@@ -52,6 +52,7 @@ function AddProduct({
         init({ product, startVolume });
         requestContributions(product.id);
     }, [product]);
+
     const theme = useTheme();
 
     React.useLayoutEffect(() => {
@@ -127,11 +128,15 @@ function AddProduct({
                     }
                     center
                 />
-                {pendingContributions !== null && pendingContributions.length > 0 && (
+                {pendingContributions !== null && pendingContributions.data.length > 0 && (
                     <PendingContributionsButton
-                        pending={pendingContributions}
+                        pending={pendingContributions.data}
                         onPress={() =>
-                            navigation.navigate('VoteProductChanges', { contributions: pendingContributions, product })
+                            navigation.navigate('VoteProductChanges', {
+                                preloaded: pendingContributions,
+                                filter: 'pending',
+                                product,
+                            })
                         }
                     />
                 )}

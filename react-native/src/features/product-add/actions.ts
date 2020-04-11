@@ -1,6 +1,7 @@
 import { ProductContributionDto, ProductInfo } from 'Models';
 import { createAsyncAction, createAction } from 'typesafe-actions';
 import { RequestErrorResponse } from 'src/utils/error-result';
+import { PagingResponse } from 'MyNutritionComrade';
 
 export const init = createAction('PRODUCTADD/INIT')<{ product: ProductInfo; startVolume?: number }>();
 export const setVolume = createAction('PRODUCTADD/SET_VOLUME')<number>();
@@ -10,4 +11,4 @@ export const loadContributionsAsync = createAsyncAction(
     'PRODUCTADD/LOAD_CONTRIBUTIONS_REQUEST',
     'PRODUCTADD/LOAD_CONTRIBUTIONS_SUCCESS',
     'PRODUCTADD/LOAD_CONTRIBUTIONS_FAILURE',
-)<string, ProductContributionDto[], RequestErrorResponse>();
+)<string, PagingResponse<ProductContributionDto>, RequestErrorResponse>();

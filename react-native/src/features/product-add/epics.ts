@@ -10,7 +10,7 @@ export const loadProductContributionsEpic: RootEpic = (action$, _, { api }) =>
     action$.pipe(
         filter(isActionOf(actions.loadContributionsAsync.request)),
         switchMap(({ payload }) =>
-            from(api.products.getPendingContributions(payload)).pipe(
+            from(api.products.getContributions(payload, 'pending')).pipe(
                 map((response) => actions.loadContributionsAsync.success(response)),
                 catchError((error: AxiosError) => of(actions.loadContributionsAsync.failure(toErrorResult(error)))),
             ),

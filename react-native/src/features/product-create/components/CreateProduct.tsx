@@ -11,6 +11,7 @@ import { RestError } from 'src/utils/error-result';
 import * as actions from '../actions';
 import { emptyProductInfo } from '../data';
 import ProductEditor from './ProductEditor';
+import cuid from 'cuid';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -61,12 +62,14 @@ function CreateProduct({
         }
     };
 
+    const initVal = { ...emptyProductInfo, ...initialValues };
+
     return (
         <ProductEditor
             loadingTitle="Creating product..."
             title="Create Product"
             titleIcon="check"
-            initialValue={{ ...emptyProductInfo, ...initialValues }}
+            initialValue={{ ...initVal, label: initVal.label.map((x) => ({ ...x, key: cuid() })) }}
             onSubmit={createProduct}
             navigation={navigation}
         />

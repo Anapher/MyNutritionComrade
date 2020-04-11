@@ -1,17 +1,19 @@
 declare module 'Models' {
-    type UserVoteDto = {
+    export type UserVoteDto = {
         approve: boolean;
         createdOn: string;
     };
 
-    type ProductContributionStatistics = {
+    export type ProductContributionStatistics = {
         totalVotes: number;
         approveVotes: number;
     };
 
-    type ProductContributionDto = {
+    export type ProductContributionStatus = 'pending' | 'applied' | 'rejected';
+
+    export type ProductContributionDto = {
         id: string;
-        status: 'pending' | 'applied' | 'rejected';
+        status: ProductContributionStatus;
         statusDescription?: string;
         productId: string;
         patch: PatchOperation[];

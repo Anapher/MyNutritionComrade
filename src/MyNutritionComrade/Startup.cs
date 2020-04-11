@@ -203,6 +203,7 @@ namespace MyNutritionComrade
 
                 }, new List<string>()}});
                 c.AddFluentValidationRules();
+                c.ResolveConflictingActions(enumerable => enumerable.First());
             });
             services.AddSwaggerGenNewtonsoftSupport();
 

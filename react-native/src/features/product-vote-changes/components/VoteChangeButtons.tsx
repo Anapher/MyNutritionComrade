@@ -5,6 +5,7 @@ import { Text } from 'react-native-paper';
 import AnimatedIconButton from 'src/components/AnimatedIconButton';
 import { formatNumber } from 'src/utils/string-utils';
 import Color from 'color';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type Props = {
     contribution: ProductContributionDto;
@@ -40,6 +41,22 @@ function ArrowButton({ isUpvote = false, existingVote, pendingVote, onVote, disa
 }
 
 function VoteButtons({ contribution, onVote, pendingVote }: Props) {
+    if (contribution.status === 'applied') {
+        return (
+            <View style={{ marginRight: 8, height: 120 }}>
+                <Text style={[styles.statusText, styles.appliedText]}>Applied</Text>
+            </View>
+        );
+    }
+
+    if (contribution.status === 'rejected') {
+        return (
+            <View style={{ marginRight: 8, height: 140 }}>
+                <Text style={[styles.statusText, styles.rejectedText]}>Rejected</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.arrows}>
             <View style={{ height: 56 }}>
@@ -86,6 +103,21 @@ const styles = StyleSheet.create({
     },
     voteProportionText: {
         fontSize: 9,
+    },
+    statusText: {
+        textTransform: 'uppercase',
+        transform: [{ rotate: '90deg' }, { translateX: 90 }],
+        fontSize: 20,
+        width: 200,
+        letterSpacing: 5,
+        marginHorizontal: -90,
+        fontWeight: '700',
+    },
+    appliedText: {
+        color: '#27ae60',
+    },
+    rejectedText: {
+        color: '#e74c3c',
     },
 });
 

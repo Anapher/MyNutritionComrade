@@ -1,5 +1,5 @@
 import { ProductContributionDto, ProductInfo } from 'Models';
-import { RootAction } from 'MyNutritionComrade';
+import { RootAction, PagingResponse } from 'MyNutritionComrade';
 import { combineReducers } from 'redux';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
@@ -21,7 +21,7 @@ export type ProductSlider = {
 
 export type AddProductState = Readonly<{
     slider: ProductSlider | null;
-    pendingContributions: ProductContributionDto[] | null;
+    pendingContributions: PagingResponse<ProductContributionDto> | null;
 }>;
 
 export default combineReducers<AddProductState, RootAction>({

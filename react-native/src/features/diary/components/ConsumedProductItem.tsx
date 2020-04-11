@@ -30,9 +30,10 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
             onPress={onPress && (() => onPress())}
             onLongPress={onLongPress && (() => onLongPress())}
             rippleColor={rippleColor}
+            style={styles.root}
         >
             <View style={styles.container}>
-                <View style={{ flexDirection: 'column' }}>
+                <View style={styles.flexFill}>
                     <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.title, { color: titleColor }]}>
                         {selectLabel(product.label)}
                     </Text>
@@ -49,16 +50,20 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
                         </Text>
                     </View>
                 </View>
-                <View>
-                    <Text style={{ color: kcalColor }}>{roundNumber(energy)} kcal</Text>
-                </View>
+                <Text style={[styles.energyText, { color: kcalColor }]}>{roundNumber(energy)} kcal</Text>
             </View>
         </TouchableRipple>
     );
 }
 
 const styles = StyleSheet.create({
+    root: {
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+    },
     container: {
+        display: 'flex',
         padding: 8,
         flexDirection: 'row',
         marginLeft: 8,
@@ -74,6 +79,12 @@ const styles = StyleSheet.create({
     },
     description: {
         fontSize: 12,
+    },
+    energyText: {
+        marginLeft: 16,
+    },
+    flexFill: {
+        flex: 1,
     },
 });
 

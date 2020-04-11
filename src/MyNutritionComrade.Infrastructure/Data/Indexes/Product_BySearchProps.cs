@@ -17,6 +17,8 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
                     Tags = product.Tags.ToArray(),
                     Servings = product.Servings.Select(x => x.Key).ToArray()
                 };
+
+            Index(x => x.ProductName, FieldIndexing.Search);
         }
 
         public class Result

@@ -8,7 +8,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
     {
         public ProductContribution_ByProductAndStatus()
         {
-            Map = contributions => contributions.Select(x => new {x.ProductId, x.Status});
+            Map = contributions => contributions.Select(x => new {x.ProductId, x.Status, x.CreatedOn});
         }
     }
 }
