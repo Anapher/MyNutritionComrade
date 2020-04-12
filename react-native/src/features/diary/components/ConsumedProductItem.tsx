@@ -2,7 +2,7 @@ import Color from 'color';
 import { ConsumedProduct } from 'Models';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { TouchableRipple, useTheme, Surface } from 'react-native-paper';
+import { Surface, TouchableRipple, useTheme } from 'react-native-paper';
 import { TagLiquid } from 'src/consts';
 import selectLabel from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
@@ -26,7 +26,7 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
     const { fat, carbohydrates, protein, volume, energy } = product.nutritionalInfo;
 
     return (
-        <Surface style={{ elevation: 1 }}>
+        <Surface style={styles.surface}>
             <TouchableRipple
                 onPress={onPress && (() => onPress())}
                 onLongPress={onLongPress && (() => onLongPress())}
@@ -38,7 +38,7 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
                         <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.title, { color: titleColor }]}>
                             {selectLabel(product.label)}
                         </Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={styles.verticalCenterAlignedRow}>
                             <Text style={[styles.description, { color: descriptionColor }]}>
                                 {volume}
                                 {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
@@ -59,6 +59,10 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
 }
 
 const styles = StyleSheet.create({
+    surface: {
+        height: '100%',
+        elevation: 1,
+    },
     root: {
         height: '100%',
         display: 'flex',
@@ -73,9 +77,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    row: {
-        flexDirection: 'row',
-    },
     title: {
         fontSize: 14,
     },
@@ -87,6 +88,10 @@ const styles = StyleSheet.create({
     },
     flexFill: {
         flex: 1,
+    },
+    verticalCenterAlignedRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });
 

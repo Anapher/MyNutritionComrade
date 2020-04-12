@@ -25,14 +25,12 @@ function DateControls({ selectedDate, onChange }: Props) {
                 style={{ flex: 1 }}
                 center
             />
-            {
-                <FlatIconButton
-                    icon="arrow-right"
-                    onPress={() => onChange(dateTime.plus({ days: 1 }).toISODate())}
-                    margin={2}
-                    disabled={dateTime.hasSame(DateTime.local(), 'day')}
-                />
-            }
+            <FlatIconButton
+                icon="arrow-right"
+                onPress={() => onChange(dateTime.plus({ days: 1 }).toISODate())}
+                margin={2}
+                disabled={dateTime.hasSame(DateTime.local(), 'day')}
+            />
         </View>
     );
 }

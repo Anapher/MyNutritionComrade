@@ -1,22 +1,20 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import Color from 'color';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect } from 'react';
-import { Dimensions, View, StyleSheet } from 'react-native';
-import { Text, useTheme, overlay } from 'react-native-paper';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { overlay, Text, useTheme } from 'react-native-paper';
 import { connect } from 'react-redux';
 import CurvedSlider from 'src/components/CurvedSlider/CurvedSlider';
 import FlatButton from 'src/components/FlatButton';
-import { TagLiquid } from 'src/consts';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as productsApi from 'src/services/api/products';
-import selectLabel from 'src/utils/product-utils';
+import selectLabel, { getBaseUnit } from 'src/utils/product-utils';
 import * as actions from '../actions';
 import AddProductHeader from './AddProductHeader';
+import PendingContributionsButton from './PendingContributionsButton';
 import ServingInfo from './ServingInfo';
 import ServingSelection from './ServingSelection';
-import { ProductContributionDto } from 'Models';
 
 const mapStateToProps = (state: RootState) => ({
     slider: state.addProduct.slider,
@@ -74,27 +72,24 @@ function AddProduct({
     if (!slider) return null;
     if (slider.product.id !== product.id) return null;
 
+    const handleChangeProduct = async () => {
+        const productDto = await productsApi.getById(product.id);
+        navigation.navigate('ChangeProduct', { product: productDto });
+    };
+
     const { volume, selectedServing: serving, curve: curveScale } = slider;
     const curveBackground = overlay(8, theme.colors.surface) as string;
 
     return (
-        <View
-            style={{
-                marginTop: 16,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                flex: 1,
-            }}
-        >
+        <View style={styles.root}>
             <View>
-                <View style={{ marginHorizontal: 16 }}>
+                <View style={styles.servingInfoContainer}>
                     <ServingInfo product={product} volume={volume * product.servings[serving]} />
                 </View>
-                <View style={{ marginTop: 32 }}>
+                <View style={styles.servingSelectionContainer}>
                     <ServingSelection product={product} value={serving} onChange={(x) => setServing(x)} />
                 </View>
-                <View style={{ marginTop: 16, marginHorizontal: 16 }}>
+                <View style={styles.sliderContainer}>
                     <CurvedSlider
                         onChange={(x) => setVolume(x)}
                         step={curveScale.step}
@@ -108,10 +103,10 @@ function AddProduct({
                         value={volume}
                     />
                 </View>
-                <View style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row' }}>
-                    <Text style={{ fontSize: 36 }}>
+                <View style={styles.volumeTextContainer}>
+                    <Text style={styles.volumeText}>
                         {volume * product.servings[serving]}
-                        {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
+                        {getBaseUnit(product)}
                     </Text>
                 </View>
             </View>
@@ -120,12 +115,7 @@ function AddProduct({
                     text="Suggest changes"
                     icon="flag"
                     style={styles.bottomButton}
-                    onPress={
-                        (async () => {
-                            const productDto = await productsApi.getById(product.id);
-                            navigation.navigate('ChangeProduct', { product: productDto });
-                        }) as any
-                    }
+                    onPress={handleChangeProduct}
                     center
                 />
                 {pendingContributions !== null && pendingContributions.data.length > 0 && (
@@ -145,28 +135,14 @@ function AddProduct({
     );
 }
 
-function PendingContributionsButton({ pending, onPress }: { pending: ProductContributionDto[]; onPress: () => void }) {
-    const voteChanges = pending.filter((x) => !x.vote);
-
-    let text = '';
-    if (voteChanges.length > 0) {
-        text = `${voteChanges.length} change${voteChanges.length > 1 ? 's' : ''} to vote`;
-    } else {
-        text = `${pending.length} pending change${pending.length > 1 ? 's' : ''}`;
-    }
-
-    return (
-        <FlatButton
-            style={[styles.bottomButton, voteChanges.length > 0 && styles.highlightedButton]}
-            text={text}
-            icon="poll-box"
-            onPress={onPress}
-            center
-        />
-    );
-}
-
 const styles = StyleSheet.create({
+    root: {
+        marginTop: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        flex: 1,
+    },
     splitView: {
         display: 'flex',
         flexDirection: 'row',
@@ -174,8 +150,22 @@ const styles = StyleSheet.create({
     bottomButton: {
         flex: 1,
     },
-    highlightedButton: {
-        backgroundColor: Color('#e67e22').alpha(0.3).string(),
+    servingInfoContainer: {
+        marginHorizontal: 16,
+    },
+    servingSelectionContainer: {
+        marginTop: 32,
+    },
+    sliderContainer: {
+        marginHorizontal: 16,
+    },
+    volumeTextContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'row',
+    },
+    volumeText: {
+        fontSize: 36,
     },
 });
 

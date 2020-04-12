@@ -1,8 +1,7 @@
-import Color from 'color';
 import { ConsumedProduct } from 'Models';
 import React from 'react';
-import { SectionListData, StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
-import { Surface, useTheme, Divider } from 'react-native-paper';
+import { SectionListData, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Surface, useTheme } from 'react-native-paper';
 import FlatButton from 'src/components/FlatButton';
 import FlatIconButton from 'src/components/FlatIconButton';
 
@@ -20,11 +19,12 @@ function ConsumptionTimeFooter({ section: { data }, onAddFood, onScanBarcode, on
         <Surface style={[styles.footer, style]}>
             {data.length === 0 && (
                 <View
-                    style={{
-                        borderBottomColor: theme.colors.disabled,
-                        borderBottomWidth: StyleSheet.hairlineWidth,
-                        marginRight: 80,
-                    }}
+                    style={[
+                        styles.divider,
+                        {
+                            borderBottomColor: theme.colors.disabled,
+                        },
+                    ]}
                 />
             )}
             <View style={styles.row}>
@@ -55,5 +55,9 @@ const styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
+    },
+    divider: {
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        marginRight: 80,
     },
 });

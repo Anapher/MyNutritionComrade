@@ -1,31 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Animated, Easing } from 'react-native';
-import Svg, { Rect, Path } from 'react-native-svg';
-
-const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        ...StyleSheet.absoluteFillObject,
-    },
-    maskRow: {
-        width: '100%',
-    },
-    maskFrame: {
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        flex: 1,
-    },
-    maskCenter: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    maskInner: {
-        backgroundColor: 'transparent',
-    },
-});
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 type Props = {
     width?: number;
@@ -235,3 +210,28 @@ export default function Overlay({
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        ...StyleSheet.absoluteFillObject,
+    },
+    maskRow: {
+        width: '100%',
+    },
+    maskFrame: {
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        flex: 1,
+    },
+    maskCenter: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    maskInner: {
+        backgroundColor: 'transparent',
+    },
+});
