@@ -1,6 +1,23 @@
 import { AxiosError } from 'axios';
 
 /**
+ * A rest error thrown by the business code of the server
+ */
+export interface RestError {
+    /** the type of the error */
+    type: 'ValidationError' | 'Authentication' | 'EntityNotFound' | 'StateError' | 'InvalidOperation' | 'InternalError';
+
+    /** a human readable error message */
+    message: string;
+
+    /** the error code */
+    code: number;
+
+    /** fields that are responsible for this error including a more specific description about the error state */
+    fields?: { [key: string]: string };
+}
+
+/**
  * An error response from a web request
  */
 export interface RequestErrorResponse {
@@ -23,7 +40,12 @@ export function isServerUnavailable(response: RequestErrorResponse): boolean {
  * @param response the error response data
  */
 export function isRestError(response: any | RestError): response is RestError {
-    return response.code !== undefined && response.message !== undefined && response.type !== undefined;
+    return (
+        response !== undefined &&
+        response.code !== undefined &&
+        response.message !== undefined &&
+        response.type !== undefined
+    );
 }
 
 /**
@@ -51,23 +73,6 @@ export function toString(error: RequestErrorResponse): string {
     }
 
     return `${response.message} (code: ${response.code})`;
-}
-
-/**
- * A rest error thrown by the business code of the server
- */
-export interface RestError {
-    /** the type of the error */
-    type: 'ValidationError';
-
-    /** a human readable error message */
-    message: string;
-
-    /** the error code */
-    code: number;
-
-    /** fields that are responsible for this error including a more specific description about the error state */
-    fields?: {};
 }
 
 /**

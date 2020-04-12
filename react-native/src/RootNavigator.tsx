@@ -4,7 +4,6 @@ import {
     ConsumptionTime,
     PatchOperation,
     ProductContributionDto,
-    ProductDto,
     ProductInfo,
     ProductProperties,
     ProductContributionStatus,
@@ -38,8 +37,8 @@ export type RootStackParamList = {
     Home: undefined;
     SearchProduct: { consumptionTime: ConsumptionTime; date: string };
     CreateProduct: { initialValues?: Partial<ProductProperties> };
-    ChangeProduct: { product: ProductDto };
-    ReviewProductChanges: { product: ProductDto; changes: PatchOperation[][]; acceptChanges: () => void };
+    ChangeProduct: { product: ProductInfo };
+    ReviewProductChanges: { product: ProductInfo; changes: PatchOperation[][]; acceptChanges: () => void };
     ScanBarcode: {
         onBarcodeScanned: (
             result: BarCodeScanningResult,

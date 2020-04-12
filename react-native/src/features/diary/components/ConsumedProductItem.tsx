@@ -2,7 +2,7 @@ import Color from 'color';
 import { ConsumedProduct } from 'Models';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { TouchableRipple, useTheme } from 'react-native-paper';
+import { TouchableRipple, useTheme, Surface } from 'react-native-paper';
 import { TagLiquid } from 'src/consts';
 import selectLabel from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
@@ -26,33 +26,35 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
     const { fat, carbohydrates, protein, volume, energy } = product.nutritionalInfo;
 
     return (
-        <TouchableRipple
-            onPress={onPress && (() => onPress())}
-            onLongPress={onLongPress && (() => onLongPress())}
-            rippleColor={rippleColor}
-            style={styles.root}
-        >
-            <View style={styles.container}>
-                <View style={styles.flexFill}>
-                    <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.title, { color: titleColor }]}>
-                        {selectLabel(product.label)}
-                    </Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={[styles.description, { color: descriptionColor }]}>
-                            {volume}
-                            {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
+        <Surface style={{ elevation: 1 }}>
+            <TouchableRipple
+                onPress={onPress && (() => onPress())}
+                onLongPress={onLongPress && (() => onLongPress())}
+                rippleColor={rippleColor}
+                style={styles.root}
+            >
+                <View style={styles.container}>
+                    <View style={styles.flexFill}>
+                        <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.title, { color: titleColor }]}>
+                            {selectLabel(product.label)}
                         </Text>
-                        <Text style={[styles.description, { color: descriptionBColor, fontSize: 11 }]}>
-                            {' | '}
-                            {`Fat: ${roundNumber(fat)}g | Carbs: ${roundNumber(
-                                carbohydrates,
-                            )}g | Protein: ${roundNumber(protein)}g`}
-                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={[styles.description, { color: descriptionColor }]}>
+                                {volume}
+                                {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
+                            </Text>
+                            <Text style={[styles.description, { color: descriptionBColor, fontSize: 11 }]}>
+                                {' | '}
+                                {`Fat: ${roundNumber(fat)}g | Carbs: ${roundNumber(
+                                    carbohydrates,
+                                )}g | Protein: ${roundNumber(protein)}g`}
+                            </Text>
+                        </View>
                     </View>
+                    <Text style={[styles.energyText, { color: kcalColor }]}>{roundNumber(energy)} kcal</Text>
                 </View>
-                <Text style={[styles.energyText, { color: kcalColor }]}>{roundNumber(energy)} kcal</Text>
-            </View>
-        </TouchableRipple>
+            </TouchableRipple>
+        </Surface>
     );
 }
 

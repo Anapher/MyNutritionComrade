@@ -27,21 +27,21 @@ namespace MyNutritionComrade.Controllers
     {
         [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([RequiredFromQuery] string barcode,
+        public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProduct([RequiredFromQuery] string barcode,
             [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
         {
             if (string.IsNullOrEmpty(barcode))
                 return new FieldValidationError("The query parameter barcode is required.", "query").ToActionResult();
 
             var product = await repository.FindByBarcode(barcode);
-            if (product == null) return ImmutableList<ProductSearchDto>.Empty;
+            if (product == null) return ImmutableList<ProductDto>.Empty;
 
-            return mapper.Map<ProductSearchDto>(product).Yield().ToList();
+            return mapper.Map<ProductDto>(product).Yield().ToList();
         }
 
         [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ProductSearchDto>>> SearchProduct([RequiredFromQuery] string term, [FromQuery] string? units,
+        public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProduct([RequiredFromQuery] string term, [FromQuery] string? units,
             [FromServices] ISearchProductSelector searchProductSelector, [FromServices] IMapper mapper)
         {
             if (string.IsNullOrEmpty(term))
@@ -50,7 +50,7 @@ namespace MyNutritionComrade.Controllers
             var unitsArray = units?.Split(',');
             var result = await searchProductSelector.SearchProducts(term, unitsArray);
 
-            return result.Select(mapper.Map<ProductSearchDto>).ToList();
+            return result.Select(mapper.Map<ProductDto>).ToList();
         }
 
         [HttpPost]

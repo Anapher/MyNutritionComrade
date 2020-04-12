@@ -11,13 +11,14 @@ import DefaultUnit from './DefaultUnit';
 type Props = {
     formik: FormikProps<ProductProperties>;
     navigation: StackNavigationProp<RootStackParamList>;
+    duplicationCheck: boolean;
 };
 
-function Properties({ formik, navigation }: Props) {
+function Properties({ formik, navigation, duplicationCheck }: Props) {
     return (
         <ScrollView style={styles.root}>
             <View>
-                <BarCodeField formik={formik} navigation={navigation} />
+                <BarCodeField formik={formik} navigation={navigation} duplicationCheck={duplicationCheck} />
                 <View style={styles.unitRow}>
                     <DefaultUnit formik={formik} />
                 </View>

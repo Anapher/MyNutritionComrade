@@ -7,7 +7,7 @@ import { Keyboard, Platform, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Colors, Dialog, Paragraph, Portal, useTheme } from 'react-native-paper';
 import LinearMobileStepper from 'src/components/LinearMobileStepper';
 import { RootStackParamList } from 'src/RootNavigator';
-import { productInfoValidationSchema } from '../data';
+import schema from '../schema';
 import ProductEditorHeader from './ProductEditorHeader';
 import NutritionInfo from './tabs/NutritionInfo';
 import ProductLabel from './tabs/ProductLabel';
@@ -25,6 +25,7 @@ type Props = {
     titleIcon: string;
     loadingTitle: string;
     disableLoadingIndicator?: boolean;
+    duplicationCheck: boolean;
 };
 
 function ProductEditor({
@@ -35,6 +36,7 @@ function ProductEditor({
     titleIcon,
     loadingTitle,
     disableLoadingIndicator,
+    duplicationCheck,
 }: Props) {
     const [currentPage, setCurrentPage] = useState(0);
     const viewPagerRef = useRef<ViewPager>(null);
@@ -57,7 +59,7 @@ function ProductEditor({
 
                 return onSubmit(patchedValues, helpers);
             }}
-            validationSchema={productInfoValidationSchema}
+            validationSchema={schema}
         >
             {(props) => {
                 React.useLayoutEffect(() => {
@@ -89,7 +91,11 @@ function ProductEditor({
                                 <ProductLabel formik={props} />
                             </View>
                             <View key="2">
-                                <Properties formik={props} navigation={navigation} />
+                                <Properties
+                                    formik={props}
+                                    navigation={navigation}
+                                    duplicationCheck={duplicationCheck}
+                                />
                             </View>
                             <View key="3">
                                 <NutritionInfo

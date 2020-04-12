@@ -93,6 +93,7 @@ function ChangeProduct({
             initialValue={mapToProductInfo(product)}
             onSubmit={changeProduct}
             navigation={navigation}
+            duplicationCheck={false}
         />
     );
 }

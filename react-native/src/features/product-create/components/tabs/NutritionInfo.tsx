@@ -16,7 +16,7 @@ type Props = {
 function NutritionInfo({ formik, onShowNextPage }: Props) {
     const theme = useTheme();
 
-    const dividerColor = Color(theme.colors.text).alpha(0.5).string();
+    const dividerColor = Color(theme.colors.onSurface).alpha(0.2).string();
     const textBackground = Color(theme.colors.text).alpha(0.1).string();
 
     const refs = nutritionalInfo.map(() => useRef<TextInput>(null));

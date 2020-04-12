@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Caption } from 'react-native-paper';
-import { errorColor } from 'src/consts';
+import { Caption, useTheme } from 'react-native-paper';
 
 const styles = StyleSheet.create({
     root: {
@@ -29,6 +28,7 @@ export type RowProps = {
 };
 
 export default function Row({ name, children, lastItem, description, error }: RowProps) {
+    const theme = useTheme();
     return (
         <View style={styles.root}>
             <View style={[styles.nameValue, !lastItem && styles.middleRow]}>
@@ -36,7 +36,7 @@ export default function Row({ name, children, lastItem, description, error }: Ro
                 {children}
             </View>
             {description && <Caption>{description}</Caption>}
-            {error && <Caption style={{ color: errorColor }}>{error}</Caption>}
+            {error && <Caption style={{ color: theme.colors.error }}>{error}</Caption>}
         </View>
     );
 }

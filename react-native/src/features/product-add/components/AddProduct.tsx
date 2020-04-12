@@ -4,7 +4,7 @@ import Color from 'color';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect } from 'react';
 import { Dimensions, View, StyleSheet } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Text, useTheme, overlay } from 'react-native-paper';
 import { connect } from 'react-redux';
 import CurvedSlider from 'src/components/CurvedSlider/CurvedSlider';
 import FlatButton from 'src/components/FlatButton';
@@ -75,7 +75,7 @@ function AddProduct({
     if (slider.product.id !== product.id) return null;
 
     const { volume, selectedServing: serving, curve: curveScale } = slider;
-    const curveBackground = Color(theme.colors.text).alpha(0.3).string();
+    const curveBackground = overlay(8, theme.colors.surface) as string;
 
     return (
         <View
@@ -103,8 +103,8 @@ function AddProduct({
                         width={Dimensions.get('window').width - 32}
                         scaleSteps={curveScale.labelStep}
                         curveBackground={curveBackground}
-                        curveGradientStart="#e74c3c"
-                        curveGradientEnd="#e74c3c"
+                        curveGradientStart={theme.colors.accent}
+                        curveGradientEnd={theme.colors.accent}
                         value={volume}
                     />
                 </View>

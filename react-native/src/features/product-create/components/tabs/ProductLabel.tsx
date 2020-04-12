@@ -17,7 +17,7 @@ import {
     useTheme,
 } from 'react-native-paper';
 import DialogRadioButton from 'src/components/DialogRadioButton';
-import { errorColor, SupportedLanguages } from 'src/consts';
+import { SupportedLanguages } from 'src/consts';
 
 type Props = {
     formik: FormikProps<ProductProperties>;
@@ -67,7 +67,7 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                 }
                 ListFooterComponent={
                     errors.label !== undefined && typeof errors.label === 'string' ? (
-                        <Caption style={{ color: errorColor, margin: 8 }}>{errors.label}</Caption>
+                        <Caption style={{ color: theme.colors.error, margin: 8 }}>{errors.label}</Caption>
                     ) : undefined
                 }
                 keyExtractor={(x) => (x as any).key}
@@ -81,9 +81,7 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                                 onChangeText={(s) =>
                                     setFieldValue(
                                         'label',
-                                        values.label.map((x, i) =>
-                                            i !== index ? x : { languageCode: x.languageCode, value: s },
-                                        ),
+                                        values.label.map((x, i) => (i !== index ? x : { ...x, value: s })),
                                     )
                                 }
                                 style={{ flex: 1 }}
@@ -92,7 +90,7 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                             <IconButton icon="delete" onPress={() => handleDeleteLabel(index)} />
                         </View>
                         {errors.label && errors.label[index] && (
-                            <Caption style={{ color: errorColor }}>
+                            <Caption style={{ color: theme.colors.error }}>
                                 {errors.label && (errors.label[index] as any).label}
                             </Caption>
                         )}

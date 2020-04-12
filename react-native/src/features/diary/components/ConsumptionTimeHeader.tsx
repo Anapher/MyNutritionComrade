@@ -20,13 +20,12 @@ type Props = {
 
 function ConsumptionTimeHeader({ section: { data, time }, style }: Props) {
     const theme = useTheme();
-    const summaryColor = Color(theme.colors.text).alpha(0.5).rgb().string();
-    const surfaceColor = Color(theme.colors.surface).lighten(1.8).string();
+    const summaryColor = Color(theme.colors.onSurface).alpha(0.5).rgb().string();
 
     const { energy, fat, carbohydrates, sugars, protein } = sumNutritions(data.map((x) => x.nutritionalInfo));
 
     return (
-        <Surface style={[styles.header, { backgroundColor: surfaceColor }, style]}>
+        <Surface style={[styles.header, style]}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Subheading accessibilityRole="header" style={styles.headerText}>
                     {(timeTitles as any)[time]}
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
     header: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        elevation: 3,
+        elevation: 8,
     },
     headerText: {
         fontSize: 16,

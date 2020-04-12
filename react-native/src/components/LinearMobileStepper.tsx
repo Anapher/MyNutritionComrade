@@ -1,9 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Animated, Keyboard } from 'react-native';
-import { useTheme, TouchableRipple, Surface } from 'react-native-paper';
+import { useTheme, TouchableRipple, Surface, overlay } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Color from 'color';
-import { errorColor } from 'src/consts';
 
 type ProgressDotsProps = {
     count: number;
@@ -15,7 +14,7 @@ function ProgressDots({ count, active, errors }: ProgressDotsProps) {
     const theme = useTheme();
 
     const activeColor = theme.colors.primary;
-    const inactiveColor = Color(theme.colors.text).alpha(0.2).string();
+    const inactiveColor = overlay(12, theme.colors.surface) as string;
 
     const activeDotAnimation = useRef(new Animated.Value(0)).current;
 
@@ -34,7 +33,7 @@ function ProgressDots({ count, active, errors }: ProgressDotsProps) {
                     style={[
                         styles.progressDot,
                         {
-                            backgroundColor: errors[x] ? errorColor : inactiveColor,
+                            backgroundColor: errors[x] ? theme.colors.error : inactiveColor,
                             marginLeft: x > 0 ? 8 : 0,
                         },
                     ]}

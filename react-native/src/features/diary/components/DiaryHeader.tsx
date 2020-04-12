@@ -21,14 +21,11 @@ const dispatchProps = {
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchProps;
 
 function DiaryHeader({ consumedProducts, currentDate, loadDate }: Props) {
-    const theme = useTheme();
-    const color = Color(theme.colors.surface).lighten(2.3).string();
-
     return (
-        <Surface style={{ elevation: 6, backgroundColor: color }}>
+        <Surface style={styles.surface}>
             <DateControls selectedDate={currentDate} onChange={(d) => loadDate(d)} />
             <Divider />
-            <View style={{ marginVertical: 8 }}>
+            <View style={styles.summary}>
                 <NutritionSummary products={consumedProducts} />
             </View>
         </Surface>
@@ -37,4 +34,11 @@ function DiaryHeader({ consumedProducts, currentDate, loadDate }: Props) {
 
 export default connect(mapStateToProps, dispatchProps)(DiaryHeader);
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    surface: {
+        elevation: 12,
+    },
+    summary: {
+        marginVertical: 8,
+    },
+});

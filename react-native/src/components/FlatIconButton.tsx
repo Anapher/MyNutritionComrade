@@ -36,7 +36,7 @@ export default function FlatIconButton({ icon, margin, onPress, longPressInfo, d
             borderless
             onLongPress={disabled ? undefined : getToastCallback(longPressInfo)}
         >
-            <View style={[styles.buttonContent, { opacity: disabled ? 0.3 : 1 }]}>
+            <View style={[styles.buttonContent, { opacity: disabled ? 0.34 : 1 }]}>
                 <Icon
                     name={icon}
                     size={20}

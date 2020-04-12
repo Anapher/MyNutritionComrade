@@ -2,11 +2,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { AxiosError } from 'axios';
 import itiriri from 'itiriri';
 import { DateTime } from 'luxon';
-import { ConsumedProduct, ConsumptionTime, ProductDto, ProductInfo } from 'Models';
+import { ConsumedProduct, ConsumptionTime, ProductInfo } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { Button, Dialog, Divider, Paragraph, Portal, Surface } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Button, Dialog, Divider, Paragraph, Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
 import AnimatedSectionList from 'src/components/AnimatedSectionList';
 import AsyncDialogButton from 'src/components/AsyncDialogButton';
@@ -95,7 +95,7 @@ function TabDiary({
     };
 
     const editItem = async (item: ConsumedProduct) => {
-        let product: ProductDto | undefined = itiriri(
+        let product: ProductInfo | undefined = itiriri(
             flattenProductsPrioritize(frequentlyUsedProducts, item.time),
         ).find((x) => x.id === item.productId);
 
@@ -140,7 +140,7 @@ function TabDiary({
     };
 
     return (
-        <Surface style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <View style={styles.root}>
             <DiaryHeader />
             <AnimatedSectionList
                 style={{ flex: 1 }}
@@ -268,13 +268,15 @@ function TabDiary({
                     </Dialog.Content>
                 </Dialog>
             </Portal>
-        </Surface>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    divider: {
-        marginVertical: 8,
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
     },
 });
 

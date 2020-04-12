@@ -1,8 +1,8 @@
-import React from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import React from 'react';
 import TabDiary from './features/diary/components/TabDiary';
+import TabWeight from './features/weight/components/TabWeight';
 import TabAnalysis from './TabAnalysis';
-import TabProfile from './TabProfile';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -24,10 +24,10 @@ export const BottomTabs = () => {
                 }}
             />
             <Tab.Screen
-                name="Profile"
-                component={TabProfile}
+                name="Weight"
+                component={TabWeight}
                 options={{
-                    tabBarIcon: 'account',
+                    tabBarIcon: 'gauge',
                 }}
             />
         </Tab.Navigator>

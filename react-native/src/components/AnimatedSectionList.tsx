@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, SectionList, StyleSheet, SectionListData, SectionListProps } from 'react-native';
 import _ from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, SectionList, SectionListData, SectionListProps } from 'react-native';
 
 type AnimationProps = {
     duration?: number;
@@ -11,62 +11,61 @@ type Props<SectionT> = SectionListProps<SectionT> & AnimationProps;
 
 type SectionStateInfo = {
     previousItems: ItemInfo[];
-    removing: RemovedItem[];
+    removing: FadingRemovedItem[];
     key: string;
 };
+
+type FadingRemovedItem = RemovedItem & {
+    timestamp: number;
+};
+
+function isFadingRemovedItem(item: RemovedItem): item is FadingRemovedItem {
+    return (item as FadingRemovedItem).timestamp !== undefined;
+}
 
 function AnimatedSectionList<T>({ renderItem, duration = 600, sections, keyExtractor, rowHeight, ...props }: Props<T>) {
     const [displaySections, setDisplaySections] = useState(sections);
     const [sectionStates, setSectionStates] = useState<SectionStateInfo[]>([]);
 
+    // sections changed
     useEffect(() => {
         if (keyExtractor === undefined) throw 'The key extractor is required';
 
-        const result: SectionStateInfo[] = [];
+        const newState: SectionStateInfo[] = [];
         const display: SectionListData<T>[] = [];
+        const now = Date.now();
+
         for (const s of sections) {
             if (s.key === undefined) throw 'The sections must have keys';
 
-            const currentState = sectionStates.find((x) => x.key === s.key);
+            // map data of section with key
             const items = s.data.map((item, i) => ({ item, key: keyExtractor(item, i) }));
 
-            const asd = mapSection(items, currentState?.previousItems || [], currentState?.removing || []);
+            // find the current state of this section (memorized)
+            const currentState = sectionStates.find((x) => x.key === s.key);
 
-            const { nowRemoved, previousItems, removing, view } = asd;
-            result.push({ previousItems, removing, key: s.key! });
+            // filter removing items that have their animation finished
+            const removingItems = (currentState?.removing || []).filter((x) => x.timestamp > now - duration);
 
+            // generate a new state
+            const { previousItems, removing, view } = mapSection(
+                items,
+                currentState?.previousItems || [],
+                removingItems,
+            );
+
+            // push to new state, set timestamp for newly removed items
+            newState.push({
+                previousItems,
+                removing: removing.map((x) => (isFadingRemovedItem(x) ? x : { ...x, timestamp: now })),
+                key: s.key!,
+            });
+
+            // push view to display
             display.push({ ...s, data: view.map((x) => x.item) as any });
-
-            if (nowRemoved.length > 0) {
-                const sectionKey = s.key;
-                const removedItems = nowRemoved.map((x) => x.key);
-
-                setTimeout(() => {
-                    setSectionStates((x) =>
-                        x.map((x) =>
-                            x.key === sectionKey
-                                ? {
-                                      ...x,
-                                      removing: x.removing.filter((removed) => !removedItems.includes(removed.key)),
-                                  }
-                                : x,
-                        ),
-                    );
-                    setDisplaySections((x) =>
-                        x.map((x) =>
-                            x.key === sectionKey
-                                ? {
-                                      ...x,
-                                      data: x.data.filter((d, i) => !removedItems.includes(keyExtractor!(d, i))),
-                                  }
-                                : x,
-                        ),
-                    );
-                }, duration + 100);
-            }
         }
 
-        setSectionStates(result);
+        setSectionStates(newState);
         setDisplaySections(display);
     }, [sections]);
 
@@ -105,7 +104,6 @@ type SectionInfo = {
     previousItems: ItemInfo[];
     removing: RemovedItem[];
     view: ItemInfo[];
-    nowRemoved: ItemInfo[];
 };
 
 export function mapSection(
@@ -158,7 +156,7 @@ export function mapSection(
         result.push(...item);
     }
 
-    return { removing: newRemoving, previousItems: items, view: result, nowRemoved: removed };
+    return { removing: newRemoving, previousItems: items, view: result };
 }
 
 type ItemProps = {

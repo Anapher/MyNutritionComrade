@@ -3,7 +3,6 @@ import {
     PatchOperation,
     Product,
     ProductContributionDto,
-    ProductDto,
     ProductInfo,
     ProductProperties,
     ProductContributionStatus,
@@ -53,8 +52,8 @@ export async function searchByBarcode(barcode: string): Promise<ProductInfo | un
     return response.data?.length === 0 ? undefined : response.data[0];
 }
 
-export async function getById(id: string): Promise<ProductDto> {
-    const response = await Axios.get<ProductDto>(`/api/v1/products/${id}`);
+export async function getById(id: string): Promise<ProductInfo> {
+    const response = await Axios.get<ProductInfo>(`/api/v1/products/${id}`);
     return response.data;
 }
 

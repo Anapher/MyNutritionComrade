@@ -1,7 +1,7 @@
 import Color from 'color';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { Theme, TouchableRipple, withTheme } from 'react-native-paper';
+import { Theme, TouchableRipple, withTheme, overlay } from 'react-native-paper';
 
 type Props = {
     isChecked?: boolean;
@@ -11,10 +11,12 @@ type Props = {
     theme: Theme;
     style?: StyleProp<ViewStyle>;
     children?: React.ReactNode;
+    color?: 'primary' | 'accent';
 };
 
-function TextToggleButton({ onToggle, isChecked, children, isLeft, isRight, theme, style }: Props) {
-    const uncheckedBackground = Color(theme.colors.text).alpha(0.3).string();
+function TextToggleButton({ onToggle, isChecked, children, isLeft, isRight, theme, style, color = 'primary' }: Props) {
+    const uncheckedBackground = overlay(8, theme.colors.surface) as string;
+    const checkedBackground = theme.colors[color];
 
     const backgroundAnimation = useRef(new Animated.Value(0)).current;
     useEffect(() => {
@@ -40,7 +42,7 @@ function TextToggleButton({ onToggle, isChecked, children, isLeft, isRight, them
                     {
                         backgroundColor: backgroundAnimation.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [uncheckedBackground, theme.colors.primary],
+                            outputRange: [uncheckedBackground, checkedBackground],
                         }),
                     },
                     style,
