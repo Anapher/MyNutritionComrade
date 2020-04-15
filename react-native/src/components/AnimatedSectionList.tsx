@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, SectionList, SectionListData, SectionListProps } from 'react-native';
+import { Animated, SectionList, SectionListData, SectionListProps, View } from 'react-native';
 
 type AnimationProps = {
     duration?: number;
@@ -26,6 +26,7 @@ function isFadingRemovedItem(item: RemovedItem): item is FadingRemovedItem {
 function AnimatedSectionList<T>({ renderItem, duration = 600, sections, keyExtractor, rowHeight, ...props }: Props<T>) {
     const [displaySections, setDisplaySections] = useState(sections);
     const [sectionStates, setSectionStates] = useState<SectionStateInfo[]>([]);
+    const [refreshCounter, setRefreshCounter] = useState(0);
 
     // sections changed
     useEffect(() => {
@@ -34,6 +35,7 @@ function AnimatedSectionList<T>({ renderItem, duration = 600, sections, keyExtra
         const newState: SectionStateInfo[] = [];
         const display: SectionListData<T>[] = [];
         const now = Date.now();
+        let refreshTimer = false;
 
         for (const s of sections) {
             if (s.key === undefined) throw 'The sections must have keys';
@@ -57,21 +59,28 @@ function AnimatedSectionList<T>({ renderItem, duration = 600, sections, keyExtra
             // push to new state, set timestamp for newly removed items
             newState.push({
                 previousItems,
-                removing: removing.map((x) => (isFadingRemovedItem(x) ? x : { ...x, timestamp: now })),
+                removing: removing.map((x) => {
+                    if (isFadingRemovedItem(x)) return x;
+
+                    refreshTimer = true;
+                    return { ...x, timestamp: now };
+                }),
                 key: s.key!,
             });
 
             // push view to display
             display.push({ ...s, data: view.map((x) => x.item) as any });
         }
+        if (refreshTimer) setTimeout(() => setRefreshCounter((x) => x + 1), duration);
 
         setSectionStates(newState);
         setDisplaySections(display);
-    }, [sections]);
+    }, [sections, refreshCounter]);
 
     return (
         <SectionList
             {...props}
+            keyExtractor={keyExtractor}
             sections={displaySections}
             renderItem={(item) => {
                 const k = keyExtractor!(item.item, item.index);
@@ -183,7 +192,7 @@ function AnimatedItem({ children, duration, removing, rowHeight }: ItemProps) {
         <Animated.View
             style={{
                 height: animation.interpolate({ inputRange: [0, 1], outputRange: [0, rowHeight] }),
-                opacity: animation,
+                opacity: animation.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] }),
             }}
         >
             {children}
