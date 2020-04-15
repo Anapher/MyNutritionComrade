@@ -1,14 +1,14 @@
-import { FoodSuggestion } from 'Models';
-import { ConsumptionTime } from 'Models';
+import { ConsumptionTime, SearchResult } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { combineReducers } from 'redux';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
+import { compareSearchResults } from './helpers';
 
 export type ProductSearchState = Readonly<{
     searchText: string;
     consumptionTime: ConsumptionTime;
-    suggestions: FoodSuggestion[];
+    suggestions: SearchResult[];
 }>;
 
 export default combineReducers<ProductSearchState, RootAction>({
@@ -37,10 +37,7 @@ export default combineReducers<ProductSearchState, RootAction>({
             case getType(actions.setSuggestions):
                 return action.payload;
             case getType(actions.appendSuggestions):
-                return [
-                    ...state,
-                    ...action.payload.filter((x) => state.findIndex((y) => y.model.id === x.model.id) === -1),
-                ];
+                return [...state, ...action.payload.filter((x) => !state.find((y) => compareSearchResults(x, y)))];
             default:
                 return state;
         }

@@ -14,5 +14,6 @@ export default DialogButton;
 const styles = StyleSheet.create({
     contentStyle: {
         justifyContent: 'flex-start',
+        height: 50,
     },
 });

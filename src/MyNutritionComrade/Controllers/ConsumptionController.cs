@@ -40,13 +40,25 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpGet("{date}")]
-        public async Task<ActionResult<List<ConsumedProductDto>>> GetDayConsumption(string date, [FromServices] IConsumedProductsOfTheDay selector)
+        public async Task<ActionResult<Dictionary<string, List<ConsumedProductDto>>>> GetDayConsumption(string date, [FromQuery] string? to, [FromServices] IConsumedProductsOfTheDay selector)
         {
             if (!DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
                 return BadRequest("The url parameter must be a valid date time.");
 
+            var daysBack = 0;
+            if (to != null)
+            {
+                if (!DateTime.TryParseExact(to, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var toDate))
+                    return BadRequest("The query parameter 'to' must be a valid date time.");
+
+                daysBack = Math.Abs((int) (dateTime - toDate).TotalDays);
+                dateTime = toDate > dateTime ? toDate : dateTime;
+            }
+
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
-            return await selector.GetConsumedProductsOfTheDay(userId, dateTime);
+            var result = (await selector.GetConsumedProductsOfTheDay(userId, dateTime, daysBack));
+
+            return result.ToDictionary(x => x.Key.ToString("yyy-MM-dd"), x => x.Value);
         }
 
         public class ValueHolder

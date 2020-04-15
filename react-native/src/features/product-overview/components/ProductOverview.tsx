@@ -62,7 +62,7 @@ function ProductOverview({ product: { label, code, tags, nutritionalInfo, servin
             <View style={styles.section}>
                 <Subheading>Servings</Subheading>
                 {Object.keys(servings).map((x) => (
-                    <View style={styles.row}>
+                    <View style={styles.row} key={x}>
                         <Text style={{ width: 64 }}>{x}: </Text>
                         <Text>{servings[x]}</Text>
                         {defaultServing === x && <Text style={{ color: secondaryText, marginLeft: 8 }}>(default)</Text>}

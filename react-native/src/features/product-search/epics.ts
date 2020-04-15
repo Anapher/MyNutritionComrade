@@ -1,12 +1,12 @@
-import { FoodSuggestion } from 'Models';
 import { RootEpic } from 'MyNutritionComrade';
 import { empty, from, of } from 'rxjs';
-import { catchError, debounceTime, filter, ignoreElements, map, switchMap } from 'rxjs/operators';
+import { catchError, debounceTime, filter, map, switchMap } from 'rxjs/operators';
+import toErrorResult from 'src/utils/error-result';
 import { tryParseServingSize } from 'src/utils/input-parser';
 import { isActionOf } from 'typesafe-actions';
 import * as actions from './actions';
 import { mapToFoodSuggestion, querySuggestions } from './helpers';
-import toErrorResult from 'src/utils/error-result';
+import { SearchResult } from 'Models';
 
 export const initSuggestionsEpic: RootEpic = (action$, state$) =>
     action$.pipe(
@@ -17,6 +17,7 @@ export const initSuggestionsEpic: RootEpic = (action$, state$) =>
                     '',
                     state$.value.productSearch.consumptionTime,
                     state$.value.diary.frequentlyUsedProducts,
+                    state$.value.diary.loadedDays,
                 ),
             ),
         ),
@@ -31,6 +32,7 @@ export const querySuggestionsEpic: RootEpic = (action$, state$) =>
                     payload,
                     state$.value.productSearch.consumptionTime,
                     state$.value.diary.frequentlyUsedProducts,
+                    state$.value.diary.loadedDays,
                 ),
             ),
         ),
@@ -47,12 +49,12 @@ export const apiSearchEpic: RootEpic = (action$, _, { api }) =>
             return from(
                 api.products.search(
                     result.productSearch,
-                    result.serving?.filter((x) => x.unit !== undefined).map((x) => x.unit!),
+                    result.serving?.filter((x) => x.servingType !== undefined).map((x) => x.servingType!),
                 ),
             ).pipe(
                 map((response) =>
                     actions.appendSuggestions(
-                        response.map<FoodSuggestion>((x) => mapToFoodSuggestion(x, result.serving)),
+                        response.map<SearchResult>((x) => mapToFoodSuggestion(x, result.serving)),
                     ),
                 ),
                 catchError((e) => of(actions.suggestionRequestFailed(toErrorResult(e)))),

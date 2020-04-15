@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Surface, FAB } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 
 const TabWeight = () => {
     return (

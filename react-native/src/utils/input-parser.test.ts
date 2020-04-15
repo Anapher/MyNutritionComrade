@@ -8,7 +8,7 @@ test('should parse "5" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(5);
+    expect(serving!.amount).toBe(5);
     expect(serving!.unit).toBeUndefined();
 });
 
@@ -20,7 +20,7 @@ test('should parse "5g" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(5);
+    expect(serving!.amount).toBe(5);
     expect(serving!.unit).toBe('g');
 });
 
@@ -32,7 +32,7 @@ test('should parse "5 sl" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(5);
+    expect(serving!.amount).toBe(5);
     expect(serving!.unit).toBe('slice');
 });
 
@@ -44,11 +44,11 @@ test('should parse "kg" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(0);
+    expect(serving!.amount).toBe(0);
     expect(serving!.unit).toBe('g');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(1000);
-    expect(serving!.conversion!.name).toBe('kg');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(1000);
+    expect(serving!.convertedFrom!.name).toBe('kg');
 });
 
 test('should parse "kg Kartoffeln" correctly', () => {
@@ -59,11 +59,11 @@ test('should parse "kg Kartoffeln" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(0);
+    expect(serving!.amount).toBe(0);
     expect(serving!.unit).toBe('g');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(1000);
-    expect(serving!.conversion!.name).toBe('kg');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(1000);
+    expect(serving!.convertedFrom!.name).toBe('kg');
 });
 
 test('should parse "3kg Kartoffeln" correctly', () => {
@@ -74,11 +74,11 @@ test('should parse "3kg Kartoffeln" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(3);
+    expect(serving!.amount).toBe(3);
     expect(serving!.unit).toBe('g');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(1000);
-    expect(serving!.conversion!.name).toBe('kg');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(1000);
+    expect(serving!.convertedFrom!.name).toBe('kg');
 });
 
 test('should parse "3 kg Kartoffeln" correctly', () => {
@@ -89,11 +89,11 @@ test('should parse "3 kg Kartoffeln" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(3);
+    expect(serving!.amount).toBe(3);
     expect(serving!.unit).toBe('g');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(1000);
-    expect(serving!.conversion!.name).toBe('kg');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(1000);
+    expect(serving!.convertedFrom!.name).toBe('kg');
 });
 
 test('should parse ".5 kg Kartoffeln" correctly', () => {
@@ -104,11 +104,11 @@ test('should parse ".5 kg Kartoffeln" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(0.5);
+    expect(serving!.amount).toBe(0.5);
     expect(serving!.unit).toBe('g');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(1000);
-    expect(serving!.conversion!.name).toBe('kg');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(1000);
+    expect(serving!.convertedFrom!.name).toBe('kg');
 });
 
 test('should parse "0.5 kg Kartoffeln" correctly', () => {
@@ -119,11 +119,11 @@ test('should parse "0.5 kg Kartoffeln" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(0.5);
+    expect(serving!.amount).toBe(0.5);
     expect(serving!.unit).toBe('g');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(1000);
-    expect(serving!.conversion!.name).toBe('kg');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(1000);
+    expect(serving!.convertedFrom!.name).toBe('kg');
 });
 
 test('should parse "5 slices bread" correctly', () => {
@@ -134,9 +134,9 @@ test('should parse "5 slices bread" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(5);
+    expect(serving!.amount).toBe(5);
     expect(serving!.unit).toBe('slice');
-    expect(serving!.conversion).toBeUndefined();
+    expect(serving!.convertedFrom).toBeUndefined();
 });
 
 test('should parse "potatoe" correctly', () => {
@@ -155,11 +155,11 @@ test('should parse "200ml Milch" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(200);
+    expect(serving!.amount).toBe(200);
     expect(serving!.unit).toBe('l');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(0.001);
-    expect(serving!.conversion!.name).toBe('ml');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(0.001);
+    expect(serving!.convertedFrom!.name).toBe('ml');
 });
 
 test('should parse "200 Milch" correctly', () => {
@@ -170,7 +170,7 @@ test('should parse "200 Milch" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(200);
+    expect(serving!.amount).toBe(200);
     expect(serving!.unit).toBeUndefined();
 });
 
@@ -182,9 +182,9 @@ test('should parse "200ML Milch" correctly', () => {
 
     const serving = result.serving && result.serving[0];
     expect(serving).toBeDefined();
-    expect(serving!.size).toBe(200);
+    expect(serving!.amount).toBe(200);
     expect(serving!.unit).toBe('l');
-    expect(serving!.conversion).toBeDefined();
-    expect(serving!.conversion!.factor).toBe(0.001);
-    expect(serving!.conversion!.name).toBe('ml');
+    expect(serving!.convertedFrom).toBeDefined();
+    expect(serving!.convertedFrom!.factor).toBe(0.001);
+    expect(serving!.convertedFrom!.name).toBe('ml');
 });

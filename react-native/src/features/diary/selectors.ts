@@ -1,23 +1,21 @@
-import { ConsumptionTimes } from 'src/consts';
-import { ConsumptionTime, ConsumedProduct } from 'Models';
+import { ConsumedProduct } from 'Models';
 import { RootState } from 'MyNutritionComrade';
-import { createSelector } from 'reselect';
-import { patchConsumedProducts } from './utils';
 import { SectionListData } from 'react-native';
+import { createSelector } from 'reselect';
+import { ConsumptionTimes } from 'src/consts';
+import { patchConsumedProducts } from './utils';
 
-type TimeProps = {
-    time: ConsumptionTime;
-};
+const selectedDateSelector = (state: RootState) => state.diary.selectedDate;
 
-const currentDateSelector = (state: RootState) => state.diary.currentDate;
-
-const consumedProductsSelector = (state: RootState) => state.diary.consumedProducts;
+const consumedProductsSelector = (state: RootState) => state.diary.loadedDays[state.diary.selectedDate];
 
 const pendingConsumedProductsSelector = (state: RootState) => state.diary.pendingConsumedProducts;
 
 export const getConsumedProducts = createSelector(
-    [currentDateSelector, consumedProductsSelector, pendingConsumedProductsSelector],
+    [selectedDateSelector, consumedProductsSelector, pendingConsumedProductsSelector],
     (currentDate, consumedProducts, pendingProducts) => {
+        if (!consumedProducts) return [];
+
         let result = [...consumedProducts.filter((x) => x.date === currentDate)];
         let pending = [...pendingProducts.filter((x) => x.date === currentDate)];
 
@@ -25,7 +23,7 @@ export const getConsumedProducts = createSelector(
             const item = pending[pending.length - 1];
 
             // remove all with same product id, only the most recent (last) item should have an effect
-            pending = pending.filter((x) => x.productId !== item.productId);
+            pending = pending.filter((x) => x.product.id !== item.product.id);
             result = patchConsumedProducts(result, item);
         }
 

@@ -1,14 +1,15 @@
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { ProductEssentialsWithId, ProductInfo, SearchResult, ServingSize } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
+import { Keyboard } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Divider, useTheme } from 'react-native-paper';
 import { connect } from 'react-redux';
-import SuggestionItem from './SuggestionItem';
-import * as actions from '../../diary/actions';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from 'src/RootNavigator';
-import { RouteProp } from '@react-navigation/native';
-import { Keyboard } from 'react-native';
+import * as actions from '../../diary/actions';
+import SuggestionItem from './SuggestionItem';
 
 const mapStateToProps = (state: RootState) => ({
     suggestions: state.productSearch.suggestions,
@@ -24,8 +25,57 @@ type Props = ReturnType<typeof mapStateToProps> &
         route: RouteProp<RootStackParamList, 'SearchProduct'>;
     };
 
+const getServingSizeValue = (servingSize: ServingSize, product: ProductInfo) =>
+    product.servings[servingSize.servingType || product.defaultServing] * servingSize.amount;
+
+const getSearchResultId = (result: SearchResult): string => {
+    switch (result.type) {
+        case 'product':
+            return result.product.id;
+        case 'serving':
+            return `${result.product.id}/${result.servingSize.servingType}`;
+        case 'meal':
+            return result.id;
+    }
+};
+
 function ProductSearchScreen({ suggestions, navigation, route, changeProductConsumption }: Props) {
     const theme = useTheme();
+
+    const execute = (product: ProductEssentialsWithId, value: number) => {
+        changeProductConsumption({
+            date: route.params.date,
+            time: route.params.consumptionTime,
+            product: product,
+            value,
+            append: true,
+        });
+    };
+
+    const onPressItem = (item: SearchResult) => {
+        switch (item.type) {
+            case 'product':
+                navigation.navigate('AddProduct', {
+                    onSubmit: (value) => {
+                        execute(item.product, value);
+                        navigation.goBack();
+                    },
+                    product: item.product,
+                });
+                break;
+            case 'serving':
+                execute(item.product, getServingSizeValue(item.servingSize, item.product));
+                navigation.goBack();
+
+                break;
+            case 'meal':
+                item.products.forEach((x) => execute(x.product, x.servingSize.amount));
+                navigation.goBack();
+                break;
+        }
+
+        Keyboard.dismiss();
+    };
 
     return (
         <FlatList
@@ -33,41 +83,8 @@ function ProductSearchScreen({ suggestions, navigation, route, changeProductCons
             keyboardShouldPersistTaps="handled"
             style={{ backgroundColor: theme.colors.background }}
             ItemSeparatorComponent={() => <Divider inset />}
-            keyExtractor={(x) => `${x.model.id}/${x.servingSize?.unit}`}
-            renderItem={({ item }) => (
-                <SuggestionItem
-                    item={item}
-                    onPress={() => {
-                        const execute = (value: number) => {
-                            changeProductConsumption({
-                                date: route.params.date,
-                                time: route.params.consumptionTime,
-                                product: item.model,
-                                productId: item.model.id,
-                                value,
-                                append: true,
-                            });
-                            navigation.goBack();
-                        };
-
-                        if (item.servingSize?.size) {
-                            let value = item.servingSize.size;
-                            if (item.servingSize.conversion) {
-                                value = item.servingSize.conversion.factor * value;
-                            }
-                            value = item.model.servings[item.servingSize.unit || item.model.defaultServing] * value;
-                            execute(value);
-                        } else {
-                            navigation.navigate('AddProduct', {
-                                onSubmit: execute,
-                                product: item.model,
-                            });
-                        }
-
-                        Keyboard.dismiss();
-                    }}
-                />
-            )}
+            keyExtractor={getSearchResultId}
+            renderItem={({ item }) => <SuggestionItem item={item} onPress={() => onPressItem(item)} />}
         />
     );
 }

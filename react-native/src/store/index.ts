@@ -6,6 +6,7 @@ import rootEpic from './root-epic';
 import rootReducer from './root-reducer';
 import { persistState, loadState } from './storage';
 import createReduxPromiseListener from 'redux-promise-listener';
+import { composeEnhancers } from './utils';
 
 export const epicMiddleware = createEpicMiddleware<RootAction, RootAction, RootState, Services>({
     dependencies: services,
@@ -17,7 +18,7 @@ export const promiseListener = createReduxPromiseListener();
 const middlewares = [epicMiddleware, promiseListener.middleware];
 
 // compose enhancers
-const enhancer = compose(applyMiddleware(...middlewares));
+const enhancer = composeEnhancers(applyMiddleware(...middlewares));
 
 let store: Store | null = null;
 export async function loadStore() {
@@ -25,7 +26,7 @@ export async function loadStore() {
     const initialState = await loadState();
 
     // create store
-    store = createStore(rootReducer, initialState, enhancer);
+    store = createStore(rootReducer, { ...initialState, diary: undefined }, enhancer);
     persistState(store, (x) => ({ auth: x.auth, diary: x.diary }));
 
     epicMiddleware.run(rootEpic);

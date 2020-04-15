@@ -1,14 +1,13 @@
-import { TagLiquid } from 'src/consts';
+import _ from 'lodash';
 import {
-    FrequentlyUsedProducts,
     ConsumptionTime,
     FrequentlyUsedProductDto,
-    ProductProperties,
+    FrequentlyUsedProducts,
     NutritionalInfo,
+    ProductEssentials,
     ProductLabel,
 } from 'Models';
-import { ConsumptionTimes } from 'src/consts';
-import _ from 'lodash';
+import { ConsumptionTimes, TagLiquid } from 'src/consts';
 
 /**
  * Change the volume of a {@see NutritionalInfo} and calculate the new nutrtional values
@@ -82,7 +81,7 @@ export function* flattenProductsPrioritize(
  * Return true if the product is a liquid
  * @param product the product
  */
-export function isProductLiquid(product: ProductProperties): boolean {
+export function isProductLiquid(product: ProductEssentials): boolean {
     return product.tags.includes(TagLiquid);
 }
 
@@ -90,7 +89,7 @@ export function isProductLiquid(product: ProductProperties): boolean {
  * Return the base unit for the product. 'ml' for liquids, 'g' else
  * @param product the product
  */
-export function getBaseUnit(product: ProductProperties): string {
+export function getBaseUnit(product: ProductEssentials): string {
     return isProductLiquid(product) ? 'ml' : 'g';
 }
 

@@ -76,7 +76,7 @@ export function tryParseServingSize(input: string): { serving?: Partial<ServingS
     }
 
     if (unit === undefined) {
-        return { serving: [{ size: amount }] };
+        return { serving: [{ amount: amount }] };
     }
 
     let productSearch = m[3] ? m[3].trim() : undefined;
@@ -93,19 +93,19 @@ export function tryParseServingSize(input: string): { serving?: Partial<ServingS
             return { productSearch };
         }
 
-        return { productSearch, serving: [{ size: amount }] };
+        return { productSearch, serving: [{ amount: amount }] };
     }
 
     const serving: ServingSize[] = servingTypes.map((x) => ({
-        size: amount || 0,
-        unit: x.type,
+        amount: amount || 0 * (x.conversion?.factor || 1),
+        servingType: x.servingType,
         conversion: x.conversion,
     }));
     return { serving, productSearch };
 }
 
 type ParsedServing = {
-    type: string;
+    servingType: string;
     conversion?: Conversion;
 };
 
@@ -118,11 +118,13 @@ function tryMatchServingType(unit: string): ParsedServing[] | undefined {
     unit = unit.toLowerCase();
 
     const result: ParsedServing[] = [];
+
+    // search for exact match
     for (const servingType of servingTypes) {
         for (const keyword of servingType.keywords) {
             if (keyword === unit) {
                 result.push({
-                    type: servingType.id,
+                    servingType: servingType.id,
                     conversion:
                         servingType.conversionFactor !== undefined
                             ? { factor: servingType.conversionFactor!, name: keyword }
@@ -134,21 +136,27 @@ function tryMatchServingType(unit: string): ParsedServing[] | undefined {
 
     if (result.length > 0) return result;
 
+    // search by startsWith
     for (const servingType of servingTypes) {
         for (const keyword of servingType.keywords) {
             if (keyword.startsWith(unit)) {
                 return [
                     {
-                        type: servingType.id,
+                        servingType: servingType.id,
                         conversion:
                             servingType.conversionFactor !== undefined
-                                ? { factor: servingType.conversionFactor!, name: keyword }
+                                ? {
+                                      factor: servingType.conversionFactor!,
+                                      name: keyword,
+                                  }
                                 : undefined,
                     },
                 ];
             }
         }
     }
+
+    if (result.length > 0) return result;
 
     return undefined;
 }

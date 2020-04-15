@@ -5,6 +5,10 @@ declare module 'Models' {
         label: ProductLabel[];
     }
 
+    export interface ProductEssentialsWithId extends ProductEssentials {
+        id: string;
+    }
+
     export interface ProductProperties extends ProductEssentials {
         code?: string | null;
         servings: { [key: string]: number };

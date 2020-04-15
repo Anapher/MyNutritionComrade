@@ -25,12 +25,12 @@ import DiaryHeader from './DiaryHeader';
 const mapStateToProps = (state: RootState) => ({
     sections: selectors.getConsumedProductsSections(state),
     frequentlyUsedProducts: state.diary.frequentlyUsedProducts,
-    currentDate: state.diary.currentDate,
+    selectedDay: state.diary.selectedDate,
 });
 
 const dispatchProps = {
     loadFrequentlyUsedProducts: actions.loadFrequentlyUsedProducts.request,
-    loadDate: actions.loadDate.request,
+    loadDate: actions.setSelectedDate.request,
     changeProductConsumption: actions.changeProductConsumption.request,
 };
 
@@ -44,7 +44,7 @@ function TabDiary({
     loadFrequentlyUsedProducts,
     loadDate,
     sections,
-    currentDate,
+    selectedDay,
     frequentlyUsedProducts,
     changeProductConsumption,
 }: Props) {
@@ -76,7 +76,7 @@ function TabDiary({
                         product,
                         onSubmit: (volume) => {
                             changeProductConsumption({
-                                date: currentDate,
+                                date: selectedDay,
                                 time,
                                 product: product!,
                                 productId: product!.id,
@@ -128,7 +128,7 @@ function TabDiary({
             volume: item.nutritionalInfo.volume,
             onSubmit: (volume) => {
                 changeProductConsumption({
-                    date: currentDate,
+                    date: selectedDay,
                     time: item.time,
                     product: product!,
                     productId: product!.id,
@@ -156,8 +156,8 @@ function TabDiary({
                     />
                 )}
                 ItemSeparatorComponent={() => <Divider />}
-                renderSectionHeader={({ section }) => (
-                    <ConsumptionTimeHeader section={section} style={{ marginTop: 8 }} />
+                renderSectionHeader={({ section: { key } }) => (
+                    <ConsumptionTimeHeader section={sections.find((x) => x.key === key)!} style={{ marginTop: 8 }} />
                 )}
                 renderSectionFooter={({ section }) => (
                     <ConsumptionTimeFooter
@@ -166,7 +166,7 @@ function TabDiary({
                         onAddFood={() =>
                             navigation.navigate('SearchProduct', {
                                 consumptionTime: section.time,
-                                date: currentDate,
+                                date: selectedDay,
                             })
                         }
                         onMoreOptions={() => {}}
@@ -200,7 +200,7 @@ function TabDiary({
                     <Dialog.Title numberOfLines={1} lineBreakMode="tail">
                         {productOptions && selectLabel(productOptions.label)}
                     </Dialog.Title>
-                    <Dialog.Content>
+                    <View>
                         <DialogButton
                             onPress={async () => {
                                 const p = productOptions!;
@@ -254,7 +254,7 @@ function TabDiary({
                             onPress={() => {
                                 changeProductConsumption({
                                     append: false,
-                                    date: currentDate,
+                                    date: selectedDay,
                                     product: productOptions!,
                                     productId: productOptions!.productId,
                                     time: productOptions!.time,
@@ -265,7 +265,7 @@ function TabDiary({
                         >
                             Remove
                         </DialogButton>
-                    </Dialog.Content>
+                    </View>
                 </Dialog>
             </Portal>
         </View>

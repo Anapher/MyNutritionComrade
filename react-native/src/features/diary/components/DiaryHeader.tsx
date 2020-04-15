@@ -10,19 +10,19 @@ import NutritionSummary from './NutritionSummary';
 
 const mapStateToProps = (state: RootState) => ({
     consumedProducts: selectors.getConsumedProducts(state),
-    currentDate: state.diary.currentDate,
+    selectedDate: state.diary.selectedDate,
 });
 
 const dispatchProps = {
-    loadDate: actions.loadDate.request,
+    loadDate: actions.setSelectedDate.request,
 };
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchProps;
 
-function DiaryHeader({ consumedProducts, currentDate, loadDate }: Props) {
+function DiaryHeader({ consumedProducts, selectedDate, loadDate }: Props) {
     return (
         <Surface style={styles.surface}>
-            <DateControls selectedDate={currentDate} onChange={(d) => loadDate(d)} />
+            <DateControls selectedDate={selectedDate} onChange={(d) => loadDate(d)} />
             <Divider />
             <View style={styles.summary}>
                 <NutritionSummary products={consumedProducts} />

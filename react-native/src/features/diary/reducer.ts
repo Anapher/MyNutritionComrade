@@ -1,26 +1,38 @@
-import { ConsumedProduct, ConsumptionTime, FrequentlyUsedProducts, ProductEssentials } from 'Models';
+import {
+    ConsumedProduct,
+    ConsumptionTime,
+    FrequentlyUsedProducts,
+    ProductEssentials,
+    ProductConsumptionDates,
+    ProductEssentialsWithId,
+} from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
-import { patchConsumedProducts } from './utils';
+import { patchConsumedProducts, getRequiredDates } from './utils';
+import { DateTime } from 'luxon';
 
 export type ConsumeProductData = {
     date: string;
     time: ConsumptionTime;
-    product: ProductEssentials;
-    productId: string;
+    product: ProductEssentialsWithId;
     value: number;
 
     requestId: string;
     append: boolean;
 };
 
+export type DiaryConsumedDate = {
+    date: string;
+    products: ConsumedProduct[];
+};
+
 export type DiaryState = Readonly<{
     /** the current date that is displayed */
-    currentDate: string;
+    selectedDate: string;
 
-    /** the consumed products of the current date */
-    consumedProducts: ConsumedProduct[];
+    /** all loaded days of consumed products */
+    loadedDays: ProductConsumptionDates;
 
     /** pending products for which the server hasn't respond yet */
     pendingConsumedProducts: ConsumeProductData[];
@@ -30,8 +42,8 @@ export type DiaryState = Readonly<{
 }>;
 
 export const initialState: DiaryState = {
-    currentDate: '',
-    consumedProducts: [],
+    selectedDate: '',
+    loadedDays: {},
     pendingConsumedProducts: [],
     frequentlyUsedProducts: { breakfast: [], lunch: [], dinner: [], snack: [] },
 };
@@ -40,24 +52,48 @@ export default function (state: DiaryState = initialState, action: RootAction): 
     switch (action.type) {
         case getType(actions.loadFrequentlyUsedProducts.success):
             return { ...state, frequentlyUsedProducts: action.payload };
-        case getType(actions.loadDate.request):
-            return { ...state, currentDate: action.payload };
-        case getType(actions.loadDate.success):
-            if (state.currentDate !== action.payload.date) return state;
+        case getType(actions.setSelectedDate.request):
+            return { ...state, selectedDate: action.payload };
+        case getType(actions.setSelectedDate.success):
+            if (state.selectedDate !== action.payload.date) return state;
 
-            return { ...state, consumedProducts: action.payload.value, pendingConsumedProducts: [] };
+            const requiredDays = getRequiredDates(
+                DateTime.local(),
+                DateTime.fromISO(state.selectedDate),
+                3,
+                7,
+            ).map((x) => x.toISODate());
+            const merged = { ...state.loadedDays, ...action.payload.data };
+
+            return {
+                ...state,
+                loadedDays: Object.fromEntries(
+                    Object.keys(merged)
+                        .filter((x) => requiredDays.includes(x))
+                        .map((x) => [x, merged[x]]),
+                ),
+            };
         case getType(actions.changeProductConsumption.request):
             return {
                 ...state,
                 pendingConsumedProducts: [...state.pendingConsumedProducts, action.payload],
             };
         case getType(actions.changeProductConsumption.success):
-            const pending = state.pendingConsumedProducts.filter((x) => x.requestId === action.payload.requestId);
-            if (!pending) return state; // likely changed current date
+            const pending = state.pendingConsumedProducts.find((x) => x.requestId === action.payload.requestId);
+            if (!pending) return state;
+
+            const date = DateTime.fromISO(action.payload.date).toISODate();
+            const consumedProducts = state.loadedDays[date];
+            if (consumedProducts === undefined) return state;
 
             return {
                 ...state,
-                consumedProducts: patchConsumedProducts(state.consumedProducts, action.payload),
+                loadedDays: Object.fromEntries(
+                    Object.keys(state.loadedDays).map((x) => [
+                        x,
+                        x === date ? patchConsumedProducts(consumedProducts, action.payload) : state.loadedDays[x],
+                    ]),
+                ),
                 pendingConsumedProducts: state.pendingConsumedProducts.filter(
                     (x) => x.requestId !== action.payload.requestId,
                 ),

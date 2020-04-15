@@ -1,5 +1,5 @@
 import cuid from 'cuid';
-import { ConsumedProduct, FrequentlyUsedProducts } from 'Models';
+import { FrequentlyUsedProducts, ProductConsumptionDates } from 'Models';
 import { RequestErrorResponse } from 'src/utils/error-result';
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { ConsumeProductData } from './reducer';
@@ -10,11 +10,11 @@ export const loadFrequentlyUsedProducts = createAsyncAction(
     'DIARY/LOAD_FREQUENTLYUSEDPRODUCTS_FAILURE',
 )<undefined, FrequentlyUsedProducts, RequestErrorResponse>();
 
-export const loadDate = createAsyncAction(
-    'DIARY/LOAD_DATE_REQUEST',
-    'DIARY/LOAD_DATE_SUCCESS',
-    'DIARY/LOAD_DATE_FAILURE',
-)<string, { date: string; value: ConsumedProduct[] }, RequestErrorResponse>();
+export const setSelectedDate = createAsyncAction(
+    'DIARY/SET_SELECTED_DATE_REQUEST',
+    'DIARY/SET_SELECTED_DATE_SUCCESS',
+    'DIARY/SET_SELECTED_DATE_FAILURE',
+)<string, { date: string; data: ProductConsumptionDates }, RequestErrorResponse>();
 
 export const changeProductConsumption = {
     request: createAction(

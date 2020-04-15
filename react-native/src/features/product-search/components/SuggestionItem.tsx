@@ -1,13 +1,13 @@
-import { FoodSuggestion } from 'Models';
-import React from 'react';
-import { List, TouchableRipple, Text, Caption, Theme, withTheme } from 'react-native-paper';
-import selectLabel from 'src/utils/product-utils';
-import { View, StyleSheet } from 'react-native';
 import color from 'color';
+import { SearchResult } from 'Models';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import selectLabel from 'src/utils/product-utils';
 
 type Props = {
-    item: FoodSuggestion;
+    item: SearchResult;
     theme: Theme;
     onPress: () => void;
 };
@@ -23,18 +23,38 @@ function SuggestionItem({ item, theme, onPress }: Props) {
                     <Icon name="plus" color={iconColor} size={24} />
                 </View>
                 <View>
-                    <Text style={[styles.title, { color: theme.colors.text }]}>{selectLabel(item.model.label)}</Text>
-                    <Text style={[styles.description, { color: descriptionColor }]}>
-                        {item.servingSize
-                            ? `${item.servingSize?.size} ${
-                                  item.servingSize?.conversion?.name || item.servingSize?.unit
-                              }`
-                            : 'Tap to choose volume'}
-                    </Text>
+                    <Text style={[styles.title, { color: theme.colors.text }]}>{getTitle(item)}</Text>
+                    <Text style={[styles.description, { color: descriptionColor }]}>{getDescription(item)}</Text>
                 </View>
             </View>
         </TouchableRipple>
     );
+}
+
+function getTitle(s: SearchResult): string {
+    switch (s.type) {
+        case 'product':
+            return selectLabel(s.product.label);
+        case 'serving':
+            return selectLabel(s.product.label);
+        case 'meal':
+            return s.name;
+    }
+}
+
+function getDescription(s: SearchResult): string {
+    switch (s.type) {
+        case 'product':
+            return 'Tap to choose volume';
+        case 'serving':
+            if (s.servingSize.convertedFrom !== undefined)
+                return `${s.servingSize.amount * (1 / s.servingSize.convertedFrom.factor)} ${
+                    s.servingSize.convertedFrom.name
+                }`;
+            return `${s.servingSize.amount} ${s.servingSize.servingType}`;
+        case 'meal':
+            return s.products.map((x) => selectLabel(x.product.label)).join(', ');
+    }
 }
 
 const styles = StyleSheet.create({
