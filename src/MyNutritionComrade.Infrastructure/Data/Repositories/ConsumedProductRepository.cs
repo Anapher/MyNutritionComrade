@@ -25,6 +25,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         public async Task Add(ConsumedProduct consumedProduct)
         {
             using var session = OpenWriteSession();
+
             await session.StoreAsync(consumedProduct, GetId(consumedProduct));
             await session.SaveChangesAsync();
         }

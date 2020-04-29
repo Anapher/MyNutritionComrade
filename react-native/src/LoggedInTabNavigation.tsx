@@ -8,7 +8,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 export const BottomTabs = () => {
     return (
-        <Tab.Navigator shifting={true} sceneAnimationEnabled={false}>
+        <Tab.Navigator>
             <Tab.Screen
                 name="Diary"
                 component={TabDiary}

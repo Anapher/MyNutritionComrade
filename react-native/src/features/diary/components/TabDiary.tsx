@@ -79,7 +79,6 @@ function TabDiary({
                                 date: selectedDay,
                                 time,
                                 product: product!,
-                                productId: product!.id,
                                 value: volume,
                                 append: true,
                             });
@@ -131,7 +130,6 @@ function TabDiary({
                     date: selectedDay,
                     time: item.time,
                     product: product!,
-                    productId: product!.id,
                     value: volume,
                     append: false,
                 });
@@ -255,8 +253,7 @@ function TabDiary({
                                 changeProductConsumption({
                                     append: false,
                                     date: selectedDay,
-                                    product: productOptions!,
-                                    productId: productOptions!.productId,
+                                    product: { ...productOptions!, id: productOptions!.productId },
                                     time: productOptions!.time,
                                     value: 0,
                                 });

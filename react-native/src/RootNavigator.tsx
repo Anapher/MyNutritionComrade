@@ -23,6 +23,7 @@ import ProductSearch from './features/product-search/components/ProductSearchScr
 import VoteProductChanges from './features/product-vote-changes/components/VoteProductChanges';
 import HomeScreen from './HomeScreen';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
+import LoadExistingInfoTab from './features/nutrition-goals/components/LoadExistingInfoTab';
 
 const Stack = createStackNavigator();
 
@@ -52,6 +53,7 @@ export type RootStackParamList = {
         product: ProductInfo;
     };
     ProductOverview: { product: ProductInfo };
+    ConfigureNutritionGoals: {};
 };
 
 function RootNavigator({ isAuthenticated, isSignOut }: Props) {
@@ -67,9 +69,13 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                         options={{
                             // When logging out, a pop animation feels intuitive
                             animationTypeForReplace: isSignOut ? 'pop' : 'push',
-                            header: (x) => (
+                            header: ({ navigation }) => (
                                 <Appbar.Header>
                                     <Appbar.Content title="My Nutriton Comrade" />
+                                    <Appbar.Action
+                                        icon="settings"
+                                        onPress={() => navigation.navigate('ConfigureNutritionGoals')}
+                                    />
                                 </Appbar.Header>
                             ),
                         }}
@@ -107,6 +113,11 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                     <Stack.Screen name="AddProduct" component={AddProduct} />
                     <Stack.Screen name="VoteProductChanges" component={VoteProductChanges} />
                     <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
+                    <Stack.Screen
+                        name="ConfigureNutritionGoals"
+                        component={LoadExistingInfoTab}
+                        options={{ headerTitle: 'Configure Nutrition Goals' }}
+                    />
                 </>
             )}
         </Stack.Navigator>
