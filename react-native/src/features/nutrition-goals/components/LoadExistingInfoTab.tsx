@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { RootState } from 'MyNutritionComrade';
 import * as actions from '../actions';
-import { Button } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 import ConfigureNutritionGoals from './ConfigureNutritionGoals';
 import { connect } from 'react-redux';
 

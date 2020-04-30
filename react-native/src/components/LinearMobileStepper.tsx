@@ -96,7 +96,7 @@ function LinearMobileStepper({ activeStep, steps, onChangeActiveStep, errors = {
                         },
                     ]}
                 >
-                    <Icon name={'chevron-left'} size={24} color={foreground} />
+                    <Icon name="chevron-left" size={24} color={foreground} />
                     <Text style={[styles.stepperButtonText, { color: foreground }]}>back</Text>
                 </View>
             </TouchableRipple>
@@ -114,7 +114,7 @@ function LinearMobileStepper({ activeStep, steps, onChangeActiveStep, errors = {
                     ]}
                 >
                     <Text style={[styles.stepperButtonText, { color: foreground }]}>next</Text>
-                    <Icon name={'chevron-right'} size={24} color={foreground} />
+                    <Icon name="chevron-right" size={24} color={foreground} />
                 </View>
             </TouchableRipple>
         </Surface>

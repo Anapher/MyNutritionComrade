@@ -3,9 +3,11 @@ import { StyleSheet, View } from 'react-native';
 import { UserNutritionGoal } from 'Models';
 import Accordion from 'react-native-collapsible/Accordion';
 import { Text, TouchableRipple, useTheme, Divider, overlay } from 'react-native-paper';
-import ConfigureCalories from './ConfigureCalories';
-import ConfigureNutritentDistribution from './ConfigureNutritentDistribution';
-import ConfigureProtein from './ConfigureProtein';
+import ConfigureCalories, { defaultValue as defaultValueCalories } from './ConfigureCalories';
+import ConfigureNutritentDistribution from './ConfigureNutrientDistribution';
+import ConfigureProtein, { defaultValue as defaultValueProtein } from './ConfigureProtein';
+import { ScrollView } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type Props = {
     initialValue: UserNutritionGoal;
@@ -20,7 +22,17 @@ function SectionHeader({ text, onPress, active }: { text: string; onPress: () =>
                 style={[styles.sectionHeader, active && { backgroundColor: theme.colors.accent }]}
                 onPress={onPress}
             >
-                <Text style={{ fontWeight: 'bold' }}>{text}</Text>
+                <View
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{text}</Text>
+                    {active && <Icon name="check" size={20} style={{ color: theme.colors.text }} />}
+                </View>
             </TouchableRipple>
             <Divider />
         </View>
@@ -41,13 +53,13 @@ const sections: {
     {
         type: 'calories',
         label: 'Calories',
-        defaultValue: { type: 'caloriesMifflinStJeor', palFactor: 2000, calorieBalance: 0, calorieOffset: 0 },
+        defaultValue: defaultValueCalories,
         render: ConfigureCalories,
     },
     {
         type: 'protein',
         label: 'Protein',
-        defaultValue: { type: 'proteinByBodyweight', proteinPerKgBodyweight: 1.5 },
+        defaultValue: defaultValueProtein,
         render: ConfigureProtein,
     },
     {
@@ -62,37 +74,31 @@ function ConfigureNutritionGoals({ initialValue }: Props) {
     const [value, setValue] = useState(initialValue);
 
     return (
-        <Accordion
-            activeSections={sections
-                .map((d, i) => ({ d, i }))
-                .filter((x) => value[x.d.type] !== undefined)
-                .map((x) => x.i)}
-            sections={sections}
-            renderSectionTitle={() => null}
-            renderHeader={(item, i, active) => (
-                <SectionHeader
-                    active={active}
-                    text={item.label}
-                    onPress={() =>
-                        setValue({
-                            ...value,
-                            [item.type]: value[item.type] === undefined ? item.defaultValue : undefined,
-                        })
-                    }
-                />
-            )}
-            renderContent={(content) => <content.render data={value} onChange={(x) => setValue(x)} />}
-            onChange={(x) => {}}
-            expandMultiple
-        />
-        // <Accordion
-        //     activeSections={[0]}
-        //     sections={['Section 1', 'Section 2', 'Section 3']}
-        //     renderSectionTitle={this._renderSectionTitle}
-        //     renderHeader={this._renderHeader}
-        //     renderContent={this._renderContent}
-        //     onChange={this._updateSections}
-        // />
+        <ScrollView>
+            <Accordion
+                activeSections={sections
+                    .map((d, i) => ({ d, i }))
+                    .filter((x) => value[x.d.type] !== undefined)
+                    .map((x) => x.i)}
+                sections={sections}
+                renderSectionTitle={() => null as any}
+                renderHeader={(item, i, active) => (
+                    <SectionHeader
+                        active={active}
+                        text={item.label}
+                        onPress={() =>
+                            setValue({
+                                ...value,
+                                [item.type]: value[item.type] === undefined ? item.defaultValue : undefined,
+                            })
+                        }
+                    />
+                )}
+                renderContent={(content) => <content.render data={value} onChange={(x) => setValue(x)} />}
+                onChange={(x) => {}}
+                expandMultiple
+            />
+        </ScrollView>
     );
 }
 
