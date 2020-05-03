@@ -26,13 +26,8 @@ namespace MyNutritionComrade.Core.UseCases
             if (user == null)
                 return ReturnError(new EntityNotFoundError($"The user with id {message.UserId} was not found.", ErrorCode.UserNotFound));
 
-            var value = await _repository.GetByUser(user.Id) ?? new UserNutritionGoal();
-
-            foreach (var update in message.PartialUserNutritionGoal)
-                value[update.Key] = update.Value;
-
-            await _repository.Save(user.Id, value);
-            return new PatchNutritionGoalsResponse(value);
+            await _repository.Save(user.Id, message.NewValue);
+            return new PatchNutritionGoalsResponse(message.NewValue);
         }
     }
 }

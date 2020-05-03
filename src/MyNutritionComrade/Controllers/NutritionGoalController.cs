@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,12 +39,12 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpPatch]
-        public async Task<ActionResult<UserNutritionGoal>> PatchNutritionGoals([FromBody] UserNutritionGoal updates,
+        public async Task<ActionResult<UserNutritionGoal>> PatchNutritionGoals([FromBody]UserNutritionGoal newNutritionGoal,
             [FromServices] IPatchNutritionGoalsUseCase useCase)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var response = await useCase.Handle(new PatchNutritionGoalsRequest(updates, userId));
+            var response = await useCase.Handle(new PatchNutritionGoalsRequest(newNutritionGoal, userId));
             if (useCase.HasError)
                 return useCase.Error!.ToActionResult();
 

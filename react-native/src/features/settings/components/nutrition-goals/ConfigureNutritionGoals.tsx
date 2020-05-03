@@ -10,7 +10,8 @@ import { ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type Props = {
-    initialValue: UserNutritionGoal;
+    value: UserNutritionGoal;
+    onChange: (x: UserNutritionGoal) => void;
 };
 
 function SectionHeader({ text, onPress, active }: { text: string; onPress: () => void; active: boolean }) {
@@ -70,9 +71,7 @@ const sections: {
     },
 ];
 
-function ConfigureNutritionGoals({ initialValue }: Props) {
-    const [value, setValue] = useState(initialValue);
-
+function ConfigureNutritionGoals({ value, onChange }: Props) {
     return (
         <ScrollView>
             <Accordion
@@ -87,14 +86,14 @@ function ConfigureNutritionGoals({ initialValue }: Props) {
                         active={active}
                         text={item.label}
                         onPress={() =>
-                            setValue({
+                            onChange({
                                 ...value,
                                 [item.type]: value[item.type] === undefined ? item.defaultValue : undefined,
                             })
                         }
                     />
                 )}
-                renderContent={(content) => <content.render data={value} onChange={(x) => setValue(x)} />}
+                renderContent={(content) => <content.render data={value} onChange={(x) => onChange(x)} />}
                 onChange={(x) => {}}
                 expandMultiple
             />

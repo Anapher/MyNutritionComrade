@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, Divider, Portal, RadioButton } from 'react-native-paper';
 import { GoalConfigProps } from './ConfigureNutritionGoals';
 import DialogActionButton from './DialogActionButton';
-import NumberTextInput from './NumberTextInput';
+import NumberTextInput from '../NumberTextInput';
 
 const referenceProteinPerKgBodyweight = [
     {
@@ -91,8 +91,9 @@ const ProteinByBodyweightView = ({
 
 const ConfigureProtein = ({ data, onChange }: GoalConfigProps) => {
     const theme = useTheme();
+
     /** ugly fix for radio button */
-    theme.colors.primary = theme.colors.text;
+    const fixedTheme = { ...theme, colors: { ...theme.colors, primary: theme.colors.text } };
 
     const handleOnChange = (protein: any) => {
         onChange({ ...data, protein });
@@ -103,7 +104,7 @@ const ConfigureProtein = ({ data, onChange }: GoalConfigProps) => {
             <View style={styles.linearView}>
                 <View style={styles.flex}>
                     <RadioButton.Item
-                        theme={theme}
+                        theme={fixedTheme}
                         label="Fixed value"
                         status={data.protein?.type === 'proteinFixed' ? 'checked' : 'unchecked'}
                         value="proteinFixed"
@@ -112,7 +113,7 @@ const ConfigureProtein = ({ data, onChange }: GoalConfigProps) => {
                 </View>
                 <View style={styles.flex}>
                     <RadioButton.Item
-                        theme={theme}
+                        theme={fixedTheme}
                         label="Calculate"
                         status={data.protein?.type === 'proteinByBodyweight' ? 'checked' : 'unchecked'}
                         value="proteinByBodyweight"

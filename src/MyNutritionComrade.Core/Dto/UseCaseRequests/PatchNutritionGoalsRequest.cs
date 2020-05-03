@@ -6,13 +6,13 @@ namespace MyNutritionComrade.Core.Dto.UseCaseRequests
 {
     public class PatchNutritionGoalsRequest : IUseCaseRequest<PatchNutritionGoalsResponse>
     {
-        public PatchNutritionGoalsRequest(UserNutritionGoal partialUserNutritionGoal, string userId)
+        public PatchNutritionGoalsRequest(UserNutritionGoal newValue, string userId)
         {
-            PartialUserNutritionGoal = partialUserNutritionGoal;
+            NewValue = newValue;
             UserId = userId;
         }
 
-        public UserNutritionGoal PartialUserNutritionGoal { get; }
+        public UserNutritionGoal NewValue { get; }
         public string UserId { get; }
     }
 }

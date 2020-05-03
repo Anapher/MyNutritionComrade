@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GoalConfigProps } from './ConfigureNutritionGoals';
-import NumberTextInput from './NumberTextInput';
+import NumberTextInput from '../NumberTextInput';
 import { NutrientDistribution } from 'Models';
 import { Text, useTheme } from 'react-native-paper';
 

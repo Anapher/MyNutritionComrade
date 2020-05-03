@@ -5,21 +5,23 @@ import { getType } from 'typesafe-actions';
 import * as actions from './actions';
 import { RequestErrorResponse } from 'src/utils/error-result';
 
-export type NutritionGoalState = Readonly<{
+export type SettingsState = Readonly<{
     nutritionGoal: UserNutritionGoal | null;
-    isLoading: boolean;
-    error: RequestErrorResponse | null;
+    isLoadingNutritionGoal: boolean;
+    errorNutritionGoal: RequestErrorResponse | null;
 }>;
 
-export default combineReducers<NutritionGoalState, RootAction>({
+export default combineReducers<SettingsState, RootAction>({
     nutritionGoal: (state = null, action) => {
         switch (action.type) {
             case getType(actions.loadCurrentNutritionGoal.success):
                 return action.payload;
+            case getType(actions.patchNutritionGoal.success):
+                return action.payload;
         }
         return state;
     },
-    isLoading: (state = false, action) => {
+    isLoadingNutritionGoal: (state = false, action) => {
         switch (action.type) {
             case getType(actions.loadCurrentNutritionGoal.success):
             case getType(actions.loadCurrentNutritionGoal.failure):
@@ -29,7 +31,7 @@ export default combineReducers<NutritionGoalState, RootAction>({
         }
         return state;
     },
-    error: (state = null, action) => {
+    errorNutritionGoal: (state = null, action) => {
         switch (action.type) {
             case getType(actions.loadCurrentNutritionGoal.failure):
                 return action.payload;

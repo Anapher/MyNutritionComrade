@@ -17,7 +17,7 @@ import {
 import PaperSlider from 'src/components/PaperSlider';
 import { GoalConfigProps } from './ConfigureNutritionGoals';
 import DialogActionButton from './DialogActionButton';
-import NumberTextInput from './NumberTextInput';
+import NumberTextInput from '../NumberTextInput';
 
 const defaultFixedCalories: CaloriesFixedNutritionGoal = { type: 'caloriesFixed', caloriesPerDay: 2200 };
 const defaultMifflinStJeor: CaloriesMifflinStJeorNutritionGoal = {
@@ -159,8 +159,9 @@ const CaloriesMifflinStJeorView = ({
 
 const ConfigureCalories = ({ data, onChange }: GoalConfigProps) => {
     const theme = useTheme();
+
     /** ugly fix for radio button */
-    theme.colors.primary = theme.colors.text;
+    const fixedTheme = { ...theme, colors: { ...theme.colors, primary: theme.colors.text } };
 
     const handleOnChange = (calories: any) => {
         onChange({ ...data, calories });
@@ -171,7 +172,7 @@ const ConfigureCalories = ({ data, onChange }: GoalConfigProps) => {
             <View style={styles.linearView}>
                 <View style={styles.flex}>
                     <RadioButton.Item
-                        theme={theme}
+                        theme={fixedTheme}
                         label="Fixed value"
                         status={data.calories?.type === 'caloriesFixed' ? 'checked' : 'unchecked'}
                         value="caloriesFixed"
@@ -180,7 +181,7 @@ const ConfigureCalories = ({ data, onChange }: GoalConfigProps) => {
                 </View>
                 <View style={styles.flex}>
                     <RadioButton.Item
-                        theme={theme}
+                        theme={fixedTheme}
                         label="Calculate"
                         status={data.calories?.type === 'caloriesMifflinStJeor' ? 'checked' : 'unchecked'}
                         value="caloriesMifflinStJeor"

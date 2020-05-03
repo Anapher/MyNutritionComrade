@@ -16,3 +16,14 @@ export const loadCurrentUserNutritionGoal: RootEpic = (action$, _, { api }) =>
             ),
         ),
     );
+
+export const patchCurrentUserNutritionGoal: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(isActionOf(actions.patchNutritionGoal.request)),
+        switchMap(({ payload }) =>
+            from(api.nutritionGoal.patch(payload)).pipe(
+                map((response) => actions.patchNutritionGoal.success(response)),
+                catchError((error: AxiosError) => of(actions.patchNutritionGoal.failure(toErrorResult(error)))),
+            ),
+        ),
+    );
