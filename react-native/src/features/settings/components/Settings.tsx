@@ -1,16 +1,21 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { UserNutritionGoal } from 'Models';
+import { UserNutritionGoal, UserPersonalInfo } from 'Models';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import SettingsNutritionGoals from './SettingsNutritionGoals';
 import SettingsOverview from './SettingsOverview';
 import { Appbar } from 'react-native-paper';
+import SettingsPersonalInfo from './SettingsPersonalInfo';
 
 export type SettingsStackParamList = {
     Home: undefined;
     ConfigureNutritionGoals: {
         initialValue: UserNutritionGoal;
         onSubmit: (newValue: UserNutritionGoal) => Promise<any>;
+    };
+    ConfigurePersonalInfo: {
+        initialValue: UserPersonalInfo;
+        onSubmit: (newValue: UserPersonalInfo) => Promise<any>;
     };
 };
 
@@ -32,6 +37,7 @@ const Settings = () => {
                 }}
             />
             <Stack.Screen name="ConfigureNutritionGoals" component={SettingsNutritionGoals} />
+            <Stack.Screen name="ConfigurePersonalInfo" component={SettingsPersonalInfo} />
         </Stack.Navigator>
     );
 };

@@ -3,7 +3,8 @@ import * as products from './api/products';
 import * as userService from './api/user-service';
 import * as consumption from './api/consumption';
 import * as nutritionGoal from './api/nutrition-goal';
+import * as personalInfo from './api/user-personal-info';
 
 export default {
-    api: { auth, products, userService, consumption, nutritionGoal },
+    api: { auth, products, userService, consumption, nutritionGoal, personalInfo },
 };

@@ -27,3 +27,25 @@ export const patchCurrentUserNutritionGoal: RootEpic = (action$, _, { api }) =>
             ),
         ),
     );
+
+export const loadPersonalInfo: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(isActionOf(actions.loadPersonalInfo.request)),
+        switchMap(() =>
+            from(api.personalInfo.get()).pipe(
+                map((response) => actions.loadPersonalInfo.success(response)),
+                catchError((error: AxiosError) => of(actions.loadPersonalInfo.failure(toErrorResult(error)))),
+            ),
+        ),
+    );
+
+export const patchPersonalInfo: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(isActionOf(actions.patchPersonalInfo.request)),
+        switchMap(({ payload }) =>
+            from(api.personalInfo.patch(payload)).pipe(
+                map((response) => actions.patchPersonalInfo.success(response)),
+                catchError((error: AxiosError) => of(actions.patchPersonalInfo.failure(toErrorResult(error)))),
+            ),
+        ),
+    );

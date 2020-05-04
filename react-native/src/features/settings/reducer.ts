@@ -1,4 +1,4 @@
-import { UserNutritionGoal } from 'Models';
+import { UserNutritionGoal, UserPersonalInfo } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { combineReducers } from 'redux';
 import { getType } from 'typesafe-actions';
@@ -9,6 +9,10 @@ export type SettingsState = Readonly<{
     nutritionGoal: UserNutritionGoal | null;
     isLoadingNutritionGoal: boolean;
     errorNutritionGoal: RequestErrorResponse | null;
+
+    personalInfo: UserPersonalInfo | null;
+    isLoadingPersonalInfo: boolean;
+    errorPersonalInfo: RequestErrorResponse | null;
 }>;
 
 export default combineReducers<SettingsState, RootAction>({
@@ -36,6 +40,34 @@ export default combineReducers<SettingsState, RootAction>({
             case getType(actions.loadCurrentNutritionGoal.failure):
                 return action.payload;
             case getType(actions.loadCurrentNutritionGoal.success):
+                return null;
+        }
+        return state;
+    },
+    personalInfo: (state = null, action) => {
+        switch (action.type) {
+            case getType(actions.loadPersonalInfo.success):
+                return action.payload;
+            case getType(actions.patchPersonalInfo.success):
+                return action.payload;
+        }
+        return state;
+    },
+    isLoadingPersonalInfo: (state = false, action) => {
+        switch (action.type) {
+            case getType(actions.loadPersonalInfo.success):
+            case getType(actions.loadPersonalInfo.failure):
+                return false;
+            case getType(actions.loadPersonalInfo.request):
+                return true;
+        }
+        return state;
+    },
+    errorPersonalInfo: (state = null, action) => {
+        switch (action.type) {
+            case getType(actions.loadPersonalInfo.failure):
+                return action.payload;
+            case getType(actions.loadPersonalInfo.success):
                 return null;
         }
         return state;

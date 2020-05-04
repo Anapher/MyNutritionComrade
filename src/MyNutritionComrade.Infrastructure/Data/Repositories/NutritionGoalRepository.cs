@@ -8,7 +8,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
     public class NutritionGoalRepository : RavenRepo, INutritionGoalRepository
     {
-        private static string GetId(string userId) => $"NutritionGoal/{userId}";
+        private static string GetId(string userId) => $"nutritionGoal/{userId}";
 
         public NutritionGoalRepository(IDocumentStore store) : base(store)
         {
