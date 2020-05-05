@@ -1,73 +1,41 @@
-import { UserNutritionGoal, UserPersonalInfo } from 'Models';
+import { UserSettings } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { combineReducers } from 'redux';
+import { RequestErrorResponse } from 'src/utils/error-result';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
-import { RequestErrorResponse } from 'src/utils/error-result';
 
 export type SettingsState = Readonly<{
-    nutritionGoal: UserNutritionGoal | null;
-    isLoadingNutritionGoal: boolean;
-    errorNutritionGoal: RequestErrorResponse | null;
-
-    personalInfo: UserPersonalInfo | null;
-    isLoadingPersonalInfo: boolean;
-    errorPersonalInfo: RequestErrorResponse | null;
+    userSettings: UserSettings | null;
+    isLoading: boolean;
+    error: RequestErrorResponse | null;
 }>;
 
 export default combineReducers<SettingsState, RootAction>({
-    nutritionGoal: (state = null, action) => {
+    userSettings: (state = null, action) => {
         switch (action.type) {
-            case getType(actions.loadCurrentNutritionGoal.success):
+            case getType(actions.loadUserSettings.success):
                 return action.payload;
-            case getType(actions.patchNutritionGoal.success):
+            case getType(actions.patchUserSettings.success):
                 return action.payload;
         }
         return state;
     },
-    isLoadingNutritionGoal: (state = false, action) => {
+    isLoading: (state = false, action) => {
         switch (action.type) {
-            case getType(actions.loadCurrentNutritionGoal.success):
-            case getType(actions.loadCurrentNutritionGoal.failure):
+            case getType(actions.loadUserSettings.success):
+            case getType(actions.loadUserSettings.failure):
                 return false;
-            case getType(actions.loadCurrentNutritionGoal.request):
+            case getType(actions.loadUserSettings.request):
                 return true;
         }
         return state;
     },
-    errorNutritionGoal: (state = null, action) => {
+    error: (state = null, action) => {
         switch (action.type) {
-            case getType(actions.loadCurrentNutritionGoal.failure):
+            case getType(actions.loadUserSettings.failure):
                 return action.payload;
-            case getType(actions.loadCurrentNutritionGoal.success):
-                return null;
-        }
-        return state;
-    },
-    personalInfo: (state = null, action) => {
-        switch (action.type) {
-            case getType(actions.loadPersonalInfo.success):
-                return action.payload;
-            case getType(actions.patchPersonalInfo.success):
-                return action.payload;
-        }
-        return state;
-    },
-    isLoadingPersonalInfo: (state = false, action) => {
-        switch (action.type) {
-            case getType(actions.loadPersonalInfo.success):
-            case getType(actions.loadPersonalInfo.failure):
-                return false;
-            case getType(actions.loadPersonalInfo.request):
-                return true;
-        }
-        return state;
-    },
-    errorPersonalInfo: (state = null, action) => {
-        switch (action.type) {
-            case getType(actions.loadPersonalInfo.failure):
-                return action.payload;
-            case getType(actions.loadPersonalInfo.success):
+            case getType(actions.loadUserSettings.success):
                 return null;
         }
         return state;

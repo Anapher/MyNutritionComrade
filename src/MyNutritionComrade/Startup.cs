@@ -28,12 +28,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
 using MyNutritionComrade.Core.Domain.Validation;
 using MyNutritionComrade.Core.Options;
 using MyNutritionComrade.Infrastructure.Converter;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
@@ -47,6 +47,13 @@ namespace MyNutritionComrade
         }
 
         public IConfiguration Configuration { get; }
+
+        private static void ConfigureJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Converters.AddRequiredConverters();
+            settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -141,6 +148,11 @@ namespace MyNutritionComrade
             identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
             identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
 
+            var jsonSettings = new JsonSerializerSettings();
+            ConfigureJsonSerializerSettings(jsonSettings);
+
+            services.AddSingleton(JsonSerializer.Create(jsonSettings));
+
             services.AddMvc().ConfigureApiBehaviorOptions(options =>
             {
                 options.InvalidModelStateResponseFactory = context =>
@@ -159,9 +171,7 @@ namespace MyNutritionComrade
                 fv.RegisterValidatorsFromAssemblyContaining<ProductInfoValidator>();
             }).AddNewtonsoftJson(x =>
             {
-                x.SerializerSettings.Converters.AddRequiredConverters();
-                x.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
-                x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                ConfigureJsonSerializerSettings(x.SerializerSettings);
             });
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(InfrastructureModule).Assembly);

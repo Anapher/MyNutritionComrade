@@ -1,6 +1,6 @@
 ﻿namespace MyNutritionComrade.Core.Domain.Entities.Goal
 {
-    public class NutrientDistribution
+    public class NutrientDistribution : NutritionGoalBase
     {
         public double Carbohydrates { get; set; }
         public double Protein { get; set; }

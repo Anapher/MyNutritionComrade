@@ -3,7 +3,7 @@ using MyNutritionComrade.Core.Dto.UseCaseResponses;
 
 namespace MyNutritionComrade.Core.Interfaces.UseCases
 {
-    public interface IPatchNutritionGoalsUseCase : IUseCaseRequestHandler<PatchNutritionGoalsRequest, PatchNutritionGoalsResponse>
+    public interface IPatchUserSettingsUseCase : IUseCaseRequestHandler<PatchUserSettingsRequest, PatchUserSettingsResponse>
     {
     }
 }

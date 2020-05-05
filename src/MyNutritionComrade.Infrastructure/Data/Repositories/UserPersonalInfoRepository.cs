@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Infrastructure.Shared;
@@ -9,26 +6,26 @@ using Raven.Client.Documents;
 
 namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
-    public class UserPersonalInfoRepository : RavenRepo, IUserPersonalInfoRepository
+    public class UserSettingsRepository : RavenRepo, IUserSettingsRepository
     {
-        private static string GetId(string userId) => $"userPersonalInfo/{userId}";
+        private static string GetId(string userId) => $"userSettings/{userId}";
 
-        public UserPersonalInfoRepository(IDocumentStore store) : base(store)
+        public UserSettingsRepository(IDocumentStore store) : base(store)
         {
         }
 
-        public async Task<UserPersonalInfo?> GetPersonalInfo(string userId)
+        public async Task<UserSettings?> GetUserSettings(string userId)
         {
             using var session = OpenReadOnlySession();
 
-            return await session.LoadAsync<UserPersonalInfo?>(GetId(userId));
+            return await session.LoadAsync<UserSettings?>(GetId(userId));
         }
 
-        public async Task SavePersonalInfo(string userId, UserPersonalInfo info)
+        public async Task Save(string userId, UserSettings settings)
         {
             using var session = OpenWriteSession();
 
-            await session.StoreAsync(info, GetId(userId));
+            await session.StoreAsync(settings, GetId(userId));
             await session.SaveChangesAsync();
         }
     }

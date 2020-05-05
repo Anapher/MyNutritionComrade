@@ -4,14 +4,13 @@ import { UserNutritionGoal } from 'Models';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Card, Divider, Paragraph, Title, useTheme } from 'react-native-paper';
-import useAsyncFunction from 'src/hooks/use-async-function';
-import * as actions from '../../actions';
 import Highlight from '../Highlight';
 import { SettingsStackParamList } from '../Settings';
 
 type Props = {
     navigation: StackNavigationProp<SettingsStackParamList>;
     data: UserNutritionGoal;
+    onChange: (newValue: UserNutritionGoal) => Promise<any>;
 };
 
 function CaloriesInfo({ data: { calories } }: { data: UserNutritionGoal }) {
@@ -89,14 +88,8 @@ function NutrientDistributionInfo({ data: { distribution } }: { data: UserNutrit
     return null;
 }
 
-function Widget({ navigation, data }: Props) {
+function Widget({ navigation, data, onChange }: Props) {
     const theme = useTheme();
-
-    const patchAction = useAsyncFunction(
-        actions.patchNutritionGoal.request,
-        actions.patchNutritionGoal.success,
-        actions.patchNutritionGoal.failure,
-    );
 
     return (
         <Card>
@@ -121,9 +114,7 @@ function Widget({ navigation, data }: Props) {
                     onPress={() =>
                         navigation.navigate('ConfigureNutritionGoals', {
                             initialValue: data,
-                            onSubmit: (goal) => {
-                                return patchAction!(goal);
-                            },
+                            onSubmit: onChange,
                         })
                     }
                 >

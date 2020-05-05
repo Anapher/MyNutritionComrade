@@ -2,13 +2,13 @@
 
 namespace MyNutritionComrade.Core.Dto.UseCaseResponses
 {
-    public class PatchNutritionGoalsResponse
+    public class PatchUserSettingsResponse
     {
-        public PatchNutritionGoalsResponse(UserNutritionGoal result)
+        public PatchUserSettingsResponse(UserSettings result)
         {
             Result = result;
         }
 
-        public UserNutritionGoal Result { get; }
+        public UserSettings Result { get; }
     }
 }

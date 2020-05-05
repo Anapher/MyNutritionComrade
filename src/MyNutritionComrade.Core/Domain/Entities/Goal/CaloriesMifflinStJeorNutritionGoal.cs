@@ -1,6 +1,6 @@
 ﻿namespace MyNutritionComrade.Core.Domain.Entities.Goal
 {
-    public class CaloriesMifflinStJeorNutritionGoal
+    public class CaloriesMifflinStJeorNutritionGoal : NutritionGoalBase
     {
         /// <summary>
         ///     Physical activity level factor

@@ -1,7 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using MyNutritionComrade.Core.Domain.Entities.Goal;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
+    public class UserSettings
+    {
+        public UserPersonalInfo PersonalInfo { get; set; } = new UserPersonalInfo();
+        public UserNutritionGoal NutritionGoal { get; set; } = new UserNutritionGoal();
+    }
+
+    public class UserNutritionGoal : Dictionary<NutritionGoalType, NutritionGoalBase>
+    {
+    }
+
     public class UserPersonalInfo
     {
         /// <summary>

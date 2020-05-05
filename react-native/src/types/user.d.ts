@@ -4,4 +4,9 @@ declare module 'Models' {
         gender?: 'male' | 'female';
         height?: number;
     }
+
+    export interface UserSettings {
+        personalInfo?: UserPersonalInfo;
+        nutritionGoal?: UserNutritionGoal;
+    }
 }

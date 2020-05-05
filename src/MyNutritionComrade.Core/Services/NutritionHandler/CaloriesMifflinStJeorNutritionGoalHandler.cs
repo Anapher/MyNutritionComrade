@@ -11,11 +11,11 @@ namespace MyNutritionComrade.Core.Services.NutritionHandler
     public class CaloriesMifflinStJeorNutritionGoalHandler : INutritionGoalHandler<CaloriesMifflinStJeorNutritionGoal>
     {
         private readonly ILoggedWeightRepository _weightRepository;
-        private readonly IUserPersonalInfoRepository _userRepository;
+        private readonly IUserSettingsRepository _userRepository;
 
         private static readonly IReadOnlyDictionary<Gender, double> GenderOffsets = new Dictionary<Gender, double> {{Gender.Male, 5}, {Gender.Female, -161},};
 
-        public CaloriesMifflinStJeorNutritionGoalHandler(ILoggedWeightRepository weightRepository, IUserPersonalInfoRepository userRepository)
+        public CaloriesMifflinStJeorNutritionGoalHandler(ILoggedWeightRepository weightRepository, IUserSettingsRepository userRepository)
         {
             _weightRepository = weightRepository;
             _userRepository = userRepository;
@@ -25,7 +25,7 @@ namespace MyNutritionComrade.Core.Services.NutritionHandler
         public async ValueTask SetGoal(string userId, CalculateCurrentNutritionGoalResponse response, CaloriesMifflinStJeorNutritionGoal goal)
         {
             var bodyweight = await _weightRepository.GetRecentAveragedWeight(userId);
-            var personalInfo = await _userRepository.GetPersonalInfo(userId);
+            var personalInfo = (await _userRepository.GetUserSettings(userId))?.PersonalInfo;
 
             if (bodyweight != null && personalInfo?.Height != null && personalInfo?.Birthday != null && personalInfo?.Gender != null)
             {

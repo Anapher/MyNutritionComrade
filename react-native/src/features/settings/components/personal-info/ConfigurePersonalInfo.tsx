@@ -13,7 +13,6 @@ type Props = {
 
 function ConfigurePersonalInfo({ value, onChange }: Props) {
     const age = -(value.birthday ? DateTime.fromISO(value.birthday).diffNow('years').years : 0).toFixed(0);
-    console.log(value.birthday);
 
     return (
         <View style={styles.root}>

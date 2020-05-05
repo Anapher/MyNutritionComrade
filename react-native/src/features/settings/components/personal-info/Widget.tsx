@@ -1,26 +1,18 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import * as jsonPatch from 'fast-json-patch';
 import { DateTime } from 'luxon';
 import { UserPersonalInfo } from 'Models';
 import React from 'react';
 import { Button, Card, Paragraph, Title } from 'react-native-paper';
-import useAsyncFunction from 'src/hooks/use-async-function';
-import * as actions from '../../actions';
 import Highlight from '../Highlight';
 import { SettingsStackParamList } from '../Settings';
 
 type Props = {
     navigation: StackNavigationProp<SettingsStackParamList>;
     data: UserPersonalInfo;
+    onChange: (newValue: UserPersonalInfo) => Promise<any>;
 };
 
-function Widget({ data, navigation }: Props) {
-    const patchAction = useAsyncFunction(
-        actions.patchPersonalInfo.request,
-        actions.patchPersonalInfo.success,
-        actions.patchPersonalInfo.failure,
-    );
-
+function Widget({ data, navigation, onChange }: Props) {
     const age = data.birthday ? (-DateTime.fromISO(data.birthday).diffNow('years').years).toFixed(0) : 'unknown';
 
     return (
@@ -42,11 +34,7 @@ function Widget({ data, navigation }: Props) {
                     onPress={() =>
                         navigation.navigate('ConfigurePersonalInfo', {
                             initialValue: data,
-                            onSubmit: (newValue) => {
-                                const ops = jsonPatch.compare(data, newValue);
-
-                                return patchAction!(ops);
-                            },
+                            onSubmit: onChange,
                         })
                     }
                 >

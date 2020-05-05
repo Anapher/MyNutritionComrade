@@ -14,11 +14,11 @@ namespace MyNutritionComrade.Core.UseCases
 {
     public class CalculateCurrentNutritionsGoalUseCase : UseCaseStatus<CalculateCurrentNutritionGoalResponse>, ICalculateCurrentNutritionGoalUseCase
     {
-        private readonly INutritionGoalRepository _repository;
+        private readonly IUserSettingsRepository _repository;
         private readonly IUserRepository _userRepository;
         private readonly IServiceProvider _serviceProvider;
 
-        public CalculateCurrentNutritionsGoalUseCase(INutritionGoalRepository repository, IUserRepository userRepository, IServiceProvider serviceProvider)
+        public CalculateCurrentNutritionsGoalUseCase(IUserSettingsRepository repository, IUserRepository userRepository, IServiceProvider serviceProvider)
         {
             _repository = repository;
             _userRepository = userRepository;
@@ -33,7 +33,7 @@ namespace MyNutritionComrade.Core.UseCases
 
             var response = new CalculateCurrentNutritionGoalResponse();
 
-            var goals = await _repository.GetByUser(user.Id);
+            var goals = (await _repository.GetUserSettings(user.Id))?.NutritionGoal;
             if (goals != null)
                 foreach (var goal in goals.Select(x => x.Value))
                 {
@@ -41,7 +41,7 @@ namespace MyNutritionComrade.Core.UseCases
                     var service = _serviceProvider.GetRequiredService(serviceType);
                     var method = serviceType.GetMethod(nameof(INutritionGoalHandler<string>.SetGoal));
 
-                    var task = (ValueTask) method!.Invoke(service, new[] {user.Id, response, goal})!;
+                    var task = (ValueTask) method!.Invoke(service, new object[] {user.Id, response, goal})!;
                     await task;
                 }
 

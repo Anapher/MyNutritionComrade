@@ -44,6 +44,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             using var session = OpenWriteSession();
 
             await session.StoreAsync(loggedWeight, GetId(loggedWeight));
+            await session.SaveChangesAsync();
         }
     }
 }

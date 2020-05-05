@@ -1,6 +1,6 @@
 ﻿namespace MyNutritionComrade.Core.Domain.Entities.Goal
 {
-    public class CaloriesFixedNutritionGoal
+    public class CaloriesFixedNutritionGoal : NutritionGoalBase
     {
         public double CaloriesPerDay { get; set; }
     }
