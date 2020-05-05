@@ -10,6 +10,8 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
     public class LoggedWeightRepository : RavenRepo, ILoggedWeightRepository
     {
+        private static string GetId(LoggedWeight weight) => $"loggedWeight/{weight.UserId}/{weight.Timestamp:O}";
+
         public LoggedWeightRepository(IDocumentStore store) : base(store)
         {
         }
@@ -35,6 +37,13 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 
             // calculate average
             return usefulWeights.Sum(x => x.Value) / usefulWeights.Count;
+        }
+
+        public async Task Add(LoggedWeight loggedWeight)
+        {
+            using var session = OpenWriteSession();
+
+            await session.StoreAsync(loggedWeight, GetId(loggedWeight));
         }
     }
 }
