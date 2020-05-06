@@ -5,6 +5,7 @@ import diary from 'src/features/diary/reducer';
 import addProduct from 'src/features/product-add/reducer';
 import voteProductChanges from 'src/features/product-vote-changes/reducer';
 import settings from 'src/features/settings/reducer';
+import logWeight from 'src/features/log-weight/reducer';
 
 const rootReducer = combineReducers({
     auth,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     addProduct,
     voteProductChanges,
     settings,
+    logWeight,
 });
 
 export default rootReducer;

@@ -9,6 +9,8 @@ import { isActionOf } from 'typesafe-actions';
 import * as actions from './actions';
 import { matchProduct, getRequiredDates, groupDatesInChunks } from './utils';
 import _ from 'lodash';
+import * as settingsActions from '../settings/actions';
+import * as logWeightActions from '../log-weight/actions';
 
 export const loadFrequentProductsEpic: RootEpic = (action$, _, { api }) =>
     action$.pipe(
@@ -94,4 +96,22 @@ export const changeProductConsumptionEpic: RootEpic = (action$, state$, { api })
                 ),
             );
         }),
+    );
+
+export const loadComputedNutritionGoalsEpic: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(
+            isActionOf([
+                actions.loadNutritionGoal.request,
+                settingsActions.patchUserSettings.success,
+                logWeightActions.addLoggedWeight.success,
+                logWeightActions.removeLoggedWeight.success,
+            ]),
+        ),
+        switchMap(() =>
+            from(api.userService.sumNutritionGoal()).pipe(
+                map((response) => actions.loadNutritionGoal.success(response)),
+                catchError((error: AxiosError) => of(actions.loadNutritionGoal.failure(toErrorResult(error)))),
+            ),
+        ),
     );

@@ -34,6 +34,21 @@ namespace MyNutritionComrade.Controllers
             return Ok(response!.Entity);
         }
 
+        [HttpDelete("{timestamp}")]
+        public async Task<ActionResult<LoggedWeight>> DeleteWeight(string timestamp, [FromServices] IDeleteLoggedWeightUseCase useCase)
+        {
+            if (!DateTimeOffset.TryParse(timestamp, out var dateTime))
+                return new FieldValidationError("timestamp", "The timestamp must be a valid date time.").ToActionResult();
+
+            var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
+
+            await useCase.Handle(new DeleteLoggedWeightRequest(userId, dateTime));
+            if (useCase.HasError)
+                return useCase.Error!.ToActionResult();
+
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<ActionResult> GetLoggedWeight([FromQuery] PagingRequest request, [FromServices] ILoggedWeightSelector selector)
         {

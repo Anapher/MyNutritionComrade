@@ -26,12 +26,14 @@ const mapStateToProps = (state: RootState) => ({
     sections: selectors.getConsumedProductsSections(state),
     frequentlyUsedProducts: state.diary.frequentlyUsedProducts,
     selectedDay: state.diary.selectedDate,
+    nutritionGoal: state.diary.nutritionGoal,
 });
 
 const dispatchProps = {
     loadFrequentlyUsedProducts: actions.loadFrequentlyUsedProducts.request,
     loadDate: actions.setSelectedDate.request,
     changeProductConsumption: actions.changeProductConsumption.request,
+    loadNutritionGoal: actions.loadNutritionGoal.request,
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -47,10 +49,16 @@ function TabDiary({
     selectedDay,
     frequentlyUsedProducts,
     changeProductConsumption,
+    nutritionGoal,
+    loadNutritionGoal,
 }: Props) {
     useEffect(() => {
         loadFrequentlyUsedProducts();
         loadDate(DateTime.local().toISODate());
+
+        if (nutritionGoal == null) {
+            loadNutritionGoal();
+        }
     }, []);
 
     const [unlistedProduct, setUnlistedProduct] = useState<string | undefined>();

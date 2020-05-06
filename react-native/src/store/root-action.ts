@@ -5,6 +5,7 @@ import * as diary from '../features/diary/actions';
 import * as productAdd from '../features/product-add/actions';
 import * as productVoteChanges from '../features/product-vote-changes/actions';
 import * as settings from '../features/settings/actions';
+import * as logWeight from '../features/log-weight/actions';
 
 export default {
     auth,
@@ -14,4 +15,5 @@ export default {
     productAdd,
     productVoteChanges,
     settings,
+    logWeight,
 };

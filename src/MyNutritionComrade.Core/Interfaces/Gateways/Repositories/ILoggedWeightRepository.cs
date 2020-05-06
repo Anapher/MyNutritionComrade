@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 
 namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
@@ -7,5 +8,6 @@ namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
     {
         Task<double?> GetRecentAveragedWeight(string userId);
         Task Add(LoggedWeight loggedWeight);
+        Task Delete(string userId, DateTimeOffset timestamp);
     }
 }

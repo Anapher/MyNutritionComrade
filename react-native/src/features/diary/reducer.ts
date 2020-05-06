@@ -1,16 +1,16 @@
+import { DateTime } from 'luxon';
 import {
     ConsumedProduct,
     ConsumptionTime,
     FrequentlyUsedProducts,
-    ProductEssentials,
     ProductConsumptionDates,
     ProductEssentialsWithId,
+    ComputedNutritionGoals,
 } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
-import { patchConsumedProducts, getRequiredDates } from './utils';
-import { DateTime } from 'luxon';
+import { getRequiredDates, patchConsumedProducts } from './utils';
 
 export type ConsumeProductData = {
     date: string;
@@ -39,6 +39,9 @@ export type DiaryState = Readonly<{
 
     /** frequently used products received once at the start */
     frequentlyUsedProducts: FrequentlyUsedProducts;
+
+    nutritionGoal: ComputedNutritionGoals | null;
+    nutritionGoalTimestamp: string | null;
 }>;
 
 export const initialState: DiaryState = {
@@ -46,6 +49,8 @@ export const initialState: DiaryState = {
     loadedDays: {},
     pendingConsumedProducts: [],
     frequentlyUsedProducts: { breakfast: [], lunch: [], dinner: [], snack: [] },
+    nutritionGoal: null,
+    nutritionGoalTimestamp: null,
 };
 
 export default function (state: DiaryState = initialState, action: RootAction): DiaryState {
@@ -105,6 +110,8 @@ export default function (state: DiaryState = initialState, action: RootAction): 
                     (x) => x.requestId === action.payload.requestId,
                 ),
             };
+        case getType(actions.loadNutritionGoal.success):
+            return { ...state, nutritionGoal: action.payload, nutritionGoalTimestamp: DateTime.local().toISO() };
         default:
             return state;
     }

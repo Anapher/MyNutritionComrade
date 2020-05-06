@@ -1,29 +1,8 @@
+import { NutritionalInfo } from 'Models';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ConsumedProduct, NutritionalInfo } from 'Models';
 import { roundNumber } from 'src/utils/string-utils';
-import { sumNutritions } from 'src/utils/product-utils';
-import { Text } from 'react-native-paper';
-import _ from 'lodash';
-
-type TileProps = {
-    caption: string;
-    value: string;
-    text: string;
-    fat?: boolean;
-};
-
-function Tile({ caption, value, text, fat }: TileProps) {
-    return (
-        <View style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', flex: 1 }}>
-            <Text style={{ letterSpacing: 0.4, fontSize: 12, opacity: 0.6 }}>{caption}</Text>
-            <Text style={{ fontSize: 16, letterSpacing: 0.5, fontWeight: fat !== undefined ? 'bold' : undefined }}>
-                {value}
-            </Text>
-            <Text style={{ fontSize: 10 }}>{text}</Text>
-        </View>
-    );
-}
+import Tile from './Tile';
 
 type NutritionTile = {
     info: NutritionalInfo;
@@ -42,12 +21,10 @@ function NutritionTile({ info, name, volume }: NutritionTile) {
 }
 
 type Props = {
-    products: ConsumedProduct[];
+    nutritions: NutritionalInfo;
 };
 
-function NutritionSummary({ products }: Props) {
-    const nutritions = sumNutritions(products.map((x) => x.nutritionalInfo));
-
+function NutritionSummary({ nutritions }: Props) {
     return (
         <View style={styles.root}>
             <Tile caption=" " value={roundNumber(nutritions.energy) as any} text="kcal" fat />

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
+using MyNutritionComrade.Core.Dto.UseCaseResponses;
 using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Helpers;
@@ -27,7 +28,7 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpGet("sum_nutrition_goal")]
-        public async Task<ActionResult<UserNutritionGoal>> SumNutritionGoals([FromServices] ICalculateCurrentNutritionGoalUseCase useCase)
+        public async Task<ActionResult<CalculateCurrentNutritionGoalResponse>> SumNutritionGoals([FromServices] ICalculateCurrentNutritionGoalUseCase useCase)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 

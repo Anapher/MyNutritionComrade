@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Infrastructure.Data.Indexes;
@@ -10,7 +11,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 {
     public class LoggedWeightRepository : RavenRepo, ILoggedWeightRepository
     {
-        private static string GetId(LoggedWeight weight) => $"loggedWeight/{weight.UserId}/{weight.Timestamp:O}";
+        private static string GetId(string userId, DateTimeOffset timestamp) => $"loggedWeight/{userId}/{timestamp:O}";
 
         public LoggedWeightRepository(IDocumentStore store) : base(store)
         {
@@ -43,7 +44,15 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         {
             using var session = OpenWriteSession();
 
-            await session.StoreAsync(loggedWeight, GetId(loggedWeight));
+            await session.StoreAsync(loggedWeight, GetId(loggedWeight.UserId, loggedWeight.Timestamp));
+            await session.SaveChangesAsync();
+        }
+
+        public async Task Delete(string userId, DateTimeOffset timestamp)
+        {
+            using var session = OpenWriteSession();
+
+            session.Delete(GetId(userId, timestamp));
             await session.SaveChangesAsync();
         }
     }

@@ -1,7 +1,7 @@
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import React from 'react';
 import TabDiary from './features/diary/components/TabDiary';
-import TabWeight from './features/weight/components/TabWeight';
+import TabWeight from './features/log-weight/components/TabWeight';
 import TabAnalysis from './TabAnalysis';
 
 const Tab = createMaterialBottomTabNavigator();

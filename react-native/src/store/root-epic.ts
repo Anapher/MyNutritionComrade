@@ -6,6 +6,7 @@ import * as diaryEpics from 'src/features/diary/epics';
 import * as productAddEpics from 'src/features/product-add/epics';
 import * as productVoteChangesEpics from 'src/features/product-vote-changes/epics';
 import * as settingsEpics from '../features/settings/epics';
+import * as logWeightEpics from '../features/log-weight/epics';
 
 export default combineEpics(
     ...Object.values(authEpics),
@@ -15,4 +16,5 @@ export default combineEpics(
     ...Object.values(productAddEpics),
     ...Object.values(productVoteChangesEpics),
     ...Object.values(settingsEpics),
+    ...Object.values(logWeightEpics),
 );

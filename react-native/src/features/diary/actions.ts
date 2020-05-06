@@ -1,5 +1,5 @@
 import cuid from 'cuid';
-import { FrequentlyUsedProducts, ProductConsumptionDates } from 'Models';
+import { FrequentlyUsedProducts, ProductConsumptionDates, ComputedNutritionGoals } from 'Models';
 import { RequestErrorResponse } from 'src/utils/error-result';
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { ConsumeProductData } from './reducer';
@@ -24,3 +24,9 @@ export const changeProductConsumption = {
     success: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_SUCCESS')<ConsumeProductData>(),
     failure: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_FAILURE')<RequestErrorResponse & { requestId: string }>(),
 };
+
+export const loadNutritionGoal = createAsyncAction(
+    'DIARY/LOAD_NUTRITION_GOAL_REQUEST',
+    'DIARY/LOAD_NUTRITION_GOAL_SUCCESS',
+    'DIARY/LOAD_NUTRITION_GOAL_FAILURE',
+)<undefined, ComputedNutritionGoals, RequestErrorResponse>();
