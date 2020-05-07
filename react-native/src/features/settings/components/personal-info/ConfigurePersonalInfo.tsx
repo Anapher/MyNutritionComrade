@@ -38,8 +38,8 @@ function ConfigurePersonalInfo({ value, onChange }: Props) {
             <NumberTextInput
                 style={styles.viewItem}
                 label="Height (cm)"
-                value={value.height || 0}
-                onChangeValue={(x) => onChange({ ...value, height: x })}
+                value={value.height !== undefined ? value.height * 100 : 0}
+                onChangeValue={(x) => onChange({ ...value, height: x / 100 })}
             />
             <NumberTextInput
                 style={styles.viewItem}

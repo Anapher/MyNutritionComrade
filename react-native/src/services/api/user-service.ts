@@ -7,6 +7,6 @@ export async function loadFrequentlyUsedProducts(): Promise<FrequentlyUsedProduc
 }
 
 export async function sumNutritionGoal(): Promise<ComputedNutritionGoals> {
-    const response = await Axios.get<ComputedNutritionGoals>('/api/v1/nutritiongoal/sum_nutrition_goal');
+    const response = await Axios.get<ComputedNutritionGoals>('/api/v1/userservice/sum_nutrition_goal');
     return response.data;
 }

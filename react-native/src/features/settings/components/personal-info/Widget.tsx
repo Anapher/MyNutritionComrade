@@ -20,7 +20,7 @@ function Widget({ data, navigation, onChange }: Props) {
             <Card.Content>
                 <Title>Personal Info</Title>
                 <Paragraph>
-                    Height: <Highlight>{!!data.height ? data.height + ' cm' : 'unknown'}</Highlight>
+                    Height: <Highlight>{!!data.height ? data.height * 100 + ' cm' : 'unknown'}</Highlight>
                 </Paragraph>
                 <Paragraph>
                     Gender: <Highlight>{data.gender || 'unknown'}</Highlight>
