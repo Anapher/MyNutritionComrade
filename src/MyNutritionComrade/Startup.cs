@@ -33,9 +33,12 @@ using MyNutritionComrade.Config;
 using MyNutritionComrade.Core.Domain.Validation;
 using MyNutritionComrade.Core.Options;
 using MyNutritionComrade.Infrastructure.Converter;
+using MyNutritionComrade.Infrastructure.Data.Indexes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Indexes;
 
 namespace MyNutritionComrade
 {
@@ -234,6 +237,9 @@ namespace MyNutritionComrade
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var documentStore = app.ApplicationServices.GetRequiredService<IDocumentStore>();
+            IndexCreation.CreateIndexes(typeof(Product_ByCode).Assembly, documentStore);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -2,10 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyNutritionComrade.Infrastructure.Converter;
-using MyNutritionComrade.Infrastructure.Data.Indexes;
 using Newtonsoft.Json;
 using Raven.Client.Documents;
-using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Session;
 
 namespace MyNutritionComrade.Config
@@ -25,26 +23,28 @@ namespace MyNutritionComrade.Config
             var options = new RavenDbOptions();
             configuration.Bind(options);
 
-            var store = new DocumentStore
+            services.AddSingleton<IDocumentStore>((x) =>
             {
-                Urls = options.Urls,
-                Database = options.DatabaseName,
-                Conventions =
+                var store = new DocumentStore
                 {
-                    CustomizeJsonDeserializer = CustomizeJsonSerializer,
-                    CustomizeJsonSerializer = CustomizeJsonSerializer,
-                    FindCollectionName = type => type.Name,
-                }
-            };
+                    Urls = options.Urls,
+                    Database = options.DatabaseName,
+                    Conventions =
+                    {
+                        CustomizeJsonDeserializer = CustomizeJsonSerializer,
+                        CustomizeJsonSerializer = CustomizeJsonSerializer,
+                        FindCollectionName = type => type.Name,
+                    }
+                };
 
-            if (!string.IsNullOrEmpty(options.CertPath))
-                store.Certificate = new X509Certificate2(options.CertPath, options.CertPass);
+                if (!string.IsNullOrEmpty(options.CertPath))
+                    store.Certificate = new X509Certificate2(options.CertPath, options.CertPass);
 
-            store.Initialize();
+                store.Initialize();
 
-            IndexCreation.CreateIndexes(typeof(Product_ByCode).Assembly, store);
+                return store;
+            });
 
-            services.AddSingleton<IDocumentStore>(store);
             services.AddScoped(serviceProvider => serviceProvider.GetService<IDocumentStore>().OpenAsyncSession(new SessionOptions {NoTracking = true}));
         }
 
