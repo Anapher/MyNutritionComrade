@@ -8,6 +8,20 @@ namespace MyNutritionComrade.Core.Extensions
 {
     public static class FluentValidatorExtensions
     {
+        private static readonly ISet<string> SupportedCultures;
+
+        static FluentValidatorExtensions()
+        {
+            var cultureInfos = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                .Where(x => !string.IsNullOrEmpty(x.Name))
+                .ToArray();
+            var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            allNames.UnionWith(cultureInfos.Select(x => x.TwoLetterISOLanguageName));
+            allNames.UnionWith(cultureInfos.Select(x => x.Name));
+
+            SupportedCultures = allNames;
+        }
+
         public static IRuleBuilderOptions<T, string> IsCulture<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
             return ruleBuilder.Must(x =>
@@ -15,15 +29,7 @@ namespace MyNutritionComrade.Core.Extensions
                 if (string.IsNullOrEmpty(x))
                     return true;
 
-                try
-                {
-                    var _ = CultureInfo.GetCultureInfo(x);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
+                return SupportedCultures.Contains(x);
             }).WithMessage("A localization code is expected");
         }
 
