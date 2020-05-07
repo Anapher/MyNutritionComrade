@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
-using MyNutritionComrade.Infrastructure.Data;
 using MyNutritionComrade.Infrastructure.Identity;
 using MyNutritionComrade.IntegrationTests.Utils;
 
@@ -21,13 +20,6 @@ namespace MyNutritionComrade.IntegrationTests
                 var serviceProvider = new ServiceCollection()
                     .AddEntityFrameworkInMemoryDatabase()
                     .BuildServiceProvider();
-
-                // Add a database context (AppDbContext) using an in-memory database for testing.
-                services.AddDbContext<AppDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("InMemoryAppDb");
-                    options.UseInternalServiceProvider(serviceProvider);
-                });
 
                 services.AddDbContext<AppIdentityDbContext>(options =>
                 {
@@ -47,20 +39,17 @@ namespace MyNutritionComrade.IntegrationTests
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
-                    var appDb = scopedServices.GetRequiredService<AppDbContext>();
                     var identityDb = scopedServices.GetRequiredService<AppIdentityDbContext>();
 
                     var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
 
                     // Ensure the database is created.
-                    appDb.Database.EnsureCreated();
                     identityDb.Database.EnsureCreated();
 
                     try
                     {
                         // Seed the database with test data.
                         SeedData.PopulateTestData(identityDb);
-                        SeedData.PopulateTestData(appDb);
                     }
                     catch (Exception ex)
                     {
