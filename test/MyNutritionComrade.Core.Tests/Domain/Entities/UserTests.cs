@@ -1,4 +1,5 @@
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Domain.Entities.Account;
 using Xunit;
 
 namespace MyNutritionComrade.Core.Tests.Domain.Entities

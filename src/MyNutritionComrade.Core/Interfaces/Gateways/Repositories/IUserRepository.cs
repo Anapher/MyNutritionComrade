@@ -1,17 +1,12 @@
-using MyNutritionComrade.Core.Domain.Entities;
-using MyNutritionComrade.Core.Dto.GatewayResponses.Repositories;
 using System.Threading.Tasks;
+using MyNutritionComrade.Core.Domain.Entities.Account;
 
 namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
 {
     public interface IUserRepository
     {
-        Task<CreateUserResponse> Create(string email, string userName, string password);
-        Task<User?> FindByName(string userName);
-        Task<bool> CheckPassword(User user, string password);
-        Task<User?> FindById(string id);
-
+        Task Create(User user);
         Task Update(User entity);
-        Task Delete(User entity);
+        Task<User?> FindById(string userId);
     }
 }

@@ -2,8 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Theme as NavTheme } from '@react-navigation/native/lib/typescript/src/types';
 import React from 'react';
 import { DarkTheme, Provider as PaperProvider, Theme, overlay } from 'react-native-paper';
-import { Provider } from 'react-redux';
-import { getStore } from 'src/store';
+
 import RootNavigator from './RootNavigator';
 
 const theme: Theme = {
@@ -29,12 +28,10 @@ const navigationTheme: NavTheme = {
 
 export default function Main() {
     return (
-        <Provider store={getStore()}>
-            <PaperProvider theme={theme}>
-                <NavigationContainer theme={navigationTheme}>
-                    <RootNavigator />
-                </NavigationContainer>
-            </PaperProvider>
-        </Provider>
+        <PaperProvider theme={theme}>
+            <NavigationContainer theme={navigationTheme}>
+                <RootNavigator />
+            </NavigationContainer>
+        </PaperProvider>
     );
 }

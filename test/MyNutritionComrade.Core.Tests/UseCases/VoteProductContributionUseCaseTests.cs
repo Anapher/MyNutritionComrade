@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Domain.Entities.Account;
 using MyNutritionComrade.Core.Dto;
 using MyNutritionComrade.Core.Dto.GatewayResponses.Repositories;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;

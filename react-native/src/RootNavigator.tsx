@@ -28,8 +28,7 @@ import Settings from './features/settings/components/Settings';
 const Stack = createStackNavigator();
 
 const mapStateToProps = (state: RootState) => ({
-    isAuthenticated: state.auth.isAuthenticated,
-    isSignOut: state.auth.isSignOut,
+    isAuthenticated: state.auth.token !== null,
 });
 
 type Props = ReturnType<typeof mapStateToProps>;
@@ -56,7 +55,7 @@ export type RootStackParamList = {
     Settings: {};
 };
 
-function RootNavigator({ isAuthenticated, isSignOut }: Props) {
+function RootNavigator({ isAuthenticated }: Props) {
     return (
         <Stack.Navigator>
             {!isAuthenticated ? (
@@ -68,7 +67,7 @@ function RootNavigator({ isAuthenticated, isSignOut }: Props) {
                         component={HomeScreen}
                         options={{
                             // When logging out, a pop animation feels intuitive
-                            animationTypeForReplace: isSignOut ? 'pop' : 'push',
+                            animationTypeForReplace: isAuthenticated ? 'push' : 'pop',
                             header: ({ navigation }) => (
                                 <Appbar.Header>
                                     <Appbar.Content title="My Nutriton Comrade" />

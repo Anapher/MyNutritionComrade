@@ -1,9 +1,8 @@
 ﻿using System;
-using MyNutritionComrade.Core.Shared;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
-    public class MealProduct : BaseEntity
+    public class MealProduct
     {
         private double _amount;
 

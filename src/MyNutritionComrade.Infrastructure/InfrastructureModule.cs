@@ -3,7 +3,6 @@ using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Infrastructure.Auth;
 using MyNutritionComrade.Infrastructure.Data.Repositories;
-using MyNutritionComrade.Infrastructure.Identity.Repositories;
 using MyNutritionComrade.Infrastructure.Interfaces;
 using MyNutritionComrade.Infrastructure.Patch;
 

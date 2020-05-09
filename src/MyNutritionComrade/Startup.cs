@@ -63,13 +63,11 @@ namespace MyNutritionComrade
         {
             services.AddLogging();
 
-            // Add framework services.
-            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default"), b => b.MigrationsAssembly("MyNutritionComrade.Infrastructure")));
-
             // Register the ConfigurationBuilder instance of AuthSettings
             var authSettings = Configuration.GetSection(nameof(AuthSettings));
             services.Configure<AuthSettings>(authSettings);
             services.Configure<VotingOptions>(Configuration.GetSection("ProductVoting"));
+            services.Configure<GoogleOAuthOptions>(Configuration.GetSection("GoogleOAuth"));
 
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings[nameof(AuthSettings.SecretKey)]));
 
@@ -132,24 +130,7 @@ namespace MyNutritionComrade
 
             services.AddSignalR();
 
-            // use BCrypt to hash passwords
-            services.AddScoped<IPasswordHasher<AppUser>, BCryptPasswordHasher<AppUser>>();
-
             services.AddRavenDb(Configuration.GetSection("RavenDb"));
-
-            // add identity
-            var identityBuilder = services.AddIdentityCore<AppUser>(o =>
-            {
-                // configure identity options
-                o.Password.RequireDigit = false;
-                o.Password.RequireLowercase = false;
-                o.Password.RequireUppercase = false;
-                o.Password.RequireNonAlphanumeric = false;
-                o.Password.RequiredLength = 6;
-            });
-
-            identityBuilder = new IdentityBuilder(identityBuilder.UserType, typeof(IdentityRole), identityBuilder.Services);
-            identityBuilder.AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
 
             var jsonSettings = new JsonSerializerSettings();
             ConfigureJsonSerializerSettings(jsonSettings);

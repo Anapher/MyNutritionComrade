@@ -13,6 +13,4 @@ export const SupportedLanguages: LanguageInfo[] = [
     { name: 'French', twoLetterCode: 'fr' },
 ];
 
-export const errorColor = '#e74c3c';
-
 export const ConsumptionTimes: ConsumptionTime[] = ['breakfast', 'lunch', 'dinner', 'snack'];

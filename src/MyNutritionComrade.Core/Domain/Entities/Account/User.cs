@@ -2,30 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MyNutritionComrade.Core.Domain.Entities
+namespace MyNutritionComrade.Core.Domain.Entities.Account
 {
     public class User
     {
         private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
-        public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
-        public User(string id, string userName, string passwordHash)
+        public User(string id, UserMetadata userMetadata)
         {
             Id = id;
-            UserName = userName;
-            PasswordHash = passwordHash;
+            Metadata = userMetadata;
         }
 
-        public string Id { get; }
-        public string UserName { get; }
-        public string? Email { get; set; }
-        public string PasswordHash { get; set; }
-        public string? UnconfirmedEmailAddress { get; set; }
+        public string Id { get; private set; }
+        public bool IsDisabled { get; set; }
+        public UserMetadata Metadata { get; private set; }
         public bool IsTrustworthy { get; set; }
-        // how many approves contributions done
-        public int UserScore { get; set; }
-
-        public bool HasConfirmedEmailAddress() => Email != null;
+        public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
         public bool HasValidRefreshToken(string refreshToken)
         {

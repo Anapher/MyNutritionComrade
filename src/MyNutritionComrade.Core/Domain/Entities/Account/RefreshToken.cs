@@ -1,9 +1,8 @@
 using System;
-using MyNutritionComrade.Core.Shared;
 
-namespace MyNutritionComrade.Core.Domain.Entities
+namespace MyNutritionComrade.Core.Domain.Entities.Account
 {
-    public class RefreshToken : BaseEntity
+    public class RefreshToken
     {
         public RefreshToken(string token, DateTimeOffset expires, string? remoteIpAddress)
         {
@@ -12,11 +11,11 @@ namespace MyNutritionComrade.Core.Domain.Entities
             RemoteIpAddress = remoteIpAddress;
         }
 
-        public string? AppUserId { get; private set; }
-
         public string Token { get; private set; }
         public DateTimeOffset Expires { get; private set; }
-        public bool Active => DateTimeOffset.UtcNow <= Expires;
         public string? RemoteIpAddress { get; private set; }
+        public DateTimeOffset CreatedOn { get; private set; } = DateTimeOffset.UtcNow;
+
+        public bool Active => DateTimeOffset.UtcNow <= Expires;
     }
 }

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using System;
 
 namespace MyNutritionComrade.Infrastructure.Identity
@@ -35,5 +34,4 @@ namespace MyNutritionComrade.Infrastructure.Identity
             }
         }
     }
-
 }

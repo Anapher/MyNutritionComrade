@@ -10,6 +10,7 @@ namespace MyNutritionComrade.Infrastructure.Converter
             converters.Add(new ServingTypeJsonConverter());
             converters.Add(new PatchOperationJsonConverter());
             converters.Add(new NutritionGoalConverter());
+            converters.Add(new UserMetadataConverter());
         }
     }
 }

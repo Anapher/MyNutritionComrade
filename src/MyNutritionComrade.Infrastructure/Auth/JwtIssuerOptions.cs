@@ -44,7 +44,7 @@ namespace MyNutritionComrade.Infrastructure.Auth
         /// <summary>
         /// "jti" (JWT ID) Claim (default ID is a GUID)
         /// </summary>
-        public Func<Task<string>> JtiGenerator => () => Task.FromResult(Guid.NewGuid().ToString());
+        public Func<ValueTask<string>> JtiGenerator => () => new ValueTask<string>(Guid.NewGuid().ToString());
 
         /// <summary>
         /// The signing key to use when generating tokens.

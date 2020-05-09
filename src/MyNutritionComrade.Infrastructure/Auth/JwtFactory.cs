@@ -22,13 +22,13 @@ namespace MyNutritionComrade.Infrastructure.Auth
             ThrowIfInvalidOptions(_jwtOptions);
         }
 
-        public async Task<string> GenerateEncodedToken(string id, string userName)
+        public async Task<string> GenerateEncodedToken(string id)
         {
-            var identity = GenerateClaimsIdentity(id, userName);
+            var identity = GenerateClaimsIdentity(id);
 
             var claims = new[]
             {
-                 new Claim(JwtRegisteredClaimNames.Sub, userName),
+                 new Claim(JwtRegisteredClaimNames.Sub, id),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                  new Claim(JwtRegisteredClaimNames.Iat, _jwtOptions.IssuedAt.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
@@ -36,20 +36,15 @@ namespace MyNutritionComrade.Infrastructure.Auth
              };
 
             // Create the JWT security token and encode it.
-            var jwt = new JwtSecurityToken(
-                _jwtOptions.Issuer,
-                _jwtOptions.Audience,
-                claims,
-                _jwtOptions.NotBefore.UtcDateTime,
-                _jwtOptions.Expiration.UtcDateTime,
-                _jwtOptions.SigningCredentials);
+            var jwt = new JwtSecurityToken(_jwtOptions.Issuer, _jwtOptions.Audience, claims, _jwtOptions.NotBefore.UtcDateTime,
+                _jwtOptions.Expiration.UtcDateTime, _jwtOptions.SigningCredentials);
 
             return _jwtHandler.WriteToken(jwt);
         }
 
-        private static ClaimsIdentity GenerateClaimsIdentity(string id, string userName)
+        private static ClaimsIdentity GenerateClaimsIdentity(string id)
         {
-            return new ClaimsIdentity(new GenericIdentity(userName, "Token"), new[]
+            return new ClaimsIdentity(new GenericIdentity(id, "Token"), new[]
             {
                 new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Id, id),
                 new Claim(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol, Helpers.Constants.Strings.JwtClaims.ApiAccess)

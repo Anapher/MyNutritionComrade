@@ -1,11 +1,11 @@
 import { RootAction, RootState, Services } from 'MyNutritionComrade';
-import { applyMiddleware, createStore, compose, Store } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
+import { persistStore } from 'redux-persist';
+import createReduxPromiseListener from 'redux-promise-listener';
 import services from '../services';
 import rootEpic from './root-epic';
 import rootReducer from './root-reducer';
-import { persistState, loadState } from './storage';
-import createReduxPromiseListener from 'redux-promise-listener';
 import { composeEnhancers } from './utils';
 
 export const epicMiddleware = createEpicMiddleware<RootAction, RootAction, RootState, Services>({
@@ -20,21 +20,11 @@ const middlewares = [epicMiddleware, promiseListener.middleware];
 // compose enhancers
 const enhancer = composeEnhancers(applyMiddleware(...middlewares));
 
-let store: Store | null = null;
-export async function loadStore() {
-    // rehydrate state on app start
-    const initialState = await loadState();
+const store = createStore(rootReducer, {}, enhancer);
+epicMiddleware.run(rootEpic);
 
-    // create store
-    store = createStore(rootReducer, { ...initialState, diary: undefined }, enhancer);
-    persistState(store, (x) => ({ auth: x.auth, diary: x.diary }));
-
-    epicMiddleware.run(rootEpic);
-}
-
-export function getStore() {
-    return store!;
-}
+const persistor = persistStore(store);
 
 // export store singleton instance
 export default store;
+export const rootPersistor = persistor;

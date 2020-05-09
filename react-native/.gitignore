@@ -57,3 +57,5 @@ buck-out/
 
 # Firebase
 google-services.json
+
+env.ts

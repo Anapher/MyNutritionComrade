@@ -1,5 +1,6 @@
 using System;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Domain.Entities.Account;
 using MyNutritionComrade.Infrastructure.Identity;
 
 namespace MyNutritionComrade.IntegrationTests

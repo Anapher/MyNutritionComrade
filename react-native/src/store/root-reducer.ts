@@ -6,11 +6,13 @@ import addProduct from 'src/features/product-add/reducer';
 import voteProductChanges from 'src/features/product-vote-changes/reducer';
 import settings from 'src/features/settings/reducer';
 import logWeight from 'src/features/log-weight/reducer';
+import { persistReducer, persistStore } from 'redux-persist';
+import { AsyncStorage } from 'react-native';
 
 const rootReducer = combineReducers({
-    auth,
+    auth: persistReducer({ whitelist: ['isAuthenticated', 'token'], storage: AsyncStorage, key: 'auth' }, auth),
     productSearch,
-    diary,
+    diary: persistReducer({ storage: AsyncStorage, key: 'diary' }, diary),
     addProduct,
     voteProductChanges,
     settings,

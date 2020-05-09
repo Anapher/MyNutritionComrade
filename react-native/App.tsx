@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { loadStore, getStore } from 'src/store';
-import Main from './src/Main';
-import SplashScreen from './src/SplashScreen';
-import configure from 'src/startup';
 import Axios from 'axios';
+import { AppLoading } from 'expo';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import env from 'src/env';
+import store, { rootPersistor } from 'src/store';
+import Main from './src/Main';
+import configure from 'src/startup';
 
-Axios.defaults.baseURL = 'http://192.168.178.41:32423';
+configure(store);
+Axios.defaults.baseURL = env.apiUrl;
 
 function App() {
-    const [isLoaded, setIsLoaded] = useState(false);
-    useEffect(() => {
-        loadStore().then(() => {
-            configure(getStore());
-            setIsLoaded(true);
-        });
-    }, []);
-
-    if (!isLoaded) {
-        return <SplashScreen />;
-    }
-
-    return <Main />;
+    return (
+        <Provider store={store}>
+            <PersistGate persistor={rootPersistor} loading={<AppLoading />}>
+                <Main />
+            </PersistGate>
+        </Provider>
+    );
 }
 
 export default App;

@@ -7,6 +7,7 @@ using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Core.Interfaces.UseCases;
 using System.Linq;
 using System.Threading.Tasks;
+using MyNutritionComrade.Core.Extensions;
 
 namespace MyNutritionComrade.Core.UseCases
 {
@@ -35,14 +36,16 @@ namespace MyNutritionComrade.Core.UseCases
             }
 
             var id = claimsPrincipal.Claims.First(x => x.Type == "id");
-            var user = await _userRepository.FindById(id.Value);
-            if (user == null)
-                return ReturnError(AuthenticationError.UserNotFound);
+
+            if (!(await _userRepository.ValidateUser(id.Value)).Result(out var error, out var user))
+            {
+                return ReturnError(error);
+            }
 
             if (!user.HasValidRefreshToken(message.RefreshToken))
                 return ReturnError(AuthenticationError.InvalidToken);
 
-            var jwToken = await _jwtFactory.GenerateEncodedToken(user.Id, user.UserName);
+            var jwToken = await _jwtFactory.GenerateEncodedToken(user.Id);
             var refreshToken = _tokenFactory.GenerateToken();
 
             user.RemoveRefreshToken(message.RefreshToken);

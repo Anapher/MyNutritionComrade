@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MyNutritionComrade.Core.Shared;
-using MyNutritionComrade.Core.Utilities;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
-    public class Meal : BaseEntity
+    public class Meal
     {
         private readonly List<MealProduct> _products = new List<MealProduct>();
 

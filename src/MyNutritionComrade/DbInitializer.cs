@@ -17,40 +17,9 @@ namespace MyNutritionComrade
             {
                 var serviceProvider = scope.ServiceProvider;
                 var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
-
-                InitializeAppIdentityDbContext(serviceProvider, logger);
             }
 
             return webHost;
         }
-
-        private static void InitializeAppIdentityDbContext(IServiceProvider serviceProvider, ILogger logger)
-        {
-            var context = serviceProvider.GetRequiredService<AppIdentityDbContext>();
-            try
-            {
-                context.Database.Migrate();
-            }
-            catch (Exception ex)
-            {
-                logger.LogCritical(ex, "An error occurred migrating AppIdentityDbContext.");
-                throw;
-            }
-
-            if (!context.Users.Any())
-            {
-                var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
-
-                try
-                {
-                    userManager.CreateAsync(new AppUser { UserName = "admin" }, "admin123").Wait();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogCritical(ex, "An error occurred seeding AppIdentityDbContext.");
-                    throw;
-                }
-            }
-        }
-    }
+  }
 }

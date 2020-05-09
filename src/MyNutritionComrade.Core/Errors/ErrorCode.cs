@@ -6,6 +6,9 @@ namespace MyNutritionComrade.Core.Errors
         UserNotFound,
         InvalidPassword,
         InvalidToken,
+        InvalidOperation,
+
+        User_Disabled = 1400,
 
 
         Identity_DefaultError = 1500,

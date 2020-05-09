@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Domain.Entities.Account;
 using MyNutritionComrade.Core.Dto;
 using MyNutritionComrade.Core.Errors;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
@@ -45,7 +46,10 @@ namespace MyNutritionComrade.Core.Extensions
         {
             var user = await userRepository.FindById(userId);
             if (user == null)
-                return new UserValidationResult(new EntityNotFoundError($"The user with id {userId} was not found.", ErrorCode.UserNotFound));
+                return new UserValidationResult(new AuthenticationError($"The user with id {userId} was not found.", ErrorCode.UserNotFound));
+
+            if (user.IsDisabled)
+                return new UserValidationResult(new AuthenticationError("The user is disabled.", ErrorCode.User_Disabled));
 
             return new UserValidationResult(user);
         }

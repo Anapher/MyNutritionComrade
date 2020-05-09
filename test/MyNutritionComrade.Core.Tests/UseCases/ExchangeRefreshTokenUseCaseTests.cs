@@ -5,6 +5,7 @@ using MyNutritionComrade.Core.Interfaces.Services;
 using MyNutritionComrade.Core.UseCases;
 using Moq;
 using System.Security.Claims;
+using MyNutritionComrade.Core.Domain.Entities.Account;
 using Xunit;
 
 namespace MyNutritionComrade.Core.Tests.UseCases

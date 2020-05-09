@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import { AccessInfo } from 'AppModels';
+import { jsonAxiosConfig } from '../api-utils';
 
 export async function signIn(userName: string, password: string): Promise<AccessInfo> {
     const response = await Axios.post<AccessInfo>('/api/v1/auth/login', {
@@ -7,6 +8,15 @@ export async function signIn(userName: string, password: string): Promise<Access
         password,
     });
 
+    return response.data;
+}
+
+export async function googleSignIn(idToken: string): Promise<AccessInfo> {
+    const response = await Axios.post<AccessInfo>(
+        '/api/v1/auth/login_with_google',
+        JSON.stringify(idToken),
+        jsonAxiosConfig,
+    );
     return response.data;
 }
 
