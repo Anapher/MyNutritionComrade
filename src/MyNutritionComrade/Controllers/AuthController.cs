@@ -6,6 +6,7 @@ using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Models.Request;
 using MyNutritionComrade.Models.Response;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyNutritionComrade.Config;
 
@@ -15,6 +16,13 @@ namespace MyNutritionComrade.Controllers
     [ApiController]
     public class AuthController : Controller
     {
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(ILogger<AuthController> logger)
+        {
+            _logger = logger;
+        }
+
         // POST api/v1/auth/login
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto request, [FromServices] ILoginUseCase loginUseCase)
@@ -46,18 +54,40 @@ namespace MyNutritionComrade.Controllers
         public async Task<ActionResult<LoginResponseDto>> LoginWithGoogle([FromBody] string idToken, [FromServices] IOptions<GoogleOAuthOptions> options,
             [FromServices] ILoginUseCase loginUseCase)
         {
-            GoogleJsonWebSignature.Payload user;
-            try
+            GoogleLoginRequest request;
+
+            if (options.Value.EnableDeveloperMode && idToken == options.Value.DeveloperToken)
             {
-                user = await GoogleJsonWebSignature.ValidateAsync(idToken,
-                    new GoogleJsonWebSignature.ValidationSettings {Audience = new[] {options.Value.Aud}});
+                _logger.LogWarning("Developer Mode is enabled for Google Authentication, so the DeveloperToken will be a valid authentication token!");
+
+                var subject = options.Value.DeveloperToken.Split('.', 3)[1];
+                var email = options.Value.DeveloperToken.Split('.', 3)[2];
+                request = new GoogleLoginRequest(subject, email, HttpContext.Connection.RemoteIpAddress?.ToString());
             }
-            catch (InvalidJwtException)
+            else
             {
-                return Forbid();
+                _logger.LogDebug("Received auth request using google with id token: {idToken}", idToken);
+
+                GoogleJsonWebSignature.Payload user;
+                try
+                {
+                    var settings = new GoogleJsonWebSignature.ValidationSettings();
+                    if (!string.IsNullOrEmpty(options.Value.Aud)) settings.Audience = new[] { options.Value.Aud };
+
+                    user = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+                }
+                catch (InvalidJwtException e)
+                {
+                    _logger.LogDebug(e, "Validation of id token failed.");
+                    return Forbid();
+                }
+
+                _logger.LogDebug("idToken validated successfully, creating user...");
+
+                request = new GoogleLoginRequest(user.Subject, user.Email, HttpContext.Connection.RemoteIpAddress?.ToString());
             }
 
-            var result = await loginUseCase.Handle(new GoogleLoginRequest(user.Subject, user.Email, HttpContext.Connection.RemoteIpAddress?.ToString()));
+            var result = await loginUseCase.Handle(request);
             if (loginUseCase.HasError)
             {
                 return loginUseCase.ToActionResult();

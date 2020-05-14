@@ -82,10 +82,8 @@ function LinearMobileStepper({ activeStep, steps, onChangeActiveStep, errors = {
         }
     }, [hideOnKeyboardOpening]);
 
-    if (!isShown) return null;
-
     return (
-        <Surface style={[styles.root]}>
+        <Surface style={[styles.root, !isShown && { display: 'none' }]}>
             <TouchableRipple onPress={canGoBack ? goBack : undefined} style={{ opacity: canGoBack ? 1 : 0.3 }}>
                 <View
                     style={[

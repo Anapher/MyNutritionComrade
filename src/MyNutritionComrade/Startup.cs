@@ -3,18 +3,14 @@ using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using MyNutritionComrade.Core;
 using MyNutritionComrade.Core.Errors;
-using MyNutritionComrade.Hubs;
 using MyNutritionComrade.Infrastructure;
 using MyNutritionComrade.Infrastructure.Auth;
 using MyNutritionComrade.Infrastructure.Helpers;
-using MyNutritionComrade.Infrastructure.Identity;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -33,12 +29,9 @@ using MyNutritionComrade.Config;
 using MyNutritionComrade.Core.Domain.Validation;
 using MyNutritionComrade.Core.Options;
 using MyNutritionComrade.Infrastructure.Converter;
-using MyNutritionComrade.Infrastructure.Data.Indexes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Indexes;
 
 namespace MyNutritionComrade
 {
@@ -128,8 +121,6 @@ namespace MyNutritionComrade
                 options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
             });
 
-            services.AddSignalR();
-
             services.AddRavenDb(Configuration.GetSection("RavenDb"));
 
             var jsonSettings = new JsonSerializerSettings();
@@ -153,18 +144,15 @@ namespace MyNutritionComrade
             {
                 fv.RegisterValidatorsFromAssemblyContaining<Startup>();
                 fv.RegisterValidatorsFromAssemblyContaining<ProductInfoValidator>();
-            }).AddNewtonsoftJson(x =>
-            {
-                ConfigureJsonSerializerSettings(x.SerializerSettings);
-            });
+            }).AddNewtonsoftJson(x => ConfigureJsonSerializerSettings(x.SerializerSettings));
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(InfrastructureModule).Assembly);
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
+            //services.AddSpaStaticFiles(configuration =>
+            //{
+            //    configuration.RootPath = "ClientApp/build";
+            //});
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -184,18 +172,19 @@ namespace MyNutritionComrade
 
                 // Swagger 2.+ support
                 c.AddSecurityDefinition("Bearer", scheme);
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement {{ new OpenApiSecurityScheme
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    Reference = new OpenApiReference
                     {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    },
-                    Scheme = "oauth2",
-                    Name = "Bearer",
-                    In = ParameterLocation.Header,
-
-                }, new List<string>()}});
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "Bearer"},
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
                 c.AddFluentValidationRules();
                 c.ResolveConflictingActions(enumerable => enumerable.First());
             });
@@ -218,8 +207,7 @@ namespace MyNutritionComrade
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var documentStore = app.ApplicationServices.GetRequiredService<IDocumentStore>();
-            IndexCreation.CreateIndexes(typeof(Product_ByCode).Assembly, documentStore);
+            app.CreateRavenDbIndexes();
 
             if (env.IsDevelopment())
             {
@@ -239,7 +227,7 @@ namespace MyNutritionComrade
 
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+            //app.UseSpaStaticFiles();
 
             app.UseAuthentication();
             app.UseRouting();
@@ -249,20 +237,19 @@ namespace MyNutritionComrade
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}");
-                endpoints.MapHub<CoreHub>("/signalr");
             });
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
+            //app.UseSpa(spa =>
+            //{
+            //    spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                    // uncomment this if you want the React app to start with ASP.Net Core (else you have to start it manually)
-                    //spa.UseReactDevelopmentServer(npmScript: "start"); 
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-                }
-            });
+            //    if (env.IsDevelopment())
+            //    {
+            //        // uncomment this if you want the React app to start with ASP.Net Core (else you have to start it manually)
+            //        //spa.UseReactDevelopmentServer(npmScript: "start"); 
+            //        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+            //    }
+            //});
         }
     }
 }

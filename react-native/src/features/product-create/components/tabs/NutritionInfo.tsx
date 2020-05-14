@@ -77,7 +77,7 @@ function NutritionInfo({ formik, onShowNextPage }: Props) {
                     </View>
                 </Row>
             )}
-        ></FlatList>
+        />
     );
 }
 

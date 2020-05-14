@@ -26,7 +26,7 @@ function Widget({ data, navigation, onChange }: Props) {
                     Gender: <Highlight>{data.gender || 'unknown'}</Highlight>
                 </Paragraph>
                 <Paragraph>
-                    Age (+/- 1 year): <Highlight>{age}</Highlight>
+                    Age (±1 year): <Highlight>{age}</Highlight>
                 </Paragraph>
             </Card.Content>
             <Card.Actions>

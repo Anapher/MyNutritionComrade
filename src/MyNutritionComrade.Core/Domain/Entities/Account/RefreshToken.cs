@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace MyNutritionComrade.Core.Domain.Entities.Account
 {
@@ -16,6 +17,7 @@ namespace MyNutritionComrade.Core.Domain.Entities.Account
         public string? RemoteIpAddress { get; private set; }
         public DateTimeOffset CreatedOn { get; private set; } = DateTimeOffset.UtcNow;
 
+        [JsonIgnore]
         public bool Active => DateTimeOffset.UtcNow <= Expires;
     }
 }

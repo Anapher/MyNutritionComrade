@@ -16,7 +16,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         {
             using var session = OpenWriteSession();
 
-            await session.StoreAsync(user, GetId(user.Id));
+            await session.StoreAsync(user, user.Id);
             await session.SaveChangesAsync();
         }
 
@@ -26,9 +26,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         {
             using var session = OpenReadOnlySession();
 
-            return await session.LoadAsync<User>(GetId(userId));
+            return await session.LoadAsync<User>(userId);
         }
-
-        private static string GetId(string userId) => $"user/{userId}";
     }
 }

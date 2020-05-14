@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using MyNutritionComrade.Core.Domain.Entities.Account;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
@@ -14,25 +15,35 @@ namespace MyNutritionComrade.Core.UseCases
     {
         private readonly IJwtFactory _jwtFactory;
         private readonly ITokenFactory _tokenFactory;
+        private readonly ILogger<LoginUseCase> _logger;
         private readonly IUserRepository _userRepository;
 
-        public LoginUseCase(IUserRepository userRepository, IJwtFactory jwtFactory, ITokenFactory tokenFactory)
+        public LoginUseCase(IUserRepository userRepository, IJwtFactory jwtFactory, ITokenFactory tokenFactory, ILogger<LoginUseCase> logger)
         {
             _userRepository = userRepository;
             _jwtFactory = jwtFactory;
             _tokenFactory = tokenFactory;
+            _logger = logger;
         }
 
         public async Task<LoginResponse?> Handle(LoginRequest message)
         {
-            User? user = null;
+            User? user;
             if (message is GoogleLoginRequest googleLoginRequest)
             {
+                _logger.LogDebug("Processing Google login, try to find user with {id}", googleLoginRequest.Subject);
+
                 user = await _userRepository.FindById(googleLoginRequest.Subject);
                 if (user == null)
                 {
                     user = new User(googleLoginRequest.Subject, new GoogleUserMetadata(googleLoginRequest.EmailAddress));
+
+                    _logger.LogDebug("User with id {id} was not found, creating new user: {@userData}", googleLoginRequest.Subject, user);
                     await _userRepository.Create(user);
+                }
+                else
+                {
+                    _logger.LogDebug("User with id {id} was found", googleLoginRequest.Subject);
                 }
             }
             //else if (message is CustomLoginRequest loginRequest)
@@ -57,11 +68,17 @@ namespace MyNutritionComrade.Core.UseCases
 
             if (user == null)
             {
+                _logger.LogDebug("The user was not found, fail authentication process.");
                 return ReturnError(new AuthenticationError("The user was not found.", ErrorCode.UserNotFound));
             }
 
             if (user.IsDisabled)
+            {
+                _logger.LogDebug("The user {id} is disabled, fail authentication process.", user.Id);
                 return ReturnError(new AuthenticationError("The user account is disabled.", ErrorCode.User_Disabled));
+            }
+
+            _logger.LogDebug("Authentication successful, generate tokens");
 
             // generate refresh token
             var refreshToken = _tokenFactory.GenerateToken();

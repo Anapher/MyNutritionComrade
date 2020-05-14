@@ -20,7 +20,7 @@ const googleSignIn: () => Promise<{ type: 'success' | 'cancel'; idToken?: string
         return { type: result.type, idToken: result.user?.auth?.idToken };
     } catch (error) {
         ToastAndroid.show(error.toString(), ToastAndroid.LONG);
-        return { type: 'success', idToken: 'asd' };
+        return { type: 'success', idToken: env.developerToken };
     }
 };
 

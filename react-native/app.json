@@ -7,6 +7,7 @@
     "privacy": "unlisted",
     "sdkVersion": "36.0.0",
     "version": "0.0.1",
+    "githubUrl": "https://github.com/Anapher/MyNutritionComrade",
     "entryPoint": "node_modules/expo/AppEntry.js",
     "platforms": [
       "ios",
@@ -21,6 +22,14 @@
           "certificateHash": "1C:C0:36:66:BC:58:F2:FC:3B:F4:DC:ED:C0:52:86:9A:A0:10:F8:92"
         }
       }
+    },
+    "androidStatusBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#212121"
+    },
+    "splash": {
+      "backgroundColor": "#212121",
+      "image": "./assets/splash.png"
     }
   },
   "updates": {

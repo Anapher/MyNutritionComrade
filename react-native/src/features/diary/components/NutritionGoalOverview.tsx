@@ -34,6 +34,21 @@ type Props = {
 };
 
 function NutritionGoalOverview({ nutritionGoal, nutritions }: Props) {
+    if (
+        nutritionGoal?.caloriesPerDay === null &&
+        nutritionGoal?.distribution === null &&
+        nutritionGoal?.proteinPerDay === null
+    ) {
+        return (
+            <View style={styles.centered}>
+                <Text style={{ textAlign: 'center', opacity: 0.5 }}>
+                    You can configure your nutrition goal in settings. If you did so, please add your current
+                    bodyweight.
+                </Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.root}>
             <View style={styles.container}>
@@ -74,5 +89,12 @@ const styles = StyleSheet.create({
     container: {
         display: 'flex',
         flexDirection: 'row',
+    },
+    centered: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        paddingHorizontal: 16,
     },
 });

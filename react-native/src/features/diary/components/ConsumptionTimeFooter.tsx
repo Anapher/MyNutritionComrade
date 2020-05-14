@@ -34,14 +34,14 @@ function ConsumptionTimeFooter({ section: { data }, onAddFood, onScanBarcode, on
                 <View style={{ flex: 1 }}>
                     <FlatButton text="Scan" icon="barcode" onPress={onScanBarcode} />
                 </View>
-                <View>
+                {/* <View>
                     <FlatIconButton
                         icon="dots-horizontal"
                         margin={14}
                         onPress={onMoreOptions}
                         longPressInfo="More options"
                     />
-                </View>
+                </View> */}
             </View>
         </Surface>
     );

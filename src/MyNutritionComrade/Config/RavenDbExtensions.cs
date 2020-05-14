@@ -1,21 +1,17 @@
 ﻿using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MyNutritionComrade.Infrastructure.Converter;
+using MyNutritionComrade.Infrastructure.Data.Indexes;
 using Newtonsoft.Json;
 using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
+using Raven.Client.Documents.Indexes;
+using SessionOptions = Raven.Client.Documents.Session.SessionOptions;
 
 namespace MyNutritionComrade.Config
 {
-    public class RavenDbOptions
-    {
-        public string[] Urls { get; set; } = new string[0];
-        public string DatabaseName { get; set; } = "MyNutritionComrade";
-        public string? CertPath { get; set; }
-        public string? CertPass { get; set; }
-    }
-
     public static class RavenDbExtensions
     {
         public static void AddRavenDb(this IServiceCollection services, IConfiguration configuration)
@@ -51,6 +47,17 @@ namespace MyNutritionComrade.Config
         private static void CustomizeJsonSerializer(JsonSerializer obj)
         {
             obj.Converters.AddRequiredConverters();
+        }
+
+        public static void CreateRavenDbIndexes(this IApplicationBuilder builder)
+        {
+            var logger = builder.ApplicationServices.GetRequiredService<ILogger<RavenDbOptions>>();
+            logger.LogDebug("Create Ravendb indexes...");
+
+            var documentStore = builder.ApplicationServices.GetRequiredService<IDocumentStore>();
+            IndexCreation.CreateIndexes(typeof(Product_ByCode).Assembly, documentStore);
+
+            logger.LogDebug("Indexes created successfully");
         }
     }
 }
