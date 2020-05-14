@@ -38,6 +38,7 @@ namespace MyNutritionComrade.Core.Errors
         Product_Validation,
         Product_CodeAlreadyExists,
         Product_ExecutionRaceCondition,
+        Product_ServingNotFound,
 
 
         ProductContribution_NotFound = 1700,
@@ -48,5 +49,7 @@ namespace MyNutritionComrade.Core.Errors
         ProductContribution_UpdatedFailed,
         ProductContribution_CreationFailed,
 
+        Meal_NotFound = 1800,
+        Meal_InvalidPatch
     }
 }

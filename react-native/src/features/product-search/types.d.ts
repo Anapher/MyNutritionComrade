@@ -13,11 +13,11 @@ declare module 'Models' {
     export interface MealSuggestion {
         type: 'meal';
         name: string;
-        products: MealProduct[];
+        products: MealProduct2[];
         id: string;
     }
 
-    export interface MealProduct {
+    export interface MealProduct2 {
         product: ProductEssentialsWithId;
         servingSize: ServingSize;
     }

@@ -1,26 +1,23 @@
+import { Meal } from 'Models';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ToastAndroid } from 'react-native';
-import { LoggedWeight } from 'Models';
-import { Portal, Dialog } from 'react-native-paper';
+import { ToastAndroid } from 'react-native';
+import { Dialog, Portal } from 'react-native-paper';
 import DialogButton from 'src/components/DialogButton';
-import { DateTime } from 'luxon';
 import { toString } from 'src/utils/error-result';
 
 type Props = {
-    entry?: LoggedWeight;
+    entry?: Meal;
     onDismiss: () => void;
-    onRemove: (entry: LoggedWeight) => Promise<any>;
+    onRemove: (entry: Meal) => Promise<any>;
 };
 
-function EntryOptionsDialog({ entry, onDismiss, onRemove }: Props) {
+function MealOptionsDialog({ entry, onDismiss, onRemove }: Props) {
     const [isDeleting, setIsDeleting] = useState(false);
 
     return (
         <Portal>
             <Dialog visible={!!entry} onDismiss={onDismiss}>
-                <Dialog.Title>
-                    {entry && DateTime.fromISO(entry.timestamp).toLocaleString(DateTime.DATETIME_FULL)}
-                </Dialog.Title>
+                <Dialog.Title>{entry?.name}</Dialog.Title>
                 <DialogButton
                     loading={isDeleting}
                     disabled={isDeleting}
@@ -43,4 +40,4 @@ function EntryOptionsDialog({ entry, onDismiss, onRemove }: Props) {
     );
 }
 
-export default EntryOptionsDialog;
+export default MealOptionsDialog;

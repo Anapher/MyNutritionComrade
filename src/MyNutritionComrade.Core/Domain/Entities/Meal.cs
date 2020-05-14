@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using MyNutritionComrade.Core.Utilities;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
@@ -7,33 +9,33 @@ namespace MyNutritionComrade.Core.Domain.Entities
     {
         private readonly List<MealProduct> _products = new List<MealProduct>();
 
-        public Meal(int userId, string name)
+        public Meal(string name, string userId)
         {
             Name = name;
             UserId = userId;
         }
 
-        private Meal()
-        {
-        }
+        public string Id { get; private set; } = string.Empty;
+        public string UserId { get; private set; }
+        public DateTimeOffset CreatedOn { get; private set; } = DateTimeOffset.UtcNow;
 
-        public int UserId { get; private set; }
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
         public NutritionalInfo NutritionalInfo { get; private set; } = NutritionalInfo.Empty;
-
         public IReadOnlyList<MealProduct> Products => _products.AsReadOnly();
 
-        //    public void AddProduct(MealProduct product)
-        //    {
-        //        _products.Add(product);
-        //        NutritionalInfo = _products.Select(x => x.ProductServing.Product.NutritionalInfo.ChangeMass(x.ProductServing.Weight * x.Amount)).SumNutrition();
-        //    }
+        public void AddProduct(MealProduct product)
+        {
+            if (_products.Any(x => x.ProductId == product.ProductId))
+                throw new ArgumentException("The product already exists in this meal. Please replace it.");
 
-        //    public void RemoveProduct(int mealProductId)
-        //    {
-        //        _products.Remove(_products.First(x => x.Id == mealProductId));
-        //        NutritionalInfo = _products.Select(x => x.ProductServing.Product.NutritionalInfo.ChangeMass(x.ProductServing.Weight * x.Amount)).SumNutrition();
-        //    }
-        //}
+            _products.Add(product);
+            NutritionalInfo = _products.Select(x => x.NutritionalInfo).SumNutrition();
+        }
+
+        public void RemoveProduct(string productId)
+        {
+            _products.Remove(_products.First(x => x.ProductId == productId));
+            NutritionalInfo = _products.Select(x => x.NutritionalInfo).SumNutrition();
+        }
     }
 }

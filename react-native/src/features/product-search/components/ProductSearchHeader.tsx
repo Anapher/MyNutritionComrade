@@ -1,6 +1,6 @@
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect } from 'react';
-import { TextInput, ToastAndroid } from 'react-native';
+import { TextInput, ToastAndroid, StyleSheet } from 'react-native';
 import { Theme, withTheme, IconButton, Appbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
@@ -51,11 +51,33 @@ function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, con
                 autoFocus
             />
             <IconButton
+                icon="silverware-fork-knife"
+                size={16}
+                style={styles.mealIconButton}
+                onPress={() => navigation.navigate('CreateProduct')}
+                onLongPress={getToastCallback('Meals')}
+            />
+            <IconButton
                 icon="plus"
+                style={styles.plusIconButton}
                 onPress={() => navigation.navigate('CreateProduct')}
                 onLongPress={getToastCallback('Add new product')}
             />
         </Appbar.Header>
     );
 }
+
+const styles = StyleSheet.create({
+    mealIconButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        margin: 0,
+    },
+    plusIconButton: {
+        margin: 0,
+        marginRight: 8,
+    },
+});
+
 export default connect(mapStateToProps, dispatchProps)(withTheme(ProductSearchHeader));

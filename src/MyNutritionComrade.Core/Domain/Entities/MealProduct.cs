@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyNutritionComrade.Core.Utilities;
+using System;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
@@ -6,22 +7,16 @@ namespace MyNutritionComrade.Core.Domain.Entities
     {
         private double _amount;
 
-        public MealProduct(int mealId, ServingType productServing, double amount)
+        public MealProduct(string productId, NutritionalInfo nutritionalInfo, ServingType servingType, double amount)
         {
-            MealId = mealId;
-            ProductServing = productServing;
-            Amount = amount;
+            ProductId = productId;
+            NutritionalInfo = nutritionalInfo;
+            ServingType = servingType;
+            _amount = amount;
         }
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-        private MealProduct(double amount)
-        {
-            Amount = amount;
-        }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-
-        public int MealId { get; private set; }
-        public int ProductServingId { get; private set; }
+        public string ProductId { get; private set; }
+        public NutritionalInfo NutritionalInfo { get; private set; }
 
         public double Amount
         {
@@ -35,6 +30,15 @@ namespace MyNutritionComrade.Core.Domain.Entities
             }
         }
 
-        public ServingType ProductServing { get; private set; }
+        public ServingType ServingType { get; private set; }
+
+        public static MealProduct Create(Product product, double amount, ServingType servingType)
+        {
+            if (!product.Servings.TryGetValue(servingType, out var servingSize))
+                throw new InvalidOperationException($"The product with id {product.Id} does not have a serving of type {servingType}.");
+
+            var nutritionalInfo = product.NutritionalInfo.ChangeVolume(amount * servingSize);
+            return new MealProduct(product.Id, nutritionalInfo, servingType, amount);
+        }
     }
 }

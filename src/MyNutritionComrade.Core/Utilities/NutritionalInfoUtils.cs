@@ -33,10 +33,10 @@ namespace MyNutritionComrade.Core.Utilities
             return new NutritionalInfo(totalMass, totalEnergy, totalFat, totalSaturatedFat, totalCarbohydrates, totalSugars, totalProtein, totalDietaryFiber, totalSodium);
         }
 
-        public static NutritionalInfo ChangeVolume(this INutritionalInfo nutritionalInfo, double newMass)
+        public static NutritionalInfo ChangeVolume(this INutritionalInfo nutritionalInfo, double newVol)
         {
-            var factor = newMass / nutritionalInfo.Volume;
-            return new NutritionalInfo(newMass, nutritionalInfo.Energy * factor, nutritionalInfo.Fat * factor,
+            var factor = newVol / nutritionalInfo.Volume;
+            return new NutritionalInfo(newVol, nutritionalInfo.Energy * factor, nutritionalInfo.Fat * factor,
                 nutritionalInfo.SaturatedFat * factor, nutritionalInfo.Carbohydrates * factor, nutritionalInfo.Sugars * factor,
                 nutritionalInfo.Protein * factor, nutritionalInfo.DietaryFiber * factor, nutritionalInfo.Sodium * factor);
         }

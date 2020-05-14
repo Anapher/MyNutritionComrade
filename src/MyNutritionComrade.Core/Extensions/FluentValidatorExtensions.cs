@@ -38,9 +38,10 @@ namespace MyNutritionComrade.Core.Extensions
             return ruleBuilder.Must(set.Contains).WithMessage($"The value must be one of [{string.Join(", ", set)}]");
         }
 
-        public static IRuleBuilderOptions<T, IEnumerable<TProperty>> UniqueItems<T, TProperty>(this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder)
+        public static IRuleBuilderOptions<T, IEnumerable<TProperty>> UniqueItems<T, TProperty>(this IRuleBuilder<T, IEnumerable<TProperty>> ruleBuilder, IEqualityComparer<TProperty>? comparer = null)
         {
-            return ruleBuilder.Must(x => x == null || x.Distinct().Count() == x.Count()).WithMessage("The list must not contain duplicate items.");
+            return ruleBuilder.Must(x => x == null || (comparer == null ? x.Distinct() : x.Distinct(comparer)).Count() == x.Count())
+                .WithMessage("The list must not contain duplicate items.");
         }
     }
 }

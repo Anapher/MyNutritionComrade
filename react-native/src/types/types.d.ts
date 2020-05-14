@@ -7,7 +7,7 @@ declare module 'Models' {
         productId: string;
     }
 
-    export type ProductConsumptionDates = { [key: string]: ConsumedProduct[] };
+    export type ProductConsumptionDates = { [date: string]: ConsumedProduct[] };
 
     export interface FrequentlyUsedProductDto extends ProductInfo {
         recentlyConsumedVolume: number;

@@ -65,8 +65,9 @@ export function querySuggestions(
 }
 
 function* generateMeals(consumptionTime: ConsumptionTime, history: ProductConsumptionDates): Generator<MealSuggestion> {
-    const lastMeal = _.orderBy(Object.keys(history), (x) => x, 'desc').find((time) =>
-        history[time].find((x) => x.time === consumptionTime),
+    const today = DateTime.local().toISODate();
+    const lastMeal = _.orderBy(Object.keys(history), (x) => x, 'desc').find(
+        (time) => time !== today && history[time].find((x) => x.time === consumptionTime),
     );
 
     if (lastMeal !== undefined) {

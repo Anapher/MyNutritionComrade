@@ -124,12 +124,12 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<ICollection<Product>> FindByIds(IEnumerable<string> ids)
+        public async Task<IDictionary<string, Product>> FindByIds(IEnumerable<string> ids)
         {
             using var session = OpenReadOnlySession();
 
             var result = await session.LoadAsync<Product>(ids);
-            return result.Values;
+            return result;
         }
     }
 }
