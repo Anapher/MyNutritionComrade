@@ -1,23 +1,22 @@
 import Axios from 'axios';
 import { LoggedWeight } from 'Models';
 import { PagingResponse } from 'MyNutritionComrade';
+import { jsonAxiosConfig } from '../api-utils';
 
 export async function get(): Promise<PagingResponse<LoggedWeight>> {
-    const response = await Axios.get('/api/v1/loggedweight');
-    return response.data;
+    return (await Axios.get('/api/v1/loggedweight')).data;
 }
 
 export async function getByUrl(url: string): Promise<PagingResponse<LoggedWeight>> {
-    const response = await Axios.get(url);
-    return response.data;
+    return (await Axios.get(url)).data;
 }
 
 export async function add(data: LoggedWeight): Promise<LoggedWeight> {
-    const response = await Axios.put<LoggedWeight>(`/api/v1/loggedweight/${data.timestamp}`, data.value.toString(), {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+    const response = await Axios.put<LoggedWeight>(
+        `/api/v1/loggedweight/${data.timestamp}`,
+        data.value.toString(),
+        jsonAxiosConfig,
+    );
     return response.data;
 }
 

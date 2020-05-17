@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Errors;
 using MyNutritionComrade.Core.Extensions;
@@ -15,6 +17,7 @@ using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Helpers;
 using MyNutritionComrade.Models.Paging;
+using MyNutritionComrade.Models.Request;
 using MyNutritionComrade.Models.Response;
 using MyNutritionComrade.Selectors;
 
@@ -25,7 +28,6 @@ namespace MyNutritionComrade.Controllers
     [Authorize]
     public class ProductsController : Controller
     {
-        [AllowAnonymous]
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProduct([RequiredFromQuery] string barcode,
             [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
@@ -39,18 +41,19 @@ namespace MyNutritionComrade.Controllers
             return mapper.Map<ProductDto>(product).Yield().ToList();
         }
 
-        [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProduct([RequiredFromQuery] string term, [FromQuery] string? units,
-            [FromServices] ISearchProductSelector searchProductSelector, [FromServices] IMapper mapper)
+        public async Task<ActionResult<IEnumerable<SearchResult>>> SearchProduct([RequiredFromQuery] string term, [FromQuery] SearchProductFilter filter,
+            [FromServices] ISearchProductSelector searchProductSelector)
         {
             if (string.IsNullOrEmpty(term))
                 return new FieldValidationError("The query parameter term is required.", "query").ToActionResult();
 
-            var unitsArray = units?.Split(',');
-            var result = await searchProductSelector.SearchProducts(term, unitsArray);
+            var unitsArray = filter.Units?.Split(',');
+            var consumables = filter.ConsumableFilter?.Split(',').Select(x => Enum.Parse<FoodPortionType>(x, true)).ToArray();
 
-            return result.Select(mapper.Map<ProductDto>).ToList();
+            var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
+
+            return await searchProductSelector.SearchProducts(term, unitsArray, consumables, userId);
         }
 
         [HttpPost]
@@ -76,12 +79,12 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpPost("contributions/{id}/vote")]
-        public async Task<ActionResult<ProductContributionDto>> VoteForContribution(string id, [FromBody] ApproveInfo approve,
+        public async Task<ActionResult<ProductContributionDto>> VoteForContribution(string id, [FromBody] bool approve,
             [FromServices] IVoteProductContributionUseCase useCase, [FromServices] IMapper mapper)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var response = await useCase.Handle(new VoteProductContributionRequest(userId, id, approve.Approve));
+            var response = await useCase.Handle(new VoteProductContributionRequest(userId, id, approve));
             if (useCase.HasError)
                 return useCase.ToActionResult();
 
@@ -110,11 +113,6 @@ namespace MyNutritionComrade.Controllers
                 return new EntityNotFoundError("The product could not be found.", ErrorCode.Product_NotFound).ToActionResult();
 
             return Ok(mapper.Map<ProductDto>(product));
-        }
-
-        public class ApproveInfo
-        {
-            public bool Approve { get; set; }
         }
     }
 }

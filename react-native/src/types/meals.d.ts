@@ -16,13 +16,6 @@ declare module 'Models' {
         createdOn: string;
         nutritionInfo: NutritionalInfo;
 
-        products: MealProduct[];
-    }
-
-    export interface MealProduct {
-        productId: string;
-        nutritionalInfo: NutritionalInfo;
-        amount: number;
-        servingType: string;
+        consuambles: Consumable[];
     }
 }

@@ -1,41 +1,48 @@
 import itiriri from 'itiriri';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
 import {
     ConsumptionTime,
     FrequentlyUsedProducts,
+    GeneratedMealSuggestion,
     ProductConsumptionDates,
     ProductInfo,
     ProductLabel,
+    ProductSearchConfig,
     SearchResult,
     ServingSize,
-    MealSuggestion,
 } from 'Models';
+import { ConsumptionTimes } from 'src/consts';
 import { tryParseServingSize } from 'src/utils/input-parser';
-import selectLabel, { flattenProductsPrioritize, getBaseUnit } from 'src/utils/product-utils';
-import { DateTime } from 'luxon';
+import selectLabel, { flattenProductsPrioritize } from 'src/utils/product-utils';
+import handlers from './search-result-handler';
 import { capitalizeFirstLetter } from 'src/utils/string-utils';
 
 const maxSearchResults: number = 10;
 
 export function querySuggestions(
     input: string,
-    consumptionTime: ConsumptionTime,
+    config: ProductSearchConfig,
     frequentlyUsedProducts: FrequentlyUsedProducts,
     history: ProductConsumptionDates,
 ): SearchResult[] {
-    const productsOrder = flattenProductsPrioritize(frequentlyUsedProducts, consumptionTime);
+    const productsOrder = flattenProductsPrioritize(frequentlyUsedProducts, config?.consumptionTime);
 
     if (input === '') {
         // return most frequent items from last days
-        return itiriri(productsOrder)
+        let query = itiriri(productsOrder)
             .distinct((x) => x.id)
             .take(maxSearchResults)
             .map<SearchResult>((product) => ({
                 type: 'product',
                 product,
-            }))
-            .prepend(generateMeals(consumptionTime, history))
-            .toArray();
+            }));
+
+        if (config.filter === undefined || config.filter.includes('meal')) {
+            query = query.prepend(generateMeals(history, config));
+        }
+
+        return query.toArray();
     }
 
     const result = tryParseServingSize(input);
@@ -49,45 +56,54 @@ export function querySuggestions(
         entries = entries.filter((x) => getMatchingServing(result.serving!, x.servings) !== undefined);
     }
 
-    return entries
+    let query = entries
         .distinct((x) => x.id)
         .take(maxSearchResults)
-        .map<SearchResult>((x) => mapToFoodSuggestion(x, result.serving))
-        .prepend(
-            itiriri(generateMeals(consumptionTime, history)).filter(
+        .map<SearchResult>((x) => mapToFoodSuggestion(x, result.serving));
+
+    if (config.filter === undefined || config.filter.includes('meal')) {
+        query = query.prepend(
+            itiriri(generateMeals(history, config)).filter(
                 (x) =>
                     result.productSearch !== undefined &&
                     result.serving === undefined &&
-                    x.name.toUpperCase().includes(result.productSearch.toUpperCase()),
+                    getGeneratedMealName(x).toUpperCase().includes(result.productSearch.toUpperCase()),
             ),
-        )
-        .toArray();
+        );
+    }
+
+    return query.toArray();
 }
 
-function* generateMeals(consumptionTime: ConsumptionTime, history: ProductConsumptionDates): Generator<MealSuggestion> {
-    const today = DateTime.local().toISODate();
+function* generateMeals(
+    history: ProductConsumptionDates,
+    config: ProductSearchConfig,
+): Generator<GeneratedMealSuggestion> {
+    const today = config?.date ?? DateTime.local().toISODate();
+
+    yield* ConsumptionTimes.map((x) => GenerateMealSuggestion(today, x, history)).filter((x) => x !== undefined) as any;
+}
+
+function GenerateMealSuggestion(
+    today: string,
+    time: ConsumptionTime,
+    history: ProductConsumptionDates,
+): GeneratedMealSuggestion | undefined {
     const lastMeal = _.orderBy(Object.keys(history), (x) => x, 'desc').find(
-        (time) => time !== today && history[time].find((x) => x.time === consumptionTime),
+        (time) => time !== today && history[time].find((x) => x.time === time),
     );
 
     if (lastMeal !== undefined) {
-        const products = history[lastMeal].filter((x) => x.time === consumptionTime);
-        const yesterday = lastMeal === DateTime.local().minus({ days: 1 }).toISODate();
+        const items = history[lastMeal].filter((x) => x.time === time).map((x) => x.foodPortion);
 
-        yield {
-            type: 'meal',
-            id: `INTERNAL/${consumptionTime}`,
-            name: yesterday
-                ? `Yesterdays ${capitalizeFirstLetter(consumptionTime)}`
-                : `${capitalizeFirstLetter(consumptionTime)} from ${DateTime.fromISO(lastMeal).toLocaleString(
-                      DateTime.DATE_HUGE,
-                  )}`,
-            products: products.map((product) => ({
-                product: { ...product, id: product.productId },
-                servingSize: { servingType: getBaseUnit(product), amount: product.nutritionalInfo.volume },
-            })),
+        return {
+            type: 'generatedMeal',
+            id: `${lastMeal}/${time}`,
+            items,
         };
     }
+
+    return undefined;
 }
 
 export function mapToFoodSuggestion(product: ProductInfo, parsedServing?: Partial<ServingSize>[]): SearchResult {
@@ -97,11 +113,9 @@ export function mapToFoodSuggestion(product: ProductInfo, parsedServing?: Partia
             return {
                 type: 'serving',
                 product,
-                servingSize: {
-                    amount: matchedServing.amount,
-                    servingType: matchedServing.servingType || product.defaultServing,
-                    convertedFrom: matchedServing.convertedFrom,
-                },
+                amount: matchedServing.amount,
+                servingType: matchedServing.servingType || product.defaultServing,
+                convertedFrom: matchedServing.convertedFrom,
             };
         }
     }
@@ -127,23 +141,16 @@ function matchLabel(label: ProductLabel[], s: string): boolean {
 }
 
 export function compareSearchResults(s1: SearchResult, s2: SearchResult): boolean {
-    if (s1.type === 'meal' && s2.type === 'meal') {
-        return s1.id === s2.id;
-    }
+    return handlers[s1.type]?.getKey(s1) === handlers[s2.type]?.getKey(s2);
+}
 
-    if (s1.type === 'product' && s2.type === 'product') {
-        return s1.product.id === s2.product.id;
-    }
+export function getGeneratedMealName(generatedMeal: GeneratedMealSuggestion): string {
+    const splitter = generatedMeal.id.split('/');
+    const time: ConsumptionTime = splitter[1] as any;
+    const day = splitter[0];
+    const yesterday = day === DateTime.local().minus({ days: 1 }).toISODate();
 
-    if (s1.type === 'serving' && s2.type === 'serving') {
-        return (
-            s1.product.id === s2.product.id &&
-            s1.servingSize.amount === s2.servingSize.amount &&
-            s1.servingSize.servingType === s2.servingSize.servingType &&
-            s1.servingSize.convertedFrom?.name === s2.servingSize.convertedFrom?.name
-        );
-    }
-
-    // different types
-    return false;
+    return yesterday
+        ? `Yesterdays ${capitalizeFirstLetter(time)}`
+        : `${capitalizeFirstLetter(time)} from ${DateTime.fromISO(day).toLocaleString(DateTime.DATE_HUGE)}`;
 }

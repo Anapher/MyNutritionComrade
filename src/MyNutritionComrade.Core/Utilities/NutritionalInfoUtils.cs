@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using MyNutritionComrade.Core.Domain;
+using Newtonsoft.Json;
 
 namespace MyNutritionComrade.Core.Utilities
 {
@@ -39,6 +43,14 @@ namespace MyNutritionComrade.Core.Utilities
             return new NutritionalInfo(newVol, nutritionalInfo.Energy * factor, nutritionalInfo.Fat * factor,
                 nutritionalInfo.SaturatedFat * factor, nutritionalInfo.Carbohydrates * factor, nutritionalInfo.Sugars * factor,
                 nutritionalInfo.Protein * factor, nutritionalInfo.DietaryFiber * factor, nutritionalInfo.Sodium * factor);
+        }
+
+        public static string Hash(this INutritionalInfo nutritionalInfo)
+        {
+            var s = JsonConvert.SerializeObject(nutritionalInfo);
+
+            using var md5 = MD5.Create();
+            return BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", null).ToLower();
         }
     }
 }

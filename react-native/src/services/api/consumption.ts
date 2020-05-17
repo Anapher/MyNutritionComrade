@@ -1,11 +1,14 @@
 import Axios from 'axios';
-import { ConsumptionTime, ProductConsumptionDates } from 'Models';
+import { ConsumedDto, ConsumptionTime, FoodPortionCreationDto, ProductConsumptionDates } from 'Models';
 
-export function setConsumption(date: string, type: ConsumptionTime, productId: string, value: number): Promise<any> {
-    return Axios.put(`/api/v1/consumption/${date}/${type}/${productId}`, { value });
+export function createConsumption(
+    date: string,
+    type: ConsumptionTime,
+    foodPortion: FoodPortionCreationDto,
+): Promise<ConsumedDto> {
+    return Axios.put(`/api/v1/consumption/${date}/${type}`, foodPortion);
 }
 
 export async function getConsumedProducts(date: string, to?: string): Promise<ProductConsumptionDates> {
-    const response = await Axios.get(`/api/v1/consumption/${date}${to ? '?to=' + to : ''}`);
-    return response.data;
+    return (await Axios.get(`/api/v1/consumption/${date}${to ? '?to=' + to : ''}`)).data;
 }

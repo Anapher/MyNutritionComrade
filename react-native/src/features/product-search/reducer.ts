@@ -1,4 +1,4 @@
-import { ConsumptionTime, SearchResult } from 'Models';
+import { ProductSearchConfig, SearchResult } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { combineReducers } from 'redux';
 import { getType } from 'typesafe-actions';
@@ -7,7 +7,7 @@ import { compareSearchResults } from './helpers';
 
 export type ProductSearchState = Readonly<{
     searchText: string;
-    consumptionTime: ConsumptionTime;
+    config: ProductSearchConfig | null;
     suggestions: SearchResult[];
 }>;
 
@@ -22,7 +22,7 @@ export default combineReducers<ProductSearchState, RootAction>({
                 return state;
         }
     },
-    consumptionTime: (state = 'lunch', action) => {
+    config: (state = null, action) => {
         switch (action.type) {
             case getType(actions.initSearch):
                 return action.payload;

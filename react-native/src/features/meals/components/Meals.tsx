@@ -39,11 +39,11 @@ function Meals({ meals, isLoading, navigation }: Props) {
                         <MealItem
                             meal={x.item}
                             onOptions={() => setOpenedEntry(x.item)}
-                            onEdit={() => navigation.navigate('AddUpdateMeal')}
+                            onEdit={() => navigation.navigate('AddOrUpdateMeal')}
                         />
                     )}
                 />
-                <FAB style={styles.fab} icon="plus" onPress={() => navigation.navigate('AddUpdateMeal')} />
+                <FAB style={styles.fab} icon="plus" onPress={() => navigation.navigate('AddOrUpdateMeal')} />
                 <MealOptionsDialog
                     onRemove={(x) => removeAction!(x.id)}
                     entry={openedEntry}

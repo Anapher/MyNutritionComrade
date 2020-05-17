@@ -15,7 +15,7 @@ export const initSuggestionsEpic: RootEpic = (action$, state$) =>
             actions.setSuggestions(
                 querySuggestions(
                     '',
-                    state$.value.productSearch.consumptionTime,
+                    state$.value.productSearch.config!,
                     state$.value.diary.frequentlyUsedProducts,
                     state$.value.diary.loadedDays,
                 ),
@@ -30,7 +30,7 @@ export const querySuggestionsEpic: RootEpic = (action$, state$) =>
             actions.setSuggestions(
                 querySuggestions(
                     payload,
-                    state$.value.productSearch.consumptionTime,
+                    state$.value.productSearch.config!,
                     state$.value.diary.frequentlyUsedProducts,
                     state$.value.diary.loadedDays,
                 ),
@@ -38,7 +38,7 @@ export const querySuggestionsEpic: RootEpic = (action$, state$) =>
         ),
     );
 
-export const apiSearchEpic: RootEpic = (action$, _, { api }) =>
+export const apiSearchEpic: RootEpic = (action$, state$, { api }) =>
     action$.pipe(
         filter(isActionOf(actions.setSearchText)),
         debounceTime(500),
@@ -50,6 +50,7 @@ export const apiSearchEpic: RootEpic = (action$, _, { api }) =>
                 api.products.search(
                     result.productSearch,
                     result.serving?.filter((x) => x.servingType !== undefined).map((x) => x.servingType!),
+                    state$.value.productSearch.config?.filter,
                 ),
             ).pipe(
                 map((response) =>

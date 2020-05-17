@@ -1,4 +1,12 @@
 declare module 'Models' {
+    type SuggestionType = 'product' | 'meal';
+
+    export interface ProductSearchConfig {
+        consumptionTime?: ConsumptionTime;
+        date?: string;
+        filter?: SuggestionType[];
+    }
+
     export interface ProductSuggestion {
         type: 'product';
         product: ProductInfo;
@@ -7,19 +15,22 @@ declare module 'Models' {
     export interface ServingSuggestion {
         type: 'serving';
         product: ProductInfo;
-        servingSize: ServingSize;
+
+        amount: number;
+        servingType: string;
+        convertedFrom?: Conversion;
     }
 
     export interface MealSuggestion {
         type: 'meal';
         name: string;
-        products: MealProduct2[];
-        id: string;
+        mealId: string;
     }
 
-    export interface MealProduct2 {
-        product: ProductEssentialsWithId;
-        servingSize: ServingSize;
+    export interface GeneratedMealSuggestion {
+        type: 'generatedMeal';
+        id: string;
+        items: FoodPortionDto[];
     }
 
     export interface ServingSize {
@@ -46,5 +57,5 @@ declare module 'Models' {
         unit: string;
     }
 
-    export type SearchResult = ServingSuggestion | ProductSuggestion | MealSuggestion;
+    export type SearchResult = ServingSuggestion | ProductSuggestion | MealSuggestion | GeneratedMealSuggestion;
 }

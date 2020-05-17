@@ -59,9 +59,11 @@ export function sumNutritions(nutritions: NutritionalInfo[]): NutritionalInfo {
  */
 export function* flattenProductsPrioritize(
     frequentlyUsedProducts: FrequentlyUsedProducts,
-    priorizedTime: ConsumptionTime,
+    priorizedTime?: ConsumptionTime,
 ): Generator<FrequentlyUsedProductDto, void, never> {
-    yield* frequentlyUsedProducts[priorizedTime];
+    if (priorizedTime !== undefined) {
+        yield* frequentlyUsedProducts[priorizedTime];
+    }
 
     const lists = ConsumptionTimes.filter((x) => x !== priorizedTime).map((x) => ({
         list: frequentlyUsedProducts[x] || [],

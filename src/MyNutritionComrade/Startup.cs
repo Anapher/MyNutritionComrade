@@ -26,9 +26,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Config;
+using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Core.Domain.Validation;
 using MyNutritionComrade.Core.Options;
 using MyNutritionComrade.Infrastructure.Converter;
+using MyNutritionComrade.Models.Response;
+using MyNutritionComrade.Selectors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -48,6 +51,18 @@ namespace MyNutritionComrade
         {
             settings.Converters.AddRequiredConverters();
             settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+            settings.Converters.Add(new AbstractTypeJsonConverter<SearchResult, SearchResultType>(new Dictionary<SearchResultType, Type>
+            {
+                {SearchResultType.Meal, typeof(MealSuggestion)}, {SearchResultType.Product, typeof(ProductSuggestion)}
+            }));
+            settings.Converters.Add(new AbstractTypeJsonConverter<FoodPortionDto, FoodPortionType>(new Dictionary<FoodPortionType, Type>
+            {
+                {FoodPortionType.Product, typeof(FoodPortionProductDto)},
+                {FoodPortionType.Meal, typeof(FoodPortionMealDto)},
+                {FoodPortionType.Custom, typeof(FoodPortionCustomDto)},
+                {FoodPortionType.Suggestion, typeof(FoodPortionSuggestedDto)},
+            }));
+
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 

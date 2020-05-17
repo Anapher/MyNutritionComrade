@@ -3,19 +3,20 @@ import {
     PatchOperation,
     Product,
     ProductContributionDto,
+    ProductContributionStatus,
     ProductInfo,
     ProductProperties,
-    ProductContributionStatus,
+    SuggestionType,
 } from 'Models';
 import { PagingResponse } from 'MyNutritionComrade';
+import { jsonAxiosConfig } from '../api-utils';
 
 export async function create(productInfo: ProductProperties): Promise<Product> {
-    const response = await Axios.post<Product>('/api/v1/products', productInfo);
-    return response.data;
+    return (await Axios.post<Product>('/api/v1/products', productInfo)).data;
 }
 
 export async function patch(id: string, operations: PatchOperation[]): Promise<void> {
-    return await Axios.patch(`/api/v1/products/${id}`, operations);
+    await Axios.patch(`/api/v1/products/${id}`, operations);
 }
 
 export async function getContributions(
@@ -31,17 +32,16 @@ export async function getContributions(
 }
 
 export async function getContributionsByUrl(url: string): Promise<PagingResponse<ProductContributionDto>> {
-    const response = await Axios.get(url);
-    return response.data;
+    return (await Axios.get(url)).data;
 }
 
-export async function search(term: string, units?: string[]): Promise<ProductInfo[]> {
+export async function search(term: string, units?: string[], filter?: SuggestionType[]): Promise<ProductInfo[]> {
     const queryDictionary: any = { term };
     if (units) queryDictionary['units'] = units.join(',');
-    const params = new URLSearchParams(queryDictionary);
+    if (filter) queryDictionary['consumables_filter'] = filter.join(',');
 
-    const response = await Axios.get<ProductInfo[]>(`/api/v1/products/search?${params.toString()}`);
-    return response.data;
+    const params = new URLSearchParams(queryDictionary);
+    return (await Axios.get<ProductInfo[]>(`/api/v1/products/search?${params.toString()}`)).data;
 }
 
 export async function searchByBarcode(barcode: string): Promise<ProductInfo | undefined> {
@@ -53,13 +53,14 @@ export async function searchByBarcode(barcode: string): Promise<ProductInfo | un
 }
 
 export async function getById(id: string): Promise<ProductInfo> {
-    const response = await Axios.get<ProductInfo>(`/api/v1/products/${id}`);
-    return response.data;
+    return (await Axios.get<ProductInfo>(`/api/v1/products/${id}`)).data;
 }
 
 export async function voteContribution(contributionId: string, approve: boolean): Promise<ProductContributionDto> {
-    const response = await Axios.post<ProductContributionDto>(`/api/v1/products/contributions/${contributionId}/vote`, {
-        approve,
-    });
+    const response = await Axios.post<ProductContributionDto>(
+        `/api/v1/products/contributions/${contributionId}/vote`,
+        approve.toString(),
+        jsonAxiosConfig,
+    );
     return response.data;
 }

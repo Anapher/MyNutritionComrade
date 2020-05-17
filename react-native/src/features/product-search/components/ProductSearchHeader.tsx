@@ -1,12 +1,13 @@
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect } from 'react';
 import { TextInput, ToastAndroid, StyleSheet } from 'react-native';
-import { Theme, withTheme, IconButton, Appbar } from 'react-native-paper';
+import { Theme, withTheme, IconButton, Appbar, useTheme } from 'react-native-paper';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { ConsumptionTime } from 'Models';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from 'src/RootNavigator';
+import { RouteProp } from '@react-navigation/native';
 
 const mapStateToProps = (state: RootState) => ({
     searchText: state.productSearch.searchText,
@@ -24,15 +25,24 @@ function getToastCallback(text?: string) {
 
 type Props = ReturnType<typeof mapStateToProps> &
     typeof dispatchProps & {
-        theme: Theme;
-        consumptionTime: ConsumptionTime;
         navigation: StackNavigationProp<RootStackParamList>;
+        route: RouteProp<RootStackParamList, 'SearchProduct'>;
     };
 
-function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, consumptionTime, navigation }: Props) {
+function ProductSearchHeader({
+    searchText,
+    setSearchText,
+    initSearch,
+    navigation,
+    route: {
+        params: { config },
+    },
+}: Props) {
+    const theme = useTheme();
+
     useEffect(() => {
-        initSearch(consumptionTime);
-    }, [consumptionTime]);
+        initSearch(config);
+    }, [config]);
 
     return (
         <Appbar.Header style={{ display: 'flex', flexDirection: 'row' }}>
@@ -54,7 +64,7 @@ function ProductSearchHeader({ searchText, setSearchText, initSearch, theme, con
                 icon="silverware-fork-knife"
                 size={16}
                 style={styles.mealIconButton}
-                onPress={() => navigation.navigate('CreateProduct')}
+                onPress={() => navigation.navigate('Meals')}
                 onLongPress={getToastCallback('Meals')}
             />
             <IconButton
@@ -80,4 +90,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default connect(mapStateToProps, dispatchProps)(withTheme(ProductSearchHeader));
+export default connect(mapStateToProps, dispatchProps)(ProductSearchHeader);

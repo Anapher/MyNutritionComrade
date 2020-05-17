@@ -9,13 +9,13 @@ namespace MyNutritionComrade.Core.Domain.Validation
         public CreateMealDtoValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
-            RuleForEach(x => x.Products).ChildRules(rules =>
-            {
-                rules.RuleFor(x => x.Amount).GreaterThan(0);
-                rules.RuleFor(x => x.ProductId).NotEmpty();
-                rules.RuleFor(x => x.ServingType).NotNull();
-            });
-            RuleFor(x => x.Products).UniqueItems(CreateMealProductDto.ProductIdComparer);
+            //RuleForEach(x => x.Items).ChildRules(rules =>
+            //{
+            //    rules.RuleFor(x => x.Amount).GreaterThan(0);
+            //    rules.RuleFor(x => x.ProductId).NotEmpty();
+            //    rules.RuleFor(x => x.ServingType).NotNull();
+            //});
+            //RuleFor(x => x.Items).UniqueItems(CreateMealProductDto.ProductIdComparer);
         }
     }
 }

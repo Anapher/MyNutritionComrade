@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Core.Utilities;
 
 namespace MyNutritionComrade.Core.Domain.Entities
 {
     public class Meal
     {
-        private readonly List<MealProduct> _products = new List<MealProduct>();
+        private readonly List<FoodPortion> _items = new List<FoodPortion>();
 
         public Meal(string name, string userId)
         {
@@ -21,21 +22,21 @@ namespace MyNutritionComrade.Core.Domain.Entities
 
         public string Name { get; set; }
         public NutritionalInfo NutritionalInfo { get; private set; } = NutritionalInfo.Empty;
-        public IReadOnlyList<MealProduct> Products => _products.AsReadOnly();
+        public IReadOnlyList<FoodPortion> Items => _items.AsReadOnly(); // this can contain any food portion
 
-        public void AddProduct(MealProduct product)
+        public void Add(FoodPortion foodPortion)
         {
-            if (_products.Any(x => x.ProductId == product.ProductId))
-                throw new ArgumentException("The product already exists in this meal. Please replace it.");
+            if (_items.Any(x => x.GetId() == foodPortion.GetId()))
+                throw new ArgumentException("The food already exists in this meal. Please replace it.");
 
-            _products.Add(product);
-            NutritionalInfo = _products.Select(x => x.NutritionalInfo).SumNutrition();
+            _items.Add(foodPortion);
+            NutritionalInfo = _items.Select(x => x.NutritionalInfo).SumNutrition();
         }
 
-        public void RemoveProduct(string productId)
+        public void Remove(string id)
         {
-            _products.Remove(_products.First(x => x.ProductId == productId));
-            NutritionalInfo = _products.Select(x => x.NutritionalInfo).SumNutrition();
+            _items.Remove(_items.First(x => x.GetId() == id));
+            NutritionalInfo = _items.Select(x => x.NutritionalInfo).SumNutrition();
         }
     }
 }

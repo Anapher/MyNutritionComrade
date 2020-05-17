@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Models.Response;
 
 namespace MyNutritionComrade.Config
@@ -9,9 +10,10 @@ namespace MyNutritionComrade.Config
         public AutoMapperProfile()
         {
             CreateMap<Product, ProductDto>();
-            CreateMap<ConsumedProduct, ConsumedProductDto>();
+            CreateMap<FoodPortionProduct, ConsumedDto>();
             CreateMap<Product, FrequentlyUsedProductDto>();
             CreateMap<ProductContribution, ProductContributionDto>();
+            CreateMap<Product, FoodPortionProductDto>();
         }
     }
 }

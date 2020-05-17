@@ -2,36 +2,34 @@
 
 using System;
 using System.Linq;
-using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using Raven.Client.Documents.Indexes;
 
 namespace MyNutritionComrade.Infrastructure.Data.Indexes
 {
-    public class ConsumedProduct_ByMonth : AbstractIndexCreationTask<ConsumedProduct, ConsumedProduct_ByMonth.Result>
+    public class ConsumedFoods_ByMonth : AbstractIndexCreationTask<Consumed, ConsumedFoods_ByMonth.Result>
     {
-        public ConsumedProduct_ByMonth()
+        public ConsumedFoods_ByMonth()
         {
-            Map = products => from product in products
-            select new
+            Map = allConsumed => allConsumed.Select(consumed => new
             {
-                product.UserId,
-                product.ProductId,
-
-                Date = new DateTime(product.Date.Year, product.Date.Month, 1),
-                product.Time,
+                consumed.UserId,
+                Id = consumed.FoodPortionId,
+                Date = new DateTime(consumed.Date.Year, consumed.Date.Month, 1),
+                consumed.Time,
                 Count = 1
-            };
+            });
 
             Reduce = results => results.GroupBy(x => new
             {
                 x.UserId,
-                x.ProductId,
+                Id = x.FoodPortionId,
                 x.Date,
                 x.Time
             }).Select(g => new
             {
                 g.Key.UserId,
-                g.Key.ProductId,
+                g.Key.Id,
                 g.Key.Date,
                 g.Key.Time,
                 Count = g.Sum(x => x.Count)
@@ -41,7 +39,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
         public class Result
         {
             public string UserId { get; set; }
-            public string ProductId { get; set; }
+            public string FoodPortionId { get; set; }
 
             public DateTime Date { get; set; }
 

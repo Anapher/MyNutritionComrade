@@ -8,7 +8,9 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
     {
         public Meal_ByUserId()
         {
-            Map = meals => from meal in meals select new {meal.UserId};
+            Map = meals => from meal in meals select new {meal.UserId, meal.Name};
+
+            Index(x => x.Name, FieldIndexing.Search);
         }
     }
 }

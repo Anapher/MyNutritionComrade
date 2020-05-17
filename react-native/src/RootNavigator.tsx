@@ -7,6 +7,9 @@ import {
     ProductInfo,
     ProductProperties,
     ProductContributionStatus,
+    CreateMealDto,
+    FoodPortionType,
+    ProductSearchConfig,
 } from 'Models';
 import { RootState, PagingResponse } from 'MyNutritionComrade';
 import React from 'react';
@@ -24,6 +27,8 @@ import VoteProductChanges from './features/product-vote-changes/components/VoteP
 import HomeScreen from './HomeScreen';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
 import Settings from './features/settings/components/Settings';
+import AddOrUpdateMeal from './features/meals/components/AddOrUpdateMeal';
+import Meals from './features/meals/components/Meals';
 
 const Stack = createStackNavigator();
 
@@ -35,7 +40,7 @@ type Props = ReturnType<typeof mapStateToProps>;
 
 export type RootStackParamList = {
     Home: undefined;
-    SearchProduct: { consumptionTime: ConsumptionTime; date: string };
+    SearchProduct: { config: ProductSearchConfig; onCreated: () => void };
     CreateProduct: { initialValues?: Partial<ProductProperties> };
     ChangeProduct: { product: ProductInfo };
     ReviewProductChanges: { product: ProductInfo; changes: PatchOperation[][]; acceptChanges: () => void };
@@ -53,6 +58,8 @@ export type RootStackParamList = {
     };
     ProductOverview: { product: ProductInfo };
     Settings: {};
+    AddOrUpdateMeal: { initialValue?: Partial<CreateMealDto> };
+    Meals: {};
 };
 
 function RootNavigator({ isAuthenticated }: Props) {
@@ -80,12 +87,7 @@ function RootNavigator({ isAuthenticated }: Props) {
                         name="SearchProduct"
                         component={ProductSearch}
                         options={({ route, navigation }) => ({
-                            header: () => (
-                                <ProductSearchHeader
-                                    consumptionTime={(route.params as any).consumptionTime}
-                                    navigation={navigation}
-                                />
-                            ),
+                            header: () => <ProductSearchHeader route={route as any} navigation={navigation} />,
                         })}
                     />
                     <Stack.Screen
@@ -110,6 +112,8 @@ function RootNavigator({ isAuthenticated }: Props) {
                     <Stack.Screen name="VoteProductChanges" component={VoteProductChanges} />
                     <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
                     <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
+                    <Stack.Screen name="AddOrUpdateMeal" component={AddOrUpdateMeal} />
+                    <Stack.Screen name="Meals" component={Meals} />
                 </>
             )}
         </Stack.Navigator>

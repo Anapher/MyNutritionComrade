@@ -12,18 +12,20 @@ export type MealsState = Readonly<{
 export default combineReducers<MealsState, RootAction>({
     meals: (state = null, action) => {
         switch (action.type) {
-            case getType(actions.loadMealAsync.success):
+            case getType(actions.loadMealsAsync.success):
                 return action.payload;
+            case getType(actions.removeAsync.success):
+                return state ? state.filter((x) => x.id !== action.payload) : state;
             default:
                 return state;
         }
     },
     isLoading: (state = false, action) => {
         switch (action.type) {
-            case getType(actions.loadMealAsync.request):
+            case getType(actions.loadMealsAsync.request):
                 return true;
-            case getType(actions.loadMealAsync.success):
-            case getType(actions.loadMealAsync.failure):
+            case getType(actions.loadMealsAsync.success):
+            case getType(actions.loadMealsAsync.failure):
                 return false;
             default:
                 return state;

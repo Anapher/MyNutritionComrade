@@ -3,24 +3,19 @@ import { AccessInfo } from 'AppModels';
 import { jsonAxiosConfig } from '../api-utils';
 
 export async function signIn(userName: string, password: string): Promise<AccessInfo> {
-    const response = await Axios.post<AccessInfo>('/api/v1/auth/login', {
-        userName,
-        password,
-    });
-
-    return response.data;
+    return (
+        await Axios.post<AccessInfo>('/api/v1/auth/login', {
+            userName,
+            password,
+        })
+    ).data;
 }
 
 export async function googleSignIn(idToken: string): Promise<AccessInfo> {
-    const response = await Axios.post<AccessInfo>(
-        '/api/v1/auth/login_with_google',
-        JSON.stringify(idToken),
-        jsonAxiosConfig,
-    );
-    return response.data;
+    return (await Axios.post<AccessInfo>('/api/v1/auth/login_with_google', JSON.stringify(idToken), jsonAxiosConfig))
+        .data;
 }
 
 export async function refreshToken(access: AccessInfo): Promise<AccessInfo> {
-    const response = await Axios.post<AccessInfo>('/api/v1/auth/refreshtoken', access);
-    return response.data;
+    return (await Axios.post<AccessInfo>('/api/v1/auth/refreshtoken', access)).data;
 }
