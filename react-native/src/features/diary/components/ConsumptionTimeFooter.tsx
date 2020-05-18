@@ -1,12 +1,11 @@
-import { ConsumedProduct } from 'Models';
 import React from 'react';
 import { SectionListData, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Surface, useTheme } from 'react-native-paper';
 import FlatButton from 'src/components/FlatButton';
-import FlatIconButton from 'src/components/FlatIconButton';
+import { ConsumedDto } from 'Models';
 
 type Props = {
-    section: SectionListData<ConsumedProduct>;
+    section: SectionListData<ConsumedDto>;
     onAddFood: () => void;
     onScanBarcode: () => void;
     onMoreOptions: () => void;

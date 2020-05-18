@@ -47,7 +47,7 @@ namespace MyNutritionComrade.Core.Utilities
 
         public static string Hash(this INutritionalInfo nutritionalInfo)
         {
-            var s = JsonConvert.SerializeObject(nutritionalInfo);
+            var s = JsonConvert.SerializeObject(nutritionalInfo.ChangeVolume(100));
 
             using var md5 = MD5.Create();
             return BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", null).ToLower();

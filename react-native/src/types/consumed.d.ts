@@ -13,7 +13,7 @@ declare module 'Models' {
 
     export interface MealFoodPortionCreationDto {
         type: 'meal';
-        mealId?: string;
+        mealId: string;
         portion: number;
         overwriteIngredients?: FoodPortionCreationDto[];
     }
@@ -28,7 +28,7 @@ declare module 'Models' {
     export interface SuggestionFoodPortionCreationDto {
         type: 'suggestion';
         suggestionId: string;
-        products: number;
+        items: FoodPortionCreationDto[];
     }
 
     type FoodPortionCreationDto =

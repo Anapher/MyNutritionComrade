@@ -7,10 +7,16 @@ import { catchError, filter, map, switchMap } from 'rxjs/operators';
 import toErrorResult, { RequestErrorResponse } from 'src/utils/error-result';
 import { isActionOf } from 'typesafe-actions';
 import * as actions from './actions';
-import { matchProduct, getRequiredDates, groupDatesInChunks } from './utils';
+import { getRequiredDates, groupDatesInChunks } from './utils';
 import _ from 'lodash';
 import * as settingsActions from '../settings/actions';
 import * as logWeightActions from '../log-weight/actions';
+import {
+    getConsumedDtoId,
+    getFoodPortionId,
+    getCreationDtoId,
+    addCreationDtoToFoodPortion,
+} from 'src/utils/different-foods';
 
 export const loadFrequentProductsEpic: RootEpic = (action$, _, { api }) =>
     action$.pipe(
@@ -75,20 +81,27 @@ async function loadDates({ api }: Services, missingDates: string[]): Promise<Pro
     return data.reduce((previous, val) => ({ ...previous, ...val }));
 }
 
-export const changeProductConsumptionEpic: RootEpic = (action$, state$, { api }) =>
+export const createConsumptionEpic: RootEpic = (action$, state$, { api }) =>
     action$.pipe(
-        filter(isActionOf(actions.changeProductConsumption.request)),
+        filter(isActionOf(actions.patchConsumptions.request)),
         switchMap(({ payload }) => {
-            const consumedProducts = state$.value.diary.loadedDays[payload.date];
-            const newValue = payload.append
-                ? (consumedProducts.find((x) => matchProduct(x, payload))?.nutritionalInfo.volume ?? 0) + payload.value
-                : payload.value;
+            let creationDto = payload.creationDto;
 
-            return from(api.consumption.setConsumption(payload.date, payload.time, payload.product.id, newValue)).pipe(
-                map(() => actions.changeProductConsumption.success(payload)),
+            if (payload.append) {
+                const consumedProducts = state$.value.diary.loadedDays[payload.date];
+                const existingFoodPortion = consumedProducts.find(
+                    (x) => getFoodPortionId(x.foodPortion) === getCreationDtoId(payload.creationDto),
+                );
+                if (existingFoodPortion !== undefined) {
+                    creationDto = addCreationDtoToFoodPortion(creationDto, existingFoodPortion.foodPortion);
+                }
+            }
+
+            return from(api.consumption.createConsumption(payload.date, payload.time, creationDto)).pipe(
+                map(() => actions.patchConsumptions.success(payload)),
                 catchError((error: AxiosError) =>
                     of(
-                        actions.changeProductConsumption.failure({
+                        actions.patchConsumptions.failure({
                             ...toErrorResult(error),
                             requestId: payload.requestId,
                         }),

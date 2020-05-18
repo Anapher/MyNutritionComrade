@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import selectLabel from 'src/utils/product-utils';
+import { getGeneratedMealName } from '../helpers';
 
 type Props = {
     item: SearchResult;
@@ -39,6 +40,10 @@ function getTitle(s: SearchResult): string {
             return selectLabel(s.product.label);
         case 'meal':
             return s.name;
+        case 'custom':
+            return s.label || 'Custom product';
+        case 'generatedMeal':
+            return getGeneratedMealName(s);
     }
 }
 
@@ -47,13 +52,15 @@ function getDescription(s: SearchResult): string {
         case 'product':
             return 'Tap to choose volume';
         case 'serving':
-            if (s.servingSize.convertedFrom !== undefined)
-                return `${s.servingSize.amount * (1 / s.servingSize.convertedFrom.factor)} ${
-                    s.servingSize.convertedFrom.name
-                }`;
-            return `${s.servingSize.amount} ${s.servingSize.servingType}`;
+            if (s.convertedFrom !== undefined)
+                return `${s.amount * (1 / s.convertedFrom.factor)} ${s.convertedFrom.name}`;
+            return `${s.amount} ${s.servingType}`;
         case 'meal':
-            return s.products.map((x) => selectLabel(x.product.label)).join(', ');
+            return '';
+        case 'custom':
+            return 'todo';
+        case 'generatedMeal':
+            return 'todo';
     }
 }
 

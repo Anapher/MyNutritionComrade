@@ -6,17 +6,15 @@ import {
     FrequentlyUsedProducts,
     GeneratedMealSuggestion,
     ProductConsumptionDates,
-    ProductInfo,
-    ProductLabel,
     ProductSearchConfig,
     SearchResult,
     ServingSize,
 } from 'Models';
 import { ConsumptionTimes } from 'src/consts';
-import { tryParseServingSize } from 'src/utils/input-parser';
-import selectLabel, { flattenProductsPrioritize } from 'src/utils/product-utils';
-import handlers from './search-result-handler';
+import { ProductSearchQuery, tryParseServingSize } from 'src/utils/input-parser';
+import { flattenProductsPrioritize } from 'src/utils/product-utils';
 import { capitalizeFirstLetter } from 'src/utils/string-utils';
+import { matchSearchResult, getSearchResultKey } from 'src/utils/different-foods';
 
 const maxSearchResults: number = 10;
 
@@ -26,53 +24,24 @@ export function querySuggestions(
     frequentlyUsedProducts: FrequentlyUsedProducts,
     history: ProductConsumptionDates,
 ): SearchResult[] {
-    const productsOrder = flattenProductsPrioritize(frequentlyUsedProducts, config?.consumptionTime);
+    const frequentlyUsedSearchResults = flattenProductsPrioritize(frequentlyUsedProducts, config?.consumptionTime);
 
-    if (input === '') {
-        // return most frequent items from last days
-        let query = itiriri(productsOrder)
-            .distinct((x) => x.id)
-            .take(maxSearchResults)
-            .map<SearchResult>((product) => ({
-                type: 'product',
-                product,
-            }));
-
-        if (config.filter === undefined || config.filter.includes('meal')) {
-            query = query.prepend(generateMeals(history, config));
-        }
-
-        return query.toArray();
-    }
-
-    const result = tryParseServingSize(input);
-
-    let entries = itiriri(productsOrder);
-    if (result.productSearch !== undefined) {
-        entries = entries.filter((x) => matchLabel(x.label, result.productSearch!));
-    }
-
-    if (result.serving) {
-        entries = entries.filter((x) => getMatchingServing(result.serving!, x.servings) !== undefined);
-    }
-
-    let query = entries
-        .distinct((x) => x.id)
-        .take(maxSearchResults)
-        .map<SearchResult>((x) => mapToFoodSuggestion(x, result.serving));
+    // return most frequent items from last days
+    let query = itiriri(frequentlyUsedSearchResults);
 
     if (config.filter === undefined || config.filter.includes('meal')) {
-        query = query.prepend(
-            itiriri(generateMeals(history, config)).filter(
-                (x) =>
-                    result.productSearch !== undefined &&
-                    result.serving === undefined &&
-                    getGeneratedMealName(x).toUpperCase().includes(result.productSearch.toUpperCase()),
-            ),
-        );
+        query = query.prepend(generateMeals(history, config));
     }
 
-    return query.toArray();
+    if (input) {
+        const searchQuery = tryParseServingSize(input);
+        query = query.filter((x) => matchSearchResult(x, searchQuery)).map((x) => tryMapProductServing(x, searchQuery));
+    }
+
+    return query
+        .distinct((x) => getSearchResultKey(x))
+        .take(maxSearchResults)
+        .toArray();
 }
 
 function* generateMeals(
@@ -106,27 +75,24 @@ function GenerateMealSuggestion(
     return undefined;
 }
 
-export function mapToFoodSuggestion(product: ProductInfo, parsedServing?: Partial<ServingSize>[]): SearchResult {
-    if (parsedServing) {
-        const matchedServing = getMatchingServing(parsedServing, product.servings)!;
+export function tryMapProductServing(searchResult: SearchResult, searchQuery: ProductSearchQuery): SearchResult {
+    if (searchResult.type === 'product' && searchQuery.serving !== undefined) {
+        const matchedServing = getMatchingServing(searchQuery.serving, searchResult.product.servings)!;
         if (matchedServing.amount) {
             return {
                 type: 'serving',
-                product,
+                product: searchResult.product,
                 amount: matchedServing.amount,
-                servingType: matchedServing.servingType || product.defaultServing,
+                servingType: matchedServing.servingType || searchResult.product.defaultServing,
                 convertedFrom: matchedServing.convertedFrom,
             };
         }
     }
 
-    return {
-        type: 'product',
-        product,
-    };
+    return searchResult;
 }
 
-function getMatchingServing(
+export function getMatchingServing(
     matchedServings: Partial<ServingSize>[],
     productServings: { [key: string]: number },
 ): Partial<ServingSize> | undefined {
@@ -135,13 +101,8 @@ function getMatchingServing(
         .first();
 }
 
-function matchLabel(label: ProductLabel[], s: string): boolean {
-    const labelText = selectLabel(label);
-    return labelText.toUpperCase().includes(s.toUpperCase());
-}
-
 export function compareSearchResults(s1: SearchResult, s2: SearchResult): boolean {
-    return handlers[s1.type]?.getKey(s1) === handlers[s2.type]?.getKey(s2);
+    return getSearchResultKey(s1) === getSearchResultKey(s2);
 }
 
 export function getGeneratedMealName(generatedMeal: GeneratedMealSuggestion): string {

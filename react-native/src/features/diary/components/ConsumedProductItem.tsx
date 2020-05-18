@@ -1,19 +1,55 @@
 import Color from 'color';
-import { ConsumedProduct } from 'Models';
+import { ConsumedDto, NutritionalInfo } from 'Models';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Surface, TouchableRipple, useTheme } from 'react-native-paper';
-import { TagLiquid } from 'src/consts';
-import selectLabel from 'src/utils/product-utils';
+import selectLabel, { isProductLiquid } from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
 
 type Props = {
     onPress?: () => void;
     onLongPress?: () => void;
-    product: ConsumedProduct;
+    consumed: ConsumedDto;
 };
 
-function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
+function ConsumedProductItem({ onPress, onLongPress, consumed }: Props) {
+    if (consumed.foodPortion.type === 'product') {
+        return (
+            <FoodPortionItem
+                onPress={onPress}
+                onLongPress={onLongPress}
+                label={selectLabel(consumed.foodPortion.product.label)}
+                nutritionalInfo={consumed.foodPortion.nutritionalInfo}
+                isLiquid={isProductLiquid(consumed.foodPortion.product)}
+            />
+        );
+    }
+
+    if (consumed.foodPortion.type === 'custom') {
+        return (
+            <FoodPortionItem
+                onPress={onPress}
+                onLongPress={onLongPress}
+                label={consumed.foodPortion.label || 'Manual food'}
+                nutritionalInfo={consumed.foodPortion.nutritionalInfo}
+                isLiquid={false}
+            />
+        );
+    }
+
+    return <Text>Unsupported</Text>;
+}
+
+type FoodPortionItemProps = {
+    onPress?: () => void;
+    onLongPress?: () => void;
+
+    label: string;
+    nutritionalInfo: NutritionalInfo;
+    isLiquid: boolean;
+};
+
+function FoodPortionItem({ onLongPress, onPress, nutritionalInfo, label, isLiquid }: FoodPortionItemProps) {
     const theme = useTheme();
 
     const titleColor = Color(theme.colors.text).alpha(0.87).rgb().string();
@@ -23,7 +59,7 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
     const kcalColor = Color(theme.colors.text).alpha(0.8).rgb().string();
     const rippleColor = 'black';
 
-    const { fat, carbohydrates, protein, volume, energy } = product.nutritionalInfo;
+    const { fat, carbohydrates, protein, volume, energy } = nutritionalInfo;
 
     return (
         <Surface style={styles.surface}>
@@ -36,12 +72,12 @@ function ConsumedProductItem({ onPress, onLongPress, product }: Props) {
                 <View style={styles.container}>
                     <View style={styles.flexFill}>
                         <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.title, { color: titleColor }]}>
-                            {selectLabel(product.label)}
+                            {label}
                         </Text>
                         <View style={styles.verticalCenterAlignedRow}>
                             <Text style={[styles.description, { color: descriptionColor }]}>
                                 {volume}
-                                {product.tags.includes(TagLiquid) ? 'ml' : 'g'}
+                                {isLiquid ? 'ml' : 'g'}
                             </Text>
                             <Text style={[styles.description, { color: descriptionBColor, fontSize: 11 }]}>
                                 {' | '}

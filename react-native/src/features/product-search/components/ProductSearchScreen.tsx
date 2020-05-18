@@ -1,6 +1,12 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { ProductEssentialsWithId, ProductInfo, SearchResult, ServingSize } from 'Models';
+import {
+    ProductInfo,
+    SearchResult,
+    ServingSize,
+    ProductFoodPortionCreationDto,
+    CustomFoodPortionCreationDto,
+} from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React from 'react';
 import { Keyboard } from 'react-native';
@@ -8,68 +14,81 @@ import { FlatList } from 'react-native-gesture-handler';
 import { Divider, useTheme } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { RootStackParamList } from 'src/RootNavigator';
-import * as actions from '../../diary/actions';
 import SuggestionItem from './SuggestionItem';
+import {
+    mapFoodPortionDtoCreationDto,
+    getSearchResultKey,
+    createProductPortionFromCreation,
+} from 'src/utils/different-foods';
 
 const mapStateToProps = (state: RootState) => ({
     suggestions: state.productSearch.suggestions,
 });
 
-const dispatchProps = {
-    changeProductConsumption: actions.changeProductConsumption.request,
+type Props = ReturnType<typeof mapStateToProps> & {
+    navigation: StackNavigationProp<RootStackParamList>;
+    route: RouteProp<RootStackParamList, 'SearchProduct'>;
 };
-
-type Props = ReturnType<typeof mapStateToProps> &
-    typeof dispatchProps & {
-        navigation: StackNavigationProp<RootStackParamList>;
-        route: RouteProp<RootStackParamList, 'SearchProduct'>;
-    };
 
 const getServingSizeValue = (servingSize: ServingSize, product: ProductInfo) =>
     product.servings[servingSize.servingType || product.defaultServing] * servingSize.amount;
 
-const getSearchResultId = (result: SearchResult): string => {
-    switch (result.type) {
-        case 'product':
-            return result.product.id;
-        case 'serving':
-            return `${result.product.id}/${result.servingSize.servingType}`;
-        case 'meal':
-            return result.id;
-    }
-};
-
-function ProductSearchScreen({ suggestions, navigation, route, changeProductConsumption }: Props) {
+function ProductSearchScreen({
+    suggestions,
+    navigation,
+    route: {
+        params: { onCreated },
+    },
+}: Props) {
     const theme = useTheme();
-
-    const execute = (product: ProductEssentialsWithId, value: number) => {
-        changeProductConsumption({
-            date: route.params.date,
-            time: route.params.consumptionTime,
-            product: product,
-            value,
-            append: true,
-        });
-    };
 
     const onPressItem = (item: SearchResult) => {
         switch (item.type) {
             case 'product':
                 navigation.navigate('AddProduct', {
-                    onSubmit: (value) => {
-                        execute(item.product, value);
+                    onSubmit: (amount, servingType) => {
+                        const creationDto: ProductFoodPortionCreationDto = {
+                            type: 'product',
+                            amount,
+                            servingType,
+                            productId: item.product.id,
+                        };
+                        onCreated(creationDto, createProductPortionFromCreation(creationDto, item.product));
                         navigation.goBack();
                     },
                     product: item.product,
                 });
                 break;
             case 'serving':
-                execute(item.product, getServingSizeValue(item.servingSize, item.product));
-                navigation.goBack();
+                const creationDto: ProductFoodPortionCreationDto = {
+                    type: 'product',
+                    amount: getServingSizeValue(item, item.product),
+                    productId: item.product.id,
+                    servingType: item.servingType,
+                };
 
+                onCreated(creationDto, createProductPortionFromCreation(creationDto, item.product));
+                navigation.goBack();
                 break;
             case 'meal':
-                item.products.forEach((x) => execute(x.product, x.servingSize.amount));
+                onCreated({ type: 'meal', mealId: item.mealId, portion: 1 });
+                navigation.goBack();
+                break;
+            case 'generatedMeal':
+                onCreated({
+                    type: 'suggestion',
+                    suggestionId: item.id,
+                    items: item.items.map(mapFoodPortionDtoCreationDto),
+                });
+                navigation.goBack();
+                break;
+            case 'custom':
+                const customCreationDto: CustomFoodPortionCreationDto = {
+                    type: 'custom',
+                    nutritionalInfo: item.nutritionalInfo,
+                    label: item.label,
+                };
+                onCreated(customCreationDto, customCreationDto);
                 navigation.goBack();
                 break;
         }
@@ -83,10 +102,10 @@ function ProductSearchScreen({ suggestions, navigation, route, changeProductCons
             keyboardShouldPersistTaps="handled"
             style={{ backgroundColor: theme.colors.background }}
             ItemSeparatorComponent={() => <Divider inset />}
-            keyExtractor={getSearchResultId}
+            keyExtractor={(x) => getSearchResultKey(x)}
             renderItem={({ item }) => <SuggestionItem item={item} onPress={() => onPressItem(item)} />}
         />
     );
 }
 
-export default connect(mapStateToProps, dispatchProps)(ProductSearchScreen);
+export default connect(mapStateToProps)(ProductSearchScreen);

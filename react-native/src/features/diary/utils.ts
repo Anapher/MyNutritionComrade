@@ -1,42 +1,40 @@
-import { DateTime } from 'luxon';
-import { ConsumedProduct } from 'Models';
-import { ConsumeProductData } from './reducer';
-import { changeVolume } from 'src/utils/product-utils';
 import _ from 'lodash';
+import { DateTime } from 'luxon';
+import { ConsumedDto } from 'Models';
+import { addFoodPortions, getFoodPortionId } from 'src/utils/different-foods';
+import { ConsumptionAction, DeleteConsumptionRequest } from './reducer';
 
-export const matchProduct = (o1: ConsumedProduct, o2: ConsumeProductData) =>
-    o1.date === o2.date && o1.time === o2.time && o1.productId === o2.product.id;
-
-export const mapToProduct = (x: ConsumeProductData, newValue?: number): ConsumedProduct => ({
-    date: x.date,
-    time: x.time,
-    productId: x.product.id,
-    label: x.product.label,
-    nutritionalInfo: changeVolume(x.product.nutritionalInfo, newValue ?? x.value),
-    tags: x.product.tags,
-});
-
-export function patchConsumedProducts(list: ConsumedProduct[], patch: ConsumeProductData): ConsumedProduct[] {
-    if (patch.value === 0) {
-        if (!patch.append) {
-            // remove item
-            return list.filter((x) => !matchProduct(x, patch));
-        }
-    } else if (list.findIndex((x) => matchProduct(x, patch)) > -1) {
-        const newValue = patch.append
-            ? (list.find((x) => matchProduct(x, patch))?.nutritionalInfo.volume ?? 0) + patch.value
-            : patch.value;
-
-        // update item
-        return list.map((x) =>
-            matchProduct(x, patch) ? { ...x, nutritionalInfo: changeVolume(x.nutritionalInfo, newValue) } : x,
-        );
-    } else {
-        // add item
-        return [...list, mapToProduct(patch)];
+export function patchConsumedProducts(list: ConsumedDto[], patch: ConsumptionAction): ConsumedDto[] {
+    if (isDeleteRequest(patch)) {
+        return list.filter((x) => getFoodPortionId(x.foodPortion) !== patch.foodPortionId);
     }
 
-    return list;
+    if (!patch.foodPortion) return list;
+
+    const existing = list.find((x) => getFoodPortionId(x.foodPortion) === getFoodPortionId(patch.foodPortion!));
+
+    let newValue: ConsumedDto;
+    if (!existing || !patch.append) {
+        newValue = { date: patch.date, time: patch.time, foodPortion: patch.foodPortion };
+    } else {
+        newValue = {
+            date: patch.date,
+            time: patch.time,
+            foodPortion: addFoodPortions(patch.foodPortion, existing.foodPortion),
+        };
+    }
+
+    if (existing) {
+        return list.map((x) =>
+            getFoodPortionId(x.foodPortion) === getFoodPortionId(patch.foodPortion!) ? newValue : x,
+        );
+    }
+
+    return [...list, newValue];
+}
+
+export function isDeleteRequest(patch: ConsumptionAction): patch is DeleteConsumptionRequest {
+    return (patch as DeleteConsumptionRequest).delete;
 }
 
 /**

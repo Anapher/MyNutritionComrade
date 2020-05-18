@@ -60,11 +60,16 @@ const servingTypes: ServingType[] = [
     },
 ];
 
+export interface ProductSearchQuery {
+    serving?: Partial<ServingSize>[];
+    productSearch?: string;
+}
+
 /**
  * Interpret an input an try to parse an amount and a unit. Return the parsed result
  * @param input the input string
  */
-export function tryParseServingSize(input: string): { serving?: Partial<ServingSize>[]; productSearch?: string } {
+export function tryParseServingSize(input: string): ProductSearchQuery {
     const m = input.match(regex);
     if (m === null) return {};
 

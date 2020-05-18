@@ -1,3 +1,4 @@
+import { SearchResult } from 'Models';
 import { RootEpic } from 'MyNutritionComrade';
 import { empty, from, of } from 'rxjs';
 import { catchError, debounceTime, filter, map, switchMap } from 'rxjs/operators';
@@ -5,8 +6,7 @@ import toErrorResult from 'src/utils/error-result';
 import { tryParseServingSize } from 'src/utils/input-parser';
 import { isActionOf } from 'typesafe-actions';
 import * as actions from './actions';
-import { mapToFoodSuggestion, querySuggestions } from './helpers';
-import { SearchResult } from 'Models';
+import { querySuggestions, tryMapProductServing } from './helpers';
 
 export const initSuggestionsEpic: RootEpic = (action$, state$) =>
     action$.pipe(
@@ -43,19 +43,19 @@ export const apiSearchEpic: RootEpic = (action$, state$, { api }) =>
         filter(isActionOf(actions.setSearchText)),
         debounceTime(500),
         switchMap(({ payload }) => {
-            const result = tryParseServingSize(payload);
-            if (!result.productSearch) return empty();
+            const searchQuery = tryParseServingSize(payload);
+            if (!searchQuery.productSearch) return empty();
 
             return from(
                 api.products.search(
-                    result.productSearch,
-                    result.serving?.filter((x) => x.servingType !== undefined).map((x) => x.servingType!),
+                    searchQuery.productSearch,
+                    searchQuery.serving?.filter((x) => x.servingType !== undefined).map((x) => x.servingType!),
                     state$.value.productSearch.config?.filter,
                 ),
             ).pipe(
                 map((response) =>
                     actions.appendSuggestions(
-                        response.map<SearchResult>((x) => mapToFoodSuggestion(x, result.serving)),
+                        response.map<SearchResult>((x) => tryMapProductServing(x, searchQuery)),
                     ),
                 ),
                 catchError((e) => of(actions.suggestionRequestFailed(toErrorResult(e)))),

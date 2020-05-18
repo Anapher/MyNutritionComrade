@@ -26,3 +26,16 @@ export function formatNumber(num: number, decimals: number = 1): string {
 export function capitalizeFirstLetter(s: string): string {
     return s[0].toUpperCase() + s.slice(1);
 }
+
+export function computeHashCode(s: string): number {
+    var hash = 0;
+    if (s.length == 0) {
+        return hash;
+    }
+    for (var i = 0; i < s.length; i++) {
+        var char = s.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}

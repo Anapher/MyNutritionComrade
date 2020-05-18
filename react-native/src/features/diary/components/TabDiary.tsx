@@ -1,20 +1,17 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { AxiosError } from 'axios';
 import itiriri from 'itiriri';
 import { DateTime } from 'luxon';
-import { ConsumedProduct, ConsumptionTime, ProductInfo } from 'Models';
+import { ConsumedDto, ConsumptionTime, ProductFoodPortionCreationDto, ProductInfo, ProductSuggestion } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Dialog, Divider, Paragraph, Portal } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import { connect } from 'react-redux';
 import AnimatedSectionList from 'src/components/AnimatedSectionList';
-import AsyncDialogButton from 'src/components/AsyncDialogButton';
-import DialogButton from 'src/components/DialogButton';
-import { TagLiquid } from 'src/consts';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as productApi from 'src/services/api/products';
-import selectLabel, { flattenProductsPrioritize } from 'src/utils/product-utils';
+import { createProductPortionFromCreation, getConsumedDtoId } from 'src/utils/different-foods';
+import { flattenProductsPrioritize } from 'src/utils/product-utils';
 import * as actions from '../actions';
 import * as selectors from '../selectors';
 import ConsumedProductItem from './ConsumedProductItem';
@@ -32,7 +29,7 @@ const mapStateToProps = (state: RootState) => ({
 const dispatchProps = {
     loadFrequentlyUsedProducts: actions.loadFrequentlyUsedProducts.request,
     loadDate: actions.setSelectedDate.request,
-    changeProductConsumption: actions.changeProductConsumption.request,
+    changeProductConsumption: actions.patchConsumptions.request,
     loadNutritionGoal: actions.loadNutritionGoal.request,
 };
 
@@ -62,14 +59,14 @@ function TabDiary({
     }, []);
 
     const [unlistedProduct, setUnlistedProduct] = useState<string | undefined>();
-    const [productOptions, setProductOptions] = useState<ConsumedProduct | undefined>();
+    const [productOptions, setProductOptions] = useState<ConsumedDto | undefined>();
 
     const scanBarcode = (time: ConsumptionTime) => {
         navigation.navigate('ScanBarcode', {
             onBarcodeScanned: async ({ data: barcode }, nav) => {
-                let product: ProductInfo | undefined = itiriri(
+                let product: ProductInfo | undefined = (itiriri(
                     flattenProductsPrioritize(frequentlyUsedProducts, time),
-                ).find((x) => x.code === barcode);
+                ).find((x) => x.type === 'product' && x.product.code === barcode) as ProductSuggestion)?.product;
 
                 if (product === undefined) {
                     try {
@@ -82,12 +79,19 @@ function TabDiary({
                 if (product !== undefined) {
                     nav.replace('AddProduct', {
                         product,
-                        onSubmit: (volume) => {
+                        onSubmit: (amount, servingType) => {
+                            const creationDto: ProductFoodPortionCreationDto = {
+                                type: 'product',
+                                amount,
+                                servingType,
+                                productId: product!.id,
+                            };
+
                             changeProductConsumption({
                                 date: selectedDay,
                                 time,
-                                product: product!,
-                                value: volume,
+                                creationDto,
+                                foodPortion: createProductPortionFromCreation(creationDto, product!),
                                 append: true,
                             });
                         },
@@ -101,48 +105,34 @@ function TabDiary({
         });
     };
 
-    const editItem = async (item: ConsumedProduct) => {
-        let product: ProductInfo | undefined = itiriri(
-            flattenProductsPrioritize(frequentlyUsedProducts, item.time),
-        ).find((x) => x.id === item.productId);
+    const editItem = async (item: ConsumedDto) => {
+        switch (item.foodPortion.type) {
+            case 'product':
+                const product = item.foodPortion.product;
+                navigation.navigate('AddProduct', {
+                    product,
+                    volume: item.foodPortion.nutritionalInfo.volume /** submit amount and serving type */,
+                    onSubmit: (amount, servingType) => {
+                        const creationDto: ProductFoodPortionCreationDto = {
+                            type: 'product',
+                            amount,
+                            servingType,
+                            productId: product.id,
+                        };
 
-        if (product === undefined) {
-            try {
-                product = await productApi.getById(item.productId);
-            } catch (error) {
-                const axiosError: AxiosError = error;
-                if (axiosError.response?.status === 404) {
-                    // message that product wasnt found
-                }
-
-                product = {
-                    id: item.productId,
-                    label: item.label,
-                    nutritionalInfo: item.nutritionalInfo,
-                    version: 1,
-                    code: undefined,
-                    tags: item.tags,
-                    defaultServing: item.tags.includes(TagLiquid) ? 'ml' : 'g',
-                    servings: {
-                        [item.tags.includes(TagLiquid) ? 'ml' : 'g']: 1,
+                        changeProductConsumption({
+                            date: selectedDay,
+                            time: item.time,
+                            creationDto,
+                            foodPortion: createProductPortionFromCreation(creationDto, product),
+                            append: false,
+                        });
                     },
-                };
-            }
-        }
-
-        navigation.navigate('AddProduct', {
-            product,
-            volume: item.nutritionalInfo.volume,
-            onSubmit: (volume) => {
-                changeProductConsumption({
-                    date: selectedDay,
-                    time: item.time,
-                    product: product!,
-                    value: volume,
-                    append: false,
                 });
-            },
-        });
+                break;
+            default:
+                break;
+        }
     };
 
     return (
@@ -153,10 +143,10 @@ function TabDiary({
                 duration={300}
                 rowHeight={56}
                 sections={sections}
-                keyExtractor={({ time, productId }) => `${time}/${productId}`}
+                keyExtractor={(x) => getConsumedDtoId(x)}
                 renderItem={({ item }) => (
                     <ConsumedProductItem
-                        product={item}
+                        consumed={item}
                         onPress={() => editItem(item)}
                         onLongPress={() => setProductOptions(item)}
                     />
@@ -171,8 +161,14 @@ function TabDiary({
                         section={section}
                         onAddFood={() =>
                             navigation.navigate('SearchProduct', {
-                                consumptionTime: section.time,
-                                date: selectedDay,
+                                config: { consumptionTime: section.time, date: selectedDay },
+                                onCreated: (creationDto) =>
+                                    changeProductConsumption({
+                                        time: section.time,
+                                        append: true,
+                                        creationDto,
+                                        date: selectedDay,
+                                    }),
                             })
                         }
                         onMoreOptions={() => {}}
@@ -180,7 +176,7 @@ function TabDiary({
                     />
                 )}
             />
-            <Portal>
+            {/* <Portal>
                 <Dialog visible={!!unlistedProduct} onDismiss={() => setUnlistedProduct(undefined)}>
                     <Dialog.Title>Not found</Dialog.Title>
                     <Dialog.Content>
@@ -272,7 +268,7 @@ function TabDiary({
                         </DialogButton>
                     </View>
                 </Dialog>
-            </Portal>
+            </Portal>*/}
         </View>
     );
 }

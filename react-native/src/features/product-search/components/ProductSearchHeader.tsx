@@ -1,13 +1,12 @@
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect } from 'react';
-import { TextInput, ToastAndroid, StyleSheet } from 'react-native';
-import { Theme, withTheme, IconButton, Appbar, useTheme } from 'react-native-paper';
+import { StyleSheet, TextInput, ToastAndroid } from 'react-native';
+import { Appbar, IconButton, useTheme } from 'react-native-paper';
 import { connect } from 'react-redux';
-import * as actions from '../actions';
-import { ConsumptionTime } from 'Models';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from 'src/RootNavigator';
-import { RouteProp } from '@react-navigation/native';
+import * as actions from '../actions';
 
 const mapStateToProps = (state: RootState) => ({
     searchText: state.productSearch.searchText,

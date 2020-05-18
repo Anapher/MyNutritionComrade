@@ -3,7 +3,7 @@ import { StyleSheet, View, SectionListData, StyleProp, ViewStyle } from 'react-n
 import { Subheading, useTheme, Surface, Text } from 'react-native-paper';
 import { roundNumber } from 'src/utils/string-utils';
 import Color from 'color';
-import { ConsumedProduct, ConsumptionTime } from 'Models';
+import { ConsumptionTime, ConsumedDto } from 'Models';
 import { sumNutritions } from 'src/utils/product-utils';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
@@ -14,7 +14,7 @@ const timeTitles: { [time in ConsumptionTime]: string } = {
 };
 
 type Props = {
-    section: SectionListData<ConsumedProduct>;
+    section: SectionListData<ConsumedDto>;
     style?: StyleProp<ViewStyle>;
 };
 
@@ -22,7 +22,9 @@ function ConsumptionTimeHeader({ section: { data, time }, style }: Props) {
     const theme = useTheme();
     const summaryColor = Color(theme.colors.onSurface).alpha(0.5).rgb().string();
 
-    const { energy, fat, carbohydrates, sugars, protein } = sumNutritions(data.map((x) => x.nutritionalInfo));
+    const { energy, fat, carbohydrates, sugars, protein } = sumNutritions(
+        data.map((x) => x.foodPortion.nutritionalInfo),
+    );
 
     return (
         <Surface style={[styles.header, style]}>

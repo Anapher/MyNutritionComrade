@@ -61,7 +61,7 @@ function AddProduct({
                     navigation={navigation}
                     canSubmit={volume > 0}
                     onSubmit={() => {
-                        onSubmit(volume * product.servings[serving]);
+                        onSubmit(volume, serving);
                         navigation.goBack();
                     }}
                 />

@@ -10,27 +10,36 @@ declare module 'Models' {
     export interface ProductSuggestion {
         type: 'product';
         product: ProductInfo;
+
+        frequentlyUsedPortion?: FoodPortionProductDto;
     }
 
-    export interface ServingSuggestion {
+    export interface ServingSuggestion extends ServingSize {
         type: 'serving';
         product: ProductInfo;
 
-        amount: number;
-        servingType: string;
-        convertedFrom?: Conversion;
+        frequentlyUsedPortion?: FoodPortionProductDto;
     }
 
     export interface MealSuggestion {
         type: 'meal';
         name: string;
         mealId: string;
+
+        frequentlyUsedPortion?: FoodPortionMealDto;
     }
 
     export interface GeneratedMealSuggestion {
         type: 'generatedMeal';
         id: string;
         items: FoodPortionDto[];
+    }
+
+    export interface CustomFoodSuggestion {
+        type: 'custom';
+
+        nutritionalInfo: NutritionalInfo;
+        label?: string;
     }
 
     export interface ServingSize {
@@ -57,5 +66,10 @@ declare module 'Models' {
         unit: string;
     }
 
-    export type SearchResult = ServingSuggestion | ProductSuggestion | MealSuggestion | GeneratedMealSuggestion;
+    export type SearchResult =
+        | ServingSuggestion
+        | ProductSuggestion
+        | MealSuggestion
+        | GeneratedMealSuggestion
+        | CustomFoodSuggestion;
 }

@@ -1,8 +1,8 @@
 import cuid from 'cuid';
-import { FrequentlyUsedProducts, ProductConsumptionDates, ComputedNutritionGoals } from 'Models';
+import { ComputedNutritionGoals, FrequentlyUsedProducts, ProductConsumptionDates } from 'Models';
 import { RequestErrorResponse } from 'src/utils/error-result';
 import { createAction, createAsyncAction } from 'typesafe-actions';
-import { ConsumeProductData } from './reducer';
+import { ConsumptionAction } from './reducer';
 
 export const loadFrequentlyUsedProducts = createAsyncAction(
     'DIARY/LOAD_FREQUENTLYUSEDPRODUCTS_REQUEST',
@@ -16,15 +16,18 @@ export const setSelectedDate = createAsyncAction(
     'DIARY/SET_SELECTED_DATE_FAILURE',
 )<string, { date: string; data: ProductConsumptionDates }, RequestErrorResponse>();
 
-export const changeProductConsumption = {
+export const patchConsumptions = {
     request: createAction(
-        'DIARY/CHANGE_PRODUCT_CONSUMPTION_REQUEST',
-        (payload: Omit<ConsumeProductData, 'requestId'>) => ({ ...payload, requestId: cuid() }),
+        'DIARY/PATCH_CONSUMPTION_REQUEST',
+        (payload: Omit<ConsumptionAction, 'requestId'>) =>
+            ({
+                ...payload,
+                requestId: cuid(),
+            } as ConsumptionAction),
     )(),
-    success: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_SUCCESS')<ConsumeProductData>(),
-    failure: createAction('DIARY/CHANGE_PRODUCT_CONSUMPTION_FAILURE')<RequestErrorResponse & { requestId: string }>(),
+    success: createAction('DIARY/PATCH_CONSUMPTION_SUCCESS')<ConsumptionAction>(),
+    failure: createAction('DIARY/PATCH_CONSUMPTION_FAILURE')<RequestErrorResponse & { requestId: string }>(),
 };
-
 export const loadNutritionGoal = createAsyncAction(
     'DIARY/LOAD_NUTRITION_GOAL_REQUEST',
     'DIARY/LOAD_NUTRITION_GOAL_SUCCESS',

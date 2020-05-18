@@ -1,30 +1,44 @@
 import { DateTime } from 'luxon';
 import {
-    ConsumedProduct,
+    ComputedNutritionGoals,
+    ConsumedDto,
     ConsumptionTime,
+    FoodPortionCreationDto,
     FrequentlyUsedProducts,
     ProductConsumptionDates,
-    ProductEssentialsWithId,
-    ComputedNutritionGoals,
+    FoodPortionDto,
 } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
 import { getRequiredDates, patchConsumedProducts } from './utils';
 
-export type ConsumeProductData = {
+export type CreateConsumptionRequest = {
     date: string;
     time: ConsumptionTime;
-    product: ProductEssentialsWithId;
-    value: number;
+    creationDto: FoodPortionCreationDto;
+
+    foodPortion?: FoodPortionDto;
 
     requestId: string;
     append: boolean;
 };
 
+export type DeleteConsumptionRequest = {
+    date: string;
+    time: ConsumptionTime;
+
+    delete: true;
+
+    foodPortionId: string;
+    requestId: string;
+};
+
+export type ConsumptionAction = CreateConsumptionRequest | DeleteConsumptionRequest;
+
 export type DiaryConsumedDate = {
     date: string;
-    products: ConsumedProduct[];
+    products: ConsumedDto[];
 };
 
 export type DiaryState = Readonly<{
@@ -35,7 +49,7 @@ export type DiaryState = Readonly<{
     loadedDays: ProductConsumptionDates;
 
     /** pending products for which the server hasn't respond yet */
-    pendingConsumedProducts: ConsumeProductData[];
+    pendingActions: ConsumptionAction[];
 
     /** frequently used products received once at the start */
     frequentlyUsedProducts: FrequentlyUsedProducts;
@@ -47,7 +61,7 @@ export type DiaryState = Readonly<{
 export const initialState: DiaryState = {
     selectedDate: '',
     loadedDays: {},
-    pendingConsumedProducts: [],
+    pendingActions: [],
     frequentlyUsedProducts: { breakfast: [], lunch: [], dinner: [], snack: [] },
     nutritionGoal: null,
     nutritionGoalTimestamp: null,
@@ -62,6 +76,7 @@ export default function (state: DiaryState = initialState, action: RootAction): 
         case getType(actions.setSelectedDate.success):
             if (state.selectedDate !== action.payload.date) return state;
 
+            // TODO: Handle delete rquest
             const requiredDays = getRequiredDates(
                 DateTime.local(),
                 DateTime.fromISO(state.selectedDate),
@@ -78,13 +93,13 @@ export default function (state: DiaryState = initialState, action: RootAction): 
                         .map((x) => [x, merged[x]]),
                 ),
             };
-        case getType(actions.changeProductConsumption.request):
+        case getType(actions.patchConsumptions.request):
             return {
                 ...state,
-                pendingConsumedProducts: [...state.pendingConsumedProducts, action.payload],
+                pendingActions: [...state.pendingActions, action.payload],
             };
-        case getType(actions.changeProductConsumption.success):
-            const pending = state.pendingConsumedProducts.find((x) => x.requestId === action.payload.requestId);
+        case getType(actions.patchConsumptions.success):
+            const pending = state.pendingActions.find((x) => x.requestId === action.payload.requestId);
             if (!pending) return state;
 
             const date = DateTime.fromISO(action.payload.date).toISODate();
@@ -99,16 +114,13 @@ export default function (state: DiaryState = initialState, action: RootAction): 
                         x === date ? patchConsumedProducts(consumedProducts, action.payload) : state.loadedDays[x],
                     ]),
                 ),
-                pendingConsumedProducts: state.pendingConsumedProducts.filter(
-                    (x) => x.requestId !== action.payload.requestId,
-                ),
+                pendingActions: state.pendingActions.filter((x) => x.requestId !== action.payload.requestId),
             };
-        case getType(actions.changeProductConsumption.failure):
+
+        case getType(actions.patchConsumptions.failure):
             return {
                 ...state,
-                pendingConsumedProducts: state.pendingConsumedProducts.filter(
-                    (x) => x.requestId === action.payload.requestId,
-                ),
+                pendingActions: state.pendingActions.filter((x) => x.requestId === action.payload.requestId),
             };
         case getType(actions.loadNutritionGoal.success):
             return { ...state, nutritionGoal: action.payload, nutritionGoalTimestamp: DateTime.local().toISO() };
