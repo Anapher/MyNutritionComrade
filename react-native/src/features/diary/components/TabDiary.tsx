@@ -11,13 +11,20 @@ import AnimatedSectionList from 'src/components/AnimatedSectionList';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as productApi from 'src/services/api/products';
 import { createProductPortionFromCreation, getConsumedDtoId } from 'src/utils/different-foods';
-import { flattenProductsPrioritize } from 'src/utils/product-utils';
 import * as actions from '../actions';
 import * as selectors from '../selectors';
-import ConsumedProductItem from './ConsumedProductItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
-import ConsumptionTimeHeader from './ConsumptionTimeHeader';
 import DiaryHeader from './DiaryHeader';
+import { flattenProductsPrioritize } from 'src/utils/food-flattening';
+import FoodPortionView from 'src/componants-domain/FoodPortionView';
+import FoodPortionHeader from 'src/componants-domain/FoodPortionHeader';
+
+const timeTitles: { [time in ConsumptionTime]: string } = {
+    breakfast: 'Breakfast',
+    lunch: 'Lunch',
+    dinner: 'Dinner',
+    snack: 'Snack',
+};
 
 const mapStateToProps = (state: RootState) => ({
     sections: selectors.getConsumedProductsSections(state),
@@ -29,7 +36,7 @@ const mapStateToProps = (state: RootState) => ({
 const dispatchProps = {
     loadFrequentlyUsedProducts: actions.loadFrequentlyUsedProducts.request,
     loadDate: actions.setSelectedDate.request,
-    changeProductConsumption: actions.patchConsumptions.request,
+    patchConsumptions: actions.patchConsumptions.request,
     loadNutritionGoal: actions.loadNutritionGoal.request,
 };
 
@@ -45,7 +52,7 @@ function TabDiary({
     sections,
     selectedDay,
     frequentlyUsedProducts,
-    changeProductConsumption,
+    patchConsumptions,
     nutritionGoal,
     loadNutritionGoal,
 }: Props) {
@@ -56,6 +63,8 @@ function TabDiary({
         if (nutritionGoal == null) {
             loadNutritionGoal();
         }
+
+        patchConsumptions({ delete: true, time: 'breakfast', date: 'asd', foodPortionId: 'asd' });
     }, []);
 
     const [unlistedProduct, setUnlistedProduct] = useState<string | undefined>();
@@ -87,7 +96,7 @@ function TabDiary({
                                 productId: product!.id,
                             };
 
-                            changeProductConsumption({
+                            patchConsumptions({
                                 date: selectedDay,
                                 time,
                                 creationDto,
@@ -120,7 +129,7 @@ function TabDiary({
                             productId: product.id,
                         };
 
-                        changeProductConsumption({
+                        patchConsumptions({
                             date: selectedDay,
                             time: item.time,
                             creationDto,
@@ -145,16 +154,23 @@ function TabDiary({
                 sections={sections}
                 keyExtractor={(x) => getConsumedDtoId(x)}
                 renderItem={({ item }) => (
-                    <ConsumedProductItem
-                        consumed={item}
+                    <FoodPortionView
+                        foodPortion={item.foodPortion}
                         onPress={() => editItem(item)}
                         onLongPress={() => setProductOptions(item)}
                     />
                 )}
                 ItemSeparatorComponent={() => <Divider />}
-                renderSectionHeader={({ section: { key } }) => (
-                    <ConsumptionTimeHeader section={sections.find((x) => x.key === key)!} style={{ marginTop: 8 }} />
-                )}
+                renderSectionHeader={({ section: { key } }) => {
+                    const section = sections.find((x) => x.key === key)!;
+                    return (
+                        <FoodPortionHeader
+                            foodPortions={section.data.map((x) => x.foodPortion)}
+                            header={(timeTitles as any)[section.time]}
+                            style={{ marginTop: 8 }}
+                        />
+                    );
+                }}
                 renderSectionFooter={({ section }) => (
                     <ConsumptionTimeFooter
                         style={{ marginBottom: 8 }}
@@ -162,11 +178,12 @@ function TabDiary({
                         onAddFood={() =>
                             navigation.navigate('SearchProduct', {
                                 config: { consumptionTime: section.time, date: selectedDay },
-                                onCreated: (creationDto) =>
-                                    changeProductConsumption({
+                                onCreated: (creationDto, foodPortion) =>
+                                    patchConsumptions({
                                         time: section.time,
                                         append: true,
                                         creationDto,
+                                        foodPortion,
                                         date: selectedDay,
                                     }),
                             })
@@ -254,7 +271,7 @@ function TabDiary({
                         <DialogButton
                             color="#e74c3c"
                             onPress={() => {
-                                changeProductConsumption({
+                                patchConsumptions({
                                     append: false,
                                     date: selectedDay,
                                     product: { ...productOptions!, id: productOptions!.productId },

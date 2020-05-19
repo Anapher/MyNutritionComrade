@@ -2,7 +2,7 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect } from 'react';
-import { StyleSheet, TextInput, ToastAndroid } from 'react-native';
+import { StyleSheet, TextInput, ToastAndroid, Keyboard } from 'react-native';
 import { Appbar, IconButton, useTheme } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { RootStackParamList } from 'src/RootNavigator';
@@ -59,13 +59,18 @@ function ProductSearchHeader({
                 onChangeText={(s) => setSearchText(s)}
                 autoFocus
             />
-            <IconButton
-                icon="silverware-fork-knife"
-                size={16}
-                style={styles.mealIconButton}
-                onPress={() => navigation.navigate('Meals')}
-                onLongPress={getToastCallback('Meals')}
-            />
+            {!config.disableMealCreation && (
+                <IconButton
+                    icon="silverware-fork-knife"
+                    size={16}
+                    style={styles.mealIconButton}
+                    onPress={() => {
+                        Keyboard.dismiss();
+                        navigation.navigate('Meals');
+                    }}
+                    onLongPress={getToastCallback('Meals')}
+                />
+            )}
             <IconButton
                 icon="plus"
                 style={styles.plusIconButton}

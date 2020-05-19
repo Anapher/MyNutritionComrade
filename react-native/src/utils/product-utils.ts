@@ -1,14 +1,6 @@
 import _ from 'lodash';
-import {
-    ConsumptionTime,
-    FrequentlyUsedProducts,
-    NutritionalInfo,
-    ProductEssentials,
-    ProductLabel,
-    SearchResult,
-} from 'Models';
-import { ConsumptionTimes, TagLiquid } from 'src/consts';
-import { mapFoodPortionDtoToSearchResult } from './different-foods';
+import { NutritionalInfo, ProductEssentials, ProductLabel } from 'Models';
+import { TagLiquid } from 'src/consts';
 import { computeHashCode } from './string-utils';
 
 /**
@@ -56,34 +48,6 @@ export function sumNutritions(nutritions: NutritionalInfo[]): NutritionalInfo {
 export function computeNutritionHash(nutritionalInfo: NutritionalInfo): string {
     const normalized = nutritionalInfo.volume === 100 ? nutritionalInfo : changeVolume(nutritionalInfo, 100);
     return computeHashCode(JSON.stringify(normalized)).toString();
-}
-
-/**
- * Flatten {@see FrequentlyUsedProducts} by first returning all products of the priorizedTime
- * and then returning the first products of the other times until all products are returned
- * @param frequentlyUsedProducts the frequently used products
- * @param priorizedTime the prioritized time
- */
-export function* flattenProductsPrioritize(
-    frequentlyUsedProducts: FrequentlyUsedProducts,
-    priorizedTime?: ConsumptionTime,
-): Generator<SearchResult, void, never> {
-    if (priorizedTime !== undefined) {
-        yield* frequentlyUsedProducts[priorizedTime]?.map(mapFoodPortionDtoToSearchResult);
-    }
-
-    const lists = ConsumptionTimes.filter((x) => x !== priorizedTime).map((x) => ({
-        list: frequentlyUsedProducts[x] || [],
-        i: 0,
-    }));
-
-    while (_.some(lists, (x) => x.i !== x.list.length)) {
-        for (const o of lists) {
-            if (o.i !== o.list.length) {
-                yield mapFoodPortionDtoToSearchResult(o.list[o.i++]);
-            }
-        }
-    }
 }
 
 /**

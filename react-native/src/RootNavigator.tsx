@@ -1,9 +1,9 @@
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import {
-    CreateMealDto,
     FoodPortionCreationDto,
     FoodPortionDto,
+    MealCreationForm,
     PatchOperation,
     ProductContributionDto,
     ProductContributionStatus,
@@ -61,7 +61,7 @@ export type RootStackParamList = {
     };
     ProductOverview: { product: ProductInfo };
     Settings: {};
-    AddOrUpdateMeal: { initialValue?: Partial<CreateMealDto> };
+    AddOrUpdateMeal: { initialValue?: Partial<MealCreationForm> };
     Meals: {};
 };
 

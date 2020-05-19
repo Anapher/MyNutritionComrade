@@ -53,6 +53,7 @@ function ProductSearchScreen({
                             servingType,
                             productId: item.product.id,
                         };
+
                         onCreated(creationDto, createProductPortionFromCreation(creationDto, item.product));
                         navigation.goBack();
                     },

@@ -6,6 +6,8 @@ export function createConsumption(
     type: ConsumptionTime,
     foodPortion: FoodPortionCreationDto,
 ): Promise<ConsumedDto> {
+    console.log('put');
+
     return Axios.put(`/api/v1/consumption/${date}/${type}`, foodPortion);
 }
 

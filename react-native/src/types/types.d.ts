@@ -1,3 +1,3 @@
 declare module 'Models' {
-    export type FrequentlyUsedProducts = { [time in ConsumptionTime]: ?FoodPortionDto[] };
+    export type FrequentlyConsumed = { [time in ConsumptionTime]: ?FoodPortionDto[] };
 }

@@ -13,6 +13,7 @@ namespace MyNutritionComrade.Core.Domain.Entities.Consumption
         public string SuggestionId { get; set; }
         public List<FoodPortion> Items { get; set; }
 
+        public override FoodPortionType Type { get; } = FoodPortionType.Suggestion;
         public override string GetId() => SuggestionId;
     }
 }

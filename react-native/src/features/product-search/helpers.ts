@@ -3,25 +3,24 @@ import _ from 'lodash';
 import { DateTime } from 'luxon';
 import {
     ConsumptionTime,
-    FrequentlyUsedProducts,
+    FrequentlyConsumed,
     GeneratedMealSuggestion,
     ProductConsumptionDates,
     ProductSearchConfig,
     SearchResult,
-    ServingSize,
 } from 'Models';
 import { ConsumptionTimes } from 'src/consts';
+import { getSearchResultKey, matchSearchResult } from 'src/utils/different-foods';
+import { getMatchingServing } from 'src/utils/food-utils';
 import { ProductSearchQuery, tryParseServingSize } from 'src/utils/input-parser';
-import { flattenProductsPrioritize } from 'src/utils/product-utils';
-import { capitalizeFirstLetter } from 'src/utils/string-utils';
-import { matchSearchResult, getSearchResultKey } from 'src/utils/different-foods';
+import { flattenProductsPrioritize } from 'src/utils/food-flattening';
 
 const maxSearchResults: number = 10;
 
 export function querySuggestions(
     input: string,
     config: ProductSearchConfig,
-    frequentlyUsedProducts: FrequentlyUsedProducts,
+    frequentlyUsedProducts: FrequentlyConsumed,
     history: ProductConsumptionDates,
 ): SearchResult[] {
     const frequentlyUsedSearchResults = flattenProductsPrioritize(frequentlyUsedProducts, config?.consumptionTime);
@@ -92,26 +91,6 @@ export function tryMapProductServing(searchResult: SearchResult, searchQuery: Pr
     return searchResult;
 }
 
-export function getMatchingServing(
-    matchedServings: Partial<ServingSize>[],
-    productServings: { [key: string]: number },
-): Partial<ServingSize> | undefined {
-    return itiriri(_.sortBy(matchedServings, (x) => x.servingType !== undefined)) // sort by unit, so the servings with unit are at the top
-        .filter((x) => (x.servingType ? productServings[x.servingType] !== undefined : true))
-        .first();
-}
-
 export function compareSearchResults(s1: SearchResult, s2: SearchResult): boolean {
     return getSearchResultKey(s1) === getSearchResultKey(s2);
-}
-
-export function getGeneratedMealName(generatedMeal: GeneratedMealSuggestion): string {
-    const splitter = generatedMeal.id.split('/');
-    const time: ConsumptionTime = splitter[1] as any;
-    const day = splitter[0];
-    const yesterday = day === DateTime.local().minus({ days: 1 }).toISODate();
-
-    return yesterday
-        ? `Yesterdays ${capitalizeFirstLetter(time)}`
-        : `${capitalizeFirstLetter(time)} from ${DateTime.fromISO(day).toLocaleString(DateTime.DATE_HUGE)}`;
 }

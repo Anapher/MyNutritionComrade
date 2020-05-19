@@ -1,28 +1,22 @@
-import { ProductConsumptionDates } from 'Models';
 import { AxiosError } from 'axios';
 import { DateTime } from 'luxon';
-import { RootEpic, Services, RootState } from 'MyNutritionComrade';
+import { ProductConsumptionDates } from 'Models';
+import { RootEpic, RootState, Services } from 'MyNutritionComrade';
 import { from, of } from 'rxjs';
 import { catchError, filter, map, switchMap } from 'rxjs/operators';
+import { addCreationDtoToFoodPortion, getCreationDtoId, getFoodPortionId } from 'src/utils/different-foods';
 import toErrorResult, { RequestErrorResponse } from 'src/utils/error-result';
 import { isActionOf } from 'typesafe-actions';
-import * as actions from './actions';
-import { getRequiredDates, groupDatesInChunks } from './utils';
-import _ from 'lodash';
-import * as settingsActions from '../settings/actions';
 import * as logWeightActions from '../log-weight/actions';
-import {
-    getConsumedDtoId,
-    getFoodPortionId,
-    getCreationDtoId,
-    addCreationDtoToFoodPortion,
-} from 'src/utils/different-foods';
+import * as settingsActions from '../settings/actions';
+import * as actions from './actions';
+import { getRequiredDates, groupDatesInChunks, isDeleteRequest } from './utils';
 
-export const loadFrequentProductsEpic: RootEpic = (action$, _, { api }) =>
+export const loadFrequentlyConsumedEpic: RootEpic = (action$, _, { api }) =>
     action$.pipe(
         filter(isActionOf(actions.loadFrequentlyUsedProducts.request)),
         switchMap(() =>
-            from(api.userService.loadFrequentlyUsedProducts()).pipe(
+            from(api.userService.loadFrequentlyConsumed()).pipe(
                 map((response) => actions.loadFrequentlyUsedProducts.success(response)),
                 catchError((error: AxiosError) => of(actions.loadFrequentlyUsedProducts.failure(toErrorResult(error)))),
             ),
@@ -81,33 +75,47 @@ async function loadDates({ api }: Services, missingDates: string[]): Promise<Pro
     return data.reduce((previous, val) => ({ ...previous, ...val }));
 }
 
-export const createConsumptionEpic: RootEpic = (action$, state$, { api }) =>
+export const handleConsumptionAction: RootEpic = (action$, state$, { api }) =>
     action$.pipe(
         filter(isActionOf(actions.patchConsumptions.request)),
         switchMap(({ payload }) => {
-            let creationDto = payload.creationDto;
-
-            if (payload.append) {
-                const consumedProducts = state$.value.diary.loadedDays[payload.date];
-                const existingFoodPortion = consumedProducts.find(
-                    (x) => getFoodPortionId(x.foodPortion) === getCreationDtoId(payload.creationDto),
-                );
-                if (existingFoodPortion !== undefined) {
-                    creationDto = addCreationDtoToFoodPortion(creationDto, existingFoodPortion.foodPortion);
-                }
-            }
-
-            return from(api.consumption.createConsumption(payload.date, payload.time, creationDto)).pipe(
-                map(() => actions.patchConsumptions.success(payload)),
-                catchError((error: AxiosError) =>
-                    of(
-                        actions.patchConsumptions.failure({
-                            ...toErrorResult(error),
-                            requestId: payload.requestId,
-                        }),
+            if (isDeleteRequest(payload)) {
+                return from(api.consumption.deleteConsumption(payload.date, payload.time, payload.foodPortionId)).pipe(
+                    map(() => actions.patchConsumptions.success(payload)),
+                    catchError((error: AxiosError) =>
+                        of(
+                            actions.patchConsumptions.failure({
+                                ...toErrorResult(error),
+                                requestId: payload.requestId,
+                            }),
+                        ),
                     ),
-                ),
-            );
+                );
+            } else {
+                let creationDto = payload.creationDto;
+
+                if (payload.append) {
+                    const consumedProducts = state$.value.diary.loadedDays[payload.date];
+                    const existingFoodPortion = consumedProducts.find(
+                        (x) => getFoodPortionId(x.foodPortion) === getCreationDtoId(payload.creationDto),
+                    );
+                    if (existingFoodPortion !== undefined) {
+                        creationDto = addCreationDtoToFoodPortion(creationDto, existingFoodPortion.foodPortion);
+                    }
+                }
+
+                return from(api.consumption.createConsumption(payload.date, payload.time, creationDto)).pipe(
+                    map(() => actions.patchConsumptions.success(payload)),
+                    catchError((error: AxiosError) =>
+                        of(
+                            actions.patchConsumptions.failure({
+                                ...toErrorResult(error),
+                                requestId: payload.requestId,
+                            }),
+                        ),
+                    ),
+                );
+            }
         }),
     );
 

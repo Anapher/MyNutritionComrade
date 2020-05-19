@@ -23,7 +23,7 @@ namespace MyNutritionComrade.Controllers
     {
         [HttpPut("{date}/{type}")]
         public async Task<ActionResult<ConsumedDto>> CreateConsumption(string date, string type, [FromBody] FoodPortionCreationDto value,
-            [FromServices] ICreateConsumption useCase, [FromServices] IConsumedDtoSelector selector)
+            [FromServices] ICreateConsumptionUseCase useCase, [FromServices] IConsumedDtoSelector selector)
         {
             if (!DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
                 return BadRequest("The url parameter must be a valid date time.");

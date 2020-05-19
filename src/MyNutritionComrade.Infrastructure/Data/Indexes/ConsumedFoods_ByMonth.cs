@@ -14,25 +14,27 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
             Map = allConsumed => allConsumed.Select(consumed => new
             {
                 consumed.UserId,
-                Id = consumed.FoodPortionId,
+                consumed.FoodPortionId,
                 Date = new DateTime(consumed.Date.Year, consumed.Date.Month, 1),
                 consumed.Time,
-                Count = 1
+                Count = 1,
+                RecentId = consumed.Id
             });
 
             Reduce = results => results.GroupBy(x => new
             {
                 x.UserId,
-                Id = x.FoodPortionId,
+                x.FoodPortionId,
                 x.Date,
-                x.Time
+                x.Time,
             }).Select(g => new
             {
                 g.Key.UserId,
-                g.Key.Id,
+                g.Key.FoodPortionId,
                 g.Key.Date,
                 g.Key.Time,
-                Count = g.Sum(x => x.Count)
+                Count = g.Sum(x => x.Count),
+                RecentId = g.Max(x => x.RecentId)
             });
         }
 
@@ -40,6 +42,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
         {
             public string UserId { get; set; }
             public string FoodPortionId { get; set; }
+            public string RecentId { get; set; }
 
             public DateTime Date { get; set; }
 

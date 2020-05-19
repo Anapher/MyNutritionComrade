@@ -5,6 +5,7 @@ declare module 'Models' {
         consumptionTime?: ConsumptionTime;
         date?: string;
         filter?: SuggestionType[];
+        disableMealCreation?: boolean;
     }
 
     export interface ProductSuggestion {

@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import selectLabel from 'src/utils/product-utils';
-import { getGeneratedMealName } from '../helpers';
+import { getGeneratedMealName } from 'src/utils/food-utils';
 
 type Props = {
     item: SearchResult;

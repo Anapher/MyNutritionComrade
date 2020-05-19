@@ -41,6 +41,8 @@ namespace MyNutritionComrade.Infrastructure.Converter
             foreach (var prop in type.GetProperties())
                 if (prop.CanRead)
                 {
+                    if (prop.Name.Equals(TypePropertyName, StringComparison.OrdinalIgnoreCase)) continue;
+
                     var propVal = prop.GetValue(value, null);
                     if (propVal != null) jo.Add(prop.Name.ToCamelCase(), JToken.FromObject(propVal, serializer));
                 }
@@ -55,9 +57,9 @@ namespace MyNutritionComrade.Infrastructure.Converter
             if (obj.IsNullOrEmpty())
                 return null;
 
-            var typeToken = obj[TypePropertyName];
+            var typeToken = obj.GetValue(TypePropertyName, StringComparison.OrdinalIgnoreCase);
 
-            if (typeToken == null || !_typeLookup.TryGetValue(Enum.Parse<TEnum>(typeToken.Value<string>()), out var type))
+            if (typeToken == null || !_typeLookup.TryGetValue(Enum.Parse<TEnum>(typeToken.Value<string>(), true), out var type))
                 throw new ArgumentException($"The type {typeToken?.Value<string>()} is not supported.");
 
             return (TType?) obj.ToObject(type);

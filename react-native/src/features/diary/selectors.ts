@@ -16,24 +16,24 @@ export const getConsumedProducts = createSelector(
         if (!consumedProducts) return [];
 
         let result = consumedProducts.filter((x) => x.date === currentDate);
-        let pending = pendingProducts.filter((x) => x.date === currentDate);
+        // let pending = pendingProducts.filter((x) => x.date === currentDate);
 
-        while (pending.length > 0) {
-            const item = pending[pending.length - 1];
+        // while (pending.length > 0) {
+        //     const item = pending[pending.length - 1];
 
-            // remove all with same product id, only the most recent (last) item should have an effect
-            pending = pending.filter((x) => {
-                if (x.date !== item.date || x.time !== item.time) return false;
+        //     // remove all with same product id, only the most recent (last) item should have an effect
+        //     pending = pending.filter((x) => {
+        //         if (x.date !== item.date || x.time !== item.time) return false;
 
-                if (isDeleteRequest(x) && isDeleteRequest(item)) return x.foodPortionId === item.foodPortionId;
+        //         if (isDeleteRequest(x) && isDeleteRequest(item)) return x.foodPortionId === item.foodPortionId;
 
-                if (!isDeleteRequest(x) && !isDeleteRequest(item))
-                    return getCreationDtoId(x.creationDto) === getCreationDtoId(item.creationDto);
+        //         if (!isDeleteRequest(x) && !isDeleteRequest(item))
+        //             return getCreationDtoId(x.creationDto) === getCreationDtoId(item.creationDto);
 
-                return false;
-            });
-            result = patchConsumedProducts(result, item);
-        }
+        //         return false;
+        //     });
+        //     result = patchConsumedProducts(result, item);
+        // }
 
         return result;
     },

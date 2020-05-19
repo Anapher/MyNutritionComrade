@@ -23,7 +23,7 @@ namespace MyNutritionComrade.Core.Services.FoodPortionHandler
         }
 
         public Error? Error { get; }
-        public bool Succeeded => Error != null;
+        public bool Succeeded => Error == null;
 
         public T? Response { get; }
     }

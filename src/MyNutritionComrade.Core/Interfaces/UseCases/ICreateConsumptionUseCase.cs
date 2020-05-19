@@ -3,7 +3,7 @@ using MyNutritionComrade.Core.Dto.UseCaseResponses;
 
 namespace MyNutritionComrade.Core.Interfaces.UseCases
 {
-    public interface ICreateConsumption : IUseCaseRequestHandler<CreateConsumptionRequest, CreateConsumptionResponse>
+    public interface ICreateConsumptionUseCase : IUseCaseRequestHandler<CreateConsumptionRequest, CreateConsumptionResponse>
     {
     }
 }

@@ -4,7 +4,7 @@ import {
     ConsumedDto,
     ConsumptionTime,
     FoodPortionCreationDto,
-    FrequentlyUsedProducts,
+    FrequentlyConsumed,
     ProductConsumptionDates,
     FoodPortionDto,
 } from 'Models';
@@ -52,7 +52,7 @@ export type DiaryState = Readonly<{
     pendingActions: ConsumptionAction[];
 
     /** frequently used products received once at the start */
-    frequentlyUsedProducts: FrequentlyUsedProducts;
+    frequentlyUsedProducts: FrequentlyConsumed;
 
     nutritionGoal: ComputedNutritionGoals | null;
     nutritionGoalTimestamp: string | null;
@@ -76,7 +76,6 @@ export default function (state: DiaryState = initialState, action: RootAction): 
         case getType(actions.setSelectedDate.success):
             if (state.selectedDate !== action.payload.date) return state;
 
-            // TODO: Handle delete rquest
             const requiredDays = getRequiredDates(
                 DateTime.local(),
                 DateTime.fromISO(state.selectedDate),
@@ -94,10 +93,7 @@ export default function (state: DiaryState = initialState, action: RootAction): 
                 ),
             };
         case getType(actions.patchConsumptions.request):
-            return {
-                ...state,
-                pendingActions: [...state.pendingActions, action.payload],
-            };
+            return { ...state, pendingActions: [...state.pendingActions, action.payload] };
         case getType(actions.patchConsumptions.success):
             const pending = state.pendingActions.find((x) => x.requestId === action.payload.requestId);
             if (!pending) return state;

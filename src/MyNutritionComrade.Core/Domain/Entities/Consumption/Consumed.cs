@@ -16,6 +16,8 @@ namespace MyNutritionComrade.Core.Domain.Entities.Consumption
             FoodPortionId = foodPortion.GetId();
         }
 
+        public string Id => $"{UserId}/{Date:yyyy-MM-dd}/{(int) Time}/{FoodPortion.Type.ToString().ToLower()}@{FoodPortionId}";
+
         public string UserId { get; private set; }
 
         public DateTime Date { get; private set; }

@@ -1,5 +1,5 @@
 import Color from 'color';
-import { ConsumedDto, NutritionalInfo } from 'Models';
+import { NutritionalInfo, FoodPortionDto } from 'Models';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Surface, TouchableRipple, useTheme } from 'react-native-paper';
@@ -9,29 +9,29 @@ import { roundNumber } from 'src/utils/string-utils';
 type Props = {
     onPress?: () => void;
     onLongPress?: () => void;
-    consumed: ConsumedDto;
+    foodPortion: FoodPortionDto;
 };
 
-function ConsumedProductItem({ onPress, onLongPress, consumed }: Props) {
-    if (consumed.foodPortion.type === 'product') {
+function FoodPortionView({ onPress, onLongPress, foodPortion }: Props) {
+    if (foodPortion.type === 'product') {
         return (
             <FoodPortionItem
                 onPress={onPress}
                 onLongPress={onLongPress}
-                label={selectLabel(consumed.foodPortion.product.label)}
-                nutritionalInfo={consumed.foodPortion.nutritionalInfo}
-                isLiquid={isProductLiquid(consumed.foodPortion.product)}
+                label={selectLabel(foodPortion.product.label)}
+                nutritionalInfo={foodPortion.nutritionalInfo}
+                isLiquid={isProductLiquid(foodPortion.product)}
             />
         );
     }
 
-    if (consumed.foodPortion.type === 'custom') {
+    if (foodPortion.type === 'custom') {
         return (
             <FoodPortionItem
                 onPress={onPress}
                 onLongPress={onLongPress}
-                label={consumed.foodPortion.label || 'Manual food'}
-                nutritionalInfo={consumed.foodPortion.nutritionalInfo}
+                label={foodPortion.label || 'Manual food'}
+                nutritionalInfo={foodPortion.nutritionalInfo}
                 isLiquid={false}
             />
         );
@@ -131,4 +131,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ConsumedProductItem;
+export default FoodPortionView;

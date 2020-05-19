@@ -8,6 +8,7 @@
         }
 
         public NutritionalInfo NutritionalInfo { get; set; }
+        public abstract FoodPortionType Type { get; }
 
         public abstract string GetId();
     }

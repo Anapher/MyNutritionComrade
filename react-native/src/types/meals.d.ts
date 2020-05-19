@@ -1,21 +1,20 @@
 declare module 'Models' {
     export interface CreateMealDto {
         name: string;
-        products: CreateMealProductDto[];
+        items: FoodPortionCreationDto[];
     }
 
-    export interface CreateMealProductDto {
-        productId: string;
-        amount: number;
-        servingType: string;
+    export interface MealCreationForm {
+        name: string;
+        items: FoodPortionDto[];
     }
 
-    export interface Meal {
+    export interface Meal extends MealCreationForm {
         id: string;
         name: string;
         createdOn: string;
         nutritionInfo: NutritionalInfo;
 
-        consuambles: Consumable[];
+        items: FoodPortionItemDto[];
     }
 }

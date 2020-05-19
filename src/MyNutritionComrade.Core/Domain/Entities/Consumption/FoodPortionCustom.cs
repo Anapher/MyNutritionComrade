@@ -10,6 +10,7 @@ namespace MyNutritionComrade.Core.Domain.Entities.Consumption
         }
 
         public string? Label { get; private set; }
+        public override FoodPortionType Type { get; } = FoodPortionType.Custom;
         public override string GetId() => NutritionalInfo.Hash();
     }
 }

@@ -23,6 +23,7 @@ namespace MyNutritionComrade.Core.Domain.Entities.Consumption
         /// </summary>
         public List<FoodPortionItem> Items { get; private set; }
 
+        public override FoodPortionType Type { get; } = FoodPortionType.Meal;
         public override string GetId() => MealId;
     }
 }

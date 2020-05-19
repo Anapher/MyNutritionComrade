@@ -11,7 +11,7 @@ using MyNutritionComrade.Core.Utilities;
 
 namespace MyNutritionComrade.Core.UseCases
 {
-    public class CreateConsumptionUseCase : UseCaseStatus<CreateConsumptionResponse>, ICreateConsumption
+    public class CreateConsumptionUseCase : UseCaseStatus<CreateConsumptionResponse>, ICreateConsumptionUseCase
     {
         private readonly IUserRepository _userRepository;
         private readonly IConsumedProductRepository _repository;

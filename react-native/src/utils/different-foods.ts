@@ -5,9 +5,10 @@ import {
     SearchResult,
     ProductFoodPortionCreationDto,
     ProductInfo,
-    CustomFoodPortionCreationDto,
+    MealFoodPortionCreationDto,
+    Meal,
 } from 'Models';
-import { getGeneratedMealName, getMatchingServing } from 'src/features/product-search/helpers';
+import { getGeneratedMealName, getMatchingServing } from './food-utils';
 import { ProductSearchQuery } from './input-parser';
 import selectLabel, { computeNutritionHash, sumNutritions, changeVolume } from './product-utils';
 
@@ -74,6 +75,17 @@ export function createProductPortionFromCreation(
     };
 }
 
+export function createMealPortionFromCreation(creationDto: MealFoodPortionCreationDto, meal: Meal): FoodPortionDto {
+    return {
+        type: 'meal',
+        portion: creationDto.portion,
+        mealId: creationDto.mealId,
+        mealName: meal.name,
+        items: meal.items,
+        nutritionalInfo: changeVolume(meal.nutritionInfo, meal.nutritionInfo.volume * creationDto.portion),
+    };
+}
+
 export function addCreationDtoToFoodPortion(dto: FoodPortionCreationDto, base: FoodPortionDto): FoodPortionCreationDto {
     switch (dto.type) {
         case 'product':
@@ -105,14 +117,20 @@ export function addFoodPortions(dto: FoodPortionDto, base: FoodPortionDto): Food
         case 'product':
             if (base.type !== 'product') throw 'The types do not match';
 
+            const amount = dto.amount + base.nutritionalInfo.volume / base.product.servings[dto.servingType];
             return {
                 ...dto,
-                amount: dto.amount + base.nutritionalInfo.volume / base.product.servings[dto.servingType],
+                amount,
+                nutritionalInfo: changeVolume(dto.nutritionalInfo, amount * dto.product.servings[dto.servingType]),
             };
         case 'meal':
             if (base.type !== 'meal') throw 'The types do not match';
 
-            return { ...dto, portion: dto.portion + base.portion };
+            return {
+                ...dto,
+                portion: dto.portion + base.portion,
+                nutritionalInfo: sumNutritions([dto.nutritionalInfo, base.nutritionalInfo]),
+            };
         case 'custom':
             if (base.type !== 'custom') throw 'The types do not match';
 

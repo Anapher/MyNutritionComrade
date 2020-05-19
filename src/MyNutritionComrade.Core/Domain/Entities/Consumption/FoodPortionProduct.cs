@@ -16,6 +16,7 @@ namespace MyNutritionComrade.Core.Domain.Entities.Consumption
 
         public string ProductId { get; private set; }
 
+        public override FoodPortionType Type { get; } = FoodPortionType.Product;
         public override string GetId() => ProductId;
 
         public double Amount

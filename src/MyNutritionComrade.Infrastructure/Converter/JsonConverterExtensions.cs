@@ -4,6 +4,7 @@ using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Domain.Entities.Account;
 using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Core.Domain.Entities.Goal;
+using MyNutritionComrade.Core.Dto.UseCaseRequests.Consumption.Creation;
 using Newtonsoft.Json;
 
 namespace MyNutritionComrade.Infrastructure.Converter
@@ -36,6 +37,14 @@ namespace MyNutritionComrade.Infrastructure.Converter
                 {FoodPortionType.Product, typeof(FoodPortionProduct)},
                 {FoodPortionType.Suggestion, typeof(FoodPortionSuggestion)},
                 {FoodPortionType.Custom, typeof(FoodPortionCustom)},
+            }));
+
+            converters.Add(new AbstractTypeJsonConverter<FoodPortionCreationDto, FoodPortionType>(new Dictionary<FoodPortionType, Type>
+            {
+                {FoodPortionType.Product, typeof(ProductFoodPortionCreationDto)},
+                {FoodPortionType.Meal, typeof(MealFoodPortionCreationDto)},
+                {FoodPortionType.Custom, typeof(CustomFoodPortionCreationDto)},
+                {FoodPortionType.Suggestion, typeof(SuggestionFoodPortionCreationDto)},
             }));
         }
 

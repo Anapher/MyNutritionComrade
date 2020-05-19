@@ -35,19 +35,12 @@ namespace MyNutritionComrade.Selectors
             var commonConsumptions = await _session.Query<ConsumedFoods_ByMonth.Result, ConsumedFoods_ByMonth>()
                 .Where(x => x.UserId == userId && x.Date >= startingDate).ToListAsync();
 
-            var requestedInfo = commonConsumptions.Select(x => $"{x.Time}/{x.FoodPortionId}").ToList();
+            var requestedInfo = commonConsumptions.Select(x => x.RecentId).ToList();
 
-            var foodPortions = await _session.Query<Consumed, Consumed_ByDate>().Where(x => x.UserId == userId).OrderByDescending(x => x.Date)
-                .GroupBy(x => $"{x.Time}/{x.FoodPortionId}").Where(x => x.Key.In(requestedInfo)).Select(x => x.First()).ToListAsync();
+            var recentlyConsumed = (await _session.LoadAsync<Consumed>(requestedInfo)).Values;
 
-            var result = new Dictionary<ConsumptionTime, FoodPortion[]>();
-            foreach (var commonConsumption in commonConsumptions.GroupBy(x => x.Time))
-                result.Add(commonConsumption.Key,
-                    commonConsumption.Select(x => foodPortions.First(y => y.Time == commonConsumption.Key && y.FoodPortionId == x.FoodPortionId).FoodPortion)
-                        .ToArray());
-
-            var dtos = await _selector.SelectViewModels(result.SelectMany(x => x.Value).ToList());
-            return result.ToDictionary(x => x.Key, x => x.Value.Select(y => dtos[y]).ToArray());
+            var dtos = await _selector.SelectViewModels(recentlyConsumed.Select(x => x.FoodPortion).ToList());
+            return recentlyConsumed.GroupBy(x => x.Time).ToDictionary(x => x.Key, x => x.Select(y => dtos[y.FoodPortion]).ToArray());
         }
     }
 }

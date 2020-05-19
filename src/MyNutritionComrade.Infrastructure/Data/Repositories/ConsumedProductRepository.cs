@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
+using MyNutritionComrade.Infrastructure.Extensions;
 using MyNutritionComrade.Infrastructure.Shared;
 using Raven.Client.Documents;
 
@@ -31,9 +32,6 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             await session.SaveChangesAsync();
         }
 
-        private static string GetId(Consumed consumed) => GetId(consumed.UserId, consumed.Date, consumed.Time, consumed.FoodPortion.GetId());
-
-        private static string GetId(string userId, DateTime date, ConsumptionTime time, string id) =>
-            $"{CollectionName}/{userId}/{date:yyyy-MM-dd}/{(int) time}/{id}";
+        private static string GetId(Consumed consumed) => $"{CollectionName}/{consumed.Id}";
     }
 }
