@@ -16,6 +16,7 @@ export const getConsumedProducts = createSelector(
         if (!consumedProducts) return [];
 
         let result = consumedProducts.filter((x) => x.date === currentDate);
+
         // let pending = pendingProducts.filter((x) => x.date === currentDate);
 
         // while (pending.length > 0) {

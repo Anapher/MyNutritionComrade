@@ -11,7 +11,8 @@ import {
 import { RootAction } from 'MyNutritionComrade';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
-import { getRequiredDates, patchConsumedProducts } from './utils';
+import { getRequiredDates, patchConsumedProducts as patchConsumedList } from './utils';
+import { getFoodPortionId } from 'src/utils/different-foods';
 
 export type CreateConsumptionRequest = {
     date: string;
@@ -95,24 +96,27 @@ export default function (state: DiaryState = initialState, action: RootAction): 
         case getType(actions.patchConsumptions.request):
             return { ...state, pendingActions: [...state.pendingActions, action.payload] };
         case getType(actions.patchConsumptions.success):
-            const pending = state.pendingActions.find((x) => x.requestId === action.payload.requestId);
+            const pending = state.pendingActions.find((x) => x.requestId === action.payload.trigger.requestId);
             if (!pending) return state;
 
-            const date = DateTime.fromISO(action.payload.date).toISODate();
+            const date = DateTime.fromISO(action.payload.trigger.date).toISODate();
             const consumedProducts = state.loadedDays[date];
-            if (consumedProducts === undefined) return state;
+            if (consumedProducts === undefined) {
+                return state;
+            }
 
             return {
                 ...state,
                 loadedDays: Object.fromEntries(
                     Object.keys(state.loadedDays).map((x) => [
                         x,
-                        x === date ? patchConsumedProducts(consumedProducts, action.payload) : state.loadedDays[x],
+                        x === date
+                            ? patchConsumedList(consumedProducts, action.payload.trigger, action.payload.dto)
+                            : state.loadedDays[x],
                     ]),
                 ),
-                pendingActions: state.pendingActions.filter((x) => x.requestId !== action.payload.requestId),
+                pendingActions: state.pendingActions.filter((x) => x.requestId !== action.payload.trigger.requestId),
             };
-
         case getType(actions.patchConsumptions.failure):
             return {
                 ...state,

@@ -7,6 +7,7 @@ import {
     ProductInfo,
     MealFoodPortionCreationDto,
     Meal,
+    FoodPortionProductDto,
 } from 'Models';
 import { getGeneratedMealName, getMatchingServing } from './food-utils';
 import { ProductSearchQuery } from './input-parser';
@@ -62,7 +63,7 @@ export function getCreationDtoId(dto: FoodPortionCreationDto): string {
 export function createProductPortionFromCreation(
     creationDto: ProductFoodPortionCreationDto,
     product: ProductInfo,
-): FoodPortionDto {
+): FoodPortionProductDto {
     return {
         type: 'product',
         product: product!,
@@ -205,7 +206,7 @@ export function mapFoodPortionDtoToSearchResult(dto: FoodPortionDto): SearchResu
         return { type: 'product', product: dto.product, frequentlyUsedPortion: dto };
     }
     if (dto.type === 'meal') {
-        return { type: 'meal', name: dto.mealName, mealId: dto.mealId, frequentlyUsedPortion: dto };
+        return { type: 'meal', mealName: dto.mealName, mealId: dto.mealId, frequentlyUsedPortion: dto };
     }
     if (dto.type === 'suggestion') {
         return { type: 'generatedMeal', id: dto.suggestionId, items: dto.items };
@@ -213,13 +214,14 @@ export function mapFoodPortionDtoToSearchResult(dto: FoodPortionDto): SearchResu
     if (dto.type === 'custom') {
         return { type: 'custom', nutritionalInfo: dto.nutritionalInfo, label: dto.label };
     }
+
     throw 'TODO';
 }
 
 export function matchSearchResult(result: SearchResult, query: ProductSearchQuery): boolean {
     switch (result.type) {
         case 'meal':
-            return !query.productSearch || result.name.toUpperCase().includes(query.productSearch.toUpperCase());
+            return !query.productSearch || result.mealName.toUpperCase().includes(query.productSearch.toUpperCase());
         case 'product':
             if (query.productSearch !== undefined) {
                 const labelText = selectLabel(result.product.label);

@@ -40,7 +40,7 @@ namespace MyNutritionComrade.Selectors
             if (daysBackInTime > MaxRequestedDays)
                 throw new ArgumentException($"The maximum amount of requested days is {MaxRequestedDays}.", nameof(daysBackInTime));
 
-            var days = Enumerable.Range(0, daysBackInTime).Select(x => fromDay.AddDays(-x)).ToList();
+            var days = Enumerable.Range(0, daysBackInTime + 1).Select(x => fromDay.AddDays(-x)).ToList();
 
             var consumedProducts = await _session.Query<Consumed, Consumed_ByDate>().Where(x => x.UserId == userId && x.Date.In(days)).ToListAsync();
             var result = await _selector.SelectConsumedDtos(consumedProducts);

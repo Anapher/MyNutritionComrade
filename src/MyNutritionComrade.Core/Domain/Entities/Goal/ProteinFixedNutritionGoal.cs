@@ -3,5 +3,7 @@
     public class ProteinFixedNutritionGoal : NutritionGoalBase
     {
         public double ProteinPerDay { get; set; }
+
+        public override NutritionGoalType Type { get; } = NutritionGoalType.Protein;
     }
 }

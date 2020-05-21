@@ -1,43 +1,40 @@
 import Color from 'color';
-import { NutritionalInfo, FoodPortionDto } from 'Models';
+import { FoodPortionCustomDto, FoodPortionDto, FoodPortionProductDto, NutritionalInfo } from 'Models';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Surface, TouchableRipple, useTheme } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import selectLabel, { isProductLiquid } from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
+import { styles } from './food-portion-styles';
 
-type Props = {
+interface Props<T extends FoodPortionDto> {
     onPress?: () => void;
     onLongPress?: () => void;
-    foodPortion: FoodPortionDto;
-};
+    foodPortion: T;
+}
 
-function FoodPortionView({ onPress, onLongPress, foodPortion }: Props) {
-    if (foodPortion.type === 'product') {
-        return (
-            <FoodPortionItem
-                onPress={onPress}
-                onLongPress={onLongPress}
-                label={selectLabel(foodPortion.product.label)}
-                nutritionalInfo={foodPortion.nutritionalInfo}
-                isLiquid={isProductLiquid(foodPortion.product)}
-            />
-        );
-    }
+export function ProductFoodPortionView({ onPress, onLongPress, foodPortion }: Props<FoodPortionProductDto>) {
+    return (
+        <FoodPortionItem
+            onPress={onPress}
+            onLongPress={onLongPress}
+            label={selectLabel(foodPortion.product.label)}
+            nutritionalInfo={foodPortion.nutritionalInfo}
+            isLiquid={isProductLiquid(foodPortion.product)}
+        />
+    );
+}
 
-    if (foodPortion.type === 'custom') {
-        return (
-            <FoodPortionItem
-                onPress={onPress}
-                onLongPress={onLongPress}
-                label={foodPortion.label || 'Manual food'}
-                nutritionalInfo={foodPortion.nutritionalInfo}
-                isLiquid={false}
-            />
-        );
-    }
-
-    return <Text>Unsupported</Text>;
+export function CustomFoodPortionView({ onPress, onLongPress, foodPortion }: Props<FoodPortionCustomDto>) {
+    return (
+        <FoodPortionItem
+            onPress={onPress}
+            onLongPress={onLongPress}
+            label={foodPortion.label || 'Manual food'}
+            nutritionalInfo={foodPortion.nutritionalInfo}
+            isLiquid={false}
+        />
+    );
 }
 
 type FoodPortionItemProps = {
@@ -69,7 +66,7 @@ function FoodPortionItem({ onLongPress, onPress, nutritionalInfo, label, isLiqui
                 rippleColor={rippleColor}
                 style={styles.root}
             >
-                <View style={styles.container}>
+                <View style={[styles.row, styles.container]}>
                     <View style={styles.flexFill}>
                         <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.title, { color: titleColor }]}>
                             {label}
@@ -93,42 +90,3 @@ function FoodPortionItem({ onLongPress, onPress, nutritionalInfo, label, isLiqui
         </Surface>
     );
 }
-
-const styles = StyleSheet.create({
-    surface: {
-        height: '100%',
-        elevation: 1,
-    },
-    root: {
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-    },
-    container: {
-        display: 'flex',
-        padding: 8,
-        flexDirection: 'row',
-        marginLeft: 8,
-        marginRight: 8,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 14,
-    },
-    description: {
-        fontSize: 12,
-    },
-    energyText: {
-        marginLeft: 16,
-    },
-    flexFill: {
-        flex: 1,
-    },
-    verticalCenterAlignedRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-});
-
-export default FoodPortionView;

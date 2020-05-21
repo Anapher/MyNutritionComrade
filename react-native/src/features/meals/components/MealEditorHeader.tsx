@@ -5,13 +5,14 @@ import { Appbar } from 'react-native-paper';
 type Props = {
     title: string;
     canSubmit: boolean;
+    onGoBack: () => void;
     onSubmit: () => void;
 };
 
-function MealEditorHeader({ title, canSubmit, onSubmit }: Props) {
+function MealEditorHeader({ title, canSubmit, onSubmit, onGoBack }: Props) {
     return (
         <Appbar.Header>
-            <Appbar.BackAction />
+            <Appbar.BackAction onPress={onGoBack} />
             <Appbar.Content title={title} />
             <Appbar.Action icon="check" disabled={!canSubmit} onPress={onSubmit} />
         </Appbar.Header>

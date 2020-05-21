@@ -41,6 +41,31 @@ namespace MyNutritionComrade.Controllers
             return Ok(result.Single());
         }
 
+        [HttpDelete("{date}/{type}/{compoundFoodId}")]
+        public async Task<ActionResult<ConsumedDto>> DeleteConsumption(string date, string type, string compoundFoodId,  [FromServices] IDeleteConsumptionUseCase useCase)
+        {
+            if (!DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
+                return BadRequest("The url parameter must be a valid date time.");
+
+            if (!Enum.TryParse<ConsumptionTime>(type, true, out var consumptionTime))
+                return BadRequest("The url parameter must be a valid consumption time.");
+
+            var parts = compoundFoodId.Split('@', 2);
+            if (parts.Length != 2)
+                return BadRequest("The food id must be the type separated with an '@'.");
+
+            if (!Enum.TryParse<FoodPortionType>(parts[0], true, out var foodPortionType))
+                return BadRequest("The food id must be the type separated with an '@'.");
+
+            var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
+            await useCase.Handle(new DeleteConsumptionRequest(userId, dateTime, consumptionTime, parts[1], foodPortionType));
+
+            if (useCase.HasError)
+                return useCase.ToActionResult();
+
+            return Ok();
+        }
+
         [HttpGet("{date}")]
         public async Task<ActionResult<Dictionary<string, List<ConsumedDto>>>> GetDayConsumption(string date, [FromQuery] string? to,
             [FromServices] IConsumedOfTheDay selector)

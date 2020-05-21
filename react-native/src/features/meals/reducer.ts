@@ -16,6 +16,8 @@ export default combineReducers<MealsState, RootAction>({
                 return action.payload;
             case getType(actions.removeAsync.success):
                 return state ? state.filter((x) => x.id !== action.payload) : state;
+            case getType(actions.createAsync.success):
+                return state && [...state, action.payload];
             default:
                 return state;
         }

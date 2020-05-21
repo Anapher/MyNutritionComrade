@@ -16,3 +16,14 @@ export const loadEpic: RootEpic = (action$, _, { api }) =>
             ),
         ),
     );
+
+export const createMealEpic: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(isActionOf(actions.createAsync.request)),
+        switchMap(({ payload }) =>
+            from(api.meals.create(payload)).pipe(
+                map((response) => actions.createAsync.success(response)),
+                catchError((error: AxiosError) => of(actions.createAsync.failure(toErrorResult(error)))),
+            ),
+        ),
+    );

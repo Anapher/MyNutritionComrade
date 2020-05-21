@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Meal } from 'Models';
 import { RootState } from 'MyNutritionComrade';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { FAB } from 'react-native-paper';
 import LoadingPlaceholder from 'src/components/LoadingPlaceholder';
@@ -10,18 +10,28 @@ import { RootStackParamList } from 'src/RootNavigator';
 import * as actions from '../actions';
 import MealItem from './MealItem';
 import MealOptionsDialog from './MealOptionsDialog';
+import { connect } from 'react-redux';
 
 const mapStateToProps = (state: RootState) => ({
     meals: state.meals.meals,
     isLoading: state.meals.isLoading,
 });
 
-type Props = ReturnType<typeof mapStateToProps> & {
-    navigation: StackNavigationProp<RootStackParamList>;
+const dispatchProps = {
+    loadMeals: actions.loadMealsAsync.request,
 };
 
-function Meals({ meals, isLoading, navigation }: Props) {
+type Props = ReturnType<typeof mapStateToProps> &
+    typeof dispatchProps & {
+        navigation: StackNavigationProp<RootStackParamList>;
+    };
+
+function Meals({ meals, isLoading, navigation, loadMeals }: Props) {
     const [openedEntry, setOpenedEntry] = useState<Meal | undefined>();
+
+    useEffect(() => {
+        loadMeals();
+    }, []);
 
     const removeAction = useAsyncFunction(
         actions.removeAsync.request,
@@ -54,7 +64,7 @@ function Meals({ meals, isLoading, navigation }: Props) {
     );
 }
 
-export default Meals;
+export default connect(mapStateToProps, dispatchProps)(Meals);
 
 const styles = StyleSheet.create({
     root: {

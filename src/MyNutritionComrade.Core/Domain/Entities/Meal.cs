@@ -8,7 +8,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
 {
     public class Meal
     {
-        private readonly List<FoodPortion> _items = new List<FoodPortion>();
+        private List<FoodPortion> _items = new List<FoodPortion>();
 
         public Meal(string name, string userId)
         {
@@ -22,7 +22,13 @@ namespace MyNutritionComrade.Core.Domain.Entities
 
         public string Name { get; set; }
         public NutritionalInfo NutritionalInfo { get; private set; } = NutritionalInfo.Empty;
-        public IReadOnlyList<FoodPortion> Items => _items.AsReadOnly(); // this can contain any food portion
+
+        // this can contain any food portion
+        public IReadOnlyList<FoodPortion> Items
+        {
+            get => _items.AsReadOnly();
+            private set => _items = value.ToList();
+        }
 
         public void Add(FoodPortion foodPortion)
         {

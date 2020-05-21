@@ -81,7 +81,7 @@ export const handleConsumptionAction: RootEpic = (action$, state$, { api }) =>
         switchMap(({ payload }) => {
             if (isDeleteRequest(payload)) {
                 return from(api.consumption.deleteConsumption(payload.date, payload.time, payload.foodPortionId)).pipe(
-                    map(() => actions.patchConsumptions.success(payload)),
+                    map(() => actions.patchConsumptions.success({ trigger: payload })),
                     catchError((error: AxiosError) =>
                         of(
                             actions.patchConsumptions.failure({
@@ -105,7 +105,7 @@ export const handleConsumptionAction: RootEpic = (action$, state$, { api }) =>
                 }
 
                 return from(api.consumption.createConsumption(payload.date, payload.time, creationDto)).pipe(
-                    map(() => actions.patchConsumptions.success(payload)),
+                    map((dto) => actions.patchConsumptions.success({ trigger: payload, dto })),
                     catchError((error: AxiosError) =>
                         of(
                             actions.patchConsumptions.failure({

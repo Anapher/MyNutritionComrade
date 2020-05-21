@@ -6,7 +6,7 @@ namespace MyNutritionComrade.Core.Domain.Entities.Account
 {
     public class User
     {
-        private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
+        private List<RefreshToken> _refreshTokens = new List<RefreshToken>();
 
         public User(string id, UserMetadata userMetadata)
         {
@@ -18,7 +18,12 @@ namespace MyNutritionComrade.Core.Domain.Entities.Account
         public bool IsDisabled { get; set; }
         public UserMetadata Metadata { get; private set; }
         public bool IsTrustworthy { get; set; }
-        public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+
+        public IReadOnlyCollection<RefreshToken> RefreshTokens
+        {
+            get => _refreshTokens.AsReadOnly();
+            private set => _refreshTokens = value.ToList();
+        }
 
         public bool HasValidRefreshToken(string refreshToken)
         {

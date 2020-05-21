@@ -9,6 +9,8 @@ using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
 using MyNutritionComrade.Infrastructure.Data.Indexes;
 using MyNutritionComrade.Infrastructure.Helpers;
+using MyNutritionComrade.Models.Response;
+using MyNutritionComrade.Selectors;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
@@ -20,28 +22,39 @@ namespace MyNutritionComrade.Controllers
     public class MealsController : Controller
     {
         [HttpPost]
-        public async Task<ActionResult<Meal>> CreateMeal([FromBody] CreateMealDto meal, [FromServices] ICreateMealUseCase useCase)
+        public async Task<ActionResult<Meal>> CreateMeal([FromBody] CreateMealDto meal, [FromServices] ICreateMealUseCase useCase, [FromServices]IFoodPortionDtoSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var result = await useCase.Handle(new CreateMealRequest(meal, userId));
+            var response = await useCase.Handle(new CreateMealRequest(meal, userId));
             if (useCase.HasError)
                 return useCase.Error!.ToActionResult();
 
-            return Ok(result!.Meal);
+            return Ok(await MapToMealDto(response!.Meal, selector));
         }
 
         [HttpGet]
-        public async Task<ActionResult<Meal>> GetMeals([FromServices] IAsyncDocumentSession session)
+        public async Task<ActionResult<Meal>> GetMeals([FromServices] IAsyncDocumentSession session, [FromServices] IFoodPortionDtoSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
             var meals = await session.Query<Meal, Meal_ByUserId>().Where(x => x.UserId == userId).ToListAsync();
-            return Ok(meals);
+
+            var allFoodPortions = meals.SelectMany(x => x.Items).ToList();
+            var foodPortionDtos = await selector.SelectViewModels(allFoodPortions);
+
+            return Ok(meals.Select(meal => new MealDto
+            {
+                Id = meal.Id,
+                Name = meal.Name,
+                CreatedOn = meal.CreatedOn,
+                NutritionalInfo = meal.NutritionalInfo,
+                Items = meal.Items.Select(x => foodPortionDtos[x]).ToList()
+            }));
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Meal>> DeleteMeal(string id, [FromServices] IDeleteMealUseCase useCase)
+        public async Task<ActionResult> DeleteMeal(string id, [FromServices] IDeleteMealUseCase useCase)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
@@ -53,7 +66,7 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<Meal>> PatchMeal(JsonPatchDocument<CreateMealDto> patchDocument, string id, [FromServices] IPatchMealUseCase useCase)
+        public async Task<ActionResult<Meal>> PatchMeal(JsonPatchDocument<CreateMealDto> patchDocument, string id, [FromServices] IPatchMealUseCase useCase, [FromServices] IFoodPortionDtoSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
@@ -61,7 +74,21 @@ namespace MyNutritionComrade.Controllers
             if (useCase.HasError)
                 return useCase.Error!.ToActionResult();
 
-            return Ok(response!.Meal);
+            return Ok(await MapToMealDto(response!.Meal, selector));
+        }
+
+        private static async ValueTask<MealDto> MapToMealDto(Meal meal, IFoodPortionDtoSelector selector)
+        {
+            var items = await selector.SelectViewModels(meal.Items);
+
+            return new MealDto
+            {
+                Id = meal.Id,
+                Name = meal.Name,
+                CreatedOn = meal.CreatedOn,
+                NutritionalInfo = meal.NutritionalInfo,
+                Items = items.Values
+            };
         }
     }
 }

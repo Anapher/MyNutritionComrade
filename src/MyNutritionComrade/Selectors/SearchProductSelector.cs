@@ -6,6 +6,7 @@ using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Infrastructure.Data.Indexes;
 using MyNutritionComrade.Models.Response;
+using Newtonsoft.Json;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Linq;
 using Raven.Client.Documents.Session;
@@ -62,6 +63,8 @@ namespace MyNutritionComrade.Selectors
 
     public abstract class SearchResult
     {
+        [JsonProperty]
+        public abstract SearchResultType Type { get; }
     }
 
     public class ProductSuggestion : SearchResult
@@ -72,6 +75,7 @@ namespace MyNutritionComrade.Selectors
         }
 
         public ProductDto Product { get; private set; }
+        public override SearchResultType Type { get; } = SearchResultType.Product;
     }
 
     public class MealSuggestion : SearchResult
@@ -84,6 +88,7 @@ namespace MyNutritionComrade.Selectors
 
         public string MealName { get; private set; }
         public string MealId { get; private set; }
+        public override SearchResultType Type { get; } = SearchResultType.Meal;
     }
 
     public enum SearchResultType

@@ -22,7 +22,7 @@ namespace MyNutritionComrade.Infrastructure
 
             builder.RegisterType<ProductRepository>().As<IProductRepository>().SingleInstance();
             builder.RegisterType<ProductContributionRepository>().As<IProductContributionRepository>().SingleInstance();
-            builder.RegisterType<ConsumedProductRepository>().As<IConsumedProductRepository>();
+            builder.RegisterType<ConsumedRepository>().As<IConsumedRepository>();
             builder.RegisterType<ManipulationUtils>().As<IObjectManipulationUtils>().SingleInstance();
         }
     }

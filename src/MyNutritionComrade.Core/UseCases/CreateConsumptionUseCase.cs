@@ -14,10 +14,10 @@ namespace MyNutritionComrade.Core.UseCases
     public class CreateConsumptionUseCase : UseCaseStatus<CreateConsumptionResponse>, ICreateConsumptionUseCase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IConsumedProductRepository _repository;
+        private readonly IConsumedRepository _repository;
         private readonly IServiceProvider _serviceProvider;
 
-        public CreateConsumptionUseCase(IUserRepository userRepository, IConsumedProductRepository repository, IServiceProvider serviceProvider)
+        public CreateConsumptionUseCase(IUserRepository userRepository, IConsumedRepository repository, IServiceProvider serviceProvider)
         {
             _userRepository = userRepository;
             _repository = repository;

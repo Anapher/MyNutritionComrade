@@ -54,14 +54,14 @@ namespace MyNutritionComrade
             settings.Converters.Add(new AbstractTypeJsonConverter<SearchResult, SearchResultType>(new Dictionary<SearchResultType, Type>
             {
                 {SearchResultType.Meal, typeof(MealSuggestion)}, {SearchResultType.Product, typeof(ProductSuggestion)}
-            }));
+            }) {TypePropertyName = nameof(SearchResult.Type)});
             settings.Converters.Add(new AbstractTypeJsonConverter<FoodPortionDto, FoodPortionType>(new Dictionary<FoodPortionType, Type>
             {
                 {FoodPortionType.Product, typeof(FoodPortionProductDto)},
                 {FoodPortionType.Meal, typeof(FoodPortionMealDto)},
                 {FoodPortionType.Custom, typeof(FoodPortionCustomDto)},
                 {FoodPortionType.Suggestion, typeof(FoodPortionSuggestedDto)},
-            }));
+            }) {TypePropertyName = nameof(FoodPortionDto.Type)});
 
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }

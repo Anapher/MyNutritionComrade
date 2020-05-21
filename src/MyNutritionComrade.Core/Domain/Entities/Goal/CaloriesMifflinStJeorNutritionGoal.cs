@@ -16,5 +16,7 @@
         ///     Has the same effect as <see cref="CalorieBalance" />, but is meant to fix errors in the calorie calculations
         /// </summary>
         public double CalorieOffset { get; set; }
+
+        public override NutritionGoalType Type { get; } = NutritionGoalType.Calories;
     }
 }

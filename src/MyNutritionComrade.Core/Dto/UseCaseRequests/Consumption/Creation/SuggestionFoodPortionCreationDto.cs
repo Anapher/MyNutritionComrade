@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MyNutritionComrade.Core.Domain.Entities.Consumption;
 
 namespace MyNutritionComrade.Core.Dto.UseCaseRequests.Consumption.Creation
 {
@@ -12,5 +13,6 @@ namespace MyNutritionComrade.Core.Dto.UseCaseRequests.Consumption.Creation
 
         public string SuggestionId { get; set; }
         public List<FoodPortionCreationDto> Items { get; set; }
+        public override FoodPortionType Type { get; } = FoodPortionType.Suggestion;
     }
 }

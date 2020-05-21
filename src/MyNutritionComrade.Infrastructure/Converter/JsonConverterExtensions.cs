@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Domain.Entities.Account;
 using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Core.Domain.Entities.Goal;
@@ -23,12 +22,12 @@ namespace MyNutritionComrade.Infrastructure.Converter
                 {NutritionGoalType.ProteinByBodyweight, typeof(ProteinByBodyweightNutritionGoal)},
                 {NutritionGoalType.ProteinFixed, typeof(ProteinFixedNutritionGoal)},
                 {NutritionGoalType.ProportionalDistribution, typeof(NutrientDistribution)}
-            }));
+            }) {TypePropertyName = nameof(NutritionGoalBase.Type)});
 
             converters.Add(new AbstractTypeJsonConverter<UserMetadata, UserType>(
                 new Dictionary<UserType, Type> {{UserType.Google, typeof(GoogleUserMetadata)}, {UserType.Custom, typeof(CustomUserMetadata)},}, false)
             {
-                TypePropertyName = "userType"
+                TypePropertyName = nameof(UserMetadata.UserType)
             });
 
             converters.Add(new AbstractTypeJsonConverter<FoodPortion, FoodPortionType>(new Dictionary<FoodPortionType, Type>
@@ -37,7 +36,7 @@ namespace MyNutritionComrade.Infrastructure.Converter
                 {FoodPortionType.Product, typeof(FoodPortionProduct)},
                 {FoodPortionType.Suggestion, typeof(FoodPortionSuggestion)},
                 {FoodPortionType.Custom, typeof(FoodPortionCustom)},
-            }));
+            }) {TypePropertyName = nameof(FoodPortion.Type)});
 
             converters.Add(new AbstractTypeJsonConverter<FoodPortionCreationDto, FoodPortionType>(new Dictionary<FoodPortionType, Type>
             {
@@ -45,7 +44,7 @@ namespace MyNutritionComrade.Infrastructure.Converter
                 {FoodPortionType.Meal, typeof(MealFoodPortionCreationDto)},
                 {FoodPortionType.Custom, typeof(CustomFoodPortionCreationDto)},
                 {FoodPortionType.Suggestion, typeof(SuggestionFoodPortionCreationDto)},
-            }));
+            }) {TypePropertyName = nameof(FoodPortionCreationDto.Type)});
         }
 
         public enum NutritionGoalType

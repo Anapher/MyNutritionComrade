@@ -9,6 +9,7 @@ import FoodPortionView from 'src/componants-domain/FoodPortionView';
 import { RootStackParamList } from 'src/RootNavigator';
 import { addFoodPortions, createMealPortionFromCreation, getFoodPortionId } from 'src/utils/different-foods';
 import MealEditorHeader from './MealEditorHeader';
+import * as yup from 'yup';
 
 const defaultValues: MealCreationForm = {
     name: '',
@@ -24,6 +25,11 @@ type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
 };
 
+const schema = yup.object().shape({
+    name: yup.string().required(),
+    items: yup.array().required(),
+});
+
 function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
     const getFoodPortionDto = (creationDto: FoodPortionCreationDto, foodPortion?: FoodPortionDto): FoodPortionDto => {
         if (foodPortion !== undefined) return foodPortion;
@@ -37,12 +43,17 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
     };
 
     return (
-        <Formik<MealCreationForm> initialValues={{ ...defaultValues, ...initialValue }} onSubmit={onSubmit}>
+        <Formik<MealCreationForm>
+            initialValues={{ ...defaultValues, ...initialValue }}
+            validationSchema={schema}
+            onSubmit={onSubmit}
+        >
             {({ isValid, submitForm, values, isSubmitting, setFieldValue, setValues }) => {
                 React.useLayoutEffect(() => {
                     navigation.setOptions({
                         header: () => (
                             <MealEditorHeader
+                                onGoBack={navigation.goBack}
                                 title={values.name}
                                 canSubmit={!isSubmitting && isValid}
                                 onSubmit={submitForm}

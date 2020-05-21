@@ -1,23 +1,41 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import itiriri from 'itiriri';
 import { DateTime } from 'luxon';
-import { ConsumedDto, ConsumptionTime, ProductFoodPortionCreationDto, ProductInfo, ProductSuggestion } from 'Models';
+import {
+    ConsumedDto,
+    ConsumptionTime,
+    ProductFoodPortionCreationDto,
+    ProductInfo,
+    ProductSuggestion,
+    FoodPortionItemDto,
+    FoodPortionMealDto,
+    MealFoodPortionCreationDto,
+    FoodPortionDto,
+} from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Divider } from 'react-native-paper';
+import { StyleSheet, View, SectionList } from 'react-native';
+import { Divider, Portal, Dialog, Paragraph, Button } from 'react-native-paper';
 import { connect } from 'react-redux';
 import AnimatedSectionList from 'src/components/AnimatedSectionList';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as productApi from 'src/services/api/products';
-import { createProductPortionFromCreation, getConsumedDtoId } from 'src/utils/different-foods';
+import {
+    createProductPortionFromCreation,
+    getConsumedDtoId,
+    mapFoodPortionDtoCreationDto,
+    createMealPortionFromCreation,
+    getFoodPortionId,
+} from 'src/utils/different-foods';
 import * as actions from '../actions';
 import * as selectors from '../selectors';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
 import DiaryHeader from './DiaryHeader';
 import { flattenProductsPrioritize } from 'src/utils/food-flattening';
-import FoodPortionView from 'src/componants-domain/FoodPortionView';
+import { CustomFoodPortionView, ProductFoodPortionView } from 'src/componants-domain/FoodPortionView';
 import FoodPortionHeader from 'src/componants-domain/FoodPortionHeader';
+import MealPortionView from 'src/componants-domain/MealPortionView';
+import FoodPortionDialog, { ShowOptionsInfo } from './FoodPortionDialog';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
     breakfast: 'Breakfast',
@@ -63,12 +81,10 @@ function TabDiary({
         if (nutritionGoal == null) {
             loadNutritionGoal();
         }
-
-        patchConsumptions({ delete: true, time: 'breakfast', date: 'asd', foodPortionId: 'asd' });
     }, []);
 
     const [unlistedProduct, setUnlistedProduct] = useState<string | undefined>();
-    const [productOptions, setProductOptions] = useState<ConsumedDto | undefined>();
+    const [foodPortionOptions, setFoodPortionOptions] = useState<ShowOptionsInfo | undefined>();
 
     const scanBarcode = (time: ConsumptionTime) => {
         navigation.navigate('ScanBarcode', {
@@ -144,22 +160,131 @@ function TabDiary({
         }
     };
 
+    const mealEditItem = (consumedDto: ConsumedDto, item: FoodPortionItemDto) => {
+        const meal = consumedDto.foodPortion;
+        if (meal.type !== 'meal') throw 'Must submit meal';
+
+        switch (item.type) {
+            case 'product':
+                const product = item.product;
+                navigation.navigate('AddProduct', {
+                    product,
+                    volume: item.nutritionalInfo.volume /** submit amount and serving type */,
+                    onSubmit: (amount, servingType) => {
+                        const productOverwrite: ProductFoodPortionCreationDto = {
+                            type: 'product',
+                            amount,
+                            servingType,
+                            productId: product.id,
+                        };
+
+                        const creationDto: MealFoodPortionCreationDto = {
+                            type: 'meal',
+                            mealId: meal.mealId,
+                            portion: meal.portion,
+                            overwriteIngredients: meal.items.map((x) =>
+                                x === item ? productOverwrite : mapFoodPortionDtoCreationDto(x),
+                            ),
+                        };
+
+                        const newItems = meal.items.map((x) =>
+                            x === item ? createProductPortionFromCreation(productOverwrite, item.product) : x,
+                        );
+
+                        patchConsumptions({
+                            date: selectedDay,
+                            time: consumedDto.time,
+                            creationDto,
+                            foodPortion: { ...meal, items: newItems },
+                            append: false,
+                        });
+                    },
+                });
+                break;
+            default:
+                break;
+        }
+    };
+
+    const removeItem = (options: ShowOptionsInfo) => {
+        if (options.foodPortion) {
+            if (options.consumedDto.foodPortion.type === 'meal') {
+                const meal = options.consumedDto.foodPortion;
+
+                const newItems = meal.items.filter(
+                    (x) => getFoodPortionId(x) !== getFoodPortionId(options.foodPortion!),
+                );
+
+                if (newItems.length === 0) {
+                    // remove entire meal if no items will be left
+                    removeItem({ consumedDto: options.consumedDto });
+                    return;
+                }
+
+                const creationDto: MealFoodPortionCreationDto = {
+                    type: 'meal',
+                    mealId: meal.mealId,
+                    portion: meal.portion,
+                    overwriteIngredients: newItems.map(mapFoodPortionDtoCreationDto),
+                };
+
+                patchConsumptions({
+                    date: selectedDay,
+                    time: options.consumedDto.time,
+                    creationDto,
+                    foodPortion: { ...meal, items: newItems },
+                    append: false,
+                });
+            }
+        } else {
+            patchConsumptions({
+                delete: true,
+                date: selectedDay,
+                time: options.consumedDto.time,
+                foodPortionId: getFoodPortionId(options.consumedDto.foodPortion),
+            });
+        }
+    };
+
     return (
         <View style={styles.root}>
             <DiaryHeader />
-            <AnimatedSectionList
+            <SectionList
                 style={{ flex: 1 }}
-                duration={300}
-                rowHeight={56}
                 sections={sections}
                 keyExtractor={(x) => getConsumedDtoId(x)}
-                renderItem={({ item }) => (
-                    <FoodPortionView
-                        foodPortion={item.foodPortion}
-                        onPress={() => editItem(item)}
-                        onLongPress={() => setProductOptions(item)}
-                    />
-                )}
+                renderItem={({ item }) => {
+                    switch (item.foodPortion.type) {
+                        case 'product':
+                            return (
+                                <ProductFoodPortionView
+                                    foodPortion={item.foodPortion}
+                                    onPress={() => editItem(item)}
+                                    onLongPress={() => setFoodPortionOptions({ consumedDto: item })}
+                                />
+                            );
+                        case 'custom':
+                            return (
+                                <CustomFoodPortionView
+                                    foodPortion={item.foodPortion}
+                                    onPress={() => editItem(item)}
+                                    onLongPress={() => setFoodPortionOptions({ consumedDto: item })}
+                                />
+                            );
+                        case 'meal':
+                            return (
+                                <MealPortionView
+                                    meal={item.foodPortion}
+                                    onPress={() => editItem(item)}
+                                    onLongPress={() => setFoodPortionOptions({ consumedDto: item })}
+                                    onItemPress={(x) => mealEditItem(item, x)}
+                                    onItemLongPress={(foodPortion) =>
+                                        setFoodPortionOptions({ consumedDto: item, foodPortion })
+                                    }
+                                />
+                            );
+                    }
+                }}
                 ItemSeparatorComponent={() => <Divider />}
                 renderSectionHeader={({ section: { key } }) => {
                     const section = sections.find((x) => x.key === key)!;
@@ -193,7 +318,14 @@ function TabDiary({
                     />
                 )}
             />
-            {/* <Portal>
+
+            <Portal>
+                <FoodPortionDialog
+                    value={foodPortionOptions}
+                    navigation={navigation}
+                    onDismiss={() => setFoodPortionOptions(undefined)}
+                    onRemoveItem={(x) => removeItem(x)}
+                />
                 <Dialog visible={!!unlistedProduct} onDismiss={() => setUnlistedProduct(undefined)}>
                     <Dialog.Title>Not found</Dialog.Title>
                     <Dialog.Content>
@@ -214,78 +346,7 @@ function TabDiary({
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
-
-                <Dialog visible={!!productOptions} onDismiss={() => setProductOptions(undefined)}>
-                    <Dialog.Title numberOfLines={1} lineBreakMode="tail">
-                        {productOptions && selectLabel(productOptions.label)}
-                    </Dialog.Title>
-                    <View>
-                        <DialogButton
-                            onPress={async () => {
-                                const p = productOptions!;
-                                const product = await productApi.getById(p.productId);
-                                if (productOptions !== p) return;
-
-                                navigation.navigate('ProductOverview', { product });
-                                setProductOptions(undefined);
-                            }}
-                        >
-                            Show Product
-                        </DialogButton>
-                        <Divider />
-                        <DialogButton
-                            onPress={() => {
-                                editItem(productOptions!);
-                                setProductOptions(undefined);
-                            }}
-                        >
-                            Change volume
-                        </DialogButton>
-                        <Divider />
-                        <AsyncDialogButton
-                            onPress={async () => {
-                                const p = productOptions!;
-                                const product = await productApi.getById(p.productId);
-                                if (productOptions !== p) return;
-
-                                navigation.navigate('ChangeProduct', { product });
-                                setProductOptions(undefined);
-                            }}
-                        >
-                            Suggest Changes
-                        </AsyncDialogButton>
-                        <Divider />
-                        <AsyncDialogButton
-                            onPress={async () => {
-                                const p = productOptions!;
-                                const product = await productApi.getById(p.productId);
-                                if (productOptions !== p) return;
-
-                                navigation.navigate('VoteProductChanges', { product });
-                                setProductOptions(undefined);
-                            }}
-                        >
-                            Show Changes
-                        </AsyncDialogButton>
-                        <Divider />
-                        <DialogButton
-                            color="#e74c3c"
-                            onPress={() => {
-                                patchConsumptions({
-                                    append: false,
-                                    date: selectedDay,
-                                    product: { ...productOptions!, id: productOptions!.productId },
-                                    time: productOptions!.time,
-                                    value: 0,
-                                });
-                                setProductOptions(undefined);
-                            }}
-                        >
-                            Remove
-                        </DialogButton>
-                    </View>
-                </Dialog>
-            </Portal>*/}
+            </Portal>
         </View>
     );
 }

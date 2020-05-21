@@ -50,6 +50,8 @@ namespace MyNutritionComrade.Core.Errors
         ProductContribution_CreationFailed,
 
         Meal_NotFound = 1800,
-        Meal_InvalidPatch
+        Meal_InvalidPatch,
+
+        Consumed_NotFound = 1900
     }
 }

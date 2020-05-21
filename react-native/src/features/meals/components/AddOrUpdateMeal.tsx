@@ -32,7 +32,9 @@ function AddOrUpdateMeal({ navigation, route: { params }, meals }: Props) {
             initialValue={params?.initialValue}
             allMeals={meals!}
             navigation={navigation}
-            onSubmit={async (value) => {
+            onSubmit={async (value, helpers) => {
+                console.log('submit');
+
                 const creationDto: CreateMealDto = {
                     name: value.name,
                     items: value.items.map((x) => mapFoodPortionDtoCreationDto(x)),
@@ -40,8 +42,10 @@ function AddOrUpdateMeal({ navigation, route: { params }, meals }: Props) {
 
                 try {
                     await action(creationDto);
+                    navigation.goBack();
                 } catch (error) {
-                    // thats for tomorrow :)
+                } finally {
+                    helpers.setSubmitting(false);
                 }
             }}
         />

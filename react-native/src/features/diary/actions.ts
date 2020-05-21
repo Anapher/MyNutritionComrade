@@ -1,5 +1,5 @@
 import cuid from 'cuid';
-import { ComputedNutritionGoals, FrequentlyConsumed, ProductConsumptionDates } from 'Models';
+import { ComputedNutritionGoals, FrequentlyConsumed, ProductConsumptionDates, ConsumedDto } from 'Models';
 import { RequestErrorResponse } from 'src/utils/error-result';
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import { ConsumptionAction, CreateConsumptionRequest, DeleteConsumptionRequest } from './reducer';
@@ -27,7 +27,7 @@ export const patchConsumptions = {
                 requestId: cuid(),
             } as ConsumptionAction),
     )(),
-    success: createAction('DIARY/PATCH_CONSUMPTION_SUCCESS')<ConsumptionAction>(),
+    success: createAction('DIARY/PATCH_CONSUMPTION_SUCCESS')<{ trigger: ConsumptionAction; dto?: ConsumedDto }>(),
     failure: createAction('DIARY/PATCH_CONSUMPTION_FAILURE')<RequestErrorResponse & { requestId: string }>(),
 };
 export const loadNutritionGoal = createAsyncAction(

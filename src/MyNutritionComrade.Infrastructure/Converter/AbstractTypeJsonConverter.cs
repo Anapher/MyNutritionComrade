@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MyNutritionComrade.Infrastructure.Converter
 {
-    public class AbstractTypeJsonConverter<TType, TEnum> : JsonConverter<TType?> where TEnum : struct, Enum where TType : class
+    public class AbstractTypeJsonConverter<TType, TEnum> : JsonConverter where TEnum : struct, Enum where TType : class
     {
         private readonly IReadOnlyDictionary<TEnum, Type> _typeLookup;
         private readonly IReadOnlyDictionary<Type, TEnum> _reverseTypeLookup;
@@ -20,37 +20,13 @@ namespace MyNutritionComrade.Infrastructure.Converter
         }
 
         public string TypePropertyName { get; set; } = "type";
-        public bool CamelCaseType { get; set; } = true;
 
-        public override void WriteJson(JsonWriter writer, TType? value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
-            var jo = new JObject();
-            var type = value.GetType();
-
-            var t = _reverseTypeLookup[type].ToString();
-            if (CamelCaseType) t = t.ToCamelCase();
-
-            jo.Add(TypePropertyName, t);
-
-            foreach (var prop in type.GetProperties())
-                if (prop.CanRead)
-                {
-                    if (prop.Name.Equals(TypePropertyName, StringComparison.OrdinalIgnoreCase)) continue;
-
-                    var propVal = prop.GetValue(value, null);
-                    if (propVal != null) jo.Add(prop.Name.ToCamelCase(), JToken.FromObject(propVal, serializer));
-                }
-
-            jo.WriteTo(writer);
+            throw new NotSupportedException();
         }
 
-        public override TType? ReadJson(JsonReader reader, Type objectType, TType? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             var obj = JObject.Load(reader);
 
@@ -62,10 +38,12 @@ namespace MyNutritionComrade.Infrastructure.Converter
             if (typeToken == null || !_typeLookup.TryGetValue(Enum.Parse<TEnum>(typeToken.Value<string>(), true), out var type))
                 throw new ArgumentException($"The type {typeToken?.Value<string>()} is not supported.");
 
-            return (TType?) obj.ToObject(type);
+            return (TType?) obj.ToObject(type, serializer);
         }
 
+        public override bool CanConvert(Type objectType) => objectType.IsAbstract && typeof(TType).IsAssignableFrom(objectType);
+
         public override bool CanRead { get; } = true;
-        public override bool CanWrite { get; }
+        public override bool CanWrite { get; } = false;
     }
 }

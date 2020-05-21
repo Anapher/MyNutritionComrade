@@ -1,4 +1,6 @@
-﻿namespace MyNutritionComrade.Core.Domain.Entities.Consumption
+﻿using Newtonsoft.Json;
+
+namespace MyNutritionComrade.Core.Domain.Entities.Consumption
 {
     public abstract class FoodPortion
     {
@@ -8,6 +10,8 @@
         }
 
         public NutritionalInfo NutritionalInfo { get; set; }
+
+        [JsonProperty]
         public abstract FoodPortionType Type { get; }
 
         public abstract string GetId();

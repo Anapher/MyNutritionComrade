@@ -24,7 +24,7 @@ declare module 'Models' {
 
     export interface MealSuggestion {
         type: 'meal';
-        name: string;
+        mealName: string;
         mealId: string;
 
         frequentlyUsedPortion?: FoodPortionMealDto;

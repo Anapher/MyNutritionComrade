@@ -4,33 +4,42 @@ import { ConsumedDto } from 'Models';
 import { addFoodPortions, getFoodPortionId } from 'src/utils/different-foods';
 import { ConsumptionAction, DeleteConsumptionRequest } from './reducer';
 
-export function patchConsumedProducts(list: ConsumedDto[], patch: ConsumptionAction): ConsumedDto[] {
+export function patchConsumedProducts(
+    list: ConsumedDto[],
+    patch: ConsumptionAction,
+    response?: ConsumedDto,
+): ConsumedDto[] {
     if (isDeleteRequest(patch)) {
         return list.filter((x) => getFoodPortionId(x.foodPortion) !== patch.foodPortionId);
     }
 
-    if (!patch.foodPortion) return list;
+    let newValue: ConsumedDto | undefined;
+    let existing: ConsumedDto | undefined;
 
-    const existing = list.find((x) => getFoodPortionId(x.foodPortion) === getFoodPortionId(patch.foodPortion!));
+    if (response) {
+        newValue = response;
 
-    let newValue: ConsumedDto;
-    if (!existing || !patch.append) {
-        newValue = { date: patch.date, time: patch.time, foodPortion: patch.foodPortion };
+        const id = getFoodPortionId(newValue.foodPortion);
+        existing = list.find((x) => getFoodPortionId(x.foodPortion) === id);
     } else {
-        newValue = {
-            date: patch.date,
-            time: patch.time,
-            foodPortion: addFoodPortions(patch.foodPortion, existing.foodPortion),
-        };
+        if (!patch.foodPortion) return list;
+
+        const id = getFoodPortionId(patch.foodPortion);
+        existing = list.find((x) => getFoodPortionId(x.foodPortion) === id);
+
+        if (!existing || !patch.append) {
+            newValue = { date: patch.date, time: patch.time, foodPortion: patch.foodPortion };
+        } else {
+            newValue = {
+                date: patch.date,
+                time: patch.time,
+                foodPortion: addFoodPortions(patch.foodPortion, existing.foodPortion),
+            };
+        }
     }
 
-    if (existing) {
-        return list.map((x) =>
-            getFoodPortionId(x.foodPortion) === getFoodPortionId(patch.foodPortion!) ? newValue : x,
-        );
-    }
-
-    return [...list, newValue];
+    const newConsumedDto = newValue;
+    return existing ? list.map((x) => (x === existing ? newConsumedDto : x)) : [...list, newConsumedDto];
 }
 
 export function isDeleteRequest(patch: ConsumptionAction): patch is DeleteConsumptionRequest {
