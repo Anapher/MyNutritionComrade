@@ -22,11 +22,11 @@ namespace MyNutritionComrade.Controllers
     public class MealsController : Controller
     {
         [HttpPost]
-        public async Task<ActionResult<Meal>> CreateMeal([FromBody] CreateMealDto meal, [FromServices] ICreateMealUseCase useCase, [FromServices]IFoodPortionDtoSelector selector)
+        public async Task<ActionResult<Meal>> CreateMeal([FromBody] CreateMealDto meal, [FromServices] ICreateMealUseCase useCase, [FromServices] IFoodPortionDtoSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var response = await useCase.Handle(new CreateMealRequest(meal, userId));
+            var response = await useCase.Handle(new CreateMealRequest(meal, userId, null));
             if (useCase.HasError)
                 return useCase.Error!.ToActionResult();
 
@@ -65,12 +65,12 @@ namespace MyNutritionComrade.Controllers
             return Ok();
         }
 
-        [HttpPatch("{id}")]
-        public async Task<ActionResult<Meal>> PatchMeal(JsonPatchDocument<CreateMealDto> patchDocument, string id, [FromServices] IPatchMealUseCase useCase, [FromServices] IFoodPortionDtoSelector selector)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Meal>> UpdateMeal(CreateMealDto createMealDto, string id, [FromServices] ICreateMealUseCase useCase, [FromServices] IFoodPortionDtoSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
 
-            var response = await useCase.Handle(new PatchMealRequest(userId, id, patchDocument));
+            var response = await useCase.Handle(new CreateMealRequest(createMealDto, userId, id));
             if (useCase.HasError)
                 return useCase.Error!.ToActionResult();
 

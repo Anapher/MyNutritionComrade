@@ -13,7 +13,7 @@ declare module 'Models' {
         id: string;
         name: string;
         createdOn: string;
-        nutritionInfo: NutritionalInfo;
+        nutritionalInfo: NutritionalInfo;
 
         items: FoodPortionItemDto[];
     }

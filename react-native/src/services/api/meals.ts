@@ -14,6 +14,6 @@ export async function remove(id: string): Promise<void> {
     await Axios.delete(`/api/v1/meals/${id}`);
 }
 
-export async function patch(id: string, ops: Operation[]): Promise<void> {
-    return (await Axios.patch(`/api/v1/meals/${id}`, ops)).data;
+export async function update(id: string, creationDto: CreateMealDto): Promise<Meal> {
+    return (await Axios.put(`/api/v1/meals/${id}`, creationDto)).data;
 }

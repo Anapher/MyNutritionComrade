@@ -20,8 +20,6 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             await session.SaveChangesAsync();
         }
 
-        public Task Update(Meal meal) => Create(meal);
-
         public async Task<Meal?> FindById(string mealId)
         {
             using var session = OpenReadOnlySession();
@@ -33,7 +31,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         {
             using var session = OpenWriteSession();
 
-            session.Delete(meal);
+            session.Delete(meal.Id);
             await session.SaveChangesAsync();
         }
     }

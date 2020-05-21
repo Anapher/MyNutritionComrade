@@ -19,3 +19,9 @@ export const removeAsync = createAsyncAction('MEALS/REMOVE_REQUEST', 'MEALS/REMO
     string,
     RequestErrorResponse
 >();
+
+export const updateAsync = createAsyncAction('MEALS/UPDATE_REQUEST', 'MEALS/UPDATE_SUCCESS', 'MEALS/UPDATE_FAILURE')<
+    { dto: CreateMealDto; id: string },
+    Meal,
+    RequestErrorResponse
+>();

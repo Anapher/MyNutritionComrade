@@ -27,3 +27,25 @@ export const createMealEpic: RootEpic = (action$, _, { api }) =>
             ),
         ),
     );
+
+export const updateMealEpic: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(isActionOf(actions.updateAsync.request)),
+        switchMap(({ payload: { id, dto } }) =>
+            from(api.meals.update(id, dto)).pipe(
+                map((response) => actions.updateAsync.success(response)),
+                catchError((error: AxiosError) => of(actions.updateAsync.failure(toErrorResult(error)))),
+            ),
+        ),
+    );
+
+export const removeMealEpic: RootEpic = (action$, _, { api }) =>
+    action$.pipe(
+        filter(isActionOf(actions.removeAsync.request)),
+        switchMap(({ payload }) =>
+            from(api.meals.remove(payload)).pipe(
+                map(() => actions.removeAsync.success(payload)),
+                catchError((error: AxiosError) => of(actions.removeAsync.failure(toErrorResult(error)))),
+            ),
+        ),
+    );

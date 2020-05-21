@@ -10,6 +10,7 @@ import {
     ProductInfo,
     ProductProperties,
     ProductSearchConfig,
+    Meal,
 } from 'Models';
 import { PagingResponse, RootState } from 'MyNutritionComrade';
 import React from 'react';
@@ -17,7 +18,7 @@ import { Appbar } from 'react-native-paper';
 import { connect } from 'react-redux';
 import SignInScreen from 'src/features/auth/components/SignInScreen';
 import BarcodeScanner from './features/barcode-scanner/BarcodeScanner';
-import AddOrUpdateMeal from './features/meals/components/AddOrUpdateMeal';
+import CreateMealDialog from './features/meals/components/CreateMealDialog';
 import Meals from './features/meals/components/Meals';
 import AddProduct from './features/product-add/components/AddProduct';
 import ChangeProduct from './features/product-create/components/ChangeProduct';
@@ -29,6 +30,7 @@ import ProductSearch from './features/product-search/components/ProductSearchScr
 import VoteProductChanges from './features/product-vote-changes/components/VoteProductChanges';
 import Settings from './features/settings/components/Settings';
 import HomeScreen from './HomeScreen';
+import EditMealDialog from './features/meals/components/EditMealDialog';
 
 const Stack = createStackNavigator();
 
@@ -61,7 +63,8 @@ export type RootStackParamList = {
     };
     ProductOverview: { product: ProductInfo };
     Settings: {};
-    AddOrUpdateMeal: { initialValue?: Partial<MealCreationForm> };
+    CreateMeal: { initialValue?: Partial<MealCreationForm> };
+    EditMeal: { meal: Meal };
     Meals: {};
 };
 
@@ -115,7 +118,8 @@ function RootNavigator({ isAuthenticated }: Props) {
                     <Stack.Screen name="VoteProductChanges" component={VoteProductChanges} />
                     <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
                     <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
-                    <Stack.Screen name="AddOrUpdateMeal" component={AddOrUpdateMeal} />
+                    <Stack.Screen name="CreateMeal" component={CreateMealDialog} />
+                    <Stack.Screen name="EditMeal" component={EditMealDialog} />
                     <Stack.Screen name="Meals" component={Meals} />
                 </>
             )}

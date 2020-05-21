@@ -17,10 +17,10 @@ const mapStateToProps = (state: RootState) => ({
 
 type Props = ReturnType<typeof mapStateToProps> & {
     navigation: StackNavigationProp<RootStackParamList>;
-    route: RouteProp<RootStackParamList, 'AddOrUpdateMeal'>;
+    route: RouteProp<RootStackParamList, 'CreateMeal'>;
 };
 
-function AddOrUpdateMeal({ navigation, route: { params }, meals }: Props) {
+function CreateMealDialog({ navigation, route: { params }, meals }: Props) {
     const action = useAsyncFunction(
         actions.createAsync.request,
         actions.createAsync.success,
@@ -33,11 +33,9 @@ function AddOrUpdateMeal({ navigation, route: { params }, meals }: Props) {
             allMeals={meals!}
             navigation={navigation}
             onSubmit={async (value, helpers) => {
-                console.log('submit');
-
                 const creationDto: CreateMealDto = {
                     name: value.name,
-                    items: value.items.map((x) => mapFoodPortionDtoCreationDto(x)),
+                    items: value.items.map(mapFoodPortionDtoCreationDto),
                 };
 
                 try {
@@ -52,6 +50,4 @@ function AddOrUpdateMeal({ navigation, route: { params }, meals }: Props) {
     );
 }
 
-export default connect(mapStateToProps)(AddOrUpdateMeal);
-
-const styles = StyleSheet.create({});
+export default connect(mapStateToProps)(CreateMealDialog);

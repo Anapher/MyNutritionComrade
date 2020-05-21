@@ -83,7 +83,7 @@ export function createMealPortionFromCreation(creationDto: MealFoodPortionCreati
         mealId: creationDto.mealId,
         mealName: meal.name,
         items: meal.items,
-        nutritionalInfo: changeVolume(meal.nutritionInfo, meal.nutritionInfo.volume * creationDto.portion),
+        nutritionalInfo: changeVolume(meal.nutritionalInfo, meal.nutritionalInfo.volume * creationDto.portion),
     };
 }
 

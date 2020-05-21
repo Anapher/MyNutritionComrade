@@ -1,15 +1,22 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Formik, FormikHelpers } from 'formik';
-import { FoodPortionCreationDto, FoodPortionDto, Meal, MealCreationForm, ProductInfo } from 'Models';
-import React from 'react';
+import { FoodPortionCreationDto, FoodPortionDto, FoodPortionMealDto, Meal, MealCreationForm } from 'Models';
+import React, { useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { FAB, TextInput } from 'react-native-paper';
+import { Dialog, Divider, FAB, Paragraph, Portal, TextInput } from 'react-native-paper';
 import FoodPortionHeader from 'src/componants-domain/FoodPortionHeader';
-import FoodPortionView from 'src/componants-domain/FoodPortionView';
+import { CustomFoodPortionView, ProductFoodPortionView } from 'src/componants-domain/FoodPortionView';
+import MealPortionReadOnlyView from 'src/componants-domain/MealPortionReadOnlyView';
+import DialogButton from 'src/components/DialogButton';
 import { RootStackParamList } from 'src/RootNavigator';
-import { addFoodPortions, createMealPortionFromCreation, getFoodPortionId } from 'src/utils/different-foods';
-import MealEditorHeader from './MealEditorHeader';
+import {
+    addFoodPortions,
+    createMealPortionFromCreation,
+    createProductPortionFromCreation,
+    getFoodPortionId,
+} from 'src/utils/different-foods';
 import * as yup from 'yup';
+import MealEditorHeader from './MealEditorHeader';
 
 const defaultValues: MealCreationForm = {
     name: '',
@@ -39,7 +46,7 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
             return createMealPortionFromCreation(creationDto, meal);
         }
 
-        throw 'Unknwon ';
+        throw 'Unknown';
     };
 
     return (
@@ -62,6 +69,55 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                     });
                 });
 
+                const [appendMeal, setAppendMeal] = useState<FoodPortionMealDto | undefined>();
+                const [optionsFoodPortion, setOptionsFoodPortion] = useState<FoodPortionDto | undefined>();
+
+                const editItem = async (item: FoodPortionDto) => {
+                    switch (item.type) {
+                        case 'product':
+                            const product = item.product;
+                            navigation.navigate('AddProduct', {
+                                product,
+                                volume: item.nutritionalInfo.volume /** submit amount and serving type */,
+                                onSubmit: (amount, servingType) => {
+                                    const newPortion = createProductPortionFromCreation(
+                                        { type: 'product', amount, servingType, productId: product.id },
+                                        product,
+                                    );
+
+                                    setValues({
+                                        ...values,
+                                        items: values.items.map((x) => (x === item ? newPortion : x)),
+                                    });
+                                },
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                };
+
+                const appendFood = (foodPortion: FoodPortionDto) => {
+                    const existing = values.items.find((x) => getFoodPortionId(x) === getFoodPortionId(foodPortion));
+
+                    if (!existing) {
+                        setValues({
+                            ...values,
+                            items: [...values.items, foodPortion],
+                        });
+                    } else {
+                        const mergedFoodPortion = addFoodPortions(foodPortion, existing);
+                        setValues({
+                            ...values,
+                            items: values.items.map((x) => (x === existing ? mergedFoodPortion : x)),
+                        });
+                    }
+                };
+
+                const removeItem = (foodPortion: FoodPortionDto) => {
+                    setValues({ ...values, items: values.items.filter((x) => x !== foodPortion) });
+                };
+
                 return (
                     <View style={styles.root}>
                         <TextInput label="Name" value={values.name} onChangeText={(x) => setFieldValue('name', x)} />
@@ -69,9 +125,36 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                         <FlatList
                             style={styles.list}
                             data={values.items}
-                            renderItem={({ item }) => (
-                                <FoodPortionView foodPortion={item} onLongPress={() => {}} onPress={() => {}} />
-                            )}
+                            renderItem={({ item }) => {
+                                switch (item.type) {
+                                    case 'product':
+                                        return (
+                                            <ProductFoodPortionView
+                                                foodPortion={item}
+                                                onPress={() => editItem(item)}
+                                                onLongPress={() => setOptionsFoodPortion(item)}
+                                            />
+                                        );
+                                    case 'custom':
+                                        return (
+                                            <CustomFoodPortionView
+                                                foodPortion={item}
+                                                onPress={() => {}}
+                                                onLongPress={() => setOptionsFoodPortion(item)}
+                                            />
+                                        );
+                                    case 'meal':
+                                        return (
+                                            <MealPortionReadOnlyView
+                                                meal={item}
+                                                onPress={() => {}}
+                                                onLongPress={() => setOptionsFoodPortion(item)}
+                                            />
+                                        );
+                                    case 'suggestion':
+                                        throw 'No';
+                                }
+                            }}
                             keyExtractor={(item) => getFoodPortionId(item)}
                         />
                         <FAB
@@ -83,28 +166,63 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                                     onCreated: (creationDto, portionDto) => {
                                         const newFoodPortion = getFoodPortionDto(creationDto, portionDto);
 
-                                        const existing = values.items.find(
-                                            (x) => getFoodPortionId(x) === getFoodPortionId(newFoodPortion),
-                                        );
-
-                                        if (!existing) {
-                                            setValues({
-                                                ...values,
-                                                items: [...values.items, newFoodPortion],
-                                            });
-                                        } else {
-                                            const mergedFoodPortion = addFoodPortions(newFoodPortion, existing);
-                                            setValues({
-                                                ...values,
-                                                items: values.items.map((x) =>
-                                                    x === existing ? mergedFoodPortion : x,
-                                                ),
-                                            });
+                                        switch (newFoodPortion.type) {
+                                            case 'custom':
+                                            case 'product':
+                                                appendFood(newFoodPortion);
+                                                break;
+                                            case 'meal':
+                                                setAppendMeal(newFoodPortion);
+                                                break;
+                                            case 'suggestion':
+                                                newFoodPortion.items.forEach(appendFood);
+                                                break;
                                         }
                                     },
                                 })
                             }
                         />
+                        <Portal>
+                            <Dialog visible={!!appendMeal} onDismiss={() => setAppendMeal(undefined)}>
+                                <Dialog.Title numberOfLines={1} lineBreakMode="tail">
+                                    {appendMeal && `Add ${appendMeal.mealName}`}
+                                </Dialog.Title>
+                                <Dialog.Content>
+                                    <Paragraph>
+                                        Add meal as link meaning you cannot change the items of that meal but updates
+                                        will be inherited or only add items?
+                                    </Paragraph>
+                                </Dialog.Content>
+                                <DialogButton
+                                    onPress={() => {
+                                        appendFood(appendMeal!);
+                                        setAppendMeal(undefined);
+                                    }}
+                                >
+                                    Add link
+                                </DialogButton>
+                                <Divider />
+                                <DialogButton
+                                    onPress={() => {
+                                        appendMeal!.items.forEach(appendFood);
+                                        setAppendMeal(undefined);
+                                    }}
+                                >
+                                    Add items
+                                </DialogButton>
+                            </Dialog>
+                            <Dialog visible={!!optionsFoodPortion} onDismiss={() => setOptionsFoodPortion(undefined)}>
+                                <DialogButton
+                                    color="#e74c3c"
+                                    onPress={() => {
+                                        removeItem(optionsFoodPortion!);
+                                        setOptionsFoodPortion(undefined);
+                                    }}
+                                >
+                                    Remove
+                                </DialogButton>
+                            </Dialog>
+                        </Portal>
                     </View>
                 );
             }}

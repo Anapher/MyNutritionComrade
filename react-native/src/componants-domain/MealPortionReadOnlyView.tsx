@@ -1,3 +1,4 @@
+import React from 'react';
 import { FoodPortionMealDto, FoodPortionItemDto } from 'Models';
 import { useTheme } from '@react-navigation/native';
 import Color from 'color';

@@ -12,8 +12,6 @@ type Props = {
 };
 
 function getFoodPortionLabel(foodPortion: FoodPortionDto): string {
-    console.log(foodPortion);
-
     switch (foodPortion.type) {
         case 'product':
             return `${foodPortion.nutritionalInfo.volume}${getBaseUnit(foodPortion.product)} ${selectLabel(
@@ -30,9 +28,9 @@ function getFoodPortionLabel(foodPortion: FoodPortionDto): string {
     }
 }
 
-function MealItem({ meal }: Props) {
+function MealItem({ meal, onEdit, onOptions }: Props) {
     return (
-        <TouchableRipple style={styles.root} onPress={() => {}}>
+        <TouchableRipple style={styles.root} onPress={onEdit} onLongPress={onOptions}>
             <View>
                 <Subheading>{meal.name}</Subheading>
                 <Text ellipsizeMode="tail" numberOfLines={1} style={styles.descriptionText}>

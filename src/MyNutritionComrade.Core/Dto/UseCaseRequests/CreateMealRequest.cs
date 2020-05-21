@@ -9,14 +9,16 @@ namespace MyNutritionComrade.Core.Dto.UseCaseRequests
 {
     public class CreateMealRequest : IUseCaseRequest<CreateMealResponse>
     {
-        public CreateMealRequest(CreateMealDto dto, string userId)
+        public CreateMealRequest(CreateMealDto dto, string userId, string? overwriteMeal)
         {
             Dto = dto;
             UserId = userId;
+            OverwriteMeal = overwriteMeal;
         }
 
         public string UserId { get; }
         public CreateMealDto Dto { get; }
+        public string? OverwriteMeal { get; }
     }
 
     public class CreateMealDto

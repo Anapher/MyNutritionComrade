@@ -44,5 +44,11 @@ namespace MyNutritionComrade.Core.Domain.Entities
             _items.Remove(_items.First(x => x.GetId() == id));
             NutritionalInfo = _items.Select(x => x.NutritionalInfo).SumNutrition();
         }
+
+        public void Clear()
+        {
+            _items.Clear();
+            NutritionalInfo = NutritionalInfo.Empty;
+        }
     }
 }
