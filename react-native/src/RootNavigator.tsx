@@ -11,6 +11,10 @@ import {
     ProductProperties,
     ProductSearchConfig,
     Meal,
+    FoodPortionMealDto,
+    MealFoodPortionCreationDto,
+    NutritionalInfo,
+    FoodPortionItemDto,
 } from 'Models';
 import { PagingResponse, RootState } from 'MyNutritionComrade';
 import React from 'react';
@@ -31,6 +35,7 @@ import VoteProductChanges from './features/product-vote-changes/components/VoteP
 import Settings from './features/settings/components/Settings';
 import HomeScreen from './HomeScreen';
 import EditMealDialog from './features/meals/components/EditMealDialog';
+import MealPortionDialog from './features/meals/components/MealPortionDialog';
 
 const Stack = createStackNavigator();
 
@@ -55,7 +60,12 @@ export type RootStackParamList = {
             navigation: StackNavigationProp<RootStackParamList>,
         ) => Promise<boolean | void>;
     };
-    AddProduct: { product: ProductInfo; volume?: number; onSubmit: (value: number, servingType: string) => void };
+    AddProduct: {
+        product: ProductInfo;
+        volume?: number;
+        disableGoBack?: boolean;
+        onSubmit: (value: number, servingType: string) => void;
+    };
     VoteProductChanges: {
         preloaded?: PagingResponse<ProductContributionDto>;
         filter?: ProductContributionStatus;
@@ -66,6 +76,13 @@ export type RootStackParamList = {
     CreateMeal: { initialValue?: Partial<MealCreationForm> };
     EditMeal: { meal: Meal };
     Meals: {};
+    SelectMealPortion: {
+        mealName: string;
+        nutritionalInfo: NutritionalInfo;
+        initialPortion?: number;
+        disableGoBack?: boolean;
+        onSubmit: (newPortion: number) => void;
+    };
 };
 
 function RootNavigator({ isAuthenticated }: Props) {
@@ -121,6 +138,7 @@ function RootNavigator({ isAuthenticated }: Props) {
                     <Stack.Screen name="CreateMeal" component={CreateMealDialog} />
                     <Stack.Screen name="EditMeal" component={EditMealDialog} />
                     <Stack.Screen name="Meals" component={Meals} />
+                    <Stack.Screen name="SelectMealPortion" component={MealPortionDialog} />
                 </>
             )}
         </Stack.Navigator>

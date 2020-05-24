@@ -37,7 +37,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 function AddProduct({
     navigation,
     route: {
-        params: { product, onSubmit, volume: startVolume },
+        params: { product, onSubmit, volume: startVolume, disableGoBack },
     },
     slider,
     pendingContributions,
@@ -62,7 +62,7 @@ function AddProduct({
                     canSubmit={volume > 0}
                     onSubmit={() => {
                         onSubmit(volume, serving);
-                        navigation.goBack();
+                        if (!disableGoBack) navigation.goBack();
                     }}
                 />
             ),

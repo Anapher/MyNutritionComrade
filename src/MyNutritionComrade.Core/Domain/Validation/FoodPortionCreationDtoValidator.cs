@@ -19,21 +19,20 @@ namespace MyNutritionComrade.Core.Domain.Validation
 
             When(x => x is MealFoodPortionCreationDto, () =>
             {
-                RuleFor(x => ((MealFoodPortionCreationDto)x).MealId).NotEmpty();
+                RuleFor(x => ((MealFoodPortionCreationDto) x).MealId).NotEmpty();
                 RuleForEach(x => ((MealFoodPortionCreationDto) x).OverwriteIngredients).ChildRules(rules =>
                 {
                     rules.RuleFor(x => x).Must(x => x is ProductFoodPortionCreationDto || x is CustomFoodPortionCreationDto);
                     rules.RuleFor(x => x).SetValidator(this);
                 });
-                RuleFor(x => ((MealFoodPortionCreationDto)x).Portion).GreaterThan(0);
+                RuleFor(x => ((MealFoodPortionCreationDto) x).Portion).GreaterThan(0);
             });
 
             When(x => x is SuggestionFoodPortionCreationDto, () =>
             {
-                RuleFor(x => ((SuggestionFoodPortionCreationDto)x).SuggestionId).NotEmpty();
+                RuleFor(x => ((SuggestionFoodPortionCreationDto) x).SuggestionId).NotEmpty();
                 RuleFor(x => ((SuggestionFoodPortionCreationDto) x).Items).NotEmpty();
-                RuleForEach(x => ((SuggestionFoodPortionCreationDto) x).Items)
-                    .ChildRules(rules => rules.RuleFor(x => x).SetValidator(this));
+                RuleForEach(x => ((SuggestionFoodPortionCreationDto) x).Items).ChildRules(rules => rules.RuleFor(x => x).SetValidator(this));
             });
         }
     }

@@ -12,6 +12,7 @@ import { SettingsStackParamList } from './Settings';
 import { UserSettings } from 'Models';
 import * as jsonPatch from 'fast-json-patch';
 import useAsyncFunction from 'src/hooks/use-async-function';
+import LogOffWidget from './LogOffWidget';
 
 function ErrorMessage({ error }: { error: RequestErrorResponse }) {
     const theme = useTheme();
@@ -119,6 +120,8 @@ const SettingsOverview = ({ navigation, loadUserSettings, isLoading, userSetting
             ),
         });
     }
+
+    items.push({ key: 'account', render: () => <LogOffWidget /> });
 
     return (
         <FlatList

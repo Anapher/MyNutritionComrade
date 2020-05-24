@@ -1,15 +1,14 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import MealEditor from './MealEditor';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from 'src/RootNavigator';
 import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { CreateMealDto } from 'Models';
 import { RootState } from 'MyNutritionComrade';
+import React from 'react';
 import { connect } from 'react-redux';
 import useAsyncFunction from 'src/hooks/use-async-function';
-import * as actions from '../actions';
-import { CreateMealDto } from 'Models';
+import { RootStackParamList } from 'src/RootNavigator';
 import { mapFoodPortionDtoCreationDto } from 'src/utils/different-foods';
+import * as actions from '../actions';
+import MealEditor from './MealEditor';
 
 const mapStateToProps = (state: RootState) => ({
     meals: state.meals.meals,

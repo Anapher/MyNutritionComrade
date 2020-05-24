@@ -1,3 +1,5 @@
+import { NutritionalInfo } from 'Models';
+
 declare module 'Models' {
     type SuggestionType = 'product' | 'meal';
 
@@ -26,6 +28,7 @@ declare module 'Models' {
         type: 'meal';
         mealName: string;
         mealId: string;
+        nutritionalInfo: NutritionalInfo;
 
         frequentlyUsedPortion?: FoodPortionMealDto;
     }

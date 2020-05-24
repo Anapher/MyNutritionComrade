@@ -36,6 +36,7 @@ import { CustomFoodPortionView, ProductFoodPortionView } from 'src/componants-do
 import FoodPortionHeader from 'src/componants-domain/FoodPortionHeader';
 import MealPortionView from 'src/componants-domain/MealPortionView';
 import FoodPortionDialog, { ShowOptionsInfo } from './FoodPortionDialog';
+import { changeVolume } from 'src/utils/product-utils';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
     breakfast: 'Breakfast',
@@ -150,6 +151,31 @@ function TabDiary({
                             time: item.time,
                             creationDto,
                             foodPortion: createProductPortionFromCreation(creationDto, product),
+                            append: false,
+                        });
+                    },
+                });
+                break;
+            case 'meal':
+                const mealFoodPortion = item.foodPortion;
+                navigation.navigate('SelectMealPortion', {
+                    mealName: mealFoodPortion.mealName,
+                    nutritionalInfo: changeVolume(
+                        mealFoodPortion.nutritionalInfo,
+                        mealFoodPortion.nutritionalInfo.volume * mealFoodPortion.portion,
+                    ),
+                    initialPortion: mealFoodPortion.portion,
+                    onSubmit: (portion: number) => {
+                        const creationDto: MealFoodPortionCreationDto = {
+                            type: 'meal',
+                            portion,
+                            mealId: mealFoodPortion.mealId,
+                        };
+
+                        patchConsumptions({
+                            date: selectedDay,
+                            time: item.time,
+                            creationDto,
                             append: false,
                         });
                     },

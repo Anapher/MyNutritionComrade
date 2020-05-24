@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Infrastructure.Data.Indexes;
@@ -57,7 +58,7 @@ namespace MyNutritionComrade.Selectors
         {
             var meals = await _session.Query<Meal, Meal_ByUserId>().Where(x => x.UserId == userId).Search(x => x.Name, term + "*").ToListAsync();
 
-            return meals.Select(x => new MealSuggestion(x.Name, x.Id));
+            return meals.Select(x => new MealSuggestion(x.Name, x.Id, x.NutritionalInfo));
         }
     }
 
@@ -80,14 +81,16 @@ namespace MyNutritionComrade.Selectors
 
     public class MealSuggestion : SearchResult
     {
-        public MealSuggestion(string mealName, string mealId)
+        public MealSuggestion(string mealName, string mealId, NutritionalInfo nutritionalInfo)
         {
             MealName = mealName;
             MealId = mealId;
+            NutritionalInfo = nutritionalInfo;
         }
 
         public string MealName { get; private set; }
         public string MealId { get; private set; }
+        public NutritionalInfo NutritionalInfo { get; private set; }
         public override SearchResultType Type { get; } = SearchResultType.Meal;
     }
 

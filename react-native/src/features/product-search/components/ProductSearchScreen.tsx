@@ -46,6 +46,7 @@ function ProductSearchScreen({
         switch (item.type) {
             case 'product':
                 navigation.navigate('AddProduct', {
+                    disableGoBack: true,
                     onSubmit: (amount, servingType) => {
                         const creationDto: ProductFoodPortionCreationDto = {
                             type: 'product',
@@ -55,7 +56,7 @@ function ProductSearchScreen({
                         };
 
                         onCreated(creationDto, createProductPortionFromCreation(creationDto, item.product));
-                        navigation.goBack();
+                        navigation.pop(2);
                     },
                     product: item.product,
                 });
@@ -72,8 +73,16 @@ function ProductSearchScreen({
                 navigation.goBack();
                 break;
             case 'meal':
-                onCreated({ type: 'meal', mealId: item.mealId, portion: 1 });
-                navigation.goBack();
+                navigation.navigate('SelectMealPortion', {
+                    mealName: item.mealName,
+                    initialPortion: item.frequentlyUsedPortion?.portion,
+                    nutritionalInfo: item.nutritionalInfo,
+                    disableGoBack: true,
+                    onSubmit: (portion: number) => {
+                        onCreated({ type: 'meal', mealId: item.mealId, portion });
+                        navigation.pop(2);
+                    },
+                });
                 break;
             case 'generatedMeal':
                 onCreated({
