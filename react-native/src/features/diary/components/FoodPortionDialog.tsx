@@ -6,6 +6,7 @@ import { Dialog, Divider } from 'react-native-paper';
 import DialogButton from 'src/components/DialogButton';
 import { RootStackParamList } from 'src/RootNavigator';
 import selectLabel from 'src/utils/product-utils';
+import { suggestionIdToString } from 'src/utils/food-utils';
 
 export type ShowOptionsInfo = {
     foodPortion?: FoodPortionDto;
@@ -29,7 +30,7 @@ function getName(value: FoodPortionDto) {
         case 'meal':
             return value.mealName;
         case 'suggestion':
-            return value.suggestionId;
+            return suggestionIdToString(value.suggestionId);
     }
 }
 

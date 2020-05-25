@@ -56,5 +56,3 @@ function EditMealDialog({
 }
 
 export default EditMealDialog;
-
-const styles = StyleSheet.create({});

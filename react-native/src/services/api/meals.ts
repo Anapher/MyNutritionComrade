@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import { Operation } from 'fast-json-patch';
 import { CreateMealDto, Meal } from 'Models';
 
 export async function create(dto: CreateMealDto): Promise<Meal> {

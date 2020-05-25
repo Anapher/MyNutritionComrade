@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import selectLabel from 'src/utils/product-utils';
-import { getGeneratedMealName } from 'src/utils/food-utils';
+import { suggestionIdToString } from 'src/utils/food-utils';
 
 type Props = {
     item: SearchResult;
@@ -62,7 +62,7 @@ function getTitle(s: SearchResult): string {
         case 'custom':
             return s.label || 'Custom product';
         case 'generatedMeal':
-            return getGeneratedMealName(s);
+            return suggestionIdToString(s.id);
     }
 }
 

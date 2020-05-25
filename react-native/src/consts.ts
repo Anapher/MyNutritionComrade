@@ -14,3 +14,7 @@ export const SupportedLanguages: LanguageInfo[] = [
 ];
 
 export const ConsumptionTimes: ConsumptionTime[] = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+export const generatedMealIds = {
+    recentMeal: 'recent-meal',
+};

@@ -9,11 +9,12 @@ import {
     ProductSearchConfig,
     SearchResult,
 } from 'Models';
-import { ConsumptionTimes } from 'src/consts';
+import { ConsumptionTimes, generatedMealIds } from 'src/consts';
 import { getSearchResultKey, matchSearchResult } from 'src/utils/different-foods';
 import { getMatchingServing } from 'src/utils/food-utils';
 import { ProductSearchQuery, tryParseServingSize } from 'src/utils/input-parser';
 import { flattenProductsPrioritize } from 'src/utils/food-flattening';
+import { build } from 'search-params';
 
 const maxSearchResults: number = 10;
 
@@ -49,7 +50,9 @@ function* generateMeals(
 ): Generator<GeneratedMealSuggestion> {
     const today = config?.date ?? DateTime.local().toISODate();
 
-    yield* ConsumptionTimes.map((x) => GenerateMealSuggestion(today, x, history)).filter((x) => x !== undefined) as any;
+    yield* ConsumptionTimes.filter((x) => config.consumptionTime === undefined || config.consumptionTime === x)
+        .map((x) => GenerateMealSuggestion(today, x, history))
+        .filter((x) => x !== undefined) as any;
 }
 
 function GenerateMealSuggestion(
@@ -58,7 +61,7 @@ function GenerateMealSuggestion(
     history: ProductConsumptionDates,
 ): GeneratedMealSuggestion | undefined {
     const lastMeal = _.orderBy(Object.keys(history), (x) => x, 'desc').find(
-        (time) => time !== today && history[time].find((x) => x.time === time),
+        (date) => date !== today && history[date].find((x) => x.time === time),
     );
 
     if (lastMeal !== undefined) {
@@ -66,7 +69,7 @@ function GenerateMealSuggestion(
 
         return {
             type: 'generatedMeal',
-            id: `${lastMeal}/${time}`,
+            id: `${generatedMealIds.recentMeal}?${build({ time, date: lastMeal })}`,
             items,
         };
     }

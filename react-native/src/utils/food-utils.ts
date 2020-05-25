@@ -1,7 +1,9 @@
 import itiriri from 'itiriri';
 import _ from 'lodash';
 import { DateTime } from 'luxon';
-import { ConsumptionTime, GeneratedMealSuggestion, ServingSize } from 'Models';
+import { RecentMealSuggestion, ServingSize } from 'Models';
+import { parse } from 'search-params';
+import { generatedMealIds } from 'src/consts';
 import { capitalizeFirstLetter } from './string-utils';
 
 export function getMatchingServing(
@@ -13,13 +15,19 @@ export function getMatchingServing(
         .first();
 }
 
-export function getGeneratedMealName(generatedMeal: GeneratedMealSuggestion): string {
-    const splitter = generatedMeal.id.split('/');
-    const time: ConsumptionTime = splitter[1] as any;
-    const day = splitter[0];
-    const yesterday = day === DateTime.local().minus({ days: 1 }).toISODate();
+export function suggestionIdToString(id: string): string {
+    const parts = id.split('?', 2);
 
-    return yesterday
-        ? `Yesterdays ${capitalizeFirstLetter(time)}`
-        : `${capitalizeFirstLetter(time)} from ${DateTime.fromISO(day).toLocaleString(DateTime.DATE_HUGE)}`;
+    if (parts[0] === generatedMealIds.recentMeal) {
+        const query = parse<RecentMealSuggestion>(parts[1]);
+        const yesterday = query.date === DateTime.local().minus({ days: 1 }).toISODate();
+
+        return yesterday
+            ? `Yesterdays ${capitalizeFirstLetter(query.time)}`
+            : `${capitalizeFirstLetter(query.time)} from ${DateTime.fromISO(query.date).toLocaleString(
+                  DateTime.DATE_HUGE,
+              )}`;
+    }
+
+    return 'Unknown';
 }

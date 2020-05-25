@@ -9,7 +9,7 @@ import {
     Meal,
     FoodPortionProductDto,
 } from 'Models';
-import { getGeneratedMealName, getMatchingServing } from './food-utils';
+import { suggestionIdToString, getMatchingServing } from './food-utils';
 import { ProductSearchQuery } from './input-parser';
 import selectLabel, { computeNutritionHash, sumNutritions, changeVolume } from './product-utils';
 
@@ -206,7 +206,13 @@ export function mapFoodPortionDtoToSearchResult(dto: FoodPortionDto): SearchResu
         return { type: 'product', product: dto.product, frequentlyUsedPortion: dto };
     }
     if (dto.type === 'meal') {
-        return { type: 'meal', mealName: dto.mealName, mealId: dto.mealId, frequentlyUsedPortion: dto };
+        return {
+            type: 'meal',
+            mealName: dto.mealName,
+            mealId: dto.mealId,
+            frequentlyUsedPortion: dto,
+            nutritionalInfo: dto.nutritionalInfo,
+        };
     }
     if (dto.type === 'suggestion') {
         return { type: 'generatedMeal', id: dto.suggestionId, items: dto.items };
@@ -247,7 +253,7 @@ export function matchSearchResult(result: SearchResult, query: ProductSearchQuer
         case 'generatedMeal':
             return (
                 !query.productSearch ||
-                getGeneratedMealName(result).toUpperCase().includes(query.productSearch.toUpperCase())
+                suggestionIdToString(result.id).toUpperCase().includes(query.productSearch.toUpperCase())
             );
         case 'custom':
             return (

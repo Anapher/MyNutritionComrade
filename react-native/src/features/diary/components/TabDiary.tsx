@@ -37,6 +37,7 @@ import FoodPortionHeader from 'src/componants-domain/FoodPortionHeader';
 import MealPortionView from 'src/componants-domain/MealPortionView';
 import FoodPortionDialog, { ShowOptionsInfo } from './FoodPortionDialog';
 import { changeVolume } from 'src/utils/product-utils';
+import { parse } from 'search-params';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
     breakfast: 'Breakfast',

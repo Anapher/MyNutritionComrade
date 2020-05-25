@@ -3,6 +3,11 @@ import { NutritionalInfo } from 'Models';
 declare module 'Models' {
     type SuggestionType = 'product' | 'meal';
 
+    export interface RecentMealSuggestion {
+        time: ConsumptionTime;
+        date: string;
+    }
+
     export interface ProductSearchConfig {
         consumptionTime?: ConsumptionTime;
         date?: string;
