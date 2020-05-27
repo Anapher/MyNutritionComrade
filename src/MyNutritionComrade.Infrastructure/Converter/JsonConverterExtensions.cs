@@ -46,14 +46,5 @@ namespace MyNutritionComrade.Infrastructure.Converter
                 {FoodPortionType.Suggestion, typeof(SuggestionFoodPortionCreationDto)},
             }) {TypePropertyName = nameof(FoodPortionCreationDto.Type)});
         }
-
-        public enum NutritionGoalType
-        {
-            CaloriesFixed,
-            CaloriesMifflinStJeor,
-            ProteinByBodyweight,
-            ProteinFixed,
-            ProportionalDistribution
-        }
     }
 }

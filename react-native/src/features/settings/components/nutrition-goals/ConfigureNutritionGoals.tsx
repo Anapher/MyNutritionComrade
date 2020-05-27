@@ -8,6 +8,7 @@ import ConfigureNutritentDistribution from './ConfigureNutrientDistribution';
 import ConfigureProtein, { defaultValue as defaultValueProtein } from './ConfigureProtein';
 import { ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import WorkingKeyboardAvoidingView from 'src/components/WorkingKeyboardAvoidingView';
 
 type Props = {
     value: UserNutritionGoal;
@@ -73,31 +74,33 @@ const sections: {
 
 function ConfigureNutritionGoals({ value, onChange }: Props) {
     return (
-        <ScrollView>
-            <Accordion
-                activeSections={sections
-                    .map((d, i) => ({ d, i }))
-                    .filter((x) => value[x.d.type] !== undefined)
-                    .map((x) => x.i)}
-                sections={sections}
-                renderSectionTitle={() => null as any}
-                renderHeader={(item, i, active) => (
-                    <SectionHeader
-                        active={active}
-                        text={item.label}
-                        onPress={() =>
-                            onChange({
-                                ...value,
-                                [item.type]: value[item.type] === undefined ? item.defaultValue : undefined,
-                            })
-                        }
-                    />
-                )}
-                renderContent={(content) => <content.render data={value} onChange={(x) => onChange(x)} />}
-                onChange={(x) => {}}
-                expandMultiple
-            />
-        </ScrollView>
+        <WorkingKeyboardAvoidingView>
+            <ScrollView>
+                <Accordion
+                    activeSections={sections
+                        .map((d, i) => ({ d, i }))
+                        .filter((x) => value[x.d.type] !== undefined)
+                        .map((x) => x.i)}
+                    sections={sections}
+                    renderSectionTitle={() => null as any}
+                    renderHeader={(item, i, active) => (
+                        <SectionHeader
+                            active={active}
+                            text={item.label}
+                            onPress={() =>
+                                onChange({
+                                    ...value,
+                                    [item.type]: value[item.type] === undefined ? item.defaultValue : undefined,
+                                })
+                            }
+                        />
+                    )}
+                    renderContent={(content) => <content.render data={value} onChange={(x) => onChange(x)} />}
+                    onChange={(x) => {}}
+                    expandMultiple
+                />
+            </ScrollView>
+        </WorkingKeyboardAvoidingView>
     );
 }
 

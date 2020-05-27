@@ -1,31 +1,41 @@
-import React from 'react';
-import { FoodPortionMealDto, FoodPortionItemDto } from 'Models';
 import { useTheme } from '@react-navigation/native';
 import Color from 'color';
-import { Surface, TouchableRipple, Text } from 'react-native-paper';
-import { View, StyleSheet } from 'react-native';
-import { roundNumber } from 'src/utils/string-utils';
+import { FoodPortionItemDto, FoodPortionMealDto, MealFoodPortionCreationDto } from 'Models';
+import React from 'react';
+import { View } from 'react-native';
+import { Surface, Text, TouchableRipple } from 'react-native-paper';
 import selectLabel, { getBaseUnit } from 'src/utils/product-utils';
+import { roundNumber } from 'src/utils/string-utils';
 import { styles } from './food-portion-styles';
 
 type MealPortionProps = {
-    onPress?: () => void;
-    onLongPress?: () => void;
+    onPress?: (executeEdit: (changes: Partial<MealFoodPortionCreationDto>) => void, executeRemove: () => void) => void;
+    onLongPress?: (
+        executeEdit: (changes: Partial<MealFoodPortionCreationDto>) => void,
+        executeRemove: () => void,
+    ) => void;
+
+    onEdit: (creationDto: MealFoodPortionCreationDto) => void;
+    onRemove: () => void;
+
     meal: FoodPortionMealDto;
 };
 
-function MealPortionReadOnlyView({ onPress, onLongPress, meal }: MealPortionProps) {
+function MealPortionReadOnlyView({ onPress, onLongPress, meal, onEdit, onRemove }: MealPortionProps) {
     const theme = useTheme();
 
     const rippleColor = 'black';
     const titleColor = Color(theme.colors.text).alpha(0.87).rgb().string();
     const kcalColor = Color(theme.colors.text).alpha(0.8).rgb().string();
 
+    const editDelegate: (changes: Partial<MealFoodPortionCreationDto>) => void = (changes) =>
+        onEdit({ type: 'meal', mealId: meal.mealId, portion: meal.portion, ...changes });
+
     return (
         <Surface style={styles.surface}>
             <TouchableRipple
-                onPress={onPress && (() => onPress())}
-                onLongPress={onLongPress && (() => onLongPress())}
+                onPress={onPress && (() => onPress(editDelegate, onRemove))}
+                onLongPress={onLongPress && (() => onLongPress(editDelegate, onRemove))}
                 rippleColor={rippleColor}
                 style={styles.root}
             >

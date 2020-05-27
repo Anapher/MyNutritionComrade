@@ -15,7 +15,7 @@ namespace MyNutritionComrade.Core.Domain.Validation
         }
     }
 
-    public class NutritionGoalBaseValidator : AbstractValidator<KeyValuePair<NutritionGoalType, NutritionGoalBase>>
+    public class NutritionGoalBaseValidator : AbstractValidator<KeyValuePair<NutritionGoalCategory, NutritionGoalBase>>
     {
         public NutritionGoalBaseValidator()
         {

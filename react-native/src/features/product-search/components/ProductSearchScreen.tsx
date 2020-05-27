@@ -20,6 +20,7 @@ import {
     getSearchResultKey,
     createProductPortionFromCreation,
 } from 'src/utils/different-foods';
+import { sumNutritions } from 'src/utils/product-utils';
 
 const mapStateToProps = (state: RootState) => ({
     suggestions: state.productSearch.suggestions,
@@ -85,11 +86,19 @@ function ProductSearchScreen({
                 });
                 break;
             case 'generatedMeal':
-                onCreated({
-                    type: 'suggestion',
-                    suggestionId: item.id,
-                    items: item.items.map(mapFoodPortionDtoCreationDto),
-                });
+                onCreated(
+                    {
+                        type: 'suggestion',
+                        suggestionId: item.id,
+                        items: item.items.map(mapFoodPortionDtoCreationDto),
+                    },
+                    {
+                        type: 'suggestion',
+                        suggestionId: item.id,
+                        items: item.items,
+                        nutritionalInfo: sumNutritions(item.items.map((x) => x.nutritionalInfo)),
+                    },
+                );
                 navigation.goBack();
                 break;
             case 'custom':

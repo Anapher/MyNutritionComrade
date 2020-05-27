@@ -1,12 +1,12 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, ToastAndroid } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ToastAndroid } from 'react-native';
 import { Appbar } from 'react-native-paper';
+import LoadingOverlay from 'src/components/LoadingOverlay';
+import { toString } from 'src/utils/error-result';
 import ConfigureNutritionGoals from './nutrition-goals/ConfigureNutritionGoals';
 import { SettingsStackParamList } from './Settings';
-import LoadingOverlay from 'src/components/LoadingOverlay';
-import { RequestErrorResponse, toString } from 'src/utils/error-result';
 
 type Props = {
     navigation: StackNavigationProp<SettingsStackParamList>;
@@ -22,6 +22,8 @@ const SettingsNutritionGoals = ({
     const [value, setValue] = useState(initialValue);
     const valueRef = useRef(value);
     const [isLoading, setIsLoading] = useState(false);
+
+    console.log(initialValue);
 
     useEffect(() => {
         valueRef.current = value;
@@ -58,5 +60,3 @@ const SettingsNutritionGoals = ({
 };
 
 export default SettingsNutritionGoals;
-
-const styles = StyleSheet.create({});

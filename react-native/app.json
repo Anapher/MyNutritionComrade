@@ -23,10 +23,6 @@
         }
       }
     },
-    "androidStatusBar": {
-      "barStyle": "dark-content",
-      "backgroundColor": "#212121"
-    },
     "splash": {
       "backgroundColor": "#212121",
       "image": "./assets/splash.png"

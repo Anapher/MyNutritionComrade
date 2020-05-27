@@ -1,12 +1,19 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Formik, FormikHelpers } from 'formik';
-import { FoodPortionCreationDto, FoodPortionDto, FoodPortionMealDto, Meal, MealCreationForm } from 'Models';
+import {
+    FoodPortionCreationDto,
+    FoodPortionDto,
+    FoodPortionMealDto,
+    Meal,
+    MealCreationForm,
+    FoodPortionProductDto,
+} from 'Models';
 import React, { useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, ToastAndroid } from 'react-native';
 import { Dialog, Divider, FAB, Paragraph, Portal, TextInput } from 'react-native-paper';
-import FoodPortionHeader from 'src/componants-domain/FoodPortionHeader';
-import { CustomFoodPortionView, ProductFoodPortionView } from 'src/componants-domain/FoodPortionView';
-import MealPortionReadOnlyView from 'src/componants-domain/MealPortionReadOnlyView';
+import FoodPortionHeader from 'src/components-domain/FoodPortionHeader';
+import { CustomFoodPortionView, ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
+import MealPortionReadOnlyView from 'src/components-domain/MealPortionReadOnlyView';
 import DialogButton from 'src/components/DialogButton';
 import { RootStackParamList } from 'src/RootNavigator';
 import {
@@ -14,9 +21,12 @@ import {
     createMealPortionFromCreation,
     createProductPortionFromCreation,
     getFoodPortionId,
+    getCreationDtoId,
+    mapFoodPortionMealDtoToMealInfo,
 } from 'src/utils/different-foods';
 import * as yup from 'yup';
 import MealEditorHeader from './MealEditorHeader';
+import { CreateEditProductDelegate, CreateEditMealDelegate } from 'src/components-domain/food-portion-edit-helper';
 
 const defaultValues: MealCreationForm = {
     name: '',
@@ -24,6 +34,7 @@ const defaultValues: MealCreationForm = {
 };
 
 type Props = {
+    mealId?: string;
     allMeals: Meal[];
     initialValue?: Partial<MealCreationForm>;
 
@@ -37,7 +48,7 @@ const schema = yup.object().shape({
     items: yup.array().required(),
 });
 
-function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
+function MealEditor({ initialValue, navigation, onSubmit, allMeals, mealId }: Props) {
     const getFoodPortionDto = (creationDto: FoodPortionCreationDto, foodPortion?: FoodPortionDto): FoodPortionDto => {
         if (foodPortion !== undefined) return foodPortion;
 
@@ -46,7 +57,7 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
             return createMealPortionFromCreation(creationDto, meal);
         }
 
-        throw 'Unknown';
+        throw new Error(`Cannot create food portion dto from ${creationDto.type}`);
     };
 
     return (
@@ -72,32 +83,20 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                 const [appendMeal, setAppendMeal] = useState<FoodPortionMealDto | undefined>();
                 const [optionsFoodPortion, setOptionsFoodPortion] = useState<FoodPortionDto | undefined>();
 
-                const editItem = async (item: FoodPortionDto) => {
-                    switch (item.type) {
-                        case 'product':
-                            const product = item.product;
-                            navigation.navigate('AddProduct', {
-                                product,
-                                volume: item.nutritionalInfo.volume /** submit amount and serving type */,
-                                onSubmit: (amount, servingType) => {
-                                    const newPortion = createProductPortionFromCreation(
-                                        { type: 'product', amount, servingType, productId: product.id },
-                                        product,
-                                    );
-
-                                    setValues({
-                                        ...values,
-                                        items: values.items.map((x) => (x === item ? newPortion : x)),
-                                    });
-                                },
-                            });
-                            break;
-                        default:
-                            break;
-                    }
-                };
-
                 const appendFood = (foodPortion: FoodPortionDto) => {
+                    if (foodPortion.type === 'meal' && foodPortion.mealId === mealId) {
+                        ToastAndroid.show(
+                            'Cannot add this meal to itself. That would create an infinite loop and that would be bad...',
+                            ToastAndroid.LONG,
+                        );
+                        return;
+                    }
+
+                    if (foodPortion.type === 'suggestion') {
+                        foodPortion.items.forEach(appendFood);
+                        return;
+                    }
+
                     const existing = values.items.find((x) => getFoodPortionId(x) === getFoodPortionId(foodPortion));
 
                     if (!existing) {
@@ -118,6 +117,49 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                     setValues({ ...values, items: values.items.filter((x) => x !== foodPortion) });
                 };
 
+                const onEdit = (creationDto: FoodPortionCreationDto) => {
+                    let existing: FoodPortionDto | undefined;
+                    let newFoodPortion: FoodPortionDto | undefined;
+
+                    switch (creationDto.type) {
+                        case 'product': {
+                            const id = getCreationDtoId(creationDto);
+                            existing = values.items.find((x) => x.type === 'product' && getFoodPortionId(x) === id);
+
+                            if (!existing) {
+                                throw new Error('Cannot edit an item that did not exist');
+                            }
+
+                            newFoodPortion = createProductPortionFromCreation(
+                                creationDto,
+                                (existing as FoodPortionProductDto).product,
+                            );
+                            break;
+                        }
+                        case 'meal': {
+                            const id = getCreationDtoId(creationDto);
+                            existing = values.items.find((x) => x.type === 'meal' && getFoodPortionId(x) === id);
+
+                            if (!existing) {
+                                throw new Error('Cannot edit an item that did not exist');
+                            }
+
+                            newFoodPortion = createMealPortionFromCreation(
+                                creationDto,
+                                mapFoodPortionMealDtoToMealInfo(existing as FoodPortionMealDto),
+                            );
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+
+                    setValues({
+                        ...values,
+                        items: values.items.map((x) => (x === existing ? newFoodPortion! : x)),
+                    });
+                };
+
                 return (
                     <View style={styles.root}>
                         <TextInput label="Name" value={values.name} onChangeText={(x) => setFieldValue('name', x)} />
@@ -131,8 +173,12 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                                         return (
                                             <ProductFoodPortionView
                                                 foodPortion={item}
-                                                onPress={() => editItem(item)}
+                                                onPress={(executeEdit) =>
+                                                    CreateEditProductDelegate(navigation)(item, executeEdit)
+                                                }
                                                 onLongPress={() => setOptionsFoodPortion(item)}
+                                                onEdit={onEdit}
+                                                onRemove={() => removeItem(item)}
                                             />
                                         );
                                     case 'custom':
@@ -141,14 +187,20 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                                                 foodPortion={item}
                                                 onPress={() => {}}
                                                 onLongPress={() => setOptionsFoodPortion(item)}
+                                                onEdit={onEdit}
+                                                onRemove={() => removeItem(item)}
                                             />
                                         );
                                     case 'meal':
                                         return (
                                             <MealPortionReadOnlyView
                                                 meal={item}
-                                                onPress={() => {}}
+                                                onPress={(executeEdit) =>
+                                                    CreateEditMealDelegate(navigation)(item, executeEdit)
+                                                }
                                                 onLongPress={() => setOptionsFoodPortion(item)}
+                                                onEdit={onEdit}
+                                                onRemove={() => removeItem(item)}
                                             />
                                         );
                                     case 'suggestion':
@@ -169,13 +221,11 @@ function MealEditor({ initialValue, navigation, onSubmit, allMeals }: Props) {
                                         switch (newFoodPortion.type) {
                                             case 'custom':
                                             case 'product':
+                                            case 'suggestion':
                                                 appendFood(newFoodPortion);
                                                 break;
                                             case 'meal':
                                                 setAppendMeal(newFoodPortion);
-                                                break;
-                                            case 'suggestion':
-                                                newFoodPortion.items.forEach(appendFood);
                                                 break;
                                         }
                                     },

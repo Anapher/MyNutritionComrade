@@ -3,6 +3,6 @@
     public class ProteinByBodyweightNutritionGoal : NutritionGoalBase
     {
         public double ProteinPerKgBodyweight { get; set; }
-        public override NutritionGoalType Type { get; } = NutritionGoalType.Protein;
+        public override NutritionGoalType Type { get; } = NutritionGoalType.ProteinByBodyweight;
     }
 }

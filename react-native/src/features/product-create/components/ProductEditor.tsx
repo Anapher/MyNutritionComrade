@@ -111,7 +111,6 @@ function ProductEditor({
                             </View>
                         </ViewPager>
                         <LinearMobileStepper
-                            hideOnKeyboardOpening
                             steps={4}
                             activeStep={currentPage}
                             onChangeActiveStep={(s) => viewPagerRef.current?.setPage(s)}

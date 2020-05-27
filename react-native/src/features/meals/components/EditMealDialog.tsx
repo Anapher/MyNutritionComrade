@@ -9,6 +9,7 @@ import { RootStackParamList } from 'src/RootNavigator';
 import { mapFoodPortionDtoCreationDto } from 'src/utils/different-foods';
 import * as actions from '../actions';
 import MealEditor from './MealEditor';
+import { connect } from 'react-redux';
 
 const mapStateToProps = (state: RootState) => ({
     meals: state.meals.meals,
@@ -34,6 +35,7 @@ function EditMealDialog({
 
     return (
         <MealEditor
+            mealId={meal.id}
             initialValue={meal}
             allMeals={meals!}
             navigation={navigation}
@@ -55,4 +57,4 @@ function EditMealDialog({
     );
 }
 
-export default EditMealDialog;
+export default connect(mapStateToProps)(EditMealDialog);

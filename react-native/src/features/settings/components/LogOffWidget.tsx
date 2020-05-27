@@ -19,8 +19,7 @@ function LogOffWidget({ signOut }: Props) {
             <Card.Actions>
                 <Button
                     onPress={() => {
-                        rootPersistor.purge();
-                        signOut();
+                        rootPersistor.purge().then(() => signOut());
                     }}
                 >
                     Log Off

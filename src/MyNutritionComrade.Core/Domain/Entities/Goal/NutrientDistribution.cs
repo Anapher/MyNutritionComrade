@@ -6,6 +6,6 @@
         public double Protein { get; set; }
         public double Fat { get; set; }
 
-        public override NutritionGoalType Type { get; } = NutritionGoalType.Distribution;
+        public override NutritionGoalType Type { get; } = NutritionGoalType.ProportionalDistribution;
     }
 }

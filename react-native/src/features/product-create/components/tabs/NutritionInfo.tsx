@@ -7,6 +7,7 @@ import { Subheading, Surface, Text, useTheme } from 'react-native-paper';
 import Row from 'src/components/Row';
 import { TagLiquid } from 'src/consts';
 import { nutritionalInfo } from '../../data';
+import WorkingKeyboardAvoidingView from 'src/components/WorkingKeyboardAvoidingView';
 
 type Props = {
     formik: FormikProps<ProductProperties>;
@@ -25,59 +26,63 @@ function NutritionInfo({ formik, onShowNextPage }: Props) {
     const baseUnit = formik.values.tags.includes(TagLiquid) ? 'ml' : 'g';
 
     return (
-        <FlatList
-            ItemSeparatorComponent={() => <View style={{ borderBottomColor: dividerColor, borderBottomWidth: 1 }} />}
-            data={nutritionalInfo}
-            stickyHeaderIndices={[0]}
-            keyExtractor={(item) => item.name}
-            ListHeaderComponent={
-                <Surface style={styles.listHeader}>
+        <WorkingKeyboardAvoidingView>
+            <FlatList
+                ItemSeparatorComponent={() => (
+                    <View style={{ borderBottomColor: dividerColor, borderBottomWidth: 1 }} />
+                )}
+                data={nutritionalInfo}
+                stickyHeaderIndices={[0]}
+                keyExtractor={(item) => item.name}
+                ListHeaderComponent={
+                    <Surface style={styles.listHeader}>
+                        <Row
+                            name={<Subheading>Nutritional Information</Subheading>}
+                            lastItem
+                            error={errors.nutritionalInfo?.volume}
+                        >
+                            <Subheading>{`Ø/100${baseUnit}`}</Subheading>
+                        </Row>
+                    </Surface>
+                }
+                renderItem={({ item, index }) => (
                     <Row
-                        name={<Subheading>Nutritional Information</Subheading>}
+                        key={item.name}
+                        name={<Text style={item.inset && styles.insetText}>{item.label}</Text>}
                         lastItem
-                        error={errors.nutritionalInfo?.volume}
+                        error={errors.nutritionalInfo && errors.nutritionalInfo[item.name]}
                     >
-                        <Subheading>{`Ø/100${baseUnit}`}</Subheading>
+                        <View style={styles.rightAlignedRow}>
+                            <TextInput
+                                ref={refs[index]}
+                                style={{
+                                    paddingHorizontal: 8,
+                                    backgroundColor: textBackground,
+                                    color: theme.colors.text,
+                                    width: 60,
+                                }}
+                                keyboardType="numeric"
+                                returnKeyType="next"
+                                value={values.nutritionalInfo[item.name].toString()}
+                                blurOnSubmit={false}
+                                selectTextOnFocus
+                                onChangeText={(s) => {
+                                    setFieldValue(`nutritionalInfo.${item.name}`, s.replace(',', '.'));
+                                }}
+                                onSubmitEditing={() => {
+                                    if (index < refs.length - 1) {
+                                        refs[index + 1].current?.focus();
+                                    } else {
+                                        onShowNextPage();
+                                    }
+                                }}
+                            />
+                            <Text style={styles.unitText}> {item.unit}</Text>
+                        </View>
                     </Row>
-                </Surface>
-            }
-            renderItem={({ item, index }) => (
-                <Row
-                    key={item.name}
-                    name={<Text style={item.inset && styles.insetText}>{item.label}</Text>}
-                    lastItem
-                    error={errors.nutritionalInfo && errors.nutritionalInfo[item.name]}
-                >
-                    <View style={styles.rightAlignedRow}>
-                        <TextInput
-                            ref={refs[index]}
-                            style={{
-                                paddingHorizontal: 8,
-                                backgroundColor: textBackground,
-                                color: theme.colors.text,
-                                width: 60,
-                            }}
-                            keyboardType="numeric"
-                            returnKeyType="next"
-                            value={values.nutritionalInfo[item.name].toString()}
-                            blurOnSubmit={false}
-                            selectTextOnFocus
-                            onChangeText={(s) => {
-                                setFieldValue(`nutritionalInfo.${item.name}`, s.replace(',', '.'));
-                            }}
-                            onSubmitEditing={() => {
-                                if (index < refs.length - 1) {
-                                    refs[index + 1].current?.focus();
-                                } else {
-                                    onShowNextPage();
-                                }
-                            }}
-                        />
-                        <Text style={styles.unitText}> {item.unit}</Text>
-                    </View>
-                </Row>
-            )}
-        />
+                )}
+            />
+        </WorkingKeyboardAvoidingView>
     );
 }
 

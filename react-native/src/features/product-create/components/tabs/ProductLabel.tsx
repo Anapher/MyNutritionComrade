@@ -3,7 +3,7 @@ import cuid from 'cuid';
 import { FormikProps } from 'formik';
 import { ProductProperties } from 'Models';
 import React, { useState } from 'react';
-import { FlatList, Keyboard, ScrollView, StyleSheet, View } from 'react-native';
+import { Keyboard, ScrollView, StyleSheet, View, FlatList } from 'react-native';
 import {
     Button,
     Caption,
@@ -16,8 +16,9 @@ import {
     TextInput,
     useTheme,
 } from 'react-native-paper';
-import DialogRadioButton from 'src/components/DialogRadioButton';
+import DialogButton from 'src/components/DialogButton';
 import { SupportedLanguages } from 'src/consts';
+import WorkingKeyboardAvoidingView from 'src/components/WorkingKeyboardAvoidingView';
 
 type Props = {
     formik: FormikProps<ProductProperties>;
@@ -29,7 +30,6 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
     const dividerColor = Color(theme.colors.text).alpha(0.2).string();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedLanguage, setSelectedLanguage] = useState(SupportedLanguages[0].twoLetterCode);
     const [autoFocusTextField, setAutoFocusTextField] = useState(false);
 
     const handleOpenDialog = () => {
@@ -38,9 +38,9 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
     };
     const handleCancelDialog = () => setIsDialogOpen(false);
 
-    const handleCreateLabel = () => {
+    const handleCreateLabel = (languageCode: string) => {
         setAutoFocusTextField(true);
-        setFieldValue('label', [...values.label, { languageCode: selectedLanguage, label: '', key: cuid() }]);
+        setFieldValue('label', [...values.label, { languageCode, label: '', key: cuid() }]);
         setIsDialogOpen(false);
     };
 
@@ -52,51 +52,53 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
 
     return (
         <View style={styles.root}>
-            <FlatList
-                style={styles.list}
-                data={values.label}
-                stickyHeaderIndices={[0]}
-                ItemSeparatorComponent={() => (
-                    <View style={{ borderTopWidth: StyleSheet.hairlineWidth, borderColor: dividerColor }} />
-                )}
-                ListHeaderComponent={
-                    <Surface style={{ elevation: 1, paddingVertical: 4, paddingLeft: 8 }}>
-                        <Subheading>Product label</Subheading>
-                        <Caption>The full label (including producer), translations, synonyms</Caption>
-                    </Surface>
-                }
-                ListFooterComponent={
-                    errors.label !== undefined && typeof errors.label === 'string' ? (
-                        <Caption style={{ color: theme.colors.error, margin: 8 }}>{errors.label}</Caption>
-                    ) : undefined
-                }
-                keyExtractor={(x) => (x as any).key}
-                renderItem={({ item, index }) => (
-                    <View style={styles.itemContainer}>
-                        <View style={styles.row}>
-                            <TextInput
-                                dense
-                                label={`Label (${item.languageCode})`}
-                                value={item.value}
-                                onChangeText={(s) =>
-                                    setFieldValue(
-                                        'label',
-                                        values.label.map((x, i) => (i !== index ? x : { ...x, value: s })),
-                                    )
-                                }
-                                style={{ flex: 1 }}
-                                autoFocus={autoFocusTextField}
-                            />
-                            <IconButton icon="delete" onPress={() => handleDeleteLabel(index)} />
+            <WorkingKeyboardAvoidingView>
+                <FlatList
+                    style={styles.list}
+                    data={values.label}
+                    stickyHeaderIndices={[0]}
+                    ItemSeparatorComponent={() => (
+                        <View style={{ borderTopWidth: StyleSheet.hairlineWidth, borderColor: dividerColor }} />
+                    )}
+                    ListHeaderComponent={
+                        <Surface style={{ elevation: 1, paddingVertical: 4, paddingLeft: 8 }}>
+                            <Subheading>Product label</Subheading>
+                            <Caption>The full label (including producer), translations, synonyms</Caption>
+                        </Surface>
+                    }
+                    ListFooterComponent={
+                        errors.label !== undefined && typeof errors.label === 'string' ? (
+                            <Caption style={{ color: theme.colors.error, margin: 8 }}>{errors.label}</Caption>
+                        ) : undefined
+                    }
+                    keyExtractor={(x) => (x as any).key}
+                    renderItem={({ item, index }) => (
+                        <View style={styles.itemContainer}>
+                            <View style={styles.row}>
+                                <TextInput
+                                    dense
+                                    label={`Label (${item.languageCode})`}
+                                    value={item.value}
+                                    onChangeText={(s) =>
+                                        setFieldValue(
+                                            'label',
+                                            values.label.map((x, i) => (i !== index ? x : { ...x, value: s })),
+                                        )
+                                    }
+                                    style={{ flex: 1 }}
+                                    autoFocus={autoFocusTextField}
+                                />
+                                <IconButton icon="delete" onPress={() => handleDeleteLabel(index)} />
+                            </View>
+                            {errors.label && errors.label[index] && (
+                                <Caption style={{ color: theme.colors.error }}>
+                                    {errors.label && (errors.label[index] as any).label}
+                                </Caption>
+                            )}
                         </View>
-                        {errors.label && errors.label[index] && (
-                            <Caption style={{ color: theme.colors.error }}>
-                                {errors.label && (errors.label[index] as any).label}
-                            </Caption>
-                        )}
-                    </View>
-                )}
-            />
+                    )}
+                />
+            </WorkingKeyboardAvoidingView>
             <FAB
                 style={[styles.fab, { backgroundColor: theme.colors.primary }]}
                 icon="plus"
@@ -109,12 +111,12 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                         <ScrollView>
                             <View>
                                 {SupportedLanguages.map((x) => (
-                                    <DialogRadioButton
-                                        checked={selectedLanguage === x.twoLetterCode}
+                                    <DialogButton
                                         key={x.twoLetterCode}
-                                        onPress={() => setSelectedLanguage(x.twoLetterCode)}
-                                        label={x.name}
-                                    />
+                                        onPress={() => handleCreateLabel(x.twoLetterCode)}
+                                    >
+                                        {x.name}
+                                    </DialogButton>
                                 ))}
                             </View>
                         </ScrollView>
@@ -123,7 +125,6 @@ function ProductLabel({ formik: { values, setFieldValue, errors } }: Props) {
                         <Button onPress={handleCancelDialog} color={secondaryColor}>
                             Cancel
                         </Button>
-                        <Button onPress={handleCreateLabel}>Create</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>

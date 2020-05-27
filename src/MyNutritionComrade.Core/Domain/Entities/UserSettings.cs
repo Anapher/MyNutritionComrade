@@ -10,7 +10,7 @@ namespace MyNutritionComrade.Core.Domain.Entities
         public UserNutritionGoal NutritionGoal { get; set; } = new UserNutritionGoal();
     }
 
-    public class UserNutritionGoal : Dictionary<NutritionGoalType, NutritionGoalBase>
+    public class UserNutritionGoal : Dictionary<NutritionGoalCategory, NutritionGoalBase>
     {
     }
 

@@ -8,6 +8,9 @@ import {
     MealFoodPortionCreationDto,
     Meal,
     FoodPortionProductDto,
+    FoodPortionItemDto,
+    NutritionalInfo,
+    FoodPortionMealDto,
 } from 'Models';
 import { suggestionIdToString, getMatchingServing } from './food-utils';
 import { ProductSearchQuery } from './input-parser';
@@ -76,7 +79,13 @@ export function createProductPortionFromCreation(
     };
 }
 
-export function createMealPortionFromCreation(creationDto: MealFoodPortionCreationDto, meal: Meal): FoodPortionDto {
+type MealInfo = {
+    name: string;
+    items: FoodPortionItemDto[];
+    nutritionalInfo: NutritionalInfo;
+};
+
+export function createMealPortionFromCreation(creationDto: MealFoodPortionCreationDto, meal: MealInfo): FoodPortionDto {
     return {
         type: 'meal',
         portion: creationDto.portion,
@@ -84,6 +93,14 @@ export function createMealPortionFromCreation(creationDto: MealFoodPortionCreati
         mealName: meal.name,
         items: meal.items,
         nutritionalInfo: changeVolume(meal.nutritionalInfo, meal.nutritionalInfo.volume * creationDto.portion),
+    };
+}
+
+export function mapFoodPortionMealDtoToMealInfo(foodPortion: FoodPortionMealDto): MealInfo {
+    return {
+        name: foodPortion.mealName,
+        items: foodPortion.items,
+        nutritionalInfo: changeVolume(foodPortion.nutritionalInfo, 1 / foodPortion.portion),
     };
 }
 

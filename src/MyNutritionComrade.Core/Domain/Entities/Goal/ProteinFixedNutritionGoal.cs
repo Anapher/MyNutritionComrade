@@ -4,6 +4,6 @@
     {
         public double ProteinPerDay { get; set; }
 
-        public override NutritionGoalType Type { get; } = NutritionGoalType.Protein;
+        public override NutritionGoalType Type { get; } = NutritionGoalType.ProteinFixed;
     }
 }

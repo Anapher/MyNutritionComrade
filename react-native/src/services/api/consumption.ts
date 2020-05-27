@@ -14,5 +14,5 @@ export async function getConsumedProducts(date: string, to?: string): Promise<Pr
 }
 
 export async function deleteConsumption(date: string, type: string, id: string): Promise<any> {
-    return Axios.delete(`/api/v1/consumption/${date}/${type}/${id}`);
+    return Axios.delete(`/api/v1/consumption/${date}/${type}/${encodeURIComponent(id)}`);
 }

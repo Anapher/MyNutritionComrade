@@ -1,11 +1,13 @@
 import color from 'color';
-import { SearchResult } from 'Models';
+import { SearchResult, FoodPortionDto } from 'Models';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Theme, TouchableRipple, withTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import selectLabel from 'src/utils/product-utils';
 import { suggestionIdToString } from 'src/utils/food-utils';
+import _ from 'lodash';
+import { roundNumber } from 'src/utils/string-utils';
 
 type Props = {
     item: SearchResult;
@@ -27,7 +29,7 @@ function SuggestionItem({ item, theme, onPress }: Props) {
                 <View style={styles.iconContent}>{icon && <Icon name={icon} color={iconColor} size={24} />}</View>
                 <View>
                     <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>
-                    {description && (
+                    {description !== undefined && (
                         <Text style={[styles.description, { color: descriptionColor }]}>{description}</Text>
                     )}
                 </View>
@@ -75,11 +77,26 @@ function getDescription(s: SearchResult): string | null {
                 return `${s.amount * (1 / s.convertedFrom.factor)} ${s.convertedFrom.name}`;
             return `${s.amount} ${s.servingType}`;
         case 'meal':
-            return null;
+            return `${roundNumber(s.nutritionalInfo.energy)} kcal`;
         case 'custom':
             return 'todo';
         case 'generatedMeal':
-            return 'todo';
+            return _.sortBy(s.items, (x) => x.nutritionalInfo.energy)
+                .map(getName)
+                .join(',');
+    }
+}
+
+function getName(dto: FoodPortionDto): string {
+    switch (dto.type) {
+        case 'custom':
+            return dto.label || 'Custom product';
+        case 'product':
+            return selectLabel(dto.product.label);
+        case 'meal':
+            return dto.mealName;
+        case 'suggestion':
+            return suggestionIdToString(dto.suggestionId);
     }
 }
 

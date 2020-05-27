@@ -4,40 +4,35 @@ import { DateTime } from 'luxon';
 import {
     ConsumedDto,
     ConsumptionTime,
+    FoodPortionCreationDto,
+    FoodPortionDto,
+    FoodPortionMealDto,
+    FoodPortionProductDto,
+    MealFoodPortionCreationDto,
     ProductFoodPortionCreationDto,
     ProductInfo,
     ProductSuggestion,
-    FoodPortionItemDto,
-    FoodPortionMealDto,
-    MealFoodPortionCreationDto,
-    FoodPortionDto,
+    SuggestionFoodPortionCreationDto,
 } from 'Models';
 import { RootState } from 'MyNutritionComrade';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, SectionList } from 'react-native';
-import { Divider, Portal, Dialog, Paragraph, Button } from 'react-native-paper';
+import { SectionList, StyleSheet, View } from 'react-native';
+import { Button, Dialog, Divider, Paragraph, Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
-import AnimatedSectionList from 'src/components/AnimatedSectionList';
+import FoodPortionHeader from 'src/components-domain/FoodPortionHeader';
+import { CustomFoodPortionView, ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
+import MealPortionView, { SuggestionPortionView } from 'src/components-domain/MealPortionView';
 import { RootStackParamList } from 'src/RootNavigator';
 import * as productApi from 'src/services/api/products';
-import {
-    createProductPortionFromCreation,
-    getConsumedDtoId,
-    mapFoodPortionDtoCreationDto,
-    createMealPortionFromCreation,
-    getFoodPortionId,
-} from 'src/utils/different-foods';
+import { createProductPortionFromCreation, getConsumedDtoId, getFoodPortionId } from 'src/utils/different-foods';
+import { flattenProductsPrioritize } from 'src/utils/food-flattening';
+import { changeVolume } from 'src/utils/product-utils';
 import * as actions from '../actions';
 import * as selectors from '../selectors';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
 import DiaryHeader from './DiaryHeader';
-import { flattenProductsPrioritize } from 'src/utils/food-flattening';
-import { CustomFoodPortionView, ProductFoodPortionView } from 'src/componants-domain/FoodPortionView';
-import FoodPortionHeader from 'src/componants-domain/FoodPortionHeader';
-import MealPortionView from 'src/componants-domain/MealPortionView';
 import FoodPortionDialog, { ShowOptionsInfo } from './FoodPortionDialog';
-import { changeVolume } from 'src/utils/product-utils';
-import { parse } from 'search-params';
+import { CreateEditProductDelegate } from 'src/components-domain/food-portion-edit-helper';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
     breakfast: 'Breakfast',
@@ -132,144 +127,91 @@ function TabDiary({
         });
     };
 
-    const editItem = async (item: ConsumedDto) => {
-        switch (item.foodPortion.type) {
-            case 'product':
-                const product = item.foodPortion.product;
-                navigation.navigate('AddProduct', {
-                    product,
-                    volume: item.foodPortion.nutritionalInfo.volume /** submit amount and serving type */,
-                    onSubmit: (amount, servingType) => {
-                        const creationDto: ProductFoodPortionCreationDto = {
-                            type: 'product',
-                            amount,
-                            servingType,
-                            productId: product.id,
-                        };
+    const onPressProduct = CreateEditProductDelegate(navigation);
 
-                        patchConsumptions({
-                            date: selectedDay,
-                            time: item.time,
-                            creationDto,
-                            foodPortion: createProductPortionFromCreation(creationDto, product),
-                            append: false,
-                        });
-                    },
-                });
-                break;
-            case 'meal':
-                const mealFoodPortion = item.foodPortion;
-                navigation.navigate('SelectMealPortion', {
-                    mealName: mealFoodPortion.mealName,
-                    nutritionalInfo: changeVolume(
-                        mealFoodPortion.nutritionalInfo,
-                        mealFoodPortion.nutritionalInfo.volume * mealFoodPortion.portion,
-                    ),
-                    initialPortion: mealFoodPortion.portion,
-                    onSubmit: (portion: number) => {
-                        const creationDto: MealFoodPortionCreationDto = {
-                            type: 'meal',
-                            portion,
-                            mealId: mealFoodPortion.mealId,
-                        };
-
-                        patchConsumptions({
-                            date: selectedDay,
-                            time: item.time,
-                            creationDto,
-                            append: false,
-                        });
-                    },
-                });
-                break;
-            default:
-                break;
-        }
-    };
-
-    const mealEditItem = (consumedDto: ConsumedDto, item: FoodPortionItemDto) => {
-        const meal = consumedDto.foodPortion;
-        if (meal.type !== 'meal') throw 'Must submit meal';
-
-        switch (item.type) {
-            case 'product':
-                const product = item.product;
-                navigation.navigate('AddProduct', {
-                    product,
-                    volume: item.nutritionalInfo.volume /** submit amount and serving type */,
-                    onSubmit: (amount, servingType) => {
-                        const productOverwrite: ProductFoodPortionCreationDto = {
-                            type: 'product',
-                            amount,
-                            servingType,
-                            productId: product.id,
-                        };
-
-                        const creationDto: MealFoodPortionCreationDto = {
-                            type: 'meal',
-                            mealId: meal.mealId,
-                            portion: meal.portion,
-                            overwriteIngredients: meal.items.map((x) =>
-                                x === item ? productOverwrite : mapFoodPortionDtoCreationDto(x),
-                            ),
-                        };
-
-                        const newItems = meal.items.map((x) =>
-                            x === item ? createProductPortionFromCreation(productOverwrite, item.product) : x,
-                        );
-
-                        patchConsumptions({
-                            date: selectedDay,
-                            time: consumedDto.time,
-                            creationDto,
-                            foodPortion: { ...meal, items: newItems },
-                            append: false,
-                        });
-                    },
-                });
-                break;
-            default:
-                break;
-        }
-    };
-
-    const removeItem = (options: ShowOptionsInfo) => {
-        if (options.foodPortion) {
-            if (options.consumedDto.foodPortion.type === 'meal') {
-                const meal = options.consumedDto.foodPortion;
-
-                const newItems = meal.items.filter(
-                    (x) => getFoodPortionId(x) !== getFoodPortionId(options.foodPortion!),
-                );
-
-                if (newItems.length === 0) {
-                    // remove entire meal if no items will be left
-                    removeItem({ consumedDto: options.consumedDto });
-                    return;
-                }
-
+    const onPressMeal = async (
+        foodPortion: FoodPortionMealDto,
+        executeEdit: (changes: Partial<MealFoodPortionCreationDto>) => void,
+    ) => {
+        navigation.navigate('SelectMealPortion', {
+            mealName: foodPortion.mealName,
+            nutritionalInfo: changeVolume(
+                foodPortion.nutritionalInfo,
+                foodPortion.nutritionalInfo.volume / foodPortion.portion,
+            ),
+            initialPortion: foodPortion.portion,
+            onSubmit: (portion: number) => {
                 const creationDto: MealFoodPortionCreationDto = {
                     type: 'meal',
-                    mealId: meal.mealId,
-                    portion: meal.portion,
-                    overwriteIngredients: newItems.map(mapFoodPortionDtoCreationDto),
+                    portion,
+                    mealId: foodPortion.mealId,
                 };
 
-                patchConsumptions({
-                    date: selectedDay,
-                    time: options.consumedDto.time,
-                    creationDto,
-                    foodPortion: { ...meal, items: newItems },
-                    append: false,
-                });
-            }
-        } else {
-            patchConsumptions({
-                delete: true,
-                date: selectedDay,
-                time: options.consumedDto.time,
-                foodPortionId: getFoodPortionId(options.consumedDto.foodPortion),
-            });
+                executeEdit(creationDto);
+            },
+        });
+    };
+
+    const editConsumedDto = async (item: ConsumedDto, creationDto: FoodPortionCreationDto) => {
+        let foodPortion: FoodPortionDto | undefined;
+
+        switch (item.foodPortion.type) {
+            case 'product':
+                foodPortion = createProductPortionFromCreation(
+                    creationDto as ProductFoodPortionCreationDto,
+                    item.foodPortion.product,
+                );
+                break;
+            case 'meal':
+                const mealCreationDto = creationDto as MealFoodPortionCreationDto;
+                if (mealCreationDto.overwriteIngredients?.length === 0) {
+                    // remove entire meal if no items will be left
+                    removeConsumedDto(item);
+                    return;
+                }
+                break;
+            case 'suggestion':
+                const suggestionCreationDto = creationDto as SuggestionFoodPortionCreationDto;
+                if (suggestionCreationDto.items.length === 0) {
+                    // remove entire meal if no items will be left
+                    removeConsumedDto(item);
+                    return;
+                }
+                break;
+        }
+
+        patchConsumptions({
+            date: selectedDay,
+            time: item.time,
+            creationDto,
+            foodPortion,
+            append: false,
+        });
+    };
+
+    const removeConsumedDto = async (consumedDto: ConsumedDto) => {
+        patchConsumptions({
+            delete: true,
+            date: selectedDay,
+            time: consumedDto.time,
+            foodPortionId: getFoodPortionId(consumedDto.foodPortion),
+        });
+    };
+
+    const mealEditItem = (
+        foodPortion: FoodPortionDto,
+        executeEdit: (changes: Partial<FoodPortionCreationDto>) => void,
+    ) => {
+        switch (foodPortion.type) {
+            case 'product':
+                onPressProduct(foodPortion, executeEdit);
+                break;
+            case 'meal':
+                onPressMeal(foodPortion, executeEdit);
+                break;
+            default:
+                console.log(foodPortion);
+                throw new Error('Not implemented');
         }
     };
 
@@ -281,33 +223,84 @@ function TabDiary({
                 sections={sections}
                 keyExtractor={(x) => getConsumedDtoId(x)}
                 renderItem={({ item }) => {
-                    switch (item.foodPortion.type) {
+                    const foodPortion = item.foodPortion;
+
+                    switch (foodPortion.type) {
                         case 'product':
                             return (
                                 <ProductFoodPortionView
-                                    foodPortion={item.foodPortion}
-                                    onPress={() => editItem(item)}
-                                    onLongPress={() => setFoodPortionOptions({ consumedDto: item })}
+                                    foodPortion={foodPortion}
+                                    onPress={(executeEdit) => onPressProduct(foodPortion, executeEdit)}
+                                    onLongPress={(executeEdit, handleRemove) =>
+                                        setFoodPortionOptions({
+                                            foodPortion,
+                                            handleRemove,
+                                            handleEdit: () => onPressProduct(foodPortion, executeEdit),
+                                        })
+                                    }
+                                    onEdit={(creationDto) => editConsumedDto(item, creationDto)}
+                                    onRemove={() => removeConsumedDto(item)}
                                 />
                             );
                         case 'custom':
                             return (
                                 <CustomFoodPortionView
-                                    foodPortion={item.foodPortion}
-                                    onPress={() => editItem(item)}
-                                    onLongPress={() => setFoodPortionOptions({ consumedDto: item })}
+                                    foodPortion={foodPortion}
+                                    onPress={() => {
+                                        throw new Error('Not implemented');
+                                    }}
+                                    onLongPress={(_, handleRemove) =>
+                                        setFoodPortionOptions({ foodPortion, handleRemove })
+                                    }
+                                    onEdit={(creationDto) => editConsumedDto(item, creationDto)}
+                                    onRemove={() => removeConsumedDto(item)}
                                 />
                             );
                         case 'meal':
                             return (
                                 <MealPortionView
-                                    meal={item.foodPortion}
-                                    onPress={() => editItem(item)}
-                                    onLongPress={() => setFoodPortionOptions({ consumedDto: item })}
-                                    onItemPress={(x) => mealEditItem(item, x)}
-                                    onItemLongPress={(foodPortion) =>
-                                        setFoodPortionOptions({ consumedDto: item, foodPortion })
+                                    foodPortion={foodPortion}
+                                    onEdit={(creationDto) => editConsumedDto(item, creationDto)}
+                                    onPress={(executeEdit) => onPressMeal(foodPortion, executeEdit)}
+                                    onLongPress={(executeEdit, handleRemove) =>
+                                        setFoodPortionOptions({
+                                            foodPortion,
+                                            handleRemove,
+                                            handleEdit: () => onPressMeal(foodPortion, executeEdit),
+                                        })
                                     }
+                                    onItemPress={(foodPortion, executeEdit) => mealEditItem(foodPortion, executeEdit)}
+                                    onItemLongPress={(foodPortion, executeEdit, handleRemove) =>
+                                        setFoodPortionOptions({
+                                            foodPortion,
+                                            handleRemove,
+                                            handleEdit: () => mealEditItem(foodPortion, executeEdit),
+                                        })
+                                    }
+                                    onRemove={() => removeConsumedDto(item)}
+                                />
+                            );
+                        case 'suggestion':
+                            return (
+                                <SuggestionPortionView
+                                    foodPortion={foodPortion}
+                                    onPress={() => {}}
+                                    onLongPress={(_, handleRemove) =>
+                                        setFoodPortionOptions({
+                                            foodPortion,
+                                            handleRemove,
+                                        })
+                                    }
+                                    onItemPress={(foodPortion, executeEdit) => mealEditItem(foodPortion, executeEdit)}
+                                    onItemLongPress={(foodPortion, executeEdit, handleRemove) =>
+                                        setFoodPortionOptions({
+                                            foodPortion,
+                                            handleRemove,
+                                            handleEdit: () => mealEditItem(foodPortion, executeEdit),
+                                        })
+                                    }
+                                    onEdit={(creationDto) => editConsumedDto(item, creationDto)}
+                                    onRemove={() => removeConsumedDto(item)}
                                 />
                             );
                     }
@@ -330,14 +323,27 @@ function TabDiary({
                         onAddFood={() =>
                             navigation.navigate('SearchProduct', {
                                 config: { consumptionTime: section.time, date: selectedDay },
-                                onCreated: (creationDto, foodPortion) =>
-                                    patchConsumptions({
-                                        time: section.time,
-                                        append: true,
-                                        creationDto,
-                                        foodPortion,
-                                        date: selectedDay,
-                                    }),
+                                onCreated: (creationDto, foodPortion) => {
+                                    if (creationDto.type === 'suggestion') {
+                                        // we merge suggestions to allow the user to comforatably edit meals etc.
+                                        for (const item of creationDto.items) {
+                                            patchConsumptions({
+                                                time: section.time,
+                                                append: true,
+                                                creationDto: item,
+                                                date: selectedDay,
+                                            });
+                                        }
+                                    } else {
+                                        patchConsumptions({
+                                            time: section.time,
+                                            append: true,
+                                            creationDto,
+                                            foodPortion,
+                                            date: selectedDay,
+                                        });
+                                    }
+                                },
                             })
                         }
                         onMoreOptions={() => {}}
@@ -351,7 +357,6 @@ function TabDiary({
                     value={foodPortionOptions}
                     navigation={navigation}
                     onDismiss={() => setFoodPortionOptions(undefined)}
-                    onRemoveItem={(x) => removeItem(x)}
                 />
                 <Dialog visible={!!unlistedProduct} onDismiss={() => setUnlistedProduct(undefined)}>
                     <Dialog.Title>Not found</Dialog.Title>

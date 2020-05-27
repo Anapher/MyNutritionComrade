@@ -3,6 +3,6 @@
     public class CaloriesFixedNutritionGoal : NutritionGoalBase
     {
         public double CaloriesPerDay { get; set; }
-        public override NutritionGoalType Type { get; } = NutritionGoalType.Calories;
+        public override NutritionGoalType Type { get; } = NutritionGoalType.CaloriesFixed;
     }
 }

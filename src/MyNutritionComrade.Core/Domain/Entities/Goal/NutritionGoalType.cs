@@ -2,8 +2,10 @@
 {
     public enum NutritionGoalType
     {
-        Calories,
-        Protein,
-        Distribution
+        CaloriesFixed,
+        CaloriesMifflinStJeor,
+        ProteinByBodyweight,
+        ProteinFixed,
+        ProportionalDistribution
     }
 }
