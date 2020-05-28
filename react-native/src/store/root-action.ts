@@ -7,6 +7,7 @@ import * as productVoteChanges from '../features/product-vote-changes/actions';
 import * as settings from '../features/settings/actions';
 import * as logWeight from '../features/log-weight/actions';
 import * as meals from '../features/meals/actions';
+import { purgeState } from './purgable-reducer';
 
 export default {
     auth,
@@ -18,4 +19,5 @@ export default {
     settings,
     logWeight,
     meals,
+    root: { purgeState },
 };

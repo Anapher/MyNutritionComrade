@@ -151,14 +151,11 @@ function getPatchView(props: Props): PatchView {
                 type: 'modify',
                 propertyName: `Label (Language: ${(addOp.item as ProductLabel).languageCode})`,
                 view: (
-                    <View style={styles.linearView}>
-                        <ChangedValue
-                            removed
-                            value={(removeOp.item as ProductLabel).value}
-                            style={{ marginRight: 8 }}
-                        />
+                    <Text>
+                        <ChangedValue removed value={(removeOp.item as ProductLabel).value} />
+                        <Text>{'   '}</Text>
                         <ChangedValue value={(addOp.item as ProductLabel).value} />
-                    </View>
+                    </Text>
                 ),
             };
         }

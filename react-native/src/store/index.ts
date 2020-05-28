@@ -7,6 +7,7 @@ import services from '../services';
 import rootEpic from './root-epic';
 import rootReducer from './root-reducer';
 import { composeEnhancers } from './utils';
+import purgableReducer from './purgable-reducer';
 
 export const epicMiddleware = createEpicMiddleware<RootAction, RootAction, RootState, Services>({
     dependencies: services,
@@ -20,7 +21,7 @@ const middlewares = [epicMiddleware, promiseListener.middleware];
 // compose enhancers
 const enhancer = composeEnhancers(applyMiddleware(...middlewares));
 
-const store = createStore(rootReducer, {}, enhancer);
+const store = createStore(purgableReducer(rootReducer), {}, enhancer);
 epicMiddleware.run(rootEpic);
 
 const persistor = persistStore(store);

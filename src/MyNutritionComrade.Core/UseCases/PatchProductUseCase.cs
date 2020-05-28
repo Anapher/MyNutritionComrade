@@ -89,7 +89,7 @@ namespace MyNutritionComrade.Core.UseCases
                 await applyUseCase.Handle(new ApplyProductContributionRequest(contribution, product, "Immediately executed patch"));
                 if (applyUseCase.HasError)
                 {
-                    await _contributionRepository.Remove(contribution.Id);
+                    await _contributionRepository.Remove(contribution);
                     return ReturnError(applyUseCase.Error!);
                 }
 

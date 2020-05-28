@@ -43,6 +43,8 @@ function ProductSearchScreen({
 }: Props) {
     const theme = useTheme();
 
+    console.log(suggestions);
+
     const onPressItem = (item: SearchResult) => {
         switch (item.type) {
             case 'product':
@@ -65,7 +67,7 @@ function ProductSearchScreen({
             case 'serving':
                 const creationDto: ProductFoodPortionCreationDto = {
                     type: 'product',
-                    amount: getServingSizeValue(item, item.product),
+                    amount: item.amount,
                     productId: item.product.id,
                     servingType: item.servingType,
                 };

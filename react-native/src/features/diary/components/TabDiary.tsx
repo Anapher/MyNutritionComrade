@@ -72,13 +72,15 @@ function TabDiary({
     loadNutritionGoal,
 }: Props) {
     useEffect(() => {
-        loadFrequentlyUsedProducts();
+        if (frequentlyUsedProducts === undefined) {
+            loadFrequentlyUsedProducts();
+        }
         loadDate(DateTime.local().toISODate());
 
         if (nutritionGoal == null) {
             loadNutritionGoal();
         }
-    }, []);
+    }, [frequentlyUsedProducts]);
 
     const [unlistedProduct, setUnlistedProduct] = useState<string | undefined>();
     const [foodPortionOptions, setFoodPortionOptions] = useState<ShowOptionsInfo | undefined>();

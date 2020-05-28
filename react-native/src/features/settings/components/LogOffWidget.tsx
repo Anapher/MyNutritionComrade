@@ -1,29 +1,22 @@
 import React from 'react';
 import { Button, Card, Title } from 'react-native-paper';
-import { rootPersistor } from 'src/store';
-import * as actions from 'src/features/auth/actions';
 import { connect } from 'react-redux';
+import { purgeState } from 'src/store/purgable-reducer';
 
 const dispatchProps = {
-    signOut: actions.signOut,
+    purgeState,
 };
 
 type Props = typeof dispatchProps;
 
-function LogOffWidget({ signOut }: Props) {
+function LogOffWidget({ purgeState }: Props) {
     return (
         <Card>
             <Card.Content>
                 <Title>Account</Title>
             </Card.Content>
             <Card.Actions>
-                <Button
-                    onPress={() => {
-                        rootPersistor.purge().then(() => signOut());
-                    }}
-                >
-                    Log Off
-                </Button>
+                <Button onPress={() => purgeState()}>Log Off</Button>
             </Card.Actions>
         </Card>
     );

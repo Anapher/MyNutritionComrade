@@ -8,7 +8,7 @@ namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
     {
         Task<ProductContribution?> FindById(string productContributionId);
         Task<bool> Add(ProductContribution productContribution);
-        Task Remove(string productContributionId);
+        Task Remove(ProductContribution productContribution);
         Task<ProductContribution?> FindByPatchHash(string productId, string patchHash);
         Task<List<ProductContribution>> GetActiveProductContributions(string productId);
         Task<bool> UpdateProductContribution(ProductContribution contribution);

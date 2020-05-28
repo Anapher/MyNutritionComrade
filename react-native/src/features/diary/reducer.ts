@@ -4,15 +4,14 @@ import {
     ConsumedDto,
     ConsumptionTime,
     FoodPortionCreationDto,
+    FoodPortionDto,
     FrequentlyConsumed,
     ProductConsumptionDates,
-    FoodPortionDto,
 } from 'Models';
 import { RootAction } from 'MyNutritionComrade';
 import { getType } from 'typesafe-actions';
 import * as actions from './actions';
 import { getRequiredDates, patchConsumedProducts as patchConsumedList } from './utils';
-import { getFoodPortionId } from 'src/utils/different-foods';
 
 export type CreateConsumptionRequest = {
     date: string;
@@ -49,7 +48,7 @@ export type DiaryState = Readonly<{
     /** all loaded days of consumed products */
     loadedDays: ProductConsumptionDates;
 
-    /** pending products for which the server hasn't respond yet */
+    /** pending products for which the server hasn't responded yet */
     pendingActions: ConsumptionAction[];
 
     /** frequently used products received once at the start */

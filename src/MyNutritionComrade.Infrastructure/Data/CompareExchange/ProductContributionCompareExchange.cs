@@ -20,6 +20,20 @@ namespace MyNutritionComrade.Infrastructure.Data.CompareExchange
             session.Advanced.ClusterTransaction.CreateCompareExchangeValue(key, id);
         }
 
+        public static async Task<bool> DeletePatchHash(IAsyncDocumentSession session, ProductContribution contribution)
+        {
+            var key = GetProductContributionPatchHashKey(contribution.ProductId, contribution.PatchHash);
+            var compareExchange = await session.Advanced.ClusterTransaction.GetCompareExchangeValueAsync<string>(key);
+
+            if (compareExchange != null && compareExchange.Value == contribution.Id)
+            {
+                session.Advanced.ClusterTransaction.DeleteCompareExchangeValue(compareExchange);
+                return true;
+            }
+
+            return false;
+        }
+
         public static Task<CompareExchangeValue<string>> GetPatchHash(IAsyncDocumentSession session, string productId, string patchHash)
         {
             var key = GetProductContributionPatchHashKey(productId, patchHash);

@@ -39,9 +39,21 @@ export const signInEpic: RootEpic = (action$, _, { api }) =>
             }
 
             ToastAndroid.show(`Success. idToken: ${idToken}`, ToastAndroid.LONG);
+            console.log('hello World');
+
             return from(api.auth.googleSignIn(idToken)).pipe(
-                map((response) => actions.signedIn(response)),
-                catchError((error: AxiosError) => of(actions.googleSignInAsync.failure(toErrorResult(error)))),
+                map((response) => {
+                    console.log('success');
+
+                    return actions.signedIn(response);
+                }),
+                catchError((error: AxiosError) => {
+                    console.log('failed');
+
+                    console.log(error);
+
+                    return of(actions.googleSignInAsync.failure(toErrorResult(error)));
+                }),
             );
         }),
     );

@@ -81,7 +81,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
 
             // get version unique value
             var productVersion = await ProductCompareExchange.GetProductVersion(session, currentProduct);
-            if (productVersion.Value != product.Version) return false;
+            if (productVersion.Value != sourceVersion) return false;
 
             // update version
             session.Advanced.ClusterTransaction.UpdateCompareExchangeValue(new CompareExchangeValue<int>(productVersion.Key, productVersion.Index,
@@ -106,11 +106,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             }
 
             // update product contribution
-            var contributionPatchHash =
-                await ProductContributionCompareExchange.GetPatchHash(session, productContribution.ProductId, productContribution.PatchHash);
-            if (contributionPatchHash != null)
-                session.Advanced.ClusterTransaction.DeleteCompareExchangeValue(contributionPatchHash.Key, contributionPatchHash.Index);
-
+            await ProductContributionCompareExchange.DeletePatchHash(session, productContribution);
             await session.StoreAsync(productContribution);
 
             try
@@ -128,8 +124,7 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
         {
             using var session = OpenReadOnlySession();
 
-            var result = await session.LoadAsync<Product>(ids);
-            return result;
+            return await session.LoadAsync<Product>(ids);
         }
     }
 }

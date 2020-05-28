@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Infrastructure.Data.CompareExchange;
 using MyNutritionComrade.Infrastructure.Shared;
+using Polly;
 using Raven.Client.Documents;
 using Raven.Client.Exceptions;
 
@@ -43,11 +45,21 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task Remove(string productContributionId)
+        public async Task Remove(ProductContribution contribution)
         {
             using var session = OpenWriteClusterSession();
 
-            session.Delete(productContributionId);
+            // we retry, as after getting the current value and before trying to delete it, someone could've changed it and it will always fail in this case
+
+            await Policy.Handle<ConcurrencyException>().WaitAndRetryAsync(10, _ => TimeSpan.FromSeconds(1)).ExecuteAsync(async () =>
+            {
+                if (await ProductContributionCompareExchange.DeletePatchHash(session, contribution))
+                {
+                    await session.SaveChangesAsync();
+                }
+            });
+
+            session.Delete(contribution.Id);
             await session.SaveChangesAsync();
         }
 
