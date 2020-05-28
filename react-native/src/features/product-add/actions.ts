@@ -3,8 +3,8 @@ import { createAsyncAction, createAction } from 'typesafe-actions';
 import { RequestErrorResponse } from 'src/utils/error-result';
 import { PagingResponse } from 'MyNutritionComrade';
 
-export const init = createAction('PRODUCTADD/INIT')<{ product: ProductInfo; startVolume?: number }>();
-export const setVolume = createAction('PRODUCTADD/SET_VOLUME')<number>();
+export const init = createAction('PRODUCTADD/INIT')<{ product: ProductInfo; amount?: number; servingType?: string }>();
+export const setAmount = createAction('PRODUCTADD/SET_AMOUNT')<number>();
 export const setServing = createAction('PRODUCTADD/SET_SERVING')<string>();
 
 export const loadContributionsAsync = createAsyncAction(

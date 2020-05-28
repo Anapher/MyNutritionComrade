@@ -62,7 +62,8 @@ export type RootStackParamList = {
     };
     AddProduct: {
         product: ProductInfo;
-        volume?: number;
+        servingType?: string;
+        amount?: number;
         disableGoBack?: boolean;
         onSubmit: (value: number, servingType: string) => void;
     };

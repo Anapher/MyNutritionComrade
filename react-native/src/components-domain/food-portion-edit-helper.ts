@@ -15,7 +15,8 @@ export const CreateEditProductDelegate = (navigation: StackNavigationProp<RootSt
     const product = item.product;
     navigation.navigate('AddProduct', {
         product,
-        volume: item.nutritionalInfo.volume /** submit amount and serving type */,
+        amount: item.amount,
+        servingType: item.servingType,
         onSubmit: (amount, servingType) => {
             const creationDto: ProductFoodPortionCreationDto = {
                 type: 'product',

@@ -128,6 +128,9 @@ const SettingsOverview = ({ navigation, loadUserSettings, isLoading, userSetting
             style={styles.container}
             data={items}
             renderItem={(x) => x.item.render()}
+            contentInset={{ bottom: 16 }}
+            ListFooterComponent={<View style={{ height: 16 }} />}
+            ListHeaderComponent={<View style={{ height: 16 }} />}
             keyExtractor={(x) => x.key}
             refreshing={isLoading}
             onRefresh={() => {
@@ -143,7 +146,7 @@ export default connect(mapStateToProps, dispatchProps)(SettingsOverview);
 const styles = StyleSheet.create({
     container: {
         ...StyleSheet.absoluteFillObject,
-        padding: 16,
+        paddingHorizontal: 16,
     },
     separator: {
         marginVertical: 8,

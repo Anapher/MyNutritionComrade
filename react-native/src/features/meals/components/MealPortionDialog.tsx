@@ -5,7 +5,7 @@ import { RootStackParamList } from 'src/RootNavigator';
 import { RouteProp } from '@react-navigation/native';
 import { Appbar } from 'react-native-paper';
 import TextToggleButton from 'src/components/TextToggleButton';
-import NumberTextInput from './NumberTextInput';
+import NumberTextInput from 'src/components/NumberTextInput';
 import { Text } from 'react-native-paper';
 
 type Props = {

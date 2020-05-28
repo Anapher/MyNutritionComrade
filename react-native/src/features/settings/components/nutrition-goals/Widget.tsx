@@ -126,5 +126,3 @@ function Widget({ navigation, data, onChange }: Props) {
 }
 
 export default Widget;
-
-const styles = StyleSheet.create({});

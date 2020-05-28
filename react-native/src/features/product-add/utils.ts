@@ -14,7 +14,7 @@ const scales = [
     { max: 5, step: 1, labelStep: 1 },
 ];
 
-export function selectScale(servingType: string, servingVolume: number, nutritionInfo: NutritionalInfo): CurveScale {
+export function selectScale(servingVolume: number, nutritionInfo: NutritionalInfo): CurveScale {
     const oneServingNutritions = changeVolume(nutritionInfo, servingVolume);
     for (const scale of scales) {
         if (scale.max * oneServingNutritions.energy <= maxSelectableCalories) {

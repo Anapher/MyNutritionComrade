@@ -23,8 +23,6 @@ const SettingsNutritionGoals = ({
     const valueRef = useRef(value);
     const [isLoading, setIsLoading] = useState(false);
 
-    console.log(initialValue);
-
     useEffect(() => {
         valueRef.current = value;
     }, [value]);

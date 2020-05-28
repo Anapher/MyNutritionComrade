@@ -13,8 +13,8 @@ export type CurveScale = {
 };
 
 export type ProductSlider = {
-    volume: number;
-    selectedServing: string;
+    amount: number;
+    servingType: string;
     product: ProductInfo;
     curve: CurveScale;
 };
@@ -24,41 +24,54 @@ export type AddProductState = Readonly<{
     pendingContributions: PagingResponse<ProductContributionDto> | null;
 }>;
 
+function getServingType(product: ProductInfo, givenAmount?: number, givenServingType?: string): string {
+    let servingType: string | undefined = undefined;
+
+    if (givenServingType !== undefined) {
+        const factor = product.servings[givenServingType];
+        if (factor !== undefined) {
+            return givenServingType;
+        }
+    }
+
+    if (servingType === undefined) {
+        servingType = product.defaultServing;
+        if (givenAmount) {
+            servingType =
+                _(Object.keys(product.servings))
+                    .filter((x) => givenAmount % product.servings[x] === 0)
+                    .orderBy((x) => product.servings[x], 'desc')
+                    .first() || servingType;
+        }
+    }
+
+    return servingType;
+}
+
 export default combineReducers<AddProductState, RootAction>({
     slider: (state = null, action) => {
         switch (action.type) {
             case getType(actions.init): {
-                const { product, startVolume } = action.payload;
+                const { product, amount, servingType } = action.payload;
 
-                let selectedServing = product.defaultServing;
-                if (startVolume) {
-                    selectedServing =
-                        _(Object.keys(product.servings))
-                            .filter((x) => startVolume % product.servings[x] === 0)
-                            .orderBy((x) => product.servings[x], 'desc')
-                            .first() || selectedServing;
+                let selectedServingType = getServingType(product, amount, servingType);
+
+                const curve = selectScale(product.servings[selectedServingType], product.nutritionalInfo);
+
+                let selectedAmount = curve.labelStep;
+                if (amount) {
+                    selectedAmount = amount - (amount % curve.step);
                 }
 
-                const curve = selectScale(selectedServing, product.servings[selectedServing], product.nutritionalInfo);
-                let volume = curve.labelStep;
-                if (startVolume) {
-                    volume = startVolume - (startVolume % curve.step);
-                    volume = volume / product.servings[selectedServing];
-                }
-
-                return { curve, volume, product, selectedServing };
+                return { curve, amount: selectedAmount, product, servingType: selectedServingType };
             }
-            case getType(actions.setVolume):
-                return state && { ...state, volume: action.payload };
+            case getType(actions.setAmount):
+                return state && { ...state, amount: action.payload };
             case getType(actions.setServing): {
                 if (state === null) return null;
 
-                const curve = selectScale(
-                    action.payload,
-                    state.product.servings[action.payload],
-                    state.product.nutritionalInfo,
-                );
-                return { ...state, selectedServing: action.payload, curve, volume: curve.labelStep };
+                const curve = selectScale(state.product.servings[action.payload], state.product.nutritionalInfo);
+                return { ...state, servingType: action.payload, curve, amount: curve.labelStep };
             }
         }
         return state;

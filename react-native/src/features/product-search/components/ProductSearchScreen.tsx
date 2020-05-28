@@ -31,9 +31,6 @@ type Props = ReturnType<typeof mapStateToProps> & {
     route: RouteProp<RootStackParamList, 'SearchProduct'>;
 };
 
-const getServingSizeValue = (servingSize: ServingSize, product: ProductInfo) =>
-    product.servings[servingSize.servingType || product.defaultServing] * servingSize.amount;
-
 function ProductSearchScreen({
     suggestions,
     navigation,
@@ -42,8 +39,6 @@ function ProductSearchScreen({
     },
 }: Props) {
     const theme = useTheme();
-
-    console.log(suggestions);
 
     const onPressItem = (item: SearchResult) => {
         switch (item.type) {
