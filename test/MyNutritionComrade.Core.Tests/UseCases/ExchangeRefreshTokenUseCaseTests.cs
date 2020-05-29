@@ -39,14 +39,14 @@ namespace MyNutritionComrade.Core.Tests.UseCases
             }));
 
             const string refreshToken = "1234";
-            var user = new User("", "", "");
+            var user = new User("", new CustomUserMetadata("test", "asd"));
             user.AddRefreshToken(refreshToken, "");
 
             var mockUserRepository = new Mock<IUserRepository>();
             mockUserRepository.Setup(repo => repo.FindById(It.IsAny<string>())).ReturnsAsync(user);
 
             var mockJwtFactory = new Mock<IJwtFactory>();
-            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("");
+            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>())).ReturnsAsync("");
 
             var mockTokenFactory = new Mock<ITokenFactory>();
             mockTokenFactory.Setup(factory => factory.GenerateToken(32)).Returns("");

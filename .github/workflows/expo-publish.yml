@@ -2,14 +2,15 @@ name: Expo Publish
 
 on:
   push:
-    branches: [ master ]
+    branches: [prod-expo]
     paths:
-      - 'react-native/*'
-
+      - react-native/**
 jobs:
   publish:
     name: Install and publish
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./react-native
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -20,5 +21,12 @@ jobs:
           expo-version: 3.x
           expo-username: ${{ secrets.EXPO_CLI_USERNAME }}
           expo-password: ${{ secrets.EXPO_CLI_PASSWORD }}
+      - run: 'echo "$ENV_INFO" > ./src/env.ts'
+        shell: bash
+        working-directory: ${{ env.working-directory }}
+        env:
+          ENV_INFO: ${{secrets.ENV_INFO}}
       - run: yarn install
+        working-directory: ${{ env.working-directory }}
       - run: expo publish
+        working-directory: ${{ env.working-directory }}

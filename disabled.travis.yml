@@ -1,7 +1,0 @@
-language: csharp
-dotnet: 3.1
-mono: none
-dist: xenial
-script:
-  - dotnet tool restore
-  - dotnet fake build

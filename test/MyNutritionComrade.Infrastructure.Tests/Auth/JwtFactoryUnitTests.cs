@@ -30,7 +30,7 @@ namespace MyNutritionComrade.Infrastructure.Tests.Auth
             var jwtFactory = new JwtFactory(mockJwtTokenHandler.Object, Microsoft.Extensions.Options.Options.Create(jwtIssuerOptions));
 
             // act
-            var result = await jwtFactory.GenerateEncodedToken(id, "userName");
+            var result = await jwtFactory.GenerateEncodedToken(id);
 
             // assert
             Assert.Equal(token, result);

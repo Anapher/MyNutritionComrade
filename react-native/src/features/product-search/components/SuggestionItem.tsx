@@ -83,7 +83,7 @@ function getDescription(s: SearchResult): string | null {
         case 'generatedMeal':
             return _.sortBy(s.items, (x) => x.nutritionalInfo.energy)
                 .map(getName)
-                .join(',');
+                .join(', ');
     }
 }
 

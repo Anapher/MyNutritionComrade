@@ -48,9 +48,7 @@ export const signInEpic: RootEpic = (action$, _, { api }) =>
                     return actions.signedIn(response);
                 }),
                 catchError((error: AxiosError) => {
-                    console.log('failed');
-
-                    console.log(error);
+                    console.log('failed: ' + error);
 
                     return of(actions.googleSignInAsync.failure(toErrorResult(error)));
                 }),
