@@ -1,4 +1,3 @@
-using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.Services;

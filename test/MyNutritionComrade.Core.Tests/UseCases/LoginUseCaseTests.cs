@@ -1,109 +1,105 @@
-//using MyNutritionComrade.Core.Domain.Entities;
-//using MyNutritionComrade.Core.Dto.UseCaseRequests;
-//using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
-//using MyNutritionComrade.Core.Interfaces.Services;
-//using MyNutritionComrade.Core.UseCases;
-//using Moq;
-//using MyNutritionComrade.Core.Domain.Entities.Account;
-//using Xunit;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
+using MyNutritionComrade.Core.Dto.UseCaseRequests;
+using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
+using MyNutritionComrade.Core.Interfaces.Services;
+using MyNutritionComrade.Core.UseCases;
+using Moq;
+using MyNutritionComrade.Core.Domain.Entities.Account;
+using MyNutritionComrade.Core.Tests._Helpers;
+using Xunit;
 
-//namespace MyNutritionComrade.Core.Tests.UseCases
-//{
-//    public class LoginUseCaseTests
-//    {
-//        [Fact]
-//        public async void Handle_GivenValidCredentials_ShouldSucceed()
-//        {
-//            // arrange
-//            var mockUserRepository = new Mock<IUserRepository>();
-//            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync(new User("", "", ""));
+namespace MyNutritionComrade.Core.Tests.UseCases
+{
+    public class LoginUseCaseTests
+    {
+        [Fact]
+        public async Task TestValidNewGoogleLogin()
+        {
+            // arrange
+            var request = new GoogleLoginRequest("12345", "test@email.com", "127.0.0.1");
 
-//            mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(true);
+            var mockUserRepository = new Mock<IUserRepository>();
+            mockUserRepository.Setup(x => x.FindById(It.IsAny<string>())).ReturnsAsync((User) null);
 
-//            var mockJwtFactory = new Mock<IJwtFactory>();
-//            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("");
+            var mockJwtFactory = new Mock<IJwtFactory>();
+            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>())).ReturnsAsync("token");
 
-//            var mockTokenFactory = new Mock<ITokenFactory>();
+            var mockTokenFactory = new Mock<ITokenFactory>();
+            mockTokenFactory.Setup(x => x.GenerateToken(It.IsAny<int>())).Returns("simple token");
 
-//            var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+            var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object, new NullLogger<LoginUseCase>());
 
-//            // act
-//            var response = await useCase.Handle(new LoginRequest("userName", "password", "127.0.0.1"));
+            // act
+            var response = await useCase.Handle(request);
 
-//            // assert
-//            Assert.False(useCase.HasError);
-//        }
+            // assert
+            Assert.False(useCase.HasError);
 
-//        [Fact]
-//        public async void Handle_GivenIncompleteCredentials_ShouldFail()
-//        {
-//            // arrange
-//            var mockUserRepository = new Mock<IUserRepository>();
-//            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync(new User("", "", ""));
+            mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Once);
+            mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
+            Assert.NotNull(response.AccessToken);
+            Assert.NotNull(response.RefreshToken);
+        }
 
-//            mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(false);
+        [Fact]
+        public async Task TestValidExistingGoogleLogin()
+        {
+            // arrange
+            var request = new GoogleLoginRequest("12345", "test@email.com", "127.0.0.1");
 
-//            var mockJwtFactory = new Mock<IJwtFactory>();
-//            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("");
+            var mockUserRepository = new Mock<IUserRepository>();
+            mockUserRepository.Setup(x => x.FindById(It.IsAny<string>())).ReturnsAsync(UserHelper.Default("12345"));
 
-//            var mockTokenFactory = new Mock<ITokenFactory>();
+            var mockJwtFactory = new Mock<IJwtFactory>();
+            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>())).ReturnsAsync("token");
 
-//            var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+            var mockTokenFactory = new Mock<ITokenFactory>();
+            mockTokenFactory.Setup(x => x.GenerateToken(It.IsAny<int>())).Returns("simple token");
 
-//            // act
-//            await useCase.Handle(new LoginRequest("", "password", "127.0.0.1"));
+            var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object, new NullLogger<LoginUseCase>());
 
-//            // assert
-//            Assert.True(useCase.HasError);
-//            mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
-//        }
+            // act
+            var response = await useCase.Handle(request);
 
-//        [Fact]
-//        public async void Handle_GivenUnknownCredentials_ShouldFail()
-//        {
-//            // arrange
-//            var mockUserRepository = new Mock<IUserRepository>();
-//            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync((User)null);
+            // assert
+            Assert.False(useCase.HasError);
 
-//            mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(true);
+            mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Never);
+            mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
+            Assert.NotNull(response.AccessToken);
+            Assert.NotNull(response.RefreshToken);
+        }
 
-//            var mockJwtFactory = new Mock<IJwtFactory>();
-//            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("");
+        [Fact]
+        public async Task TestDisabledExistingGoogleLogin()
+        {
+            // arrange
+            var request = new GoogleLoginRequest("12345", "test@email.com", "127.0.0.1");
 
-//            var mockTokenFactory = new Mock<ITokenFactory>();
+            var user = UserHelper.Default("12345");
+            user.IsDisabled = true;
 
-//            var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
+            var mockUserRepository = new Mock<IUserRepository>();
+            mockUserRepository.Setup(x => x.FindById(It.IsAny<string>())).ReturnsAsync(user);
 
-//            // act
-//            await useCase.Handle(new LoginRequest("", "password", "127.0.0.1"));
+            var mockJwtFactory = new Mock<IJwtFactory>();
+            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>())).ReturnsAsync("token");
 
-//            // assert
-//            Assert.True(useCase.HasError);
-//            mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
-//        }
+            var mockTokenFactory = new Mock<ITokenFactory>();
+            mockTokenFactory.Setup(x => x.GenerateToken(It.IsAny<int>())).Returns("simple token");
 
-//        [Fact]
-//        public async void Handle_GivenInvalidPassword_ShouldFail()
-//        {
-//            // arrange
-//            var mockUserRepository = new Mock<IUserRepository>();
-//            mockUserRepository.Setup(repo => repo.FindByName(It.IsAny<string>())).ReturnsAsync((User)null);
+            var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object, new NullLogger<LoginUseCase>());
 
-//            mockUserRepository.Setup(repo => repo.CheckPassword(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(false);
+            // act
+            var response = await useCase.Handle(request);
 
-//            var mockJwtFactory = new Mock<IJwtFactory>();
-//            mockJwtFactory.Setup(factory => factory.GenerateEncodedToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync("");
+            // assert
+            Assert.True(useCase.HasError);
 
-//            var mockTokenFactory = new Mock<ITokenFactory>();
-
-//            var useCase = new LoginUseCase(mockUserRepository.Object, mockJwtFactory.Object, mockTokenFactory.Object);
-
-//            // act
-//            await useCase.Handle(new LoginRequest("", "password", "127.0.0.1"));
-
-//            // assert
-//            Assert.True(useCase.HasError);
-//            mockTokenFactory.Verify(factory => factory.GenerateToken(32), Times.Never);
-//        }
-//    }
-//}
+            mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Never);
+            mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+            Assert.Null(response);
+        }
+    }
+}

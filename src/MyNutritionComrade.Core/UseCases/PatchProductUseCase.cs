@@ -45,9 +45,8 @@ namespace MyNutritionComrade.Core.UseCases
 
         public async Task<PatchProductResponse?> Handle(PatchProductRequest message)
         {
-            var user = await _userRepository.FindById(message.UserId);
-            if (user == null)
-                return ReturnError(new EntityNotFoundError($"The user with id {message.UserId} was not found.", ErrorCode.UserNotFound));
+            if (!(await _userRepository.ValidateUser(message.UserId)).Result(out var error, out var user))
+                return ReturnError(error);
 
             var product = await _productRepository.FindById(message.ProductId);
             if (product == null)

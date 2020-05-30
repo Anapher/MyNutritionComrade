@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
-using MyNutritionComrade.Core.Errors;
+using MyNutritionComrade.Core.Extensions;
 using MyNutritionComrade.Core.Interfaces;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.UseCases;
@@ -27,9 +27,8 @@ namespace MyNutritionComrade.Core.UseCases
 
         public async Task<CalculateCurrentNutritionGoalResponse?> Handle(CalculateCurrentNutritionGoalRequest message)
         {
-            var user = await _userRepository.FindById(message.UserId);
-            if (user == null)
-                return ReturnError(new EntityNotFoundError($"The user with id {message.UserId} was not found.", ErrorCode.UserNotFound));
+            if (!(await _userRepository.ValidateUser(message.UserId)).Result(out var error, out var user))
+                return ReturnError(error);
 
             var response = new CalculateCurrentNutritionGoalResponse();
 

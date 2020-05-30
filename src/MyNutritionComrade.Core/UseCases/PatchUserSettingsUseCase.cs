@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
@@ -17,12 +18,14 @@ namespace MyNutritionComrade.Core.UseCases
         private readonly IUserSettingsRepository _repository;
         private readonly IUserRepository _userRepository;
         private readonly IValidatorFactory _validatorFactory;
+        private readonly ILogger<PatchUserSettingsUseCase> _logger;
 
-        public PatchUserSettingsUseCase(IUserSettingsRepository repository, IUserRepository userRepository, IValidatorFactory validatorFactory)
+        public PatchUserSettingsUseCase(IUserSettingsRepository repository, IUserRepository userRepository, IValidatorFactory validatorFactory, ILogger<PatchUserSettingsUseCase> logger)
         {
             _repository = repository;
             _userRepository = userRepository;
             _validatorFactory = validatorFactory;
+            _logger = logger;
         }
 
         public async Task<PatchUserSettingsResponse?> Handle(PatchUserSettingsRequest message)
@@ -38,8 +41,8 @@ namespace MyNutritionComrade.Core.UseCases
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                _logger.LogWarning(e, "User patch failed. Patch: {@patch}, user id: {userId}", message.PatchDocument, message.UserId);
+                return ReturnError(new FieldValidationError("Patch", "Invalid json patch supplied."));
             }
 
             var validator = _validatorFactory.GetValidator<UserSettings>();
