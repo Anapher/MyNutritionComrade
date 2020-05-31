@@ -1,8 +1,11 @@
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
+using MyNutritionComrade.Config;
 using Raven.Client.Documents;
 using Raven.TestDriver;
 
@@ -10,19 +13,32 @@ namespace MyNutritionComrade.IntegrationTests
 {
     public class TestDriver : RavenTestDriver
     {
-        public IDocumentStore Create()
-        {
-            return GetDocumentStore();
-        }
+        public IDocumentStore Create() => GetDocumentStore();
     }
 
     public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
     {
-        private readonly TestDriver _testDriver;
+        private readonly TestDriver _testDriver = new TestDriver();
 
-        public CustomWebApplicationFactory()
+        public TestGoogleAuthValidator GoogleAuthValidator { get; } = new TestGoogleAuthValidator();
+
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            _testDriver = new TestDriver();
+            builder.ConfigureServices(services =>
+            {
+                // Remove the app's IDocumentStore registration.
+                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IDocumentStore));
+                if (descriptor != null)
+                    services.Remove(descriptor);
+
+                services.AddSingleton<IDocumentStore>(_testDriver.Create());
+
+                descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IGoogleAuthValidator));
+                if (descriptor != null)
+                    services.Remove(descriptor);
+
+                services.AddSingleton<IGoogleAuthValidator>(GoogleAuthValidator);
+            });
         }
 
         protected override void Dispose(bool disposing)
@@ -30,23 +46,19 @@ namespace MyNutritionComrade.IntegrationTests
             base.Dispose(disposing);
             _testDriver.Dispose();
         }
+    }
 
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
+    public class TestGoogleAuthValidator : IGoogleAuthValidator
+    {
+        public ConcurrentDictionary<string, GoogleJsonWebSignature.Payload> ValidLogins { get; } =
+            new ConcurrentDictionary<string, GoogleJsonWebSignature.Payload>();
+
+        public Task<GoogleJsonWebSignature.Payload> ValidateAsync(string idToken)
         {
-            builder.ConfigureTestServices(services =>
-            {
-                services.AddSingleton(_testDriver.Create());
-            });
+            if (ValidLogins.TryGetValue(idToken, out var payload))
+                return Task.FromResult(payload);
 
-            builder.ConfigureServices(services =>
-            {
-                //var repo = new MockProductRepository();
-                //services.AddSingleton<IProductRepository>(repo);
-                //services.AddSingleton(repo);
-
-                // Build the service provider.
-                var sp = services.BuildServiceProvider();
-            });
+            throw new InvalidJwtException("fail");
         }
     }
 }

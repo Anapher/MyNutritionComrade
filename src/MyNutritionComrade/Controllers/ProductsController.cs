@@ -29,16 +29,16 @@ namespace MyNutritionComrade.Controllers
     public class ProductsController : Controller
     {
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProduct([RequiredFromQuery] string barcode,
+        public async Task<ActionResult<IEnumerable<SearchResult>>> SearchProduct([RequiredFromQuery] string barcode,
             [FromServices] IProductRepository repository, [FromServices] IMapper mapper)
         {
             if (string.IsNullOrEmpty(barcode))
                 return new FieldValidationError("The query parameter barcode is required.", "query").ToActionResult();
 
             var product = await repository.FindByBarcode(barcode);
-            if (product == null) return ImmutableList<ProductDto>.Empty;
+            if (product == null) return ImmutableList<SearchResult>.Empty;
 
-            return mapper.Map<ProductDto>(product).Yield().ToList();
+            return new SearchResult[] {new ProductSuggestion(mapper.Map<ProductDto>(product))};
         }
 
         [HttpGet("search")]

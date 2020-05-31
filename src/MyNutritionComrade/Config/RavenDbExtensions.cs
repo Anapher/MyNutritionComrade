@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,27 +20,28 @@ namespace MyNutritionComrade.Config
             var options = new RavenDbOptions();
             configuration.Bind(options);
 
-            services.AddSingleton<IDocumentStore>((x) =>
-            {
-                var store = new DocumentStore
+            if (!services.Any(x => x.ServiceType == typeof(IDocumentStore)))
+                services.AddSingleton<IDocumentStore>((x) =>
                 {
-                    Urls = options.Urls,
-                    Database = options.DatabaseName,
-                    Conventions =
+                    var store = new DocumentStore
                     {
-                        CustomizeJsonDeserializer = CustomizeJsonSerializer,
-                        CustomizeJsonSerializer = CustomizeJsonSerializer,
-                        FindCollectionName = type => type.Name,
-                    }
-                };
+                        Urls = options.Urls,
+                        Database = options.DatabaseName,
+                        Conventions =
+                        {
+                            CustomizeJsonDeserializer = CustomizeJsonSerializer,
+                            CustomizeJsonSerializer = CustomizeJsonSerializer,
+                            FindCollectionName = type => type.Name,
+                        }
+                    };
 
-                if (!string.IsNullOrEmpty(options.CertPath))
-                    store.Certificate = new X509Certificate2(options.CertPath, options.CertPass);
+                    if (!string.IsNullOrEmpty(options.CertPath))
+                        store.Certificate = new X509Certificate2(options.CertPath, options.CertPass);
 
-                store.Initialize();
+                    store.Initialize();
 
-                return store;
-            });
+                    return store;
+                });
 
             services.AddScoped(serviceProvider => serviceProvider.GetService<IDocumentStore>().OpenAsyncSession(new SessionOptions {NoTracking = true}));
         }

@@ -137,6 +137,7 @@ namespace MyNutritionComrade
             });
 
             services.AddRavenDb(Configuration.GetSection("RavenDb"));
+            services.AddGoogleAuthValidator();
 
             var jsonSettings = new JsonSerializerSettings();
             ConfigureJsonSerializerSettings(jsonSettings);

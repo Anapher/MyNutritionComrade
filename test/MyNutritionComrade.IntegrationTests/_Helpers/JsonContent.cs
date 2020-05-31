@@ -2,7 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 
-namespace MyNutritionComrade.IntegrationTests.Utils
+namespace MyNutritionComrade.IntegrationTests._Helpers
 {
     public class JsonContent : StringContent
     {

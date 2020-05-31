@@ -24,17 +24,17 @@ namespace MyNutritionComrade.Controllers
         }
 
         // POST api/v1/auth/login
-        [HttpPost("login")]
-        public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto request, [FromServices] ILoginUseCase loginUseCase)
-        {
-            var result = await loginUseCase.Handle(new CustomLoginRequest(request.UserName, request.Password, HttpContext.Connection.RemoteIpAddress?.ToString()));
-            if (loginUseCase.HasError)
-            {
-                return loginUseCase.ToActionResult();
-            }
+        //[HttpPost("login")]
+        //public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto request, [FromServices] ILoginUseCase loginUseCase)
+        //{
+        //    var result = await loginUseCase.Handle(new CustomLoginRequest(request.UserName, request.Password, HttpContext.Connection.RemoteIpAddress?.ToString()));
+        //    if (loginUseCase.HasError)
+        //    {
+        //        return loginUseCase.ToActionResult();
+        //    }
 
-            return new LoginResponseDto(result!.AccessToken, result.RefreshToken);
-        }
+        //    return new LoginResponseDto(result!.AccessToken, result.RefreshToken);
+        //}
 
         // POST api/v1/auth/refreshtoken
         [HttpPost("refreshtoken")]
@@ -52,7 +52,7 @@ namespace MyNutritionComrade.Controllers
         // POST api/v1/auth/login_with_google
         [HttpPost("login_with_google")]
         public async Task<ActionResult<LoginResponseDto>> LoginWithGoogle([FromBody] string idToken, [FromServices] IOptions<GoogleOAuthOptions> options,
-            [FromServices] ILoginUseCase loginUseCase)
+            [FromServices] ILoginUseCase loginUseCase, [FromServices]IGoogleAuthValidator authValidator)
         {
             GoogleLoginRequest request;
 
@@ -71,15 +71,12 @@ namespace MyNutritionComrade.Controllers
                 GoogleJsonWebSignature.Payload user;
                 try
                 {
-                    var settings = new GoogleJsonWebSignature.ValidationSettings();
-                    if (!string.IsNullOrEmpty(options.Value.Aud)) settings.Audience = new[] { options.Value.Aud };
-
-                    user = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+                    user = await authValidator.ValidateAsync(idToken);
                 }
                 catch (InvalidJwtException e)
                 {
                     _logger.LogDebug(e, "Validation of id token failed.");
-                    return Forbid();
+                    return Unauthorized();
                 }
 
                 _logger.LogDebug("idToken validated successfully, creating user...");

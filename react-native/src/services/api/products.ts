@@ -8,6 +8,7 @@ import {
     ProductProperties,
     SuggestionType,
     SearchResult,
+    ProductSuggestion,
 } from 'Models';
 import { PagingResponse } from 'MyNutritionComrade';
 import { jsonAxiosConfig } from '../api-utils';
@@ -49,8 +50,8 @@ export async function searchByBarcode(barcode: string): Promise<ProductInfo | un
     const queryDictionary: any = { barcode };
     const params = new URLSearchParams(queryDictionary);
 
-    const response = await Axios.get<ProductInfo[]>(`/api/v1/products/search?${params.toString()}`);
-    return response.data?.length === 0 ? undefined : response.data[0];
+    const response = await Axios.get<ProductSuggestion[]>(`/api/v1/products/search?${params.toString()}`);
+    return response.data?.length === 0 ? undefined : response.data[0].product;
 }
 
 export async function getById(id: string): Promise<ProductInfo> {
