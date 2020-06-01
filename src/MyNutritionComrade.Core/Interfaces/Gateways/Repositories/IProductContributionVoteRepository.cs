@@ -8,6 +8,6 @@ namespace MyNutritionComrade.Core.Interfaces.Gateways.Repositories
     {
         Task<bool> AddVote(ProductContributionVote vote);
         Task RemoveVote(ProductContributionVote vote);
-        Task<ProductContributionVoting> GetVoting(string productContributionId);
+        Task<ProductContributionVoting?> GetVoting(string productContributionId);
     }
 }

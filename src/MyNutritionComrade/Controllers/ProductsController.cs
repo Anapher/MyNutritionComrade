@@ -11,7 +11,6 @@ using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Domain.Entities.Consumption;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Errors;
-using MyNutritionComrade.Core.Extensions;
 using MyNutritionComrade.Core.Interfaces.Gateways.Repositories;
 using MyNutritionComrade.Core.Interfaces.UseCases;
 using MyNutritionComrade.Extensions;
@@ -69,7 +68,7 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpGet("{id}/contributions")]
-        public async Task<ActionResult<ProductContributionDto>> GetContributions(string id, [FromQuery] PagingRequest request,
+        public async Task<ActionResult<PagingResponse<ProductContributionDto>>> GetContributions(string id, [FromQuery] PagingRequest request,
             [FromQuery] ProductContributionStatus? status, [FromServices] IQueryContributionsSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;

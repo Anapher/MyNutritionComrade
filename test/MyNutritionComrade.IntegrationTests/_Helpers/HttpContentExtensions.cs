@@ -12,7 +12,7 @@ namespace MyNutritionComrade.IntegrationTests._Helpers
             var s = await content.ReadAsStringAsync();
 
             if (serializer != null)
-                serializer.Deserialize<T>(new JsonTextReader(new StringReader(s)));
+                return serializer.Deserialize<T>(new JsonTextReader(new StringReader(s)));
 
             return JsonConvert.DeserializeObject<T>(s);
         }

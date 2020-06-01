@@ -13,7 +13,7 @@ using MyNutritionComrade.IntegrationTests._Helpers;
 using MyNutritionComrade.Models.Response;
 using Xunit;
 
-namespace MyNutritionComrade.IntegrationTests.Controllers
+namespace MyNutritionComrade.IntegrationTests.Tests
 {
     public class IntegrationTest1Auth : IClassFixture<CustomWebApplicationFactory>
     {

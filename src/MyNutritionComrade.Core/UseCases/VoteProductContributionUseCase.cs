@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyNutritionComrade.Core.Domain.Entities;
+using MyNutritionComrade.Core.Dto.GatewayResponses.Repositories;
 using MyNutritionComrade.Core.Dto.UseCaseRequests;
 using MyNutritionComrade.Core.Dto.UseCaseResponses;
 using MyNutritionComrade.Core.Errors;
@@ -57,7 +58,7 @@ namespace MyNutritionComrade.Core.UseCases
             if (!await _voteRepository.AddVote(vote))
                 return ReturnError(new InvalidOperationError("The user already voted for this contribution.", ErrorCode.ProductContribution_AlreadyVoted));
 
-            var voting = await _voteRepository.GetVoting(contribution.Id);
+            var voting = await _voteRepository.GetVoting(contribution.Id) ?? new ProductContributionVoting {ProductContributionId = contribution.Id};
             var totalVotes = voting.ApproveVotes + voting.DisapproveVotes;
             var proportion = voting.ApproveVotes / (double) totalVotes;
             var apply = message.Approve;

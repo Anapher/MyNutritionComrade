@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Core.Dto.GatewayResponses.Repositories;
@@ -45,11 +46,12 @@ namespace MyNutritionComrade.Infrastructure.Data.Repositories
             await session.SaveChangesAsync();
         }
 
-        public async Task<ProductContributionVoting> GetVoting(string productContributionId)
+        public async Task<ProductContributionVoting?> GetVoting(string productContributionId)
         {
             using var session = OpenReadOnlySession();
 
-            return await session.Query<ProductContributionVoting, ProductContributionVote_ByProductContribution>()
+            // it is really important that we wait for non stale results as depending on the votes further actions are executed
+            return await session.Query<ProductContributionVoting, ProductContributionVote_ByProductContribution>().Customize(x => x.WaitForNonStaleResults())
                 .FirstOrDefaultAsync(x => x.ProductContributionId == productContributionId);
         }
     }
