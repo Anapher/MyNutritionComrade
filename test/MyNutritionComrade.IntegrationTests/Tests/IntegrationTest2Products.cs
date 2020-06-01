@@ -31,7 +31,7 @@ namespace MyNutritionComrade.IntegrationTests.Tests
             _authValidator = factory.GoogleAuthValidator;
             _serializer = factory.Services.GetRequiredService<JsonSerializer>();
         }
-
+        //
         public async Task<ProductContributionDto> CreateProductContribution(string productId)
         {
             var userId = Guid.NewGuid().ToString("N");
