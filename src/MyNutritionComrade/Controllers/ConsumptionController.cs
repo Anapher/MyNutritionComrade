@@ -42,7 +42,7 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpDelete("{date}/{type}/{compoundFoodId}")]
-        public async Task<ActionResult<ConsumedDto>> DeleteConsumption(string date, string type, string compoundFoodId,  [FromServices] IDeleteConsumptionUseCase useCase)
+        public async Task<ActionResult> DeleteConsumption(string date, string type, string compoundFoodId,  [FromServices] IDeleteConsumptionUseCase useCase)
         {
             if (!DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
                 return BadRequest("The url parameter must be a valid date time.");
