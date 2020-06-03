@@ -7,13 +7,26 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using MyNutritionComrade.Config;
 using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 using Raven.TestDriver;
 
 namespace MyNutritionComrade.IntegrationTests
 {
     public class TestDriver : RavenTestDriver
     {
-        public IDocumentStore Create() => GetDocumentStore();
+        public IDocumentStore Create()
+        {
+            var store = GetDocumentStore();
+            store.OnBeforeQuery += StoreOnOnBeforeQuery;
+
+            return store;
+        }
+
+        private void StoreOnOnBeforeQuery(object? sender, BeforeQueryEventArgs e)
+        {
+            // very important so we have deterministic results
+            e.QueryCustomization.WaitForNonStaleResults();
+        }
     }
 
     public class CustomWebApplicationFactory : WebApplicationFactory<Startup>

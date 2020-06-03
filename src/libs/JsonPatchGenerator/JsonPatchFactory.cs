@@ -43,6 +43,18 @@ namespace JsonPatchGenerator
             if (originalValue == newValue)
                 return;
 
+            if (originalValue == null)
+            {
+                patch.Replace(path, JToken.FromObject(newValue));
+                return;
+            }
+
+            if (newValue == null)
+            {
+                patch.Remove(path);
+                return;
+            }
+
             var originalObject = JToken.FromObject(originalValue);
             var newObject = JToken.FromObject(newValue);
 

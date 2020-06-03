@@ -72,9 +72,9 @@ const SettingsOverview = ({ navigation, loadUserSettings, isLoading, userSetting
 
         /** replace nutrition goals which types has changed */
         if (result.nutritionGoal && current.nutritionGoal) {
-            for (const propName of Object.keys(result)) {
+            for (const propName of Object.keys(result.nutritionGoal)) {
                 if ((result.nutritionGoal as any)[propName]?.type !== (current.nutritionGoal as any)[propName]?.type) {
-                    (current.nutritionGoal as any)[propName] = null;
+                    (current.nutritionGoal as any)[propName] = undefined;
                 }
             }
         }

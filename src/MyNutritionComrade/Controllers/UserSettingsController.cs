@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -44,7 +45,8 @@ namespace MyNutritionComrade.Controllers
             // deserialize nutrition goals
             foreach (var operation in patch.Operations)
             {
-                if (operation.path.StartsWith("/nutritionGoal/") && !operation.path.Substring("/nutritionGoal/".Length).Contains("/"))
+                if (operation.path.StartsWith("/nutritionGoal/", StringComparison.OrdinalIgnoreCase) &&
+                    !operation.path.Substring("/nutritionGoal/".Length).Contains('/'))
                 {
                     if (operation.value is JObject jobj)
                         operation.value = jobj.ToObject<NutritionGoalBase>(_jsonSerializer);

@@ -43,7 +43,6 @@ namespace MyNutritionComrade.IntegrationTests.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var result = await response.Content.DeserializeJsonObject<LoginResponseDto>();
-
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
 
             // Create product

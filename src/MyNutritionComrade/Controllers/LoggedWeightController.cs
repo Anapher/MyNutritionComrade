@@ -50,7 +50,7 @@ namespace MyNutritionComrade.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetLoggedWeight([FromQuery] PagingRequest request, [FromServices] ILoggedWeightSelector selector)
+        public async Task<ActionResult<PagingResponse<LoggedWeight>>> GetLoggedWeight([FromQuery] PagingRequest request, [FromServices] ILoggedWeightSelector selector)
         {
             var userId = User.Claims.First(x => x.Type == Constants.Strings.JwtClaimIdentifiers.Id).Value;
             var result = await selector.GetLoggedWeight(userId, request);
