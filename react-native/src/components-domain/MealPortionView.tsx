@@ -168,6 +168,7 @@ function MealPortionItem({ item, lastItem, onPress, onLongPress, onEdit, onRemov
     return (
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ display: 'flex', flexDirection: 'column' }}>
+                <View style={{ backgroundColor: 'white', width: 1, height: 1, marginTop: -1 }}></View>
                 <View style={{ backgroundColor: 'white', width: 1, flex: 1 }}></View>
                 <View style={{ backgroundColor: 'white', width: 1, height: 1 }}></View>
                 <View style={{ backgroundColor: lastItem ? 'transparent' : 'white', width: 1, flex: 1 }}></View>
