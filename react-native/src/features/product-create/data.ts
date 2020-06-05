@@ -20,8 +20,8 @@ export const nutritionalInfo: NutritionRow[] = [
     { name: 'fat', label: 'Fat', unit: 'g' },
     { name: 'saturatedFat', label: 'Saturated Fat', inset: true, unit: 'g' },
     { name: 'carbohydrates', label: 'Carbohydrates', unit: 'g' },
-    { name: 'dietaryFiber', label: 'Dietary Fiber', inset: true, unit: 'g' },
     { name: 'sugars', label: 'Sugars', inset: true, unit: 'g' },
+    { name: 'dietaryFiber', label: 'Dietary Fiber', unit: 'g' },
     { name: 'protein', label: 'Protein', unit: 'g' },
     { name: 'sodium', label: 'Sodium', unit: 'g' },
 ];
