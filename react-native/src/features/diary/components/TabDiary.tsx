@@ -7,7 +7,6 @@ import {
     FoodPortionCreationDto,
     FoodPortionDto,
     FoodPortionMealDto,
-    FoodPortionProductDto,
     MealFoodPortionCreationDto,
     ProductFoodPortionCreationDto,
     ProductInfo,
@@ -19,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import { Button, Dialog, Divider, Paragraph, Portal } from 'react-native-paper';
 import { connect } from 'react-redux';
+import { CreateEditProductDelegate } from 'src/components-domain/food-portion-edit-helper';
 import FoodPortionHeader from 'src/components-domain/FoodPortionHeader';
 import { CustomFoodPortionView, ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
 import MealPortionView, { SuggestionPortionView } from 'src/components-domain/MealPortionView';
@@ -32,7 +32,6 @@ import * as selectors from '../selectors';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
 import DiaryHeader from './DiaryHeader';
 import FoodPortionDialog, { ShowOptionsInfo } from './FoodPortionDialog';
-import { CreateEditProductDelegate } from 'src/components-domain/food-portion-edit-helper';
 
 const timeTitles: { [time in ConsumptionTime]: string } = {
     breakfast: 'Breakfast',
