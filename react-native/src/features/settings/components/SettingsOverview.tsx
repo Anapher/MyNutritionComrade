@@ -13,6 +13,7 @@ import { UserSettings } from 'Models';
 import * as jsonPatch from 'fast-json-patch';
 import useAsyncFunction from 'src/hooks/use-async-function';
 import LogOffWidget from './LogOffWidget';
+import AppInfo from './AppInfo';
 
 function ErrorMessage({ error }: { error: RequestErrorResponse }) {
     const theme = useTheme();
@@ -129,7 +130,7 @@ const SettingsOverview = ({ navigation, loadUserSettings, isLoading, userSetting
             data={items}
             renderItem={(x) => x.item.render()}
             contentInset={{ bottom: 16 }}
-            ListFooterComponent={<View style={{ height: 16 }} />}
+            ListFooterComponent={<AppInfo />}
             ListHeaderComponent={<View style={{ height: 16 }} />}
             keyExtractor={(x) => x.key}
             refreshing={isLoading}

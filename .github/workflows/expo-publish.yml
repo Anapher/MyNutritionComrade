@@ -26,6 +26,10 @@ jobs:
         working-directory: ${{ env.working-directory }}
         env:
           ENV_INFO: ${{secrets.ENV_INFO}}
+      - name: Write git commit info to file
+        run: |
+          git log -1 --pretty=format:'{%n  "commit": "%h",%n  "refs": "%D",%n  "date": "%ai"%n}' > ./src/git-info.json
+        working-directory: ${{ env.working-directory }}
       - run: yarn install
         working-directory: ${{ env.working-directory }}
       - run: expo publish
