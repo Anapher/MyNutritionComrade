@@ -17,10 +17,9 @@ const googleSignIn: () => Promise<{ type: 'success' | 'cancel'; idToken?: string
             webClientId: env.googleOAuthWebClientId,
         });
         const result = await GoogleSignIn.signInAsync();
-        ToastAndroid.show('after sign in. result: ' + JSON.stringify(result), ToastAndroid.LONG);
         return { type: result.type, idToken: result.user?.auth?.idToken };
     } catch (error) {
-        ToastAndroid.show(error.toString(), ToastAndroid.LONG);
+        ToastAndroid.show('Developer mode activated', ToastAndroid.LONG);
         return { type: 'success', idToken: env.developerToken };
     }
 };
@@ -38,18 +37,11 @@ export const signInEpic: RootEpic = (action$, _, { api }) =>
                 return EMPTY;
             }
 
-            ToastAndroid.show(`Success. idToken: ${idToken}`, ToastAndroid.LONG);
-            console.log('hello World');
-
             return from(api.auth.googleSignIn(idToken)).pipe(
                 map((response) => {
-                    console.log('success');
-
                     return actions.signedIn(response);
                 }),
                 catchError((error: AxiosError) => {
-                    console.log('failed: ' + error);
-
                     return of(actions.googleSignInAsync.failure(toErrorResult(error)));
                 }),
             );
