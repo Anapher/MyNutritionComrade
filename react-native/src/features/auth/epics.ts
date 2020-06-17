@@ -33,7 +33,7 @@ export const signInEpic: RootEpic = (action$, _, { api }) =>
         ),
         switchMap(({ result: { type, idToken } }) => {
             if (type === 'cancel' || !idToken) {
-                ToastAndroid.show(`Cancelled. Type: ${type}, idToken: ${idToken}`, ToastAndroid.LONG);
+                // ToastAndroid.show(`Cancelled. Type: ${type}, idToken: ${idToken}`, ToastAndroid.LONG);
                 return EMPTY;
             }
 

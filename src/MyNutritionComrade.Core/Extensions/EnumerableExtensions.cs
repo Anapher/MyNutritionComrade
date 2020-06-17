@@ -25,5 +25,13 @@ namespace MyNutritionComrade.Core.Extensions
                     return false;
             return cnt.Values.All(c => c == 0);
         }
-	}
+
+        public static int ScrambledHashCode<T>(this IEnumerable<T> list) where T : notnull
+        {
+            unchecked
+            {
+                return list.OrderBy(x => x).Aggregate(17, (result, current) => result * 31 + current.GetHashCode());
+            }
+        }
+    }
 }

@@ -1,4 +1,5 @@
-﻿using MyNutritionComrade.Core.Domain;
+﻿using System.Collections.Generic;
+using MyNutritionComrade.Core.Domain;
 using MyNutritionComrade.Core.Domain.Entities;
 using MyNutritionComrade.Infrastructure.Patch;
 using Newtonsoft.Json;
@@ -12,6 +13,11 @@ namespace MyNutritionComrade.Infrastructure.Tests.Patch
     {
         private static readonly JsonSerializer Serializer = new JsonSerializer { ContractResolver = new CamelCasePropertyNamesContractResolver() };
         private static JToken CreateToken(object obj) => JToken.FromObject(obj, Serializer);
+
+        private class TestClassList
+        {
+            public List<ProductLabel> Label { get; set; } = new List<ProductLabel>();
+        }
 
         [Fact]
         public void TestSetProperty()
@@ -83,22 +89,21 @@ namespace MyNutritionComrade.Infrastructure.Tests.Patch
         [Fact]
         public void TestAddItem()
         {
-            var product = new ProductInfo();
-            var operations = new PatchOperation[] {new OpAddItem("label", CreateToken(new ProductLabel("Haferflocken", "de"))),};
+            var product = new TestClassList();
+            var operations = new PatchOperation[] {new OpAddItem("label", JToken.FromObject(new ProductLabel("Haferflocken"))),};
 
             PatchExecutor.Execute(operations, product);
 
             var label = Assert.Single(product.Label);
             Assert.Equal("Haferflocken", label.Value);
-            Assert.Equal("de", label.LanguageCode);
         }
 
         [Fact]
         public void TestRemoveItem()
         {
-            var product = new ProductInfo();
-            product.AddProductLabel("Haferflocken", "de");
-            var operations = new PatchOperation[] { new OpRemoveItem("label", CreateToken(new ProductLabel("Haferflocken", "de"))), };
+            var product = new TestClassList();
+            product.Label.Add(new ProductLabel("Haferflocken"));
+            var operations = new PatchOperation[] { new OpRemoveItem("label", CreateToken(new ProductLabel("Haferflocken"))), };
 
             PatchExecutor.Execute(operations, product);
 

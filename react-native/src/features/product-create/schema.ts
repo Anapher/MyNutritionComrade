@@ -1,21 +1,41 @@
 import * as yup from 'yup';
 import { SupportedLanguages } from 'src/consts';
 
-const nutritionalValue = yup.number().min(0).required();
+const nutritionalValue = yup
+    .number()
+    .min(0, 'This value must be greater or equal to 1.')
+    .required('This value is required.');
 
 const productInfoValidationSchema = yup.object().shape({
-    label: yup
-        .array()
-        .of(
-            yup.object().shape({
-                languageCode: yup
-                    .string()
-                    .required()
-                    .oneOf(SupportedLanguages.map((x) => x.twoLetterCode)),
-                value: yup.string().required('The label is required.'),
-            }),
-        )
-        .min(1, 'Please provide at least one label.'),
+    label: yup.lazy((value: any) => {
+        return yup
+            .object()
+            .shape(
+                Object.fromEntries(
+                    Object.keys(value).map((x) => [
+                        x,
+                        yup.object().shape({
+                            value: yup.string().required('This value is required.'),
+                            tags: yup
+                                .array()
+                                .of(yup.string())
+                                .test('notEmpty', 'Empty tags are not allowed', function (value: string[]) {
+                                    return value.findIndex((x) => !x) === -1;
+                                })
+                                .test('unique', 'Duplicate tags are not allowed.', function (value: string[]) {
+                                    return value.length === new Set(value.map((x) => x?.toLowerCase())).size;
+                                }),
+                        }),
+                    ]),
+                ),
+            )
+            .test('At least one label', 'Please provide at least one label.', function (value) {
+                return Object.keys(value).length > 0;
+            })
+            .test('Valid language codes', 'All label keys must be valid language codes.', function (value) {
+                return !Object.keys(value).find((x) => !SupportedLanguages.find((y) => y.twoLetterCode === x));
+            });
+    }),
     defaultServing: yup
         .string()
         .required()
@@ -32,7 +52,7 @@ const productInfoValidationSchema = yup.object().shape({
                 const { volume, fat, carbohydrates, protein, sodium } = this.parent;
                 return fat + carbohydrates + protein + sodium <= volume;
             }),
-        energy: nutritionalValue.min(1),
+        energy: nutritionalValue.min(1, 'The energy must be greater or equal to 1.'),
         fat: nutritionalValue,
         saturatedFat: nutritionalValue.test('max', 'Saturated Fat must not exceed total fat', function (value) {
             const { fat } = this.parent;

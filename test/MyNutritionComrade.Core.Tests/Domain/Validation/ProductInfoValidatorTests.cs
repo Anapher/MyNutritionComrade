@@ -30,12 +30,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -61,12 +61,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -92,12 +92,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -122,12 +122,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -153,12 +153,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -184,7 +184,7 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [],
+  ""Label"": {},
   ""Servings"": {
     ""g"": 1.0
   },
@@ -194,7 +194,7 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
         }
 
         [Fact]
-        public void TestProductWithDuplicateLabels()
+        public void TestProductWithDuplicateTags()
         {
             TestProduct(@"
 {
@@ -210,16 +210,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    },
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Hafis"", ""Hafis""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -245,12 +241,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": """"
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": """",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -276,42 +272,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""hello world"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
-  ""Servings"": {
-    ""g"": 1.0
+  ""Label"": {
+      ""helloworld"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
   },
-  ""DefaultServing"": ""g"",
-  ""Tags"": []
-}", false);
-        }
-
-        [Fact]
-        public void TestProductWithLabelWithoutLanguageCode()
-        {
-            TestProduct(@"
-{
-  ""Code"": null,
-  ""NutritionalInfo"": {
-    ""Volume"": 100.0,
-    ""Energy"": 244.0,
-    ""Fat"": 0.0,
-    ""SaturatedFat"": 0.0,
-    ""Carbohydrates"": 20.0,
-    ""Sugars"": 0.0,
-    ""Protein"": 12.0,
-    ""DietaryFiber"": 0.0,
-    ""Sodium"": 0.5
-  },
-  ""Label"": [
-    {
-      ""Value"": ""Haferflocken""
-    }
-  ],
   ""Servings"": {
     ""g"": 1.0
   },
@@ -337,12 +303,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -368,12 +334,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {},
   ""DefaultServing"": ""g"",
   ""Tags"": []
@@ -397,12 +363,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0,
     ""hello world"": 10.0
@@ -429,12 +395,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0,
     ""ml"": 1.0
@@ -461,12 +427,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""g"": 1.0
   },
@@ -492,12 +458,12 @@ namespace MyNutritionComrade.Core.Tests.Domain.Validation
     ""DietaryFiber"": 0.0,
     ""Sodium"": 0.5
   },
-  ""Label"": [
-    {
-      ""LanguageCode"": ""de"",
-      ""Value"": ""Haferflocken""
-    }
-  ],
+  ""Label"": {
+      ""de"": {
+          ""Value"": ""Haferflocken"",
+          ""Tags"": [""Nices Zeug""]
+      }
+  },
   ""Servings"": {
     ""ml"": 1.0
   },

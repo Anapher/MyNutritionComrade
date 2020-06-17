@@ -1,18 +1,17 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import cuid from 'cuid';
 import { FormikHelpers } from 'formik';
 import { ProductProperties } from 'Models';
 import React, { useState } from 'react';
 import { ToastAndroid } from 'react-native';
+import { Button, Dialog, Paragraph, Portal } from 'react-native-paper';
 import useAsyncFunction from 'src/hooks/use-async-function';
 import { RootStackParamList } from 'src/RootNavigator';
-import { RequestErrorResponse, RestError, isRestError, toString, isServerUnavailable } from 'src/utils/error-result';
+import * as productsApi from 'src/services/api/products';
+import { isRestError, isServerUnavailable, RequestErrorResponse, toString } from 'src/utils/error-result';
 import * as actions from '../actions';
 import { emptyProductInfo } from '../data';
 import ProductEditor from './ProductEditor';
-import { Portal, Dialog, Paragraph, Button } from 'react-native-paper';
-import * as productsApi from 'src/services/api/products';
 
 type Props = {
     navigation: StackNavigationProp<RootStackParamList>;
@@ -92,15 +91,13 @@ function CreateProduct({
         }
     };
 
-    const initVal = { ...emptyProductInfo, ...initialValues };
-
     return (
         <>
             <ProductEditor
                 loadingTitle="Creating product..."
                 title="Create Product"
                 titleIcon="check"
-                initialValue={{ ...initVal, label: initVal.label.map((x) => ({ ...x, key: cuid() })) }}
+                initialValue={{ ...emptyProductInfo, ...initialValues }}
                 onSubmit={createProduct}
                 navigation={navigation}
                 duplicationCheck={true}

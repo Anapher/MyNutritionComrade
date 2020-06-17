@@ -30,7 +30,7 @@ namespace MyNutritionComrade.Core.Tests.UseCases
         private Product GetValidProduct()
         {
             var p = new Product("1") {DefaultServing = ServingType.Gram, NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0)};
-            p.AddProductLabel("Haferflocken", "de");
+            p.Label.Add("de", new ProductLabel("Haferflocken"));
             p.AddProductServing(ServingType.Gram, 1);
             return p;
         }

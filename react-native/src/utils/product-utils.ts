@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { NutritionalInfo, ProductEssentials, ProductLabel } from 'Models';
+import { NutritionalInfo, ProductEssentials, ProductLabelInfo } from 'Models';
 import { TagLiquid } from 'src/consts';
 import { computeHashCode } from './string-utils';
 
@@ -66,6 +66,6 @@ export function getBaseUnit(product: ProductEssentials): string {
     return isProductLiquid(product) ? 'ml' : 'g';
 }
 
-export default function selectLabel(label: ProductLabel[]): string {
-    return label[0].value;
+export default function selectLabel(label: ProductLabelInfo): string {
+    return label[Object.keys(label)[0]].value;
 }

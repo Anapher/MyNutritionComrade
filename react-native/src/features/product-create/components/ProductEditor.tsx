@@ -1,7 +1,7 @@
 import ViewPager from '@react-native-community/viewpager';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Formik, FormikHelpers } from 'formik';
-import { ProductProperties } from 'Models';
+import { ProductProperties, NutritionalInfo } from 'Models';
 import React, { useRef, useState } from 'react';
 import { Keyboard, Platform, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Colors, Dialog, Paragraph, Portal, useTheme } from 'react-native-paper';
@@ -13,7 +13,6 @@ import NutritionInfo from './tabs/NutritionInfo';
 import ProductLabel from './tabs/ProductLabel';
 import Properties from './tabs/properties';
 import Servings from './tabs/Servings';
-import cuid from 'cuid';
 
 const isIOS = Platform.OS === 'ios';
 
@@ -44,7 +43,7 @@ function ProductEditor({
 
     return (
         <Formik<ProductProperties>
-            initialValues={{ ...initialValue, label: initialValue.label.map((x) => ({ ...x, key: cuid() })) }}
+            initialValues={initialValue}
             validateOnMount
             onSubmit={(values, helpers) => {
                 Keyboard.dismiss();
@@ -52,9 +51,8 @@ function ProductEditor({
                 const patchedValues: ProductProperties = {
                     ...values,
                     nutritionalInfo: Object.fromEntries(
-                        Object.keys(values.nutritionalInfo).map((x) => [x, Number((values.nutritionalInfo as any)[x])]),
+                        Object.entries(values.nutritionalInfo).map(([key, value]) => [key, Number(value)]),
                     ) as any,
-                    label: values.label.map((x) => ({ languageCode: x.languageCode, value: x.value })),
                 };
 
                 return onSubmit(patchedValues, helpers);

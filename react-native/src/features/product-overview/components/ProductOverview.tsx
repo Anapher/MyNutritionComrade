@@ -20,10 +20,10 @@ function ProductOverview({ product: { label, code, tags, nutritionalInfo, servin
     return (
         <View>
             <Subheading>Labels</Subheading>
-            {_.sortBy(label, (x) => x.languageCode).map((x) => (
-                <View key={`${x.languageCode}/${x.value}`} style={styles.row}>
-                    <Text style={{ color: secondaryText, marginRight: 8 }}>({x.languageCode})</Text>
-                    <Text style={styles.flexWrap}>{x.value}</Text>
+            {Object.entries(label).map(([lang, productLabel]) => (
+                <View key={lang} style={styles.row}>
+                    <Text style={{ color: secondaryText, marginRight: 8 }}>({lang})</Text>
+                    <Text style={styles.flexWrap}>{productLabel.value}</Text>
                 </View>
             ))}
             <Subheading style={styles.section}>Nutritional Information</Subheading>

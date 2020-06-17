@@ -1,17 +1,17 @@
-import { OpAddItem, OpRemoveItem, PatchOperation, ProductLabel, ProductProperties } from 'Models';
+import { PatchOperation, ProductLabel, ProductProperties } from 'Models';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Text as PaperText } from 'react-native-paper';
 import ChangedValue from 'src/components/ChangedValue';
 import ReadOnlyTable, { ReadOnlyTableRow } from 'src/components/ReadOnlyTable';
 import { TagLiquid } from 'src/consts';
+import ProductOverview from 'src/features/product-overview/components/ProductOverview';
 import { getBaseUnit, isProductLiquid } from 'src/utils/product-utils';
 import { formatNumber } from 'src/utils/string-utils';
 import { getServings, nutritionalInfo, NutritionRow, ServingInfo } from '../../data';
+import { applyPatch } from '../../utils';
 import { OperationType } from './OperationHeader';
 import ValuePatch from './ValuePatch';
-import { applyPatch } from '../../utils';
-import ProductOverview from 'src/features/product-overview/components/ProductOverview';
 
 export type PatchView = {
     type: OperationType;
@@ -27,13 +27,15 @@ type Props = {
 function getPatchView(props: Props): PatchView {
     const { patchOperation, currentProduct } = props;
 
+    // if both a label set and a nutritional info set operation exist in this operation
+    // we have an initialization, as they would've been splitted to two separate operations else
     if (
-        patchOperation.find((x) => x.path === 'label') &&
+        patchOperation.find((x) => x.path.startsWith('label')) &&
         patchOperation.find((x) => x.path === 'nutritionalInfo.energy')
     ) {
         const product: ProductProperties = {
             servings: {},
-            label: [],
+            label: {},
             tags: [],
             nutritionalInfo: {
                 volume: 0,
@@ -141,47 +143,78 @@ function getPatchView(props: Props): PatchView {
         };
     }
 
-    if (patch.path === 'label') {
-        if (patchOperation.length === 2) {
-            // replace
-            const removeOp = patchOperation.find((x) => x.type === 'remove') as OpRemoveItem;
-            const addOp = patchOperation.find((x) => x.type === 'add') as OpAddItem;
+    if (patch.path.startsWith('label.')) {
+        const splitter = patch.path.split('.');
+        const language = splitter[1];
+        const prop = splitter.length > 2 ? splitter[2] : undefined;
+
+        const currentLabel = currentProduct.label[language];
+
+        if (prop) {
+            if (prop === 'value') {
+                return {
+                    type: 'modify',
+                    propertyName: `Label value (Language: ${language})`,
+                    view: (
+                        <Text>
+                            {currentLabel && <ChangedValue removed value={currentLabel.value} />}
+                            <Text>{'   '}</Text>
+                            {patch.type === 'set' && <ChangedValue value={patch.value} />}
+                        </Text>
+                    ),
+                };
+            }
+
+            if (prop === 'tags') {
+                return {
+                    type: 'modify',
+                    propertyName: `Label tags (Language: ${language})`,
+                    view: (
+                        <Text>
+                            {currentLabel && <ChangedValue removed value={currentLabel.tags.join(', ')} />}
+                            <Text>{'   '}</Text>
+                            {patch.type === 'set' && <ChangedValue value={patch.value} />}
+                        </Text>
+                    ),
+                };
+            }
 
             return {
                 type: 'modify',
-                propertyName: `Label (Language: ${(addOp.item as ProductLabel).languageCode})`,
+                propertyName: `Label (Language: ${language})`,
+                view: <Text>Unknown Prop. Please contact the developer</Text>,
+            };
+        }
+
+        if (patch.type === 'set') {
+            // replace
+            const newLabel = patch.value as ProductLabel;
+
+            return {
+                type: 'add',
+                propertyName: `Label (Language: ${language})`,
                 view: (
                     <Text>
-                        <ChangedValue removed value={(removeOp.item as ProductLabel).value} />
-                        <Text>{'   '}</Text>
-                        <ChangedValue value={(addOp.item as ProductLabel).value} />
+                        <ChangedValue value={newLabel.value} />
+                        <Text>Tags:</Text>
+                        <ChangedValue value={newLabel.tags.join(', ')} />
                     </Text>
                 ),
             };
         }
-        if (patchOperation.length === 1) {
-            if (patch.type === 'add') {
-                return {
-                    type: 'add',
-                    propertyName: `Label (Language: ${(patch.item as ProductLabel).languageCode})`,
-                    view: (
-                        <View style={styles.linearView}>
-                            <ChangedValue value={(patch.item as ProductLabel).value} />
-                        </View>
-                    ),
-                };
-            }
-            if (patch.type === 'remove') {
-                return {
-                    type: 'remove',
-                    propertyName: `Label (Language: ${(patch.item as ProductLabel).languageCode})`,
-                    view: (
-                        <View style={styles.linearView}>
-                            <ChangedValue removed value={(patch.item as ProductLabel).value} />
-                        </View>
-                    ),
-                };
-            }
+
+        if (patch.type === 'unset') {
+            return {
+                type: 'remove',
+                propertyName: `Label (Language: ${language})`,
+                view: (
+                    <Text>
+                        <ChangedValue removed value={currentProduct.label[language]?.value} />
+                        <Text>Tags:</Text>
+                        <ChangedValue removed value={currentProduct.label[language]?.tags.join(', ')} />
+                    </Text>
+                ),
+            };
         }
     }
 

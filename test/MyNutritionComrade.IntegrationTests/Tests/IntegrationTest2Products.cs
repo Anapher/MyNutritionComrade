@@ -47,12 +47,11 @@ namespace MyNutritionComrade.IntegrationTests.Tests
             {
                 Content = new JsonContent(new List<PatchOperation>
                 {
-                    new OpAddItem("label", JToken.FromObject(new ProductLabel("Oatmeal", "en"))), new OpSetProperty("code", JToken.FromObject("zdf"))
+                    new OpSetProperty("label.en", JToken.FromObject(new ProductLabel("Oatmeal"))), new OpSetProperty("code", JToken.FromObject("zdf"))
                 }),
                 Headers = {Authorization = new AuthenticationHeaderValue("Bearer", accessInfo.AccessToken)}
             });
 
-            var asd = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"/api/v1/products/{productId}/contributions")
@@ -111,7 +110,7 @@ namespace MyNutritionComrade.IntegrationTests.Tests
 
             // 2. Create new product
             var product = new ProductInfo {NutritionalInfo = TestValues.TestNutritionalInfo, Code = "abc"};
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.AddProductServing(ServingType.Gram, 1);
             product.DefaultServing = ServingType.Gram;
 

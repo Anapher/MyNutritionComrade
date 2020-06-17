@@ -139,23 +139,22 @@ namespace MyNutritionComrade.Infrastructure.Tests.Patch
         [Fact]
         public void TestCreatePatchWithAddedLabel()
         {
-            var result = PatchCreator.CreatePatch(GetEmptyProduct(), GetEmptyProduct(x => x.AddProductLabel("test label", "de")));
+            var result = PatchCreator.CreatePatch(GetEmptyProduct(), GetEmptyProduct(x => x.Label.Add("de", new ProductLabel("test label"))));
 
             var op = Assert.Single(result);
-            var addItem = Assert.IsType<OpAddItem>(op);
-            Assert.Equal("label", addItem.Path);
-            Assert.Equal("{\"languageCode\":\"de\",\"value\":\"test label\"}", addItem.Item.ToString(Formatting.None));
+            var setItem = Assert.IsType<OpSetProperty>(op);
+            Assert.Equal("label.de", setItem.Path);
+            Assert.Equal("{\"value\":\"test label\",\"tags\":[]}", setItem.Value.ToString(Formatting.None));
         }
 
         [Fact]
         public void TestCreatePatchWithRemovedLabel()
         {
-            var result = PatchCreator.CreatePatch(GetEmptyProduct(x => x.AddProductLabel("test label", "de")), GetEmptyProduct());
+            var result = PatchCreator.CreatePatch(GetEmptyProduct(x => x.Label.Add("de", new ProductLabel("test label"))), GetEmptyProduct());
 
             var op = Assert.Single(result);
-            var removeItem = Assert.IsType<OpRemoveItem>(op);
-            Assert.Equal("label", removeItem.Path);
-            Assert.Equal("{\"languageCode\":\"de\",\"value\":\"test label\"}", removeItem.Item.ToString(Formatting.None));
+            var removeItem = Assert.IsType<OpUnsetProperty>(op);
+            Assert.Equal("label.de", removeItem.Path);
         }
 
         [Fact]

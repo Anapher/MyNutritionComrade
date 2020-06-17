@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { TextInput } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 type Props = Omit<React.ComponentProps<typeof TextInput>, 'value'> & {

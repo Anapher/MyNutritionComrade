@@ -28,14 +28,14 @@ namespace MyNutritionComrade.Infrastructure.Tests.Patch
             var product = new ProductInfo();
             product.Code = "123456";
             product.NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.DefaultServing = ServingType.Gram;
 
             var cloned = Utils.Clone(product);
             Assert.NotSame(product, cloned);
 
             Assert.Equal("123456", cloned.Code);
-            Assert.Equal("Haferflocken", Assert.Single(cloned.Label).Value);
+            Assert.Equal("Haferflocken", Assert.Single(cloned.Label).Value.Value);
             Assert.Equal(ServingType.Gram, cloned.DefaultServing);
             Assert.Equal(244, cloned.NutritionalInfo.Energy);
         }
@@ -46,13 +46,13 @@ namespace MyNutritionComrade.Infrastructure.Tests.Patch
             var product = new ProductInfo();
             product.Code = "123456";
             product.NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.DefaultServing = ServingType.Gram;
 
             var product2 = new ProductInfo();
             product2.Code = "123456";
             product2.NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0);
-            product2.AddProductLabel("Haferflocken", "de");
+            product2.Label.Add("de", new ProductLabel("Haferflocken"));
             product2.DefaultServing = ServingType.Gram;
 
             Assert.True(Utils.Compare(product, product2));
@@ -64,13 +64,13 @@ namespace MyNutritionComrade.Infrastructure.Tests.Patch
             var product = new ProductInfo();
             product.Code = "123456";
             product.NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "en");
+            product.Label.Add("en", new ProductLabel("Haferflocken"));
             product.DefaultServing = ServingType.Gram;
 
             var product2 = new ProductInfo();
             product2.Code = "123456";
             product2.NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0);
-            product2.AddProductLabel("Haferflocken", "de");
+            product2.Label.Add("de", new ProductLabel("Haferflocken"));
             product2.DefaultServing = ServingType.Gram;
 
             Assert.False(Utils.Compare(product, product2));
@@ -82,13 +82,13 @@ namespace MyNutritionComrade.Infrastructure.Tests.Patch
             var product = new Product("123456");
             product.Code = "123456";
             product.NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.DefaultServing = ServingType.Gram;
 
             var product2 = new ProductInfo();
             product2.Code = "123456";
             product2.NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0);
-            product2.AddProductLabel("Haferflocken", "de");
+            product2.Label.Add("de", new ProductLabel("Haferflocken"));
             product2.DefaultServing = ServingType.Gram;
 
             Assert.True(Utils.Compare(product, product2));

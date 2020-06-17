@@ -115,7 +115,12 @@ export const emptyProductInfo: ProductProperties = {
         sodium: 0,
     },
     tags: [],
-    label: [{ languageCode: CurrentLanguage, value: '' }],
+    label: {
+        [CurrentLanguage]: {
+            value: '',
+            tags: [],
+        },
+    },
     servings: {
         g: 1,
     },

@@ -37,7 +37,7 @@ namespace MyNutritionComrade.Core.Tests.UseCases
 
             var product = new ProductInfo();
             product.NutritionalInfo = new NutritionalInfo(100, 200, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.AddProductServing(ServingType.Gram, 1);
             product.DefaultServing = ServingType.Gram;
 
@@ -69,7 +69,7 @@ namespace MyNutritionComrade.Core.Tests.UseCases
 
             var product = new ProductInfo();
             product.NutritionalInfo = new NutritionalInfo(100, 200, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.AddProductServing(ServingType.Gram, 1);
             product.DefaultServing = ServingType.Gram;
 
@@ -104,7 +104,7 @@ namespace MyNutritionComrade.Core.Tests.UseCases
 
             var product = new ProductInfo { Code = "123456" };
             product.NutritionalInfo = new NutritionalInfo(100, 200, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.AddProductServing(ServingType.Gram, 1);
             product.DefaultServing = ServingType.Gram;
 
@@ -117,8 +117,8 @@ namespace MyNutritionComrade.Core.Tests.UseCases
                 Assert.Equal("123456", p.Code);
                 Assert.Equal(ServingType.Gram, p.DefaultServing);
                 var l = Assert.Single(p.Label);
-                Assert.Equal("Haferflocken", l.Value);
-                Assert.Equal("de", l.LanguageCode);
+                Assert.Equal("Haferflocken", l.Value.Value);
+                Assert.Equal("de", l.Key);
 
                 Assert.NotNull(contribution.PatchHash);
                 Assert.NotNull(contribution.StatusDescription);
@@ -155,7 +155,7 @@ namespace MyNutritionComrade.Core.Tests.UseCases
 
             var product = new ProductInfo();
             product.NutritionalInfo = new NutritionalInfo(100, 200, 0, 0, 0, 0, 0, 0, 0);
-            product.AddProductLabel("Haferflocken", "de");
+            product.Label.Add("de", new ProductLabel("Haferflocken"));
             product.AddProductServing(ServingType.Gram, 1);
             product.DefaultServing = ServingType.Gram;
 

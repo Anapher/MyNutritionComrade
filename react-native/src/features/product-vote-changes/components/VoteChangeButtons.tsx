@@ -5,7 +5,6 @@ import { Text } from 'react-native-paper';
 import AnimatedIconButton from 'src/components/AnimatedIconButton';
 import { formatNumber } from 'src/utils/string-utils';
 import Color from 'color';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type Props = {
     contribution: ProductContributionDto;

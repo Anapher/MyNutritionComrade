@@ -12,13 +12,15 @@ namespace MyNutritionComrade.Core.Domain.Validation
             RuleFor(x => x.NutritionalInfo).SetValidator(new NutritionalInfoValidator());
 
             RuleFor(x => x.Code).NotEqual("");
-            RuleFor(x => x.Label).NotEmpty().UniqueItems();
+            RuleFor(x => x.Label).NotEmpty();
             RuleForEach(x => x.Label).NotNull().ChildRules(labels =>
             {
-                labels.RuleFor(x => x.Value).NotEmpty();
-                labels.RuleFor(x => x.LanguageCode).NotEmpty().IsCulture();
+                labels.RuleFor(x => x.Value.Value).NotEmpty();
+                labels.RuleFor(x => x.Value.Tags).UniqueItems();
+                labels.RuleFor(x => x.Key).NotEmpty().IsCulture();
             });
             RuleForEach(x => x.Tags).OneOf(ProductInfo.AllowedTags);
+            RuleFor(x => x.Tags).UniqueItems();
             RuleFor(x => x.Servings).NotEmpty();
             RuleForEach(x => x.Servings).ChildRules(serving =>
             {

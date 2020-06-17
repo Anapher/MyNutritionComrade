@@ -13,17 +13,20 @@ namespace MyNutritionComrade.Infrastructure.Data.Indexes
             Map = products => from product in products
                 select new
                 {
-                    ProductName = product.Label.Select(x => x.Value).ToArray(),
+                    ProductName = product.Label.Select(x => x.Value.Value).ToArray(),
+                    ProductNameTags = product.Label.Select(x => string.Join(' ', x.Value.Tags)).ToArray(),
                     Tags = product.Tags.ToArray(),
                     Servings = product.Servings.Select(x => x.Key).ToArray()
                 };
 
             Index(x => x.ProductName, FieldIndexing.Search);
+            Index(x => x.ProductNameTags, FieldIndexing.Search);
         }
 
         public class Result
         {
             public string[] ProductName { get; set; }
+            public string[] ProductNameTags { get; set; }
             public string[] Tags { get; set; }
             public string[] Servings { get; set; }
         }

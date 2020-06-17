@@ -16,7 +16,7 @@ namespace MyNutritionComrade.Core.Tests.Services
         {
             // arrange
             var productInfo = new ProductInfo {DefaultServing = ServingType.Gram, NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0)};
-            productInfo.AddProductLabel("Haferflocken", "de");
+            productInfo.Label.Add("de", new ProductLabel("Haferflocken"));
             productInfo.AddProductServing(ServingType.Gram, 1);
 
             var mockPatchFactory = new Mock<IObjectManipulationUtils>();
@@ -37,7 +37,7 @@ namespace MyNutritionComrade.Core.Tests.Services
         {
             // arrange
             var productInfo = new ProductInfo { DefaultServing = ServingType.Gram, NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0) };
-            productInfo.AddProductLabel("Haferflocken", "de");
+            productInfo.Label.Add("de", new ProductLabel("Haferflocken"));
 
             var mockPatchFactory = new Mock<IObjectManipulationUtils>();
             mockPatchFactory.Setup(x => x.Clone(productInfo)).Returns(productInfo);
@@ -57,7 +57,7 @@ namespace MyNutritionComrade.Core.Tests.Services
         {
             // arrange
             var productInfo = new ProductInfo { DefaultServing = ServingType.Gram, NutritionalInfo = new NutritionalInfo(100, 244, 0, 0, 0, 0, 0, 0, 0) };
-            productInfo.AddProductLabel("Haferflocken", "de");
+            productInfo.Label.Add("de", new ProductLabel("Haferflocken"));
             productInfo.AddProductServing(ServingType.Gram, 1);
 
             var mockPatchFactory = new Mock<IObjectManipulationUtils>();

@@ -47,7 +47,7 @@ namespace MyNutritionComrade.IntegrationTests.Tests
 
             // Create product
             var product = new ProductInfo {NutritionalInfo = TestValues.TestNutritionalInfo};
-            product.AddProductLabel("Magerquark", "de");
+            product.Label.Add("de", new ProductLabel("Magerquark"));
             product.AddProductServing(ServingType.Gram, 1);
             product.DefaultServing = ServingType.Gram;
 

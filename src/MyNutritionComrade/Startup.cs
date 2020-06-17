@@ -35,6 +35,7 @@ using MyNutritionComrade.Selectors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Raven.Client.Documents;
 
 namespace MyNutritionComrade
 {
@@ -224,6 +225,12 @@ namespace MyNutritionComrade
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.CreateRavenDbIndexes();
+
+            var store = app.ApplicationServices.GetRequiredService<IDocumentStore>();
+            using (var session = store.OpenAsyncSession())
+            {
+                Migrations.MigrateProductContributions(session, app.ApplicationServices.GetRequiredService<JsonSerializer>()).Wait();
+            }
 
             if (env.IsDevelopment())
             {

@@ -1,8 +1,15 @@
 declare module 'Models' {
+    export interface ProductLabel {
+        value: string;
+        tags: string[];
+    }
+
+    type ProductLabelInfo = { [language: string]: ProductLabel };
+
     export interface ProductEssentials {
         nutritionalInfo: NutritionalInfo;
         tags: string[];
-        label: ProductLabel[];
+        label: ProductLabelInfo;
     }
 
     export interface ProductEssentialsWithId extends ProductEssentials {
@@ -25,11 +32,6 @@ declare module 'Models' {
 
         createdOn: string;
         modifiedOn: string;
-    }
-
-    export interface ProductLabel {
-        languageCode: string;
-        value: string;
     }
 
     export interface NutritionalInfo {
