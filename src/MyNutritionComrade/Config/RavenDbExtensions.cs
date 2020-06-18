@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -52,12 +53,12 @@ namespace MyNutritionComrade.Config
             obj.Converters.AddRequiredConverters();
         }
 
-        public static void CreateRavenDbIndexes(this IWebHost webHost)
+        public static void CreateRavenDbIndexes(this IServiceProvider services)
         {
-            var logger = webHost.Services.GetRequiredService<ILogger<RavenDbOptions>>();
+            var logger = services.GetRequiredService<ILogger<RavenDbOptions>>();
             logger.LogDebug("Create Ravendb indexes...");
 
-            var documentStore = webHost.Services.GetRequiredService<IDocumentStore>();
+            var documentStore = services.GetRequiredService<IDocumentStore>();
             IndexCreation.CreateIndexes(typeof(Product_ByCode).Assembly, documentStore);
 
             logger.LogDebug("Indexes created successfully");

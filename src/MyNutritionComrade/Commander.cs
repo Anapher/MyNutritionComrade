@@ -16,10 +16,13 @@ namespace MyNutritionComrade
     {
         public static bool ExecuteCommandLine(IWebHost host, string[] args, [NotNullWhen(true)] out int? exitCode)
         {
-            if (args[0] == "/import_products")
+            if (args.Length > 0)
             {
-                exitCode = ImportProducts(host, args[1], args[2]);
-                return true;
+                if (args[0] == "/import_products")
+                {
+                    exitCode = ImportProducts(host, args[1], args[2]);
+                    return true;
+                }
             }
 
             exitCode = null;

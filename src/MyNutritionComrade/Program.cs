@@ -13,7 +13,7 @@ namespace MyNutritionComrade
             try
             {
                 var host = CreateWebHostBuilder(args).Build();
-                host.CreateRavenDbIndexes();
+                host.Services.CreateRavenDbIndexes();
                 if (Commander.ExecuteCommandLine(host, args, out var exitCode))
                     return exitCode.Value;
 

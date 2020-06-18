@@ -51,6 +51,8 @@ namespace MyNutritionComrade.IntegrationTests
                     services.Remove(descriptor);
 
                 services.AddSingleton<IGoogleAuthValidator>(GoogleAuthValidator);
+
+                services.BuildServiceProvider().CreateRavenDbIndexes();
             });
         }
 
