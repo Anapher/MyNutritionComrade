@@ -33,7 +33,7 @@ namespace MyNutritionComrade.Core.UseCases
             if (!(await _userRepository.ValidateUser(message.UserId)).Result(out var error, out var user))
                 return ReturnError(error);
 
-            var productId = Guid.NewGuid().ToString("N");
+            var productId = message.RequestedProductId ?? Guid.NewGuid().ToString("N");
             var product = new Product(productId);
 
             var patch = _manipulationUtils.CreatePatch(product, message.Product);

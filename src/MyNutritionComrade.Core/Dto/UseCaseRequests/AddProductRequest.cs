@@ -14,5 +14,10 @@ namespace MyNutritionComrade.Core.Dto.UseCaseRequests
 
         public ProductInfo Product { get; }
         public string UserId { get; }
+
+        /// <summary>
+        ///     The id the product should have in the database. This field is especially meant for automatic imports.
+        /// </summary>
+        public string? RequestedProductId { get; set; }
     }
 }

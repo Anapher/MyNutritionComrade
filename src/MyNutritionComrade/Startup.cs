@@ -224,14 +224,6 @@ namespace MyNutritionComrade
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.CreateRavenDbIndexes();
-
-            var store = app.ApplicationServices.GetRequiredService<IDocumentStore>();
-            using (var session = store.OpenAsyncSession())
-            {
-                Migrations.MigrateProductContributions(session, app.ApplicationServices.GetRequiredService<JsonSerializer>()).Wait();
-            }
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using MyNutritionComrade.Config;
 using Serilog;
 
 namespace MyNutritionComrade
@@ -11,7 +12,12 @@ namespace MyNutritionComrade
         {
             try
             {
-                CreateWebHostBuilder(args).Build().Run();
+                var host = CreateWebHostBuilder(args).Build();
+                host.CreateRavenDbIndexes();
+                if (Commander.ExecuteCommandLine(host, args, out var exitCode))
+                    return exitCode.Value;
+
+                host.Run();
                 return 0;
             }
             catch (Exception e)
