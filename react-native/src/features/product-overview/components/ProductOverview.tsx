@@ -23,7 +23,14 @@ function ProductOverview({ product: { label, code, tags, nutritionalInfo, servin
             {Object.entries(label).map(([lang, productLabel]) => (
                 <View key={lang} style={styles.row}>
                     <Text style={{ color: secondaryText, marginRight: 8 }}>({lang})</Text>
-                    <Text style={styles.flexWrap}>{productLabel.value}</Text>
+                    <View style={styles.flexWrap}>
+                        <Text>{productLabel.value}</Text>
+                        {productLabel.tags?.length > 0 && (
+                            <Text style={{ opacity: 0.7 }}>
+                                Tags: <Text style={{ fontStyle: 'italic' }}>{productLabel.tags.join(', ')}</Text>
+                            </Text>
+                        )}
+                    </View>
                 </View>
             ))}
             <Subheading style={styles.section}>Nutritional Information</Subheading>
