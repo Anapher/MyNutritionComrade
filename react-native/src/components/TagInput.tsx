@@ -9,7 +9,11 @@ type Props = Omit<React.ComponentProps<typeof TextInput>, 'value'> & {
 };
 
 const formatValue = (val: string[]) => val.join(', ');
-const parseValue = (val: string) => val.split(',').map((x) => x.trim());
+const parseValue = (val: string) =>
+    val
+        .split(',')
+        .map((x) => x.trim())
+        .filter((x) => !!x);
 const compareValue = (v1: string[], v2: string[]) => _.isEqual(v1, v2);
 
 export default function TagInput({ value, onChangeValue, onChangeState, style, ...props }: Props) {
