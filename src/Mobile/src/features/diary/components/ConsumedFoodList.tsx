@@ -1,0 +1,77 @@
+import { NavigationProp, useNavigation } from '@react-navigation/core';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { SectionList, SectionListData, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Divider } from 'react-native-paper';
+import FoodPortionHeader from 'src/components-domain/FoodPortionHeader';
+import { ConsumptionTimes } from 'src/consts';
+import { RootNavigatorParamList } from 'src/RootNavigator';
+import { ConsumedPortion, ConsumptionTime } from 'src/types';
+import { getConsumedPortionId } from 'src/utils/product-utils';
+import ConsumptionTimeFooter from './ConsumptionTimeFooter';
+
+type Props = {
+   style?: StyleProp<ViewStyle>;
+   consumedFood: ConsumedPortion[];
+   selectedDate: string;
+};
+
+export default function ConsumedFoodList({ style, consumedFood, selectedDate }: Props) {
+   const { t } = useTranslation();
+   const navigation = useNavigation<NavigationProp<RootNavigatorParamList>>();
+
+   const sections = useMemo(
+      () =>
+         ConsumptionTimes.map<SectionListData<ConsumedPortion>>((time) => ({
+            time,
+            data: consumedFood.filter((x) => x.time === time),
+            key: time,
+         })),
+      [consumedFood],
+   );
+
+   const handleAddFood = (time: ConsumptionTime) => {
+      navigation.navigate('SearchProduct', {
+         config: { consumptionTime: time, date: selectedDate },
+         onCreated: (creationDto, foodPortion) => {},
+      });
+   };
+
+   const handleScanBarcode = (time: ConsumptionTime) => {};
+
+   return (
+      <SectionList
+         style={style}
+         sections={sections}
+         keyExtractor={getConsumedPortionId}
+         ItemSeparatorComponent={() => <Divider />}
+         renderSectionHeader={({ section: { key } }) => {
+            const section = sections.find((x) => x.key === key)!;
+            return (
+               <FoodPortionHeader
+                  foodPortions={section.data.map((x) => x.foodPortion)}
+                  header={t(`consumption_time.${section.time}`)}
+                  style={styles.sectionHeader}
+               />
+            );
+         }}
+         renderSectionFooter={({ section }) => (
+            <ConsumptionTimeFooter
+               style={styles.sectionFooter}
+               section={section}
+               onAddFood={() => handleAddFood(section.time)}
+               onScanBarcode={() => handleScanBarcode(section.time)}
+            />
+         )}
+      />
+   );
+}
+
+const styles = StyleSheet.create({
+   sectionHeader: {
+      marginTop: 8,
+   },
+   sectionFooter: {
+      marginBottom: 8,
+   },
+});

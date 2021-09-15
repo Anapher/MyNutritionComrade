@@ -5,12 +5,12 @@ export interface ProductLabel {
    tags?: string[] | null;
 }
 
-type ProductLabelInfo = { [language: string]: ProductLabel };
+export type ProductLabelList = { [language: string]: ProductLabel };
 
 export interface ProductEssentials {
    nutritionalInfo: NutritionalInfo;
    tags: string[];
-   label: ProductLabelInfo;
+   label: ProductLabelList;
 }
 
 export interface ProductProperties extends ProductEssentials {
@@ -67,10 +67,56 @@ export interface FoodPortionMeal extends FoodPortionBase {
    items: FoodPortionItemDto[];
 }
 
-export type FoodPortion = FoodPortionMeal | FoodPortionProduct | FoodPortionCustom;
+export interface FoodPortionSuggestion extends FoodPortionBase {
+   type: 'suggestion';
+   suggestionId: string;
+
+   items: FoodPortion[];
+}
+
+export type FoodPortion = FoodPortionMeal | FoodPortionProduct | FoodPortionCustom | FoodPortionSuggestion;
 
 export interface ConsumedPortion {
    date: string;
    time: ConsumptionTime;
    foodPortion: FoodPortion;
 }
+
+// --------------------- Food portion creation ---------------------
+
+export interface RecentMealSuggestion {
+   time: ConsumptionTime;
+   date: string;
+}
+
+export interface CustomFoodPortionCreationDto {
+   type: 'custom';
+   label?: string;
+   nutritionalInfo: NutritionalInfo;
+}
+
+export interface MealFoodPortionCreationDto {
+   type: 'meal';
+   mealId: string;
+   portion: number;
+   overwriteIngredients?: FoodPortionCreationDto[];
+}
+
+export interface ProductFoodPortionCreationDto {
+   type: 'product';
+   productId: string;
+   amount: number;
+   servingType: string;
+}
+
+export interface SuggestionFoodPortionCreationDto {
+   type: 'suggestion';
+   suggestionId: string;
+   items: FoodPortionCreationDto[];
+}
+
+export type FoodPortionCreationDto =
+   | CustomFoodPortionCreationDto
+   | MealFoodPortionCreationDto
+   | ProductFoodPortionCreationDto
+   | SuggestionFoodPortionCreationDto;

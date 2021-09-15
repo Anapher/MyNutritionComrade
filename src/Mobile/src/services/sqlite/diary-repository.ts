@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { ConsumedPortion } from 'src/types';
+import { getFoodPortionId } from 'src/utils/product-utils';
 import { SQLiteDatabase } from './types';
 
 const epocheStart = DateTime.fromMillis(0);
@@ -13,7 +14,7 @@ export async function createTables(db: SQLiteDatabase): Promise<void> {
 export async function insertConsumedPortion(db: SQLiteDatabase, consumed: ConsumedPortion): Promise<void> {
    const date = DateTime.fromISO(consumed.date);
    const daysSinceEpoche = date.diff(epocheStart).days;
-   const foodId = consumedPortionToFoodId(consumed);
+   const foodId = getFoodPortionId(consumed.foodPortion);
    const json = JSON.stringify(consumed);
 
    await db.executeSql(
@@ -24,18 +25,9 @@ export async function insertConsumedPortion(db: SQLiteDatabase, consumed: Consum
 
 export async function fetchConsumedPortionsOfDay(db: SQLiteDatabase, date: string): Promise<ConsumedPortion[]> {
    const dateTime = DateTime.fromISO(date);
-   const result = await db.executeSql('SELECT `json` FROM `consumedPortion` WHERE `date` = ?', [dateTime.toISODate()]);
+   const result = await db.executeSql('SELECT `json` FROM `consumedPortion` WHERE `date` = ? ORDER BY `id`', [
+      dateTime.toISODate(),
+   ]);
 
    return result.map(({ json }) => JSON.parse(json) as ConsumedPortion);
-}
-
-function consumedPortionToFoodId({ foodPortion }: ConsumedPortion): string | null {
-   switch (foodPortion.type) {
-      case 'meal':
-         return `meal@${foodPortion.mealId}`;
-      case 'product':
-         return `product@${foodPortion.product.id}`;
-      default:
-         return null;
-   }
 }

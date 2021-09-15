@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDate } from '../reducer';
 import { getSelectedDate, selectConsumedPortions } from '../selectors';
+import ConsumedFoodList from './ConsumedFoodList';
 import TabDiaryHeader from './TabDiaryHeader';
 
 export default function TabDiary() {
@@ -29,6 +30,9 @@ export default function TabDiary() {
             consumedFood={consumedPortions ?? []}
             onChangeSelectedDate={handleChangeSelectedDate}
          />
+         {consumedPortions && (
+            <ConsumedFoodList style={styles.list} consumedFood={consumedPortions} selectedDate={selectedDate} />
+         )}
       </View>
    );
 }
@@ -38,5 +42,8 @@ const styles = StyleSheet.create({
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
+   },
+   list: {
+      flex: 1,
    },
 });

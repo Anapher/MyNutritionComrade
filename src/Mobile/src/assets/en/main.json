@@ -5,6 +5,25 @@
     "nutritional_info": {
         "fat": "Fat",
         "carbohydrates": "Carbohydrates",
-        "protein": "Protein"
-    }
+        "protein": "Protein",
+        "sugars": "Sugars"
+    },
+    "consumption_time": {
+        "breakfast": "Breakfast",
+        "lunch": "Lunch",
+        "dinner": "Dinner",
+        "snack": "Snack"
+    },
+    "consumed_list": {
+        "add_food": "Add Food",
+        "scan": "Scan"
+    },
+    "product_search": {
+        "search_hint": "Search for products",
+        "tap_to_choose_volume": "Tap to choose volume",
+        "recent_meal_yesterday": "Yesterdays {{time, captializeFirstLetter}}",
+        "recent_meal": "{{time, captializeFirstLetter}} from {{date, dateHuge}}"
+    },
+    "product_label": "{{product, product}}",
+    "custom_meal": "Custom meal"
 }

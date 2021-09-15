@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { NutritionalInfo } from 'src/types';
+import { computeHashCode } from './string-utils';
 
 /**
  * Change the volume of a {@see NutritionalInfo} and calculate the new nutrtional values
@@ -41,4 +42,14 @@ export function sumNutritions(nutritions: NutritionalInfo[]): NutritionalInfo {
       dietaryFiber: _.sumBy(nutritions, (x) => x.dietaryFiber),
       sodium: _.sumBy(nutritions, (x) => x.sodium),
    };
+}
+
+/**
+ * Compute a hash value to identify a nutritional info
+ * @param nutritionalInfo the nutritional information
+ * @returns return a hash value identifying the nutritional info
+ */
+export function computeNutritionHash(nutritionalInfo: NutritionalInfo): string {
+   const normalized = nutritionalInfo.volume === 100 ? nutritionalInfo : changeVolume(nutritionalInfo, 100);
+   return computeHashCode(JSON.stringify(normalized)).toString();
 }
