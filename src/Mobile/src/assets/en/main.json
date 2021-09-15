@@ -1,5 +1,10 @@
 {
     "welcome": {
         "welcome_message": "Welcome to MyNutritionComrade!"
+    },
+    "nutritional_info": {
+        "fat": "Fat",
+        "carbohydrates": "Carbohydrates",
+        "protein": "Protein"
     }
 }

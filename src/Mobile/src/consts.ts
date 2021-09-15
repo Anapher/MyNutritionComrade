@@ -1,0 +1,1 @@
+export const TagLiquid = 'liquid';
