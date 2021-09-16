@@ -1,23 +1,31 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { PayloadAction } from '@reduxjs/toolkit';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { ProductSearchConfig } from './features/product-search/types';
+import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
+import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
 import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/selectors';
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
+import { ProductSearchConfig } from './services/search-engine/types';
 import { FoodPortion, FoodPortionCreationDto } from './types';
-import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
-import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 
 const Stack = createNativeStackNavigator();
+
+export type ProductSearchCompletedAction = PayloadAction<{
+   creationDto: FoodPortionCreationDto;
+   foodPortion?: FoodPortion;
+   [x: string]: any;
+}>;
 
 export type RootNavigatorParamList = {
    Home: undefined;
    Welcome: undefined;
    SearchProduct: {
       config: ProductSearchConfig;
-      onCreated: (dto: FoodPortionCreationDto, foodPortion?: FoodPortion) => void;
+      onCreatedAction: ProductSearchCompletedAction;
+      onCreatedPop: number;
    };
 };
 

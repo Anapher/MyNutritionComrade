@@ -5,6 +5,7 @@
     "nutritional_info": {
         "fat": "Fat",
         "carbohydrates": "Carbohydrates",
+        "carbohydrates_short": "Carbs",
         "protein": "Protein",
         "sugars": "Sugars"
     },

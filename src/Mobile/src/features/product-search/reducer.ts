@@ -26,12 +26,12 @@ const productSearchSlice = createSlice({
       setSearchText(state, { payload }: PayloadAction<string>) {
          state.searchText = payload;
       },
-      setSuggestions(state, { payload }: PayloadAction<SearchResult[]>) {
+      setSearchResults(state, { payload }: PayloadAction<SearchResult[]>) {
          state.searchResult = payload;
       },
    },
 });
 
-export const { initializeSearch, setSearchText } = productSearchSlice.actions;
+export const { initializeSearch, setSearchText, setSearchResults } = productSearchSlice.actions;
 
 export default productSearchSlice.reducer;

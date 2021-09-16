@@ -1,23 +1,33 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { FlatList, Keyboard } from 'react-native';
 import { Divider, useTheme } from 'react-native-paper';
-import { useSelector } from 'react-redux';
-import { RootNavigatorParamList } from 'src/RootNavigator';
+import { useDispatch, useSelector } from 'react-redux';
+import { ProductSearchCompletedAction, RootNavigatorParamList } from 'src/RootNavigator';
 import { CustomFoodPortionCreationDto, ProductFoodPortionCreationDto } from 'src/types';
+import { createProductPortionFromCreation } from 'src/utils/food-creation-utils';
 import { selectSearchResults } from '../selectors';
 import { SearchResult } from '../types';
 import { getSearchResultKey } from '../utils';
 import SearchResultItem from './SearchResultItem';
 
-export default function ProductSearchScreen() {
+type Props = {
+   navigation: NativeStackNavigationProp<RootNavigatorParamList>;
+   route: RouteProp<RootNavigatorParamList, 'SearchProduct'>;
+};
+export default function ProductSearchScreen({
+   navigation,
+   route: {
+      params: { onCreatedAction, onCreatedPop },
+   },
+}: Props) {
    const theme = useTheme();
    const results = useSelector(selectSearchResults);
-   const navigation = useNavigation<NavigationProp<RootNavigatorParamList>>();
+   const dispatch = useDispatch();
 
    const onPressItem = (item: SearchResult) => {
-      switch (
-         item.type
+      switch (item.type) {
          // case 'product':
          //    navigation.navigate('AddProduct', {
          //       disableGoBack: true,
@@ -35,17 +45,25 @@ export default function ProductSearchScreen() {
          //       product: item.product,
          //    });
          //    break;
-         //  case 'serving':
-         //      const creationDto: ProductFoodPortionCreationDto = {
-         //          type: 'product',
-         //          amount: item.amount,
-         //          productId: item.product.id,
-         //          servingType: item.servingType,
-         //      };
+         case 'serving':
+            const creationDto: ProductFoodPortionCreationDto = {
+               type: 'product',
+               amount: item.amount,
+               productId: item.product.id,
+               servingType: item.servingType,
+            };
 
-         //      onCreated(creationDto, createProductPortionFromCreation(creationDto, item.product));
-         //      navigation.goBack();
-         //      break;
+            const foodPortion = createProductPortionFromCreation(creationDto, item.product);
+
+            const action: ProductSearchCompletedAction = {
+               ...onCreatedAction,
+               payload: { ...onCreatedAction.payload, creationDto, foodPortion },
+            };
+
+            dispatch(action);
+
+            navigation.pop(onCreatedPop);
+            break;
          //  case 'meal':
          //      navigation.navigate('SelectMealPortion', {
          //          mealName: item.mealName,
@@ -83,7 +101,6 @@ export default function ProductSearchScreen() {
          //      onCreated(customCreationDto, customCreationDto);
          //      navigation.goBack();
          //      break;
-      ) {
       }
 
       Keyboard.dismiss();

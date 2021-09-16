@@ -8,6 +8,8 @@ import { ConsumptionTimes } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion, ConsumptionTime } from 'src/types';
 import { getConsumedPortionId } from 'src/utils/product-utils';
+import { addProduct } from '../reducer';
+import ConsumedFoodItem from './ConsumedFoodItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
 
 type Props = {
@@ -33,7 +35,8 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
    const handleAddFood = (time: ConsumptionTime) => {
       navigation.navigate('SearchProduct', {
          config: { consumptionTime: time, date: selectedDate },
-         onCreated: (creationDto, foodPortion) => {},
+         onCreatedPop: 1,
+         onCreatedAction: addProduct({ date: selectedDate, time } as any),
       });
    };
 
@@ -44,7 +47,9 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
          style={style}
          sections={sections}
          keyExtractor={getConsumedPortionId}
+         stickySectionHeadersEnabled={false}
          ItemSeparatorComponent={() => <Divider />}
+         renderItem={({ item }) => <ConsumedFoodItem consumed={item} />}
          renderSectionHeader={({ section: { key } }) => {
             const section = sections.find((x) => x.key === key)!;
             return (

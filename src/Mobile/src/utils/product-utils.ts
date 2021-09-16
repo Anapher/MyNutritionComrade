@@ -10,7 +10,7 @@ import { TFunction } from 'i18next';
  * @param product the product
  */
 export function isProductLiquid(product: ProductEssentials): boolean {
-   return product.tags.includes(TagLiquid);
+   return product.tags?.includes(TagLiquid) === true;
 }
 
 /**

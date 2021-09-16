@@ -1,5 +1,5 @@
-import { ConsumedPortion } from 'src/types';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ConsumedPortion, FoodPortion, FoodPortionCreationDto, ConsumptionTime } from 'src/types';
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type DiaryState = {
    selectedDate: string | null;
@@ -12,6 +12,8 @@ const initialState: DiaryState = {
    consumedOnSelectedDay: null,
    loadingSelectedDate: false,
 };
+
+export const addProduct = createAction<AddProductPayload>(`diary/add-product`);
 
 const diarySlice = createSlice({
    name: 'diary',
@@ -27,8 +29,26 @@ const diarySlice = createSlice({
          state.consumedOnSelectedDay = payload;
       },
    },
+   extraReducers: {
+      [addProduct.type]: (state, { payload }: PayloadAction<AddProductPayload>) => {
+         if (state.consumedOnSelectedDay) {
+            state.consumedOnSelectedDay.push({
+               date: payload.date,
+               time: payload.time,
+               foodPortion: payload.foodPortion!,
+            });
+         }
+      },
+   },
 });
 
 export const { setSelectedDate, selectedDateLoaded } = diarySlice.actions;
+
+type AddProductPayload = {
+   creationDto: FoodPortionCreationDto;
+   foodPortion?: FoodPortion;
+   date: string;
+   time: ConsumptionTime;
+};
 
 export default diarySlice.reducer;

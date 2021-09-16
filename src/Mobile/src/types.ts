@@ -9,7 +9,7 @@ export type ProductLabelList = { [language: string]: ProductLabel };
 
 export interface ProductEssentials {
    nutritionalInfo: NutritionalInfo;
-   tags: string[];
+   tags?: string[];
    label: ProductLabelList;
 }
 
