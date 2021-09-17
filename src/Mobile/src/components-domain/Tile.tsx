@@ -20,7 +20,7 @@ export default function Tile({ caption, value, text, fat, valueColor, style }: T
                {
                   fontSize: 16,
                   letterSpacing: 0.5,
-                  fontWeight: fat !== undefined ? 'bold' : undefined,
+                  fontWeight: fat ? 'bold' : undefined,
                },
                valueColor !== undefined ? { color: valueColor } : undefined,
             ]}

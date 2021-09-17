@@ -25,6 +25,23 @@
         "recent_meal_yesterday": "Yesterdays {{time, captializeFirstLetter}}",
         "recent_meal": "{{time, captializeFirstLetter}} from {{date, dateHuge}}"
     },
+    "serving_types": {
+        "g": "g",
+        "ml": "ml",
+        "slice": "Slice",
+        "piece": "Piece",
+        "bread": "Bread",
+        "cup": "Cup",
+        "ts": "Table spoon",
+        "te": "Tea spoon",
+        "package": "Package",
+        "portion": "Portion",
+        "bottle": "Bottle",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "extraLarge": "Extra Large"
+    },
     "product_label": "{{product, product}}",
     "custom_meal": "Custom meal"
 }

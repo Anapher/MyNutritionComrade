@@ -1,12 +1,13 @@
-import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { FlatList, Keyboard } from 'react-native';
 import { Divider, useTheme } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { ProductSearchCompletedAction, RootNavigatorParamList } from 'src/RootNavigator';
-import { CustomFoodPortionCreationDto, ProductFoodPortionCreationDto } from 'src/types';
+import { ProductFoodPortionCreationDto } from 'src/types';
 import { createProductPortionFromCreation } from 'src/utils/food-creation-utils';
+import { selectedProductAmount } from '../actions';
 import { selectSearchResults } from '../selectors';
 import { SearchResult } from '../types';
 import { getSearchResultKey } from '../utils';
@@ -28,23 +29,18 @@ export default function ProductSearchScreen({
 
    const onPressItem = (item: SearchResult) => {
       switch (item.type) {
-         // case 'product':
-         //    navigation.navigate('AddProduct', {
-         //       disableGoBack: true,
-         //       onSubmit: (amount, servingType) => {
-         //          const creationDto: ProductFoodPortionCreationDto = {
-         //             type: 'product',
-         //             amount,
-         //             servingType,
-         //             productId: item.product.id,
-         //          };
-
-         //          onCreated(creationDto, createProductPortionFromCreation(creationDto, item.product));
-         //          navigation.pop(2);
-         //       },
-         //       product: item.product,
-         //    });
-         //    break;
+         case 'product':
+            navigation.navigate('AddProduct', {
+               onSubmitAction: selectedProductAmount({
+                  amount: 0,
+                  servingType: '',
+                  product: item.product,
+                  completedAction: onCreatedAction,
+               }),
+               onSubmitPop: onCreatedPop + 1,
+               product: item.product,
+            });
+            break;
          case 'serving':
             const creationDto: ProductFoodPortionCreationDto = {
                type: 'product',

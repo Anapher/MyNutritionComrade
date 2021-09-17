@@ -3,19 +3,26 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
 import { useSelector } from 'react-redux';
+import AddProduct from './features/product-add/components/AddProduct';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
 import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/selectors';
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
 import { ProductSearchConfig } from './services/search-engine/types';
-import { FoodPortion, FoodPortionCreationDto } from './types';
+import { FoodPortion, FoodPortionCreationDto, Product } from './types';
 
 const Stack = createNativeStackNavigator();
 
 export type ProductSearchCompletedAction = PayloadAction<{
    creationDto: FoodPortionCreationDto;
    foodPortion?: FoodPortion;
+   [x: string]: any;
+}>;
+
+export type AddProductCompletedAction = PayloadAction<{
+   amount: number;
+   servingType: string;
    [x: string]: any;
 }>;
 
@@ -26,6 +33,14 @@ export type RootNavigatorParamList = {
       config: ProductSearchConfig;
       onCreatedAction: ProductSearchCompletedAction;
       onCreatedPop: number;
+   };
+   AddProduct: {
+      product: Product;
+      servingType?: string;
+      amount?: number;
+
+      onSubmitPop: number;
+      onSubmitAction: AddProductCompletedAction;
    };
 };
 
@@ -61,6 +76,7 @@ export default function RootNavigator() {
                header: () => <ProductSearchHeader route={route as any} navigation={navigation} />,
             })}
          />
+         <Stack.Screen name="AddProduct" component={AddProduct} />
       </Stack.Navigator>
    );
 }
