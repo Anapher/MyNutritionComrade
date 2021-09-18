@@ -43,5 +43,6 @@
         "extraLarge": "Extra Large"
     },
     "product_label": "{{product, product}}",
-    "custom_meal": "Custom meal"
+    "custom_meal": "Custom meal",
+    "remove": "Remove"
 }

@@ -48,6 +48,14 @@ export async function setConsumedPortion(
    );
 }
 
+export async function removeConsumedPortion(db: SQLiteDatabase, date: string, time: string, foodId: string) {
+   await db.executeSql('DELETE FROM `consumedPortion` WHERE `date` = ? AND `time` = ? AND `foodId` = ?', [
+      date,
+      time,
+      foodId,
+   ]);
+}
+
 export async function fetchConsumedPortionsOfDay(db: SQLiteDatabase, date: string): Promise<ConsumedPortion[]> {
    const dateTime = DateTime.fromISO(date);
    const result = await db.executeSql('SELECT `json` FROM `consumedPortion` WHERE `date` = ? ORDER BY `id`', [

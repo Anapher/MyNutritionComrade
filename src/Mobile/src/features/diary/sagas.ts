@@ -1,14 +1,20 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 import getDatabase from 'src/services/sqlite/database-instance';
-import { fetchConsumedPortionsOfDay, setConsumedPortion } from 'src/services/sqlite/diary-repository';
+import {
+   fetchConsumedPortionsOfDay,
+   removeConsumedPortion,
+   setConsumedPortion,
+} from 'src/services/sqlite/diary-repository';
 import { SQLiteDatabase } from 'src/services/sqlite/types';
 import { ConsumedPortion } from 'src/types';
 import { getFoodPortionId, mergeFoodPortions } from 'src/utils/product-utils';
 import {
    addConsumption,
    AddConsumptionPayload,
+   ConsumptionId,
    ConsumptionPayload,
+   removeConsumption,
    setConsumption,
    setConsumptionDialogAction,
    SetConsumptionDialogActionPayload,
@@ -42,6 +48,17 @@ function* onSetConsumption({ payload: { date, time, creationDto } }: PayloadActi
    const database: SQLiteDatabase = yield call(getDatabase);
    yield call(setConsumedPortion, database, date, time, creationDto);
 
+   yield call(refreshCurrentDate);
+}
+
+function* onRemoveConsumption({ payload: { date, time, foodId } }: PayloadAction<ConsumptionId>) {
+   const database: SQLiteDatabase = yield call(getDatabase);
+   yield call(removeConsumedPortion, database, date, time, foodId);
+
+   yield call(refreshCurrentDate);
+}
+
+function* refreshCurrentDate() {
    const selectedDate: string | null = yield select(getSelectedDate);
    if (selectedDate) {
       yield call(loadSelectedDate, setSelectedDate(selectedDate));
@@ -59,6 +76,7 @@ function* diarySaga() {
    yield takeEvery(addConsumption, onAddConsumption);
    yield takeEvery(setConsumption, onSetConsumption);
    yield takeEvery(setConsumptionDialogAction, onSetConsumptionDialogAction);
+   yield takeEvery(removeConsumption, onRemoveConsumption);
 }
 
 export default diarySaga;

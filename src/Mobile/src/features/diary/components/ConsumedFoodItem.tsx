@@ -1,17 +1,22 @@
 import { NavigationProp, useNavigation } from '@react-navigation/core';
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion } from 'src/types';
 import { mapFoodPortionDtoCreationDto } from 'src/utils/food-creation-utils';
-import { setConsumptionDialogAction } from '../actions';
+import { getFoodPortionId } from 'src/utils/product-utils';
+import { removeConsumption, setConsumptionDialogAction } from '../actions';
+import { ShowOptionsInfo } from './FoodPortionDialog';
 
 type Props = {
    consumed: ConsumedPortion;
+   showOptions: (options: ShowOptionsInfo) => void;
 };
 
-export default function ConsumedFoodItem({ consumed: { foodPortion, date, time } }: Props) {
+export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }, showOptions }: Props) {
    const navigation = useNavigation<NavigationProp<RootNavigatorParamList>>();
+   const dispatch = useDispatch();
 
    switch (foodPortion.type) {
       case 'product':
@@ -31,7 +36,20 @@ export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }
             });
          };
 
-         return <ProductFoodPortionView foodPortion={foodPortion} onPress={handleChangeProductAmount} />;
+         const handleShowOptions = () => {
+            showOptions({
+               foodPortion,
+               handleRemove: () => dispatch(removeConsumption({ date, time, foodId: getFoodPortionId(foodPortion) })),
+            });
+         };
+
+         return (
+            <ProductFoodPortionView
+               foodPortion={foodPortion}
+               onPress={handleChangeProductAmount}
+               onLongPress={handleShowOptions}
+            />
+         );
       default:
          return null;
    }
