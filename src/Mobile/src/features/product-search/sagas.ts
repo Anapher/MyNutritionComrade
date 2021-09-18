@@ -1,14 +1,13 @@
-import { selectedProductAmount, SelectedProductAmountPayload } from './actions';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { put, select, takeEvery } from 'redux-saga/effects';
+import { ProductSearchCompletedAction } from 'src/RootNavigator';
 import searchProducts from 'src/services/search-engine';
 import { ProductSearchConfig } from 'src/services/search-engine/types';
-import { selectProducts } from '../repo-manager/selectors';
 import { Product, ProductFoodPortionCreationDto } from 'src/types';
+import { selectProducts } from '../repo-manager/selectors';
+import { selectedProductAmount, SelectedProductAmountPayload } from './actions';
 import { initializeSearch, setSearchResults, setSearchText } from './reducer';
 import { selectSearchConfig, selectSearchText } from './selectors';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { createProductPortionFromCreation } from 'src/utils/food-creation-utils';
-import { ProductSearchCompletedAction } from 'src/RootNavigator';
 
 function* search() {
    const searchText: string = yield select(selectSearchText);
@@ -28,14 +27,12 @@ function* onSelectedProductAmount({
       type: 'product',
       amount,
       servingType,
-      productId: product.id,
+      product,
    };
-
-   const foodPortion = createProductPortionFromCreation(creationDto, product);
 
    const action: ProductSearchCompletedAction = {
       ...completedAction,
-      payload: { ...completedAction.payload, creationDto, foodPortion },
+      payload: { ...completedAction.payload, creationDto },
    };
 
    yield put(action);

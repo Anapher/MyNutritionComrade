@@ -1,25 +1,50 @@
 import { DateTime } from 'luxon';
-import { ConsumedPortion } from 'src/types';
+import { ConsumedPortion, ConsumptionTime, FoodPortionCreationDto } from 'src/types';
+import { createFoodPortionFromCreationDto } from 'src/utils/food-creation-utils';
 import { getFoodPortionId } from 'src/utils/product-utils';
 import { SQLiteDatabase } from './types';
 
-const epocheStart = DateTime.fromMillis(0);
-
 export async function createTables(db: SQLiteDatabase): Promise<void> {
-   await db.executeSql(
-      'CREATE TABLE IF NOT EXISTS `consumedPortion` (`id` INTEGER PRIMARY KEY NOT NULL, `json` TEXT NOT NULL, `time` TEXT NOT NULL, `date` TEXT NOT NULL, `daysSinceEpoche` INTEGER NOT NULL, `foodId` TEXT)',
-   );
+   const actions = new Array<Promise<any>>();
+
+   db.executeTransaction((tx) => {
+      actions.push(
+         tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS `consumedPortion` (`id` INTEGER PRIMARY KEY NOT NULL, `json` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `foodId` TEXT)',
+         ),
+      );
+      actions.push(
+         tx.executeSql(
+            'CREATE UNIQUE INDEX IF NOT EXISTS `portionPerDay` ON `consumedPortion` (`date`, `time`, `foodId`)',
+         ),
+      );
+   });
+
+   await Promise.all(actions);
 }
 
-export async function insertConsumedPortion(db: SQLiteDatabase, consumed: ConsumedPortion): Promise<void> {
-   const date = DateTime.fromISO(consumed.date);
-   const daysSinceEpoche = date.diff(epocheStart).days;
-   const foodId = getFoodPortionId(consumed.foodPortion);
+/**
+ * Insert or overwrite a given portion
+ * @param db the database
+ * @param consumed the consumed portion
+ */
+export async function setConsumedPortion(
+   db: SQLiteDatabase,
+   date: string,
+   time: ConsumptionTime,
+   creationDto: FoodPortionCreationDto,
+): Promise<void> {
+   date = DateTime.fromISO(date).toISODate(); // normalize
+
+   const foodPortion = createFoodPortionFromCreationDto(creationDto);
+   const consumed: ConsumedPortion = { date, time, foodPortion };
+
+   const foodId = getFoodPortionId(creationDto);
    const json = JSON.stringify(consumed);
 
    await db.executeSql(
-      'INSERT INTO `consumedPortion` (`json`, `time`, `date`, `daysSinceEpoche`, `foodId`) VALUES (?, ?, ?, ?, ?)',
-      [json, consumed.time, date.toISODate(), daysSinceEpoche, foodId],
+      'INSERT OR REPLACE INTO `consumedPortion` (`json`, `time`, `date`, `foodId`) VALUES (?, ?, ?, ?)',
+      [json, consumed.time, date, foodId],
    );
 }
 

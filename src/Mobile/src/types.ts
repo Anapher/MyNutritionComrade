@@ -76,10 +76,10 @@ export interface FoodPortionSuggestion extends FoodPortionBase {
 
 export type FoodPortion = FoodPortionMeal | FoodPortionProduct | FoodPortionCustom | FoodPortionSuggestion;
 
-export interface ConsumedPortion {
+export interface ConsumedPortion<T extends FoodPortion = FoodPortion> {
    date: string;
    time: ConsumptionTime;
-   foodPortion: FoodPortion;
+   foodPortion: T;
 }
 
 // --------------------- Food portion creation ---------------------
@@ -104,7 +104,7 @@ export interface MealFoodPortionCreationDto {
 
 export interface ProductFoodPortionCreationDto {
    type: 'product';
-   productId: string;
+   product: Product;
    amount: number;
    servingType: string;
 }

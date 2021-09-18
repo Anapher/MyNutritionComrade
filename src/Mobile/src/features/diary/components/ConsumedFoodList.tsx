@@ -8,7 +8,7 @@ import { ConsumptionTimes } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion, ConsumptionTime } from 'src/types';
 import { getConsumedPortionId } from 'src/utils/product-utils';
-import { addProduct } from '../actions';
+import { addConsumption } from '../actions';
 import ConsumedFoodItem from './ConsumedFoodItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
 
@@ -36,7 +36,7 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
       navigation.navigate('SearchProduct', {
          config: { consumptionTime: time, date: selectedDate },
          onCreatedPop: 1,
-         onCreatedAction: addProduct({ date: selectedDate, time } as any),
+         onCreatedAction: addConsumption({ date: selectedDate, time, append: true, creationDto: null as any }) as any,
       });
    };
 

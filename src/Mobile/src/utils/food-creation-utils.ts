@@ -30,7 +30,7 @@ export function mapFoodPortionDtoCreationDto(foodPortion: FoodPortion): FoodPort
             type: 'product',
             amount: foodPortion.amount,
             servingType: foodPortion.servingType,
-            productId: foodPortion.product.id,
+            product: foodPortion.product,
          };
       case 'meal':
          return {
@@ -52,5 +52,25 @@ export function mapFoodPortionDtoCreationDto(foodPortion: FoodPortion): FoodPort
          };
       default:
          throw 'Unknown type';
+   }
+}
+
+export function createFoodPortionFromCreationDto(creationDto: FoodPortionCreationDto): FoodPortion {
+   switch (creationDto.type) {
+      case 'product':
+         return {
+            type: 'product',
+            product: creationDto.product,
+            amount: creationDto.amount,
+            servingType: creationDto.servingType,
+            nutritionalInfo: changeVolume(
+               creationDto.product.nutritionalInfo,
+               creationDto.amount * creationDto.product.servings[creationDto.servingType],
+            ),
+         };
+      case 'custom':
+         return { type: 'custom', nutritionalInfo: creationDto.nutritionalInfo, label: creationDto.label };
+      default:
+         throw new Error('Not supported');
    }
 }

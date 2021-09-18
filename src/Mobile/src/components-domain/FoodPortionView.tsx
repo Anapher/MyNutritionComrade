@@ -19,12 +19,9 @@ import { useTranslation } from 'react-i18next';
 
 interface Props<T extends FoodPortion, TCreation extends FoodPortionCreationDto> {
    /** when the item is pressed. A delegate action is submitted as parameter that can be called to trigger @see {onEdit} */
-   onPress?: (executeEdit: (changes: Partial<TCreation>) => void, executeRemove: () => void) => void;
-   onLongPress?: (executeEdit: (changes: Partial<TCreation>) => void, executeRemove: () => void) => void;
+   onPress?: () => void;
+   onLongPress?: () => void;
 
-   /** Request to edit this item with the creation dto */
-   onEdit: (creationDto: TCreation) => void;
-   onRemove: () => void;
    containerStyle?: StyleProp<ViewStyle>;
 
    foodPortion: T;
@@ -34,22 +31,14 @@ export function ProductFoodPortionView({
    onPress,
    onLongPress,
    foodPortion,
-   onEdit,
-   onRemove,
    containerStyle,
 }: Props<FoodPortionProduct, ProductFoodPortionCreationDto>) {
-   const onEditDelegate = (changes: Partial<ProductFoodPortionCreationDto>) =>
-      onEdit({
-         ...(mapFoodPortionDtoCreationDto(foodPortion) as ProductFoodPortionCreationDto),
-         ...changes,
-      });
-
    const { t } = useTranslation();
 
    return (
       <FoodPortionItem
-         onPress={onPress && (() => onPress(onEditDelegate, onRemove))}
-         onLongPress={onLongPress && (() => onLongPress(onEditDelegate, onRemove))}
+         onPress={onPress}
+         onLongPress={onLongPress}
          label={t('product_label', { product: foodPortion.product })}
          nutritionalInfo={foodPortion.nutritionalInfo}
          isLiquid={isProductLiquid(foodPortion.product)}
@@ -62,21 +51,14 @@ export function CustomFoodPortionView({
    onPress,
    onLongPress,
    foodPortion,
-   onEdit,
-   onRemove,
    containerStyle,
 }: Props<FoodPortionCustom, CustomFoodPortionCreationDto>) {
-   const onEditDelegate = (changes: Partial<CustomFoodPortionCreationDto>) =>
-      onEdit({
-         ...(mapFoodPortionDtoCreationDto(foodPortion) as CustomFoodPortionCreationDto),
-         ...changes,
-      });
    const { t } = useTranslation();
 
    return (
       <FoodPortionItem
-         onPress={onPress && (() => onPress(onEditDelegate, onRemove))}
-         onLongPress={onLongPress && (() => onLongPress(onEditDelegate, onRemove))}
+         onPress={onPress}
+         onLongPress={onLongPress}
          label={foodPortion.label || t('custom_meal')}
          nutritionalInfo={foodPortion.nutritionalInfo}
          isLiquid={false}

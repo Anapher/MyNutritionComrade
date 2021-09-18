@@ -17,5 +17,23 @@ export default function wrapSQLDatabase(db: SQLite.WebSQLDatabase): SQLiteDataba
                ),
             ),
          ),
+      executeTransaction: (delegate) => {
+         db.transaction((tx) => {
+            delegate({
+               executeSql: (sql, params) =>
+                  new Promise((resolve, reject) =>
+                     tx.executeSql(
+                        sql,
+                        params,
+                        (_, { rows }) => resolve((rows as any)._array as any[]),
+                        (_, error) => {
+                           reject(error);
+                           return false;
+                        },
+                     ),
+                  ),
+            });
+         });
+      },
    };
 }

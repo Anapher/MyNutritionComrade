@@ -16,7 +16,6 @@ const Stack = createNativeStackNavigator();
 
 export type ProductSearchCompletedAction = PayloadAction<{
    creationDto: FoodPortionCreationDto;
-   foodPortion?: FoodPortion;
    [x: string]: any;
 }>;
 

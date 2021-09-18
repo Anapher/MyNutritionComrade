@@ -6,7 +6,6 @@ import { Divider, useTheme } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { ProductSearchCompletedAction, RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductFoodPortionCreationDto } from 'src/types';
-import { createProductPortionFromCreation } from 'src/utils/food-creation-utils';
 import { selectedProductAmount } from '../actions';
 import { selectSearchResults } from '../selectors';
 import { SearchResult } from '../types';
@@ -45,15 +44,13 @@ export default function ProductSearchScreen({
             const creationDto: ProductFoodPortionCreationDto = {
                type: 'product',
                amount: item.amount,
-               productId: item.product.id,
+               product: item.product,
                servingType: item.servingType,
             };
 
-            const foodPortion = createProductPortionFromCreation(creationDto, item.product);
-
             const action: ProductSearchCompletedAction = {
                ...onCreatedAction,
-               payload: { ...onCreatedAction.payload, creationDto, foodPortion },
+               payload: { ...onCreatedAction.payload, creationDto },
             };
 
             dispatch(action);

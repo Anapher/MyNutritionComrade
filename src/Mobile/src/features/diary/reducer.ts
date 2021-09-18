@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ConsumedPortion } from 'src/types';
-import { addProduct, AddProductPayload } from './actions';
 
 export type DiaryState = {
    selectedDate: string | null;
@@ -26,17 +25,6 @@ const diarySlice = createSlice({
       selectedDateLoaded(state, { payload }: PayloadAction<ConsumedPortion[]>) {
          state.loadingSelectedDate = false;
          state.consumedOnSelectedDay = payload;
-      },
-   },
-   extraReducers: {
-      [addProduct.type]: (state, { payload }: PayloadAction<AddProductPayload>) => {
-         if (state.consumedOnSelectedDay) {
-            state.consumedOnSelectedDay.push({
-               date: payload.date,
-               time: payload.time,
-               foodPortion: payload.foodPortion!,
-            });
-         }
       },
    },
 });
