@@ -40,34 +40,31 @@ export type ConsumptionTime = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
 export type FoodPortionType = 'product' | 'meal' | 'suggestion' | 'custom';
 
-export interface FoodPortionBase {
+export interface FoodPortionCustom {
+   type: 'custom';
+   label?: string;
    nutritionalInfo: NutritionalInfo;
 }
 
-export interface FoodPortionCustom extends FoodPortionBase {
-   type: 'custom';
-   label?: string;
-}
-
-export interface FoodPortionProduct extends FoodPortionBase {
+export interface FoodPortionProduct {
    type: 'product';
    product: Product;
    amount: number;
    servingType: string;
 }
 
-type FoodPortionItemDto = FoodPortionCustom | FoodPortionProduct;
+type FoodPortionItem = FoodPortionCustom | FoodPortionProduct;
 
-export interface FoodPortionMeal extends FoodPortionBase {
+export interface FoodPortionMeal {
    type: 'meal';
    mealId: string;
-   portion: number;
    mealName: string;
+   portion: number;
 
-   items: FoodPortionItemDto[];
+   items: FoodPortionItem[];
 }
 
-export interface FoodPortionSuggestion extends FoodPortionBase {
+export interface FoodPortionSuggestion {
    type: 'suggestion';
    suggestionId: string;
 
@@ -82,41 +79,7 @@ export interface ConsumedPortion<T extends FoodPortion = FoodPortion> {
    foodPortion: T;
 }
 
-// --------------------- Food portion creation ---------------------
-
 export interface RecentMealSuggestion {
    time: ConsumptionTime;
    date: string;
 }
-
-export interface CustomFoodPortionCreationDto {
-   type: 'custom';
-   label?: string;
-   nutritionalInfo: NutritionalInfo;
-}
-
-export interface MealFoodPortionCreationDto {
-   type: 'meal';
-   mealId: string;
-   portion: number;
-   overwriteIngredients?: FoodPortionCreationDto[];
-}
-
-export interface ProductFoodPortionCreationDto {
-   type: 'product';
-   product: Product;
-   amount: number;
-   servingType: string;
-}
-
-export interface SuggestionFoodPortionCreationDto {
-   type: 'suggestion';
-   suggestionId: string;
-   items: FoodPortionCreationDto[];
-}
-
-export type FoodPortionCreationDto =
-   | CustomFoodPortionCreationDto
-   | MealFoodPortionCreationDto
-   | ProductFoodPortionCreationDto
-   | SuggestionFoodPortionCreationDto;

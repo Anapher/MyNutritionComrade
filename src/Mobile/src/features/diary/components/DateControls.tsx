@@ -1,7 +1,6 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { DateTime } from 'luxon';
 import React, { useState } from 'react';
-import { Modal, Platform, Pressable, SafeAreaView, StyleSheet, TouchableHighlight, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import FlatButton from 'src/components/FlatButton';
 import FlatIconButton from 'src/components/FlatIconButton';
 import PlatformIndependentDateTimePicker from 'src/components/PlatformIndependentDateTimePicker';

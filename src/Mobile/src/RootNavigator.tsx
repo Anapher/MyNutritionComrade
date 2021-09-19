@@ -10,12 +10,12 @@ import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/se
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
 import { ProductSearchConfig } from './services/search-engine/types';
-import { FoodPortion, FoodPortionCreationDto, Product } from './types';
+import { FoodPortion, Product } from './types';
 
 const Stack = createNativeStackNavigator();
 
 export type ProductSearchCompletedAction = PayloadAction<{
-   creationDto: FoodPortionCreationDto;
+   foodPortion: FoodPortion;
    [x: string]: any;
 }>;
 

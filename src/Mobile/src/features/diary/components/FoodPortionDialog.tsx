@@ -1,10 +1,8 @@
-import { NavigationProp, useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import { TFunction, useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { Dialog, Divider } from 'react-native-paper';
 import DialogButton from 'src/components/DialogButton';
-import { RootNavigatorParamList } from 'src/RootNavigator';
 import { FoodPortion } from 'src/types';
 
 export type ShowOptionsInfo = {

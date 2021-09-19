@@ -3,7 +3,7 @@ import { put, select, takeEvery } from 'redux-saga/effects';
 import { ProductSearchCompletedAction } from 'src/RootNavigator';
 import searchProducts from 'src/services/search-engine';
 import { ProductSearchConfig } from 'src/services/search-engine/types';
-import { Product, ProductFoodPortionCreationDto } from 'src/types';
+import { FoodPortionProduct, Product } from 'src/types';
 import { selectProducts } from '../repo-manager/selectors';
 import { selectedProductAmount, SelectedProductAmountPayload } from './actions';
 import { initializeSearch, setSearchResults, setSearchText } from './reducer';
@@ -23,7 +23,7 @@ function* search() {
 function* onSelectedProductAmount({
    payload: { amount, servingType, product, completedAction },
 }: PayloadAction<SelectedProductAmountPayload>) {
-   const creationDto: ProductFoodPortionCreationDto = {
+   const creationDto: FoodPortionProduct = {
       type: 'product',
       amount,
       servingType,
@@ -32,7 +32,7 @@ function* onSelectedProductAmount({
 
    const action: ProductSearchCompletedAction = {
       ...completedAction,
-      payload: { ...completedAction.payload, creationDto },
+      payload: { ...completedAction.payload, foodPortion: creationDto },
    };
 
    yield put(action);

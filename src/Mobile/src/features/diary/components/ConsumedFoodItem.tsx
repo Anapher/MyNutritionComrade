@@ -4,8 +4,7 @@ import { useDispatch } from 'react-redux';
 import { ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion } from 'src/types';
-import { mapFoodPortionDtoCreationDto } from 'src/utils/food-creation-utils';
-import { getFoodPortionId } from 'src/utils/product-utils';
+import { getFoodPortionId } from 'src/utils/food-portion-utils';
 import { removeConsumption, setConsumptionDialogAction } from '../actions';
 import { ShowOptionsInfo } from './FoodPortionDialog';
 
@@ -31,7 +30,7 @@ export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }
                   servingType: foodPortion.servingType,
                   date,
                   time,
-                  creationDto: mapFoodPortionDtoCreationDto(foodPortion) as any,
+                  creationDto: foodPortion,
                }),
             });
          };

@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Portal } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDate } from '../reducer';
 import { getSelectedDate, selectConsumedPortions } from '../selectors';

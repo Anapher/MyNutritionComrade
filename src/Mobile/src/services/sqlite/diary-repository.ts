@@ -1,8 +1,8 @@
+import { FoodPortion } from './../../types';
 import { DateTime } from 'luxon';
-import { ConsumedPortion, ConsumptionTime, FoodPortionCreationDto } from 'src/types';
-import { createFoodPortionFromCreationDto } from 'src/utils/food-creation-utils';
-import { getFoodPortionId } from 'src/utils/product-utils';
+import { ConsumedPortion, ConsumptionTime } from 'src/types';
 import { SQLiteDatabase } from './types';
+import { getFoodPortionId } from 'src/utils/food-portion-utils';
 
 export async function createTables(db: SQLiteDatabase): Promise<void> {
    const actions = new Array<Promise<any>>();
@@ -32,14 +32,13 @@ export async function setConsumedPortion(
    db: SQLiteDatabase,
    date: string,
    time: ConsumptionTime,
-   creationDto: FoodPortionCreationDto,
+   foodPortion: FoodPortion,
 ): Promise<void> {
    date = DateTime.fromISO(date).toISODate(); // normalize
 
-   const foodPortion = createFoodPortionFromCreationDto(creationDto);
    const consumed: ConsumedPortion = { date, time, foodPortion };
 
-   const foodId = getFoodPortionId(creationDto);
+   const foodId = getFoodPortionId(foodPortion);
    const json = JSON.stringify(consumed);
 
    await db.executeSql(

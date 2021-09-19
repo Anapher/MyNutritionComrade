@@ -7,7 +7,7 @@ import FoodPortionHeader from 'src/components-domain/FoodPortionHeader';
 import { ConsumptionTimes } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion, ConsumptionTime } from 'src/types';
-import { getConsumedPortionId } from 'src/utils/product-utils';
+import { getConsumedPortionId } from 'src/utils/food-portion-utils';
 import { addConsumption } from '../actions';
 import ConsumedFoodItem from './ConsumedFoodItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';

@@ -1,7 +1,9 @@
+import { useMemo } from 'hoist-non-react-statics/node_modules/@types/react';
 import React, { useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Divider, Surface, TouchableRipple } from 'react-native-paper';
 import { ConsumedPortion } from 'src/types';
+import { getFoodPortionNutritions } from 'src/utils/food-portion-utils';
 import { sumNutritions } from 'src/utils/nutrition-utils';
 import DateControls from './DateControls';
 import NutritionSummary from './NutritionSummary';
@@ -21,7 +23,10 @@ export default function TabDiaryHeader({ selectedDate, onChangeSelectedDate, con
       Animated.timing(animation, { toValue: showGoals ? 0 : 1, duration: 250, useNativeDriver: true }).start();
    };
 
-   const nutritions = sumNutritions(consumedFood.map((x) => x.foodPortion.nutritionalInfo));
+   const nutritions = useMemo(
+      () => sumNutritions(consumedFood.map((x) => getFoodPortionNutritions(x.foodPortion))),
+      [consumedFood],
+   );
 
    return (
       <Surface style={styles.surface}>

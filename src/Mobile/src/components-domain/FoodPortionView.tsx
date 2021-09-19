@@ -5,19 +5,12 @@ import { Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import { isProductLiquid } from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
 import { styles } from './food-portion-styles';
-import {
-   CustomFoodPortionCreationDto,
-   FoodPortion,
-   FoodPortionCreationDto,
-   FoodPortionCustom,
-   FoodPortionProduct,
-   NutritionalInfo,
-   ProductFoodPortionCreationDto,
-} from 'src/types';
-import { mapFoodPortionDtoCreationDto } from 'src/utils/food-creation-utils';
+import { FoodPortion, FoodPortionCustom, FoodPortionProduct, NutritionalInfo } from 'src/types';
 import { useTranslation } from 'react-i18next';
+import { useMemo } from 'hoist-non-react-statics/node_modules/@types/react';
+import { getFoodPortionNutritions } from 'src/utils/food-portion-utils';
 
-interface Props<T extends FoodPortion, TCreation extends FoodPortionCreationDto> {
+interface Props<T extends FoodPortion> {
    /** when the item is pressed. A delegate action is submitted as parameter that can be called to trigger @see {onEdit} */
    onPress?: () => void;
    onLongPress?: () => void;
@@ -32,27 +25,23 @@ export function ProductFoodPortionView({
    onLongPress,
    foodPortion,
    containerStyle,
-}: Props<FoodPortionProduct, ProductFoodPortionCreationDto>) {
+}: Props<FoodPortionProduct>) {
    const { t } = useTranslation();
+   const nutritionalInfo = useMemo(() => getFoodPortionNutritions(foodPortion), [foodPortion]);
 
    return (
       <FoodPortionItem
          onPress={onPress}
          onLongPress={onLongPress}
          label={t('product_label', { product: foodPortion.product })}
-         nutritionalInfo={foodPortion.nutritionalInfo}
+         nutritionalInfo={nutritionalInfo}
          isLiquid={isProductLiquid(foodPortion.product)}
          containerStyle={containerStyle}
       />
    );
 }
 
-export function CustomFoodPortionView({
-   onPress,
-   onLongPress,
-   foodPortion,
-   containerStyle,
-}: Props<FoodPortionCustom, CustomFoodPortionCreationDto>) {
+export function CustomFoodPortionView({ onPress, onLongPress, foodPortion, containerStyle }: Props<FoodPortionCustom>) {
    const { t } = useTranslation();
 
    return (
