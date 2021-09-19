@@ -9,7 +9,7 @@ import { SearchResult } from '../types';
 import { FoodPortion } from 'src/types';
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import { suggestionIdToString } from 'src/utils/product-utils';
+import { getFoodPortionNutritions, suggestionIdToString } from 'src/utils/food-portion-utils';
 
 type Props = {
    item: SearchResult;
@@ -84,7 +84,7 @@ function getDescription(s: SearchResult, t: TFunction): string | null {
       case 'custom':
          return 'todo';
       case 'generatedMeal':
-         return _.sortBy(s.items, (x) => x.nutritionalInfo.energy)
+         return _.sortBy(s.items, (x) => getFoodPortionNutritions(x).energy)
             .map((x) => getName(x, t))
             .join(', ');
    }

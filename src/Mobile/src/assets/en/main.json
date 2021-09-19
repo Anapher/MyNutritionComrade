@@ -46,5 +46,17 @@
     "custom_meal": "Custom meal",
     "remove": "Remove",
     "change": "Change",
-    "add": "Add"
+    "add": "Add",
+    "settings": {
+        "personal_info": {
+            "title": "Personal Information",
+            "privacy_notice": "You can enter information about your body here to automatically calculate nutrition goals. All information is voluntary and will never be sent to our servers.",
+            "gender": "Gender",
+            "male": "Male",
+            "female": "Female",
+            "summary": {
+                "years_old": "{{age}} years old"
+            }
+        }
+    }
 }

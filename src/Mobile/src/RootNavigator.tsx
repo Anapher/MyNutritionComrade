@@ -9,6 +9,7 @@ import AddProduct from './features/product-add/components/AddProduct';
 import ProductNotFound from './features/product-create/components/ProductNotFound';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
+import SettingsScreen from './features/settings/components/SettingsScreen';
 import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/selectors';
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
@@ -53,6 +54,7 @@ export type RootNavigatorParamList = {
       onBarcodeScannedAction: BarcodeScannedAction;
    };
    ProductNotFound: undefined;
+   Settings: undefined;
 };
 
 export default function RootNavigator() {
@@ -97,6 +99,7 @@ export default function RootNavigator() {
             }}
          />
          <Stack.Screen name="ProductNotFound" component={ProductNotFound} />
+         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
    );
 }
