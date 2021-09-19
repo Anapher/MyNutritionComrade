@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { Subheading, Surface, Text, useTheme } from 'react-native-paper';
 import { FoodPortion } from 'src/types';
+import { getFoodPortionNutritions } from 'src/utils/food-portion-utils';
 import { sumNutritions } from 'src/utils/nutrition-utils';
 import { roundNumber } from 'src/utils/string-utils';
 
@@ -20,7 +21,9 @@ function FoodPortionHeader({ header, foodPortions, style }: Props) {
    const summaryColor = Color(theme.colors.onSurface).alpha(0.5).rgb().string();
    const summaryTextStyle: StyleProp<TextStyle> = { fontSize: 11, color: summaryColor };
 
-   const { energy, fat, carbohydrates, sugars, protein } = sumNutritions(foodPortions.map((x) => x.nutritionalInfo));
+   const { energy, fat, carbohydrates, sugars, protein } = sumNutritions(
+      foodPortions.map((x) => getFoodPortionNutritions(x)),
+   );
 
    return (
       <Surface style={[styles.container, style]}>

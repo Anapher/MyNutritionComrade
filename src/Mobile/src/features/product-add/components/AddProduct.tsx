@@ -2,7 +2,7 @@ import { RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack/lib/typescript/src/types';
 import React, { useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, Platform, StyleSheet, View } from 'react-native';
 import { overlay, Text, useTheme } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import CurvedSlider from 'src/components/CurvedSlider/CurvedSlider';
@@ -11,6 +11,7 @@ import { RootNavigatorParamList } from 'src/RootNavigator';
 import { getBaseUnit } from 'src/utils/product-utils';
 import { initialize, setAmount, setServingType } from '../reducer';
 import { selectSlider } from '../selectors';
+import useAddProductHeader from './AddProductHeader';
 import AddProductHeader from './AddProductHeader';
 import ServingInfo from './ServingInfo';
 import ServingSelection from './ServingSelection';
@@ -23,7 +24,14 @@ type Props = {
 export default function AddProduct({
    navigation,
    route: {
-      params: { product, amount: initialAmount, servingType: initialServingType, onSubmitAction, onSubmitPop },
+      params: {
+         product,
+         amount: initialAmount,
+         servingType: initialServingType,
+         onSubmitAction,
+         onSubmitPop,
+         submitTitle,
+      },
    },
 }: Props) {
    const dispatch = useDispatch();
@@ -37,23 +45,22 @@ export default function AddProduct({
       dispatch(initialize({ product, amount: initialAmount, servingType: initialServingType }));
    }, [product, initialAmount, initialServingType]);
 
-   useLayoutEffect(() => {
-      navigation.setOptions({
-         header: () => (
-            <AddProductHeader
-               title={t('product_label', { product })}
-               navigation={navigation}
-               canSubmit={isInputValid && slider !== null && slider.amount > 0}
-               onSubmit={() => {
-                  dispatch({
-                     ...onSubmitAction,
-                     payload: { ...onSubmitAction.payload, amount: slider!.amount, servingType: slider!.servingType },
-                  });
-                  navigation.pop(onSubmitPop);
-               }}
-            />
-         ),
-      });
+   useAddProductHeader({
+      title: t('product_label', { product }),
+      submitTitle,
+      navigation,
+      canSubmit: isInputValid && slider !== null && slider.amount > 0,
+      onSubmit: () => {
+         dispatch({
+            ...onSubmitAction,
+            payload: {
+               ...onSubmitAction.payload,
+               amount: slider!.amount,
+               servingType: slider!.servingType,
+            },
+         });
+         navigation.pop(onSubmitPop);
+      },
    });
 
    if (!slider) return null;

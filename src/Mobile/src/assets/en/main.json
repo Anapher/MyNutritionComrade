@@ -44,5 +44,7 @@
     },
     "product_label": "{{product, product}}",
     "custom_meal": "Custom meal",
-    "remove": "Remove"
+    "remove": "Remove",
+    "change": "Change",
+    "add": "Add"
 }

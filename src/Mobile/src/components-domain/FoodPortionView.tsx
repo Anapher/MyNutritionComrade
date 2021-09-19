@@ -1,5 +1,5 @@
 import Color from 'color';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, ViewStyle, StyleProp } from 'react-native';
 import { Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import { isProductLiquid } from 'src/utils/product-utils';
@@ -7,7 +7,6 @@ import { roundNumber } from 'src/utils/string-utils';
 import { styles } from './food-portion-styles';
 import { FoodPortion, FoodPortionCustom, FoodPortionProduct, NutritionalInfo } from 'src/types';
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'hoist-non-react-statics/node_modules/@types/react';
 import { getFoodPortionNutritions } from 'src/utils/food-portion-utils';
 
 interface Props<T extends FoodPortion> {

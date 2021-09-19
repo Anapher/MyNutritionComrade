@@ -1,5 +1,4 @@
-import { useMemo } from 'hoist-non-react-statics/node_modules/@types/react';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Divider, Surface, TouchableRipple } from 'react-native-paper';
 import { ConsumedPortion } from 'src/types';

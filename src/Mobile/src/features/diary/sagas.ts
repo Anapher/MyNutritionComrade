@@ -7,11 +7,14 @@ import {
    setConsumedPortion,
 } from 'src/services/sqlite/diary-repository';
 import { SQLiteDatabase } from 'src/services/sqlite/types';
-import { ConsumedPortion } from 'src/types';
-import { getFoodPortionId, mergeFoodPortions } from 'src/utils/product-utils';
+import { ConsumedPortion, Product } from 'src/types';
+import { getFoodPortionId, mergeFoodPortions } from 'src/utils/food-portion-utils';
+import { selectProducts } from '../repo-manager/selectors';
 import {
    addConsumption,
    AddConsumptionPayload,
+   barcodeScannedAddProduct,
+   BarcodeScannedAddProductPayload,
    ConsumptionId,
    ConsumptionPayload,
    removeConsumption,
@@ -21,6 +24,7 @@ import {
 } from './actions';
 import { selectedDateLoaded, setSelectedDate } from './reducer';
 import { getSelectedDate, selectConsumedPortions } from './selectors';
+import { selectedProductAmount } from '../product-search/actions';
 
 function* loadSelectedDate({ payload }: PayloadAction<string>) {
    const database: SQLiteDatabase = yield call(getDatabase);
@@ -29,22 +33,22 @@ function* loadSelectedDate({ payload }: PayloadAction<string>) {
    yield put(selectedDateLoaded(result));
 }
 
-function* onAddConsumption({ payload: { date, time, append, creationDto } }: PayloadAction<AddConsumptionPayload>) {
+function* onAddConsumption({ payload: { date, time, append, foodPortion } }: PayloadAction<AddConsumptionPayload>) {
    if (append) {
       const consumedFood: ConsumedPortion[] | null = yield select(selectConsumedPortions);
       const existing = consumedFood?.find(
-         (x) => x.date === date && x.time === time && getFoodPortionId(x.foodPortion) === getFoodPortionId(creationDto),
+         (x) => x.date === date && x.time === time && getFoodPortionId(x.foodPortion) === getFoodPortionId(foodPortion),
       );
 
       if (existing) {
-         creationDto = mergeFoodPortions(creationDto, existing.foodPortion);
+         foodPortion = mergeFoodPortions(foodPortion, existing.foodPortion);
       }
    }
 
-   yield call(onSetConsumption, setConsumption({ creationDto, date, time }));
+   yield call(onSetConsumption, setConsumption({ foodPortion: foodPortion, date, time }));
 }
 
-function* onSetConsumption({ payload: { date, time, creationDto } }: PayloadAction<ConsumptionPayload>) {
+function* onSetConsumption({ payload: { date, time, foodPortion: creationDto } }: PayloadAction<ConsumptionPayload>) {
    const database: SQLiteDatabase = yield call(getDatabase);
    yield call(setConsumedPortion, database, date, time, creationDto);
 
@@ -66,9 +70,32 @@ function* refreshCurrentDate() {
 }
 
 function* onSetConsumptionDialogAction({
-   payload: { date, time, amount, servingType, creationDto },
+   payload: { date, time, amount, servingType, foodPortion },
 }: PayloadAction<SetConsumptionDialogActionPayload>) {
-   yield put(setConsumption({ date, time, creationDto: { ...creationDto, amount, servingType } }));
+   yield put(setConsumption({ date, time, foodPortion: { ...foodPortion, amount, servingType } }));
+}
+
+function* onBarcodeScannedAction({
+   payload: { result, date, time, navigation },
+}: PayloadAction<BarcodeScannedAddProductPayload>) {
+   const products: Product[] | undefined = yield select(selectProducts);
+   if (products) {
+      const product = Object.values(products).find((x) => x.code === result.data);
+      if (product) {
+         navigation.replace('AddProduct', {
+            product,
+            onSubmitPop: 1,
+            onSubmitAction: selectedProductAmount({
+               amount: 0,
+               servingType: '',
+               product,
+               completedAction: addConsumption({ date, time, append: true, foodPortion: null as any }),
+            }),
+         });
+         return;
+      }
+   }
+   navigation.replace('ProductNotFound');
 }
 
 function* diarySaga() {
@@ -77,6 +104,7 @@ function* diarySaga() {
    yield takeEvery(setConsumption, onSetConsumption);
    yield takeEvery(setConsumptionDialogAction, onSetConsumptionDialogAction);
    yield takeEvery(removeConsumption, onRemoveConsumption);
+   yield takeEvery(barcodeScannedAddProduct, onBarcodeScannedAction);
 }
 
 export default diarySaga;

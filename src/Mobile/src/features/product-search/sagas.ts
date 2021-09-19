@@ -23,7 +23,7 @@ function* search() {
 function* onSelectedProductAmount({
    payload: { amount, servingType, product, completedAction },
 }: PayloadAction<SelectedProductAmountPayload>) {
-   const creationDto: FoodPortionProduct = {
+   const foodPortion: FoodPortionProduct = {
       type: 'product',
       amount,
       servingType,
@@ -32,7 +32,7 @@ function* onSelectedProductAmount({
 
    const action: ProductSearchCompletedAction = {
       ...completedAction,
-      payload: { ...completedAction.payload, foodPortion: creationDto },
+      payload: { ...completedAction.payload, foodPortion },
    };
 
    yield put(action);

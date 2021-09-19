@@ -1,9 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { BarCodeScanningResult } from 'expo-camera';
 import React from 'react';
 import { Appbar } from 'react-native-paper';
 import { useSelector } from 'react-redux';
+import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
 import AddProduct from './features/product-add/components/AddProduct';
+import ProductNotFound from './features/product-create/components/ProductNotFound';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
 import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/selectors';
@@ -25,6 +28,10 @@ export type AddProductCompletedAction = PayloadAction<{
    [x: string]: any;
 }>;
 
+export type BarcodeScannedAction = PayloadAction<{
+   result: BarCodeScanningResult;
+}>;
+
 export type RootNavigatorParamList = {
    Home: undefined;
    Welcome: undefined;
@@ -38,9 +45,14 @@ export type RootNavigatorParamList = {
       servingType?: string;
       amount?: number;
 
+      submitTitle: string;
       onSubmitPop: number;
       onSubmitAction: AddProductCompletedAction;
    };
+   ScanBarcode: {
+      onBarcodeScannedAction: BarcodeScannedAction;
+   };
+   ProductNotFound: undefined;
 };
 
 export default function RootNavigator() {
@@ -76,6 +88,15 @@ export default function RootNavigator() {
             })}
          />
          <Stack.Screen name="AddProduct" component={AddProduct} />
+         <Stack.Screen
+            name="ScanBarcode"
+            component={ScanProductBarCode}
+            options={{
+               headerShown: false,
+               animationTypeForReplace: 'pop',
+            }}
+         />
+         <Stack.Screen name="ProductNotFound" component={ProductNotFound} />
       </Stack.Navigator>
    );
 }

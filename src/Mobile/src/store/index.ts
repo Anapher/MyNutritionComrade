@@ -3,6 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import rootReducer from './root-reducer';
 import rootSaga from './root-saga';
 import { persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { barcodeScannedAddProduct } from 'src/features/diary/actions';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -15,7 +16,7 @@ const store = configureStore({
    middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
          serializableCheck: {
-            ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, barcodeScannedAddProduct.type],
          },
       }).concat(middlewares),
 });

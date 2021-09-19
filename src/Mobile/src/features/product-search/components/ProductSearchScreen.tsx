@@ -1,6 +1,7 @@
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Keyboard } from 'react-native';
 import { Divider, useTheme } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,11 +26,13 @@ export default function ProductSearchScreen({
    const theme = useTheme();
    const results = useSelector(selectSearchResults);
    const dispatch = useDispatch();
+   const { t } = useTranslation();
 
    const onPressItem = (item: SearchResult) => {
       switch (item.type) {
          case 'product':
             navigation.navigate('AddProduct', {
+               submitTitle: t('add'),
                onSubmitAction: selectedProductAmount({
                   amount: 0,
                   servingType: '',

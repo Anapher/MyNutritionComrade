@@ -1,4 +1,5 @@
 import { NavigationProp, useNavigation } from '@react-navigation/core';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SectionList, SectionListData, StyleProp, StyleSheet, ViewStyle } from 'react-native';
@@ -8,7 +9,7 @@ import { ConsumptionTimes } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion, ConsumptionTime } from 'src/types';
 import { getConsumedPortionId } from 'src/utils/food-portion-utils';
-import { addConsumption } from '../actions';
+import { addConsumption, barcodeScannedAddProduct } from '../actions';
 import ConsumedFoodItem from './ConsumedFoodItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
 import FoodPortionDialog, { ShowOptionsInfo } from './FoodPortionDialog';
@@ -21,7 +22,7 @@ type Props = {
 
 export default function ConsumedFoodList({ style, consumedFood, selectedDate }: Props) {
    const { t } = useTranslation();
-   const navigation = useNavigation<NavigationProp<RootNavigatorParamList>>();
+   const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const [foodPortionOptions, setFoodPortionOptions] = useState<ShowOptionsInfo | undefined>();
 
    const sections = useMemo(
@@ -38,11 +39,20 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
       navigation.navigate('SearchProduct', {
          config: { consumptionTime: time, date: selectedDate },
          onCreatedPop: 1,
-         onCreatedAction: addConsumption({ date: selectedDate, time, append: true, creationDto: null as any }) as any,
+         onCreatedAction: addConsumption({ date: selectedDate, time, append: true, foodPortion: null as any }) as any,
       });
    };
 
-   const handleScanBarcode = (time: ConsumptionTime) => {};
+   const handleScanBarcode = (time: ConsumptionTime) => {
+      navigation.navigate('ScanBarcode', {
+         onBarcodeScannedAction: barcodeScannedAddProduct({
+            date: selectedDate,
+            time,
+            result: null as any,
+            navigation,
+         }),
+      });
+   };
 
    return (
       <>

@@ -19,6 +19,8 @@
     "axios": "^0.21.4",
     "color": "^4.0.1",
     "expo": "~42.0.1",
+    "expo-barcode-scanner": "~10.2.2",
+    "expo-camera": "~11.2.2",
     "expo-localization": "~10.2.0",
     "expo-sqlite": "~9.2.1",
     "expo-status-bar": "~1.0.4",

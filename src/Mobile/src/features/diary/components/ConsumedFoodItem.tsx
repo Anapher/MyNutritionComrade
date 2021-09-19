@@ -1,5 +1,7 @@
-import { NavigationProp, useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/core';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
 import { RootNavigatorParamList } from 'src/RootNavigator';
@@ -14,13 +16,15 @@ type Props = {
 };
 
 export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }, showOptions }: Props) {
-   const navigation = useNavigation<NavigationProp<RootNavigatorParamList>>();
+   const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const dispatch = useDispatch();
+   const { t } = useTranslation();
 
    switch (foodPortion.type) {
       case 'product':
          const handleChangeProductAmount = () => {
             navigation.navigate('AddProduct', {
+               submitTitle: t('change'),
                product: foodPortion.product,
                amount: foodPortion.amount,
                servingType: foodPortion.servingType,
@@ -30,7 +34,7 @@ export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }
                   servingType: foodPortion.servingType,
                   date,
                   time,
-                  creationDto: foodPortion,
+                  foodPortion,
                }),
             });
          };
