@@ -133,7 +133,7 @@ export default function RootNavigator() {
          <Stack.Screen
             name="SettingsNutritionGoalCalories"
             component={NutritionCalories}
-            options={{ headerTitle: t('settings.protein.title') }}
+            options={{ headerTitle: t('settings.calories.title') }}
          />
          <Stack.Screen
             name="SettingsNutritionGoalDistribution"

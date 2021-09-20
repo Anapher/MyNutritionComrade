@@ -16,7 +16,7 @@ export default function SettingsItem(props: SettingsButtonContainerProps) {
    return (
       <SettingsButtonLink
          title={t('settings.calories.title')}
-         onPress={() => navigation.push('SettingsNutritionGoalProtein')}
+         onPress={() => navigation.push('SettingsNutritionGoalCalories')}
          icon="arrow"
          {...props}
       />

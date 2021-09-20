@@ -8,12 +8,59 @@ import SettingsList, { SettingsItem } from 'src/components/Settings/SettingsList
 import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
 import { setNutritionGoal } from '../../reducer';
 import { selectNutritionGoal } from '../../selectors';
-import { ProteinByBodyweightNutritionGoal, ProteinFixedNutritionGoal, UserNutritionGoal } from '../../types';
+import { UserNutritionGoal } from '../../types';
 
 const presetProteinPerKg = [
    { key: 'build_maintain_muscle', amount: 1.8 },
    { key: 'loose_weight_without_muscles', amount: 2.6 },
 ];
+
+export default function NutritionProtein() {
+   const { t } = useTranslation();
+   const dispatch = useDispatch();
+
+   const nutritionGoal = useSelector(selectNutritionGoal);
+   const protein = nutritionGoal.protein;
+
+   const handleChange = (values: Partial<UserNutritionGoal>) => {
+      dispatch(setNutritionGoal({ ...nutritionGoal, ...values }));
+   };
+
+   const settings: (SettingsItem | undefined)[] = [
+      ...proteinFixedItems(nutritionGoal, t, handleChange),
+      ...manualProteinPerKg(nutritionGoal, t, handleChange),
+      ...presetProteinPerKg.map<SettingsItem>(({ key, amount }) => ({
+         key,
+         render: (props) => (
+            <SettingsButtonLink
+               title={t(`settings.protein.${key}`)}
+               secondary={t(`settings.protein.${key}_description`)}
+               showSecondaryBelow
+               selectable
+               selected={protein?.type === 'proteinByBodyweight' && protein.proteinPerKgBodyweight === amount}
+               onPress={() =>
+                  handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: amount } })
+               }
+               {...props}
+            />
+         ),
+      })),
+      {
+         key: 'none',
+         render: (props) => (
+            <SettingsButtonLink
+               title={t('settings.protein.none')}
+               selectable
+               selected={!protein}
+               {...props}
+               onPress={() => handleChange({ protein: undefined })}
+            />
+         ),
+      },
+   ];
+
+   return <SettingsList settings={settings.filter((x): x is SettingsItem => !!x)}></SettingsList>;
+}
 
 function proteinFixedItems(
    { protein }: UserNutritionGoal,
@@ -93,51 +140,4 @@ function manualProteinPerKg(
            }
          : undefined,
    ];
-}
-
-export default function NutritionProtein() {
-   const { t } = useTranslation();
-   const dispatch = useDispatch();
-
-   const nutritionGoal = useSelector(selectNutritionGoal);
-   const protein = nutritionGoal.protein;
-
-   const handleChange = (values: Partial<UserNutritionGoal>) => {
-      dispatch(setNutritionGoal({ ...nutritionGoal, ...values }));
-   };
-
-   const settings: (SettingsItem | undefined)[] = [
-      ...proteinFixedItems(nutritionGoal, t, handleChange),
-      ...manualProteinPerKg(nutritionGoal, t, handleChange),
-      ...presetProteinPerKg.map<SettingsItem>(({ key, amount }) => ({
-         key,
-         render: (props) => (
-            <SettingsButtonLink
-               title={t(`settings.protein.${key}`)}
-               secondary={t(`settings.protein.${key}_description`)}
-               showSecondaryBelow
-               selectable
-               selected={protein?.type === 'proteinByBodyweight' && protein.proteinPerKgBodyweight === amount}
-               onPress={() =>
-                  handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: amount } })
-               }
-               {...props}
-            />
-         ),
-      })),
-      {
-         key: 'none',
-         render: (props) => (
-            <SettingsButtonLink
-               title={t('settings.protein.none')}
-               selectable
-               selected={!protein}
-               {...props}
-               onPress={() => handleChange({ protein: undefined })}
-            />
-         ),
-      },
-   ];
-
-   return <SettingsList settings={settings.filter((x): x is SettingsItem => !!x)}></SettingsList>;
 }

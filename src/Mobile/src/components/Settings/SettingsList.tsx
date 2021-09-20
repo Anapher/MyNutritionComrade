@@ -1,5 +1,14 @@
 import React from 'react';
-import { FlatList, FlatListProps, SectionList, SectionListData, StyleSheet, View } from 'react-native';
+import {
+   FlatList,
+   FlatListProps,
+   KeyboardAvoidingView,
+   Platform,
+   SectionList,
+   SectionListData,
+   StyleSheet,
+   View,
+} from 'react-native';
 import { SettingsButtonContainerProps } from './SettingsButtonContainer';
 
 export type SettingsItem = {
@@ -9,6 +18,7 @@ export type SettingsItem = {
 
 export type SettingsSection = {
    settings: SettingsItem[];
+   renderHeader?: () => React.ReactElement;
 };
 
 type Props = Omit<Omit<Omit<FlatListProps<any>, 'data'>, 'renderItem'>, 'keyExtractor'> & {
@@ -17,24 +27,32 @@ type Props = Omit<Omit<Omit<FlatListProps<any>, 'data'>, 'renderItem'>, 'keyExtr
 
 export default function SettingsList({ settings, style, ...props }: Props) {
    if (isSettingsSection(settings)) {
-      const sections = settings.map<SectionListData<SettingsItem>>(({ settings }, i) => ({
+      const sections = settings.map<SectionListData<SettingsItem>>(({ settings, renderHeader }, i) => ({
          data: settings,
          key: i.toString(),
+         renderHeader,
       }));
 
       return (
-         <SectionList
-            style={[styles.root, style]}
-            contentInset={{ bottom: 16 }}
-            sections={sections}
-            stickySectionHeadersEnabled={false}
-            renderItem={({ item, index, section }) =>
-               item.render({ top: index === 0, bottom: section.data.length - 1 === index })
-            }
-            keyExtractor={(item) => item.key}
-            renderSectionFooter={() => <View style={{ marginBottom: 32 }}></View>}
-            {...props}
-         />
+         <KeyboardAvoidingView
+            style={{ height: '100%' }}
+            keyboardVerticalOffset={Platform.select({ ios: 60, android: 78 })}
+            behavior={'padding'}
+         >
+            <SectionList
+               style={[styles.root, style]}
+               contentInset={{ bottom: 16 }}
+               sections={sections}
+               stickySectionHeadersEnabled={false}
+               renderItem={({ item, index, section }) =>
+                  item.render({ top: index === 0, bottom: section.data.length - 1 === index })
+               }
+               keyExtractor={(item) => item.key}
+               renderSectionFooter={() => <View style={{ marginBottom: 32 }}></View>}
+               renderSectionHeader={({ section }) => section.renderHeader?.()}
+               {...props}
+            />
+         </KeyboardAvoidingView>
       );
    } else {
       const items = settings.map(({ render, key }, i) => ({

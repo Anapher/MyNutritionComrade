@@ -80,6 +80,37 @@
             "summary_fixed": "{{value}}g/d",
             "summary_per_kg": "{{value}}g/kg/d"
         },
+        "calories": {
+            "title": "Calories",
+            "manual_value": "Manual value",
+            "calculate_value": "Calculate value",
+            "none": "None",
+            "calorie_intake_day": "Calories per day (kcal)",
+            "activity_level": {
+                "sedentary": {
+                    "title": "Sedentary",
+                    "description": "little to no exercise"
+                },
+                "lightly_active": {
+                    "title": "Lightly active",
+                    "description": "light exercise 1-3 days per week"
+                },
+                "moderately_active": {
+                    "title": "Moderately active",
+                    "description": "moderate exercise 3-5 days per week"
+                },
+                "very_active": {
+                    "title": "Very active",
+                    "description": "hard exercise 6-7 days per week"
+                },
+                "extra_active": {
+                    "title": "Extra active",
+                    "description": "very hard exercise or physical job"
+                }
+            },
+            "calculated_caption": "Calculated by the Mifflin-St. Jeor Equation",
+            "calculated_description": "Please enter your average daily activity level. This factor will be multiplied with the amount of energy your body needs to maintain basic functions like breathing."
+        },
         "not_set": "Not set"
     }
 }
