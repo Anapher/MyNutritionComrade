@@ -70,7 +70,7 @@ export default function AddProduct({
    const curveBackground = overlay(8, theme.colors.surface);
 
    const handleChangeServingType = (newServingType: string) => dispatch(setServingType(newServingType));
-   const handleChangeAmount = (newAmount: number) => dispatch(setAmount(newAmount));
+   const handleChangeAmount = (newAmount?: number) => dispatch(setAmount(newAmount || 0));
 
    const isBaseUnitSelected = servingType === getBaseUnit(product);
 
@@ -89,6 +89,7 @@ export default function AddProduct({
                   value={amount}
                   onChangeValue={handleChangeAmount}
                   onChangeState={(x) => setIsInputValid(x)}
+                  showBottomLine
                />
                <View style={[styles.row, { opacity: 0.6 }]}>
                   <Text>{isBaseUnitSelected ? '' : amount * product.servings[servingType]}g</Text>

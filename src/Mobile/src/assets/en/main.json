@@ -47,6 +47,7 @@
     "remove": "Remove",
     "change": "Change",
     "add": "Add",
+    "cancel": "Canel",
     "settings": {
         "personal_info": {
             "title": "Personal Information",
@@ -54,9 +55,31 @@
             "gender": "Gender",
             "male": "Male",
             "female": "Female",
+            "height": "Height (cm)",
+            "age": "Age",
             "summary": {
                 "years_old": "{{age}} years old"
             }
-        }
+        },
+        "weight": {
+            "title": "Weight",
+            "current_weight": "Current weight (kg)",
+            "enter_here": "Enter here"
+        },
+        "protein": {
+            "title": "Protein",
+            "manual_protein_per_day": "Manual protein intake / day",
+            "manual_protein_per_kg": "Manual protein intake / kg / day",
+            "build_maintain_muscle": "Build / maintain muscles",
+            "build_maintain_muscle_description": "1.8 g/kg/d",
+            "loose_weight_without_muscles": "Loose weight without muscles",
+            "loose_weight_without_muscles_description": "2.8 g/kg/d may be needed to maximize the retention of lean body mass in resistance-trained subjects during hypocaloric periods.",
+            "none": "None",
+            "protein_per_day": "Protein per day (g)",
+            "protein_per_day_kg": "Protein per kg (g)",
+            "summary_fixed": "{{value}}g/d",
+            "summary_per_kg": "{{value}}g/kg/d"
+        },
+        "not_set": "Not set"
     }
 }

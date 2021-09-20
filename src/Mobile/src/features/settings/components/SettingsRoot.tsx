@@ -1,22 +1,32 @@
 import React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import SettingsList from 'src/components/Settings/SettingsList';
+import NutritionGoalCaloriesSettingsItem from './nutrition-calories/SettingsItem';
+import NutritionGoalDistributionSettingsItem from './nutrition-distribution/SettingsItem';
+import NutritionGoalProteinSettingsItem from './nutrition-protein/SettingsItem';
 import PersonalInfoSettingsItem from './personal-info/SettingsItem';
-
-type PersonalInfoSettingsItem = {
-   key: string;
-   render: () => React.ReactElement;
-};
+import WeightSettingsItem from './weight/SettingsItem';
 
 export default function SettingsRoot() {
-   const settings: PersonalInfoSettingsItem[] = [{ key: 'personal-info', render: () => <PersonalInfoSettingsItem /> }];
-
    return (
-      <FlatList
+      <SettingsList
          style={styles.root}
-         data={settings}
+         settings={[
+            {
+               settings: [
+                  { key: 'personal', render: (props) => <PersonalInfoSettingsItem {...props} /> },
+                  { key: 'weight', render: (props) => <WeightSettingsItem {...props} /> },
+               ],
+            },
+            {
+               settings: [
+                  { key: 'calories', render: (props) => <NutritionGoalCaloriesSettingsItem {...props} /> },
+                  { key: 'protein', render: (props) => <NutritionGoalProteinSettingsItem {...props} /> },
+                  { key: 'distribution', render: (props) => <NutritionGoalDistributionSettingsItem {...props} /> },
+               ],
+            },
+         ]}
          contentInset={{ bottom: 16 }}
-         renderItem={(x) => x.item.render()}
-         keyExtractor={(x) => x.key}
       />
    );
 }

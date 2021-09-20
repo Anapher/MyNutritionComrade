@@ -1,3 +1,4 @@
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { NavigationContainer, Theme as NavTheme } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -34,13 +35,15 @@ const navigationTheme: NavTheme = {
 export default function App() {
    return (
       <Provider store={store}>
-         <PaperProvider theme={theme}>
-            <StatusBar style="light" />
-            <InitializeRepo />
-            <NavigationContainer theme={navigationTheme}>
-               <RootNavigator />
-            </NavigationContainer>
-         </PaperProvider>
+         <ActionSheetProvider>
+            <PaperProvider theme={theme}>
+               <StatusBar style="light" />
+               <InitializeRepo />
+               <NavigationContainer theme={navigationTheme}>
+                  <RootNavigator />
+               </NavigationContainer>
+            </PaperProvider>
+         </ActionSheetProvider>
       </Provider>
    );
 }

@@ -1,14 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserPersonalInfo } from './types';
+import { UserNutritionGoal, UserPersonalInfo, UserWeight } from './types';
 
 export type SettingsState = {
    firstStart: boolean;
    personalInfo: UserPersonalInfo;
+   weight: UserWeight;
+   nutritionGoal: UserNutritionGoal;
 };
 
 const initialState: SettingsState = {
    firstStart: true,
+   weight: {},
    personalInfo: {},
+   nutritionGoal: {},
 };
 
 const settingsSlice = createSlice({
@@ -21,9 +25,15 @@ const settingsSlice = createSlice({
       setPersonalInfo(state, { payload }: PayloadAction<UserPersonalInfo>) {
          state.personalInfo = payload;
       },
+      setWeight(state, { payload }: PayloadAction<UserWeight>) {
+         state.weight = payload;
+      },
+      setNutritionGoal(state, { payload }: PayloadAction<UserNutritionGoal>) {
+         state.nutritionGoal = payload;
+      },
    },
 });
 
-export const { firstStartCompleted, setPersonalInfo } = settingsSlice.actions;
+export const { firstStartCompleted, setPersonalInfo, setWeight, setNutritionGoal } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
