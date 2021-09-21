@@ -7,18 +7,19 @@ export type SettingsButtonContainerProps = {
    top?: boolean;
    bottom?: boolean;
    style?: ViewStyle;
+   padding?: boolean;
 };
 
 type Props = SettingsButtonContainerProps & { children?: React.ReactElement };
 
-export default function SettingsButtonContainer({ children, top, bottom, style }: Props) {
+export default function SettingsButtonContainer({ children, top, bottom, style, padding }: Props) {
    const theme = useTheme();
 
    return (
-      <Surface style={[styles.root, { backgroundColor: Color(theme.colors.text).alpha(0.06).rgb().string() }, style]}>
+      <Surface style={[{ backgroundColor: Color(theme.colors.text).alpha(0.06).rgb().string() }, style]}>
          <View>
             {top && <Divider />}
-            {children}
+            {padding ? <View style={styles.padding}>{children}</View> : children}
             <Divider style={bottom ? undefined : styles.dividerInset} />
          </View>
       </Surface>
@@ -26,7 +27,7 @@ export default function SettingsButtonContainer({ children, top, bottom, style }
 }
 
 const styles = StyleSheet.create({
-   root: {},
+   padding: { paddingHorizontal: 24 },
    dividerInset: {
       marginLeft: 24,
    },

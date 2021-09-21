@@ -5,6 +5,7 @@ import { ConsumedPortion } from 'src/types';
 import { getFoodPortionNutritions } from 'src/utils/food-portion-utils';
 import { sumNutritions } from 'src/utils/nutrition-utils';
 import DateControls from './DateControls';
+import NutritionGoalOverview from './NutritionGoalOverview';
 import NutritionSummary from './NutritionSummary';
 
 type Props = {
@@ -36,9 +37,9 @@ export default function TabDiaryHeader({ selectedDate, onChangeSelectedDate, con
                <Animated.View style={{ opacity: animation.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
                   <NutritionSummary nutritions={nutritions} />
                </Animated.View>
-               {/* <Animated.View style={[styles.overlay, { opacity: animation }]}>
-                  <NutritionGoalOverview nutritionGoal={nutritionGoal} nutritions={nutritions} />
-               </Animated.View> */}
+               <Animated.View style={[styles.overlay, { opacity: animation }]}>
+                  <NutritionGoalOverview nutritions={nutritions} />
+               </Animated.View>
             </View>
          </TouchableRipple>
       </Surface>

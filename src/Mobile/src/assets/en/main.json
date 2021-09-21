@@ -7,7 +7,8 @@
         "carbohydrates": "Carbohydrates",
         "carbohydrates_short": "Carbs",
         "protein": "Protein",
-        "sugars": "Sugars"
+        "sugars": "Sugars",
+        "energy": "Energy"
     },
     "consumption_time": {
         "breakfast": "Breakfast",
@@ -109,8 +110,17 @@
                 }
             },
             "calculated_caption": "Calculated by the Mifflin-St. Jeor Equation",
-            "calculated_description": "Please enter your average daily activity level. This factor will be multiplied with the amount of energy your body needs to maintain basic functions like breathing."
+            "calculated_description": "Please enter your average daily activity level. This factor will be multiplied with the amount of energy your body needs to maintain basic functions like breathing.",
+            "calulcation_data_missing": "Cannot estimate needed calories. To calculate your Basal Metabolic Rate, we need information about your body",
+            "add_personal_info": "Add personal info",
+            "add_body_weight": "Add body weight",
+            "balance": "Balance"
         },
         "not_set": "Not set"
+    },
+    "nutrition_goal_overview": {
+        "reached": "Reached",
+        "missing": "Missing",
+        "not_configured": "You can configure your nutrition goal in settings"
     }
 }

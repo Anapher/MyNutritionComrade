@@ -6,18 +6,19 @@ import { useSelector } from 'react-redux';
 import { SettingsButtonContainerProps } from 'src/components/Settings/SettingsButtonContainer';
 import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
 import { RootNavigatorParamList } from 'src/RootNavigator';
-import { selectNutritionGoal } from '../../selectors';
+import { selectUserCaloriesPerDay } from '../../selectors';
 
 export default function SettingsItem(props: SettingsButtonContainerProps) {
    const { t } = useTranslation();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
-   const nutritionGoal = useSelector(selectNutritionGoal);
+   const caloriesPerDay = useSelector(selectUserCaloriesPerDay);
 
    return (
       <SettingsButtonLink
          title={t('settings.calories.title')}
          onPress={() => navigation.push('SettingsNutritionGoalCalories')}
          icon="arrow"
+         secondary={caloriesPerDay === undefined ? t('settings.not_set') : `${caloriesPerDay}kcal/d`}
          {...props}
       />
    );
