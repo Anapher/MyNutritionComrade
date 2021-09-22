@@ -87,7 +87,7 @@ function LoadingRect({ width, height, strokeWidth }: { width: number; height: nu
    const factor = dashWidth / width;
 
    useEffect(() => {
-      Animated.timing(animation, { duration: 1500, toValue: 4, useNativeDriver: true }).start();
+      Animated.timing(animation, { duration: 1500, toValue: 4, useNativeDriver: false }).start();
 
       const timer = setTimeout(() => {
          setInterpolation(

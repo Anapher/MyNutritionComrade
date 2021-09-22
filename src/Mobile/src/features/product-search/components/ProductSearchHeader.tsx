@@ -61,7 +61,7 @@ function ProductSearchHeader({
          <IconButton
             icon="plus"
             style={styles.plusIconButton}
-            // onPress={() => navigation.navigate('CreateProduct')}
+            onPress={() => navigation.navigate('CreateProduct', { initialValue: {} })}
          />
       </Appbar.Header>
    );

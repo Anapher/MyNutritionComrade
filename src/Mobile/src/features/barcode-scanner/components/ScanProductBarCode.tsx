@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import Overlay from './Overlay';
 
@@ -17,12 +16,11 @@ type Props = {
 function ScanProductBarCode({
    navigation,
    route: {
-      params: { onBarcodeScannedAction },
+      params: { onCodeScanned, showCodeScannedAnimation, keepOpen },
    },
 }: Props) {
    const isFocused = useIsFocused();
    const [hasPermission, setHasPermission] = useState(false);
-   const dispatch = useDispatch();
 
    useEffect(() => {
       (async () => {
@@ -39,9 +37,18 @@ function ScanProductBarCode({
    const handleBarCodeScanned = (result: BarCodeScanningResult) => {
       setIsLoading(true);
 
-      setTimeout(() => {
-         dispatch({ ...onBarcodeScannedAction, payload: { ...onBarcodeScannedAction.payload, result } });
-      }, 600);
+      const publish = () => {
+         onCodeScanned(result);
+         if (!keepOpen) navigation.pop();
+      };
+
+      if (!showCodeScannedAnimation) {
+         publish();
+      } else {
+         setTimeout(() => {
+            publish();
+         }, 600);
+      }
    };
 
    const [torch, setTorch] = useState(false);

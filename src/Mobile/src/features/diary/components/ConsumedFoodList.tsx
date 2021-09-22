@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SectionList, SectionListData, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Divider, Portal } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 import FoodPortionHeader from 'src/components-domain/FoodPortionHeader';
 import { ConsumptionTimes } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export default function ConsumedFoodList({ style, consumedFood, selectedDate }: Props) {
+   const dispatch = useDispatch();
    const { t } = useTranslation();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const [foodPortionOptions, setFoodPortionOptions] = useState<ShowOptionsInfo | undefined>();
@@ -45,12 +47,10 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
 
    const handleScanBarcode = (time: ConsumptionTime) => {
       navigation.navigate('ScanBarcode', {
-         onBarcodeScannedAction: barcodeScannedAddProduct({
-            date: selectedDate,
-            time,
-            result: null as any,
-            navigation,
-         }),
+         keepOpen: true,
+         showCodeScannedAnimation: true,
+         onCodeScanned: (result) =>
+            dispatch(barcodeScannedAddProduct({ date: selectedDate, time, result, navigation })),
       });
    };
 

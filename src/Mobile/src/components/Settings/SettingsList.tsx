@@ -79,6 +79,6 @@ function isSettingsSection(s: SettingsSection[] | SettingsItem[]): s is Settings
 
 const styles = StyleSheet.create({
    root: {
-      paddingVertical: 16,
+      padding: 16,
    },
 });

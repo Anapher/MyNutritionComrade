@@ -3,10 +3,12 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { BarCodeScanningResult } from 'expo-camera';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Appbar } from 'react-native-paper';
+import { Button } from 'react-native';
+import { Appbar, IconButton } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
 import AddProduct from './features/product-add/components/AddProduct';
+import CreateProduct from './features/product-create/CreateProduct';
 import ProductNotFound from './features/product-create/components/ProductNotFound';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
@@ -19,7 +21,9 @@ import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/se
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
 import { ProductSearchConfig } from './services/search-engine/types';
-import { FoodPortion, Product } from './types';
+import { FoodPortion, Product, ProductLabel, ProductProperties } from './types';
+import { ProductLabelViewModel } from './features/product-create/types';
+import AddLabelScreen from './features/product-create/components/AddLabelScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -56,7 +60,9 @@ export type RootNavigatorParamList = {
       onSubmitAction: AddProductCompletedAction;
    };
    ScanBarcode: {
-      onBarcodeScannedAction: BarcodeScannedAction;
+      onCodeScanned: (result: BarCodeScanningResult) => void;
+      showCodeScannedAnimation?: boolean;
+      keepOpen?: boolean;
    };
    ProductNotFound: undefined;
    Settings: undefined;
@@ -65,6 +71,16 @@ export type RootNavigatorParamList = {
    SettingsNutritionGoalProtein: undefined;
    SettingsNutritionGoalCalories: undefined;
    SettingsNutritionGoalDistribution: undefined;
+   CreateProduct: {
+      initialValue: Partial<ProductProperties>;
+   };
+   ProductEditorAddLabel: {
+      initialValue: Partial<ProductLabelViewModel>;
+      availableLanguages: string[];
+      onDelete?: () => void;
+      mode: 'create' | 'change';
+      onSubmit: (label: ProductLabelViewModel) => void;
+   };
 };
 
 export default function RootNavigator() {
@@ -85,14 +101,10 @@ export default function RootNavigator() {
          <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={{
-               header: ({ navigation }) => (
-                  <Appbar.Header>
-                     <Appbar.Content title="My Nutrition Comrade" />
-                     <Appbar.Action icon="cog" onPress={() => navigation.navigate('Settings')} />
-                  </Appbar.Header>
-               ),
-            }}
+            options={({ navigation }) => ({
+               headerTitle: 'My Nutrition Comrade',
+               headerRight: ({}) => <IconButton icon="cog" onPress={() => navigation.navigate('Settings')} />,
+            })}
          />
          <Stack.Screen
             name="SearchProduct"
@@ -134,6 +146,12 @@ export default function RootNavigator() {
             component={NutritionCalories}
             options={{ headerTitle: t('settings.calories.title') }}
          />
+         <Stack.Screen
+            name="CreateProduct"
+            component={CreateProduct}
+            options={{ headerTitle: t('create_product.title') }}
+         />
+         <Stack.Screen name="ProductEditorAddLabel" component={AddLabelScreen} />
       </Stack.Navigator>
    );
 }

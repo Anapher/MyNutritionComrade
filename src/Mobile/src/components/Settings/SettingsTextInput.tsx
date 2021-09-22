@@ -1,38 +1,35 @@
 import React from 'react';
 import { StyleProp, StyleSheet, TextInput, TextStyle, View } from 'react-native';
-import { Text } from 'react-native-paper';
-import NumberTextInput from '../NumberTextInput';
+import { Text, useTheme } from 'react-native-paper';
 import { DEFAULT_HEIGHT } from './config';
 import SettingsButtonContainer, { SettingsButtonContainerProps } from './SettingsButtonContainer';
 
 type Props = SettingsButtonContainerProps & {
    title: string;
-   titleStyle?: StyleProp<TextStyle>;
-   value: number | undefined;
-   onChangeValue: (v: number | undefined) => void;
+   value: string | undefined | null;
+   onChangeValue: (v: string | undefined) => void;
    placeholder?: string;
-   inputProps?: Omit<React.ComponentProps<typeof TextInput>, 'value'>;
+   titleStyle?: StyleProp<TextStyle>;
 };
 
-export default function SettingsNumberInput({
-   title,
-   value,
-   onChangeValue,
-   placeholder,
-   inputProps,
-   titleStyle,
-   ...props
-}: Props) {
+export default function SettingsTextInput({ title, value, onChangeValue, placeholder, titleStyle, ...props }: Props) {
+   const theme = useTheme();
+
    return (
       <SettingsButtonContainer {...props}>
          <View style={styles.container}>
             <Text style={[styles.title, titleStyle]}>{title}</Text>
-            <NumberTextInput
-               style={styles.numberInput}
-               value={value}
-               onChangeValue={onChangeValue}
+            <TextInput
+               style={[
+                  styles.input,
+                  {
+                     color: theme.colors.text,
+                  },
+               ]}
+               value={value ?? undefined}
+               onChangeText={onChangeValue}
                placeholder={placeholder}
-               {...inputProps}
+               placeholderTextColor={theme.colors.disabled}
             />
          </View>
       </SettingsButtonContainer>
@@ -52,7 +49,7 @@ const styles = StyleSheet.create({
       marginRight: 8,
       flex: 1,
    },
-   numberInput: {
+   input: {
       flex: 1,
       fontSize: 17,
    },

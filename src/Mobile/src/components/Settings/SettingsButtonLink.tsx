@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 import { Caption, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { BORDER_ROUNDING, DEFAULT_HEIGHT, TEXT_PADDING_LEFT } from './config';
 import SettingsButtonContainer, { SettingsButtonContainerProps } from './SettingsButtonContainer';
 
 type Props = SettingsButtonContainerProps & {
@@ -13,6 +14,7 @@ type Props = SettingsButtonContainerProps & {
    formLayout?: boolean;
    selectable?: boolean;
    selected?: boolean;
+   textStyles?: StyleProp<TextStyle>;
 };
 
 export default function SettingsButtonLink({
@@ -24,16 +26,25 @@ export default function SettingsButtonLink({
    formLayout,
    selectable,
    selected,
+   textStyles,
    ...props
 }: Props) {
    const theme = useTheme();
 
    return (
       <SettingsButtonContainer {...props}>
-         <TouchableRipple onPress={onPress} style={styles.container}>
+         <TouchableRipple
+            onPress={onPress}
+            style={[
+               styles.container,
+               showSecondaryBelow ? undefined : styles.maxHeight,
+               props.top ? styles.surfaceTop : undefined,
+               props.bottom ? styles.surfaceBottom : undefined,
+            ]}
+         >
             <View style={styles.content}>
                <View style={[styles.textContainer, showSecondaryBelow ? undefined : styles.rowView]}>
-                  <Text style={[styles.title, formLayout && { flex: 1 }]}>{title}</Text>
+                  <Text style={[styles.title, textStyles, formLayout && { flex: 1 }]}>{title}</Text>
                   {!showSecondaryBelow && (
                      <Text
                         numberOfLines={1}
@@ -45,7 +56,9 @@ export default function SettingsButtonLink({
                   )}
                   {showSecondaryBelow && <Caption>{secondary}</Caption>}
                </View>
-               {icon === 'arrow' && <Icon name="chevron-right" size={28} color={theme.colors.disabled} />}
+               {icon === 'arrow' && (
+                  <Icon name="chevron-right" size={28} style={{ marginVertical: -2 }} color={theme.colors.disabled} />
+               )}
                {selectable && (
                   <Icon name="check" style={{ opacity: selected ? 1 : 0 }} size={22} color={theme.colors.primary} />
                )}
@@ -58,7 +71,15 @@ export default function SettingsButtonLink({
 const styles = StyleSheet.create({
    container: {
       paddingVertical: 8,
-      paddingHorizontal: 24,
+      paddingHorizontal: TEXT_PADDING_LEFT,
+   },
+   surfaceTop: {
+      borderTopLeftRadius: BORDER_ROUNDING,
+      borderTopRightRadius: BORDER_ROUNDING,
+   },
+   surfaceBottom: {
+      borderBottomLeftRadius: BORDER_ROUNDING,
+      borderBottomRightRadius: BORDER_ROUNDING,
    },
    title: {
       fontSize: 17,
@@ -70,6 +91,7 @@ const styles = StyleSheet.create({
       minWidth: 0,
    },
    content: {
+      flex: 1,
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
@@ -84,5 +106,8 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       flex: 1,
+   },
+   maxHeight: {
+      height: DEFAULT_HEIGHT,
    },
 });
