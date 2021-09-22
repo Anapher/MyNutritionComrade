@@ -12,7 +12,6 @@ import ProductSearchHeader from './features/product-search/components/ProductSea
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
 import NutritionCalories from './features/settings/components/nutrition-calories/NutritionCalories';
 import NutritionProtein from './features/settings/components/nutrition-protein/NutritionProtein';
-import NutritionDistribution from './features/settings/components/nutrition-distribution/NutritionDistribution';
 import PersonalInfo from './features/settings/components/personal-info/PersonalInfo';
 import SettingsRoot from './features/settings/components/SettingsRoot';
 import Weight from './features/settings/components/weight/Weight';
@@ -134,11 +133,6 @@ export default function RootNavigator() {
             name="SettingsNutritionGoalCalories"
             component={NutritionCalories}
             options={{ headerTitle: t('settings.calories.title') }}
-         />
-         <Stack.Screen
-            name="SettingsNutritionGoalDistribution"
-            component={NutritionDistribution}
-            options={{ headerTitle: t('settings.protein.title') }}
          />
       </Stack.Navigator>
    );

@@ -26,51 +26,64 @@ export default function NutritionProtein() {
       dispatch(setNutritionGoal({ ...nutritionGoal, ...values }));
    };
 
-   const settings: (SettingsItem | undefined)[] = [
-      ...proteinFixedItems(nutritionGoal, t, handleChange),
-      ...manualProteinPerKg(nutritionGoal, t, handleChange),
-      ...presetProteinPerKg.map<SettingsItem>(({ key, amount }) => ({
-         key,
-         render: (props) => (
-            <SettingsButtonLink
-               title={t(`settings.protein.${key}`)}
-               secondary={t(`settings.protein.${key}_description`)}
-               showSecondaryBelow
-               selectable
-               selected={protein?.type === 'proteinByBodyweight' && protein.proteinPerKgBodyweight === amount}
-               onPress={() =>
-                  handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: amount } })
-               }
-               {...props}
-            />
-         ),
-      })),
-      {
-         key: 'none',
-         render: (props) => (
-            <SettingsButtonLink
-               title={t('settings.protein.none')}
-               selectable
-               selected={!protein}
-               {...props}
-               onPress={() => handleChange({ protein: undefined })}
-            />
-         ),
-      },
-   ];
+   const proteinFixedItems = proteinFixedView(nutritionGoal, t, handleChange);
+   const manualProteinItems = manualProteinPerKgView(nutritionGoal, t, handleChange);
 
-   return <SettingsList settings={settings.filter((x): x is SettingsItem => !!x)}></SettingsList>;
+   return (
+      <SettingsList
+         settings={[
+            {
+               settings: [
+                  proteinFixedItems.settingsItem,
+                  manualProteinItems.settingsItem,
+                  ...presetProteinPerKg.map<SettingsItem>(({ key, amount }) => ({
+                     key,
+                     render: (props) => (
+                        <SettingsButtonLink
+                           title={t(`settings.protein.${key}`)}
+                           secondary={t(`settings.protein.${key}_description`)}
+                           showSecondaryBelow
+                           selectable
+                           selected={
+                              protein?.type === 'proteinByBodyweight' && protein.proteinPerKgBodyweight === amount
+                           }
+                           onPress={() =>
+                              handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: amount } })
+                           }
+                           {...props}
+                        />
+                     ),
+                  })),
+                  {
+                     key: 'none',
+                     render: (props) => (
+                        <SettingsButtonLink
+                           title={t('settings.protein.none')}
+                           selectable
+                           selected={!protein}
+                           {...props}
+                           onPress={() => handleChange({ protein: undefined })}
+                        />
+                     ),
+                  },
+               ],
+            },
+            ...(!proteinFixedItems.newSection ? [] : [{ settings: proteinFixedItems.newSection }]),
+            ...(!manualProteinItems.newSection ? [] : [{ settings: manualProteinItems.newSection }]),
+         ]}
+      ></SettingsList>
+   );
 }
 
-function proteinFixedItems(
+function proteinFixedView(
    { protein }: UserNutritionGoal,
    t: TFunction,
    handleChange: (newValue: Partial<UserNutritionGoal>) => void,
-): (SettingsItem | undefined)[] {
+): { settingsItem: SettingsItem; newSection?: SettingsItem[] } {
    const selected = protein?.type === 'proteinFixed';
 
-   return [
-      {
+   return {
+      settingsItem: {
          key: 'proteinFixed',
          render: (props) => (
             <SettingsButtonLink
@@ -82,62 +95,63 @@ function proteinFixedItems(
             />
          ),
       },
-      selected
-         ? {
-              key: 'proteinFixed.input',
-              render: (props: SettingsButtonContainerProps) => (
-                 <SettingsNumberInput
-                    style={{ marginBottom: 16 }}
-                    title={t('settings.protein.protein_per_day') + ':'}
-                    value={protein.proteinPerDay || undefined}
-                    onChangeValue={(x) => handleChange({ protein: { type: 'proteinFixed', proteinPerDay: x ?? 0 } })}
-                    {...props}
-                    bottom
-                 />
-              ),
-           }
-         : undefined,
-   ];
+      newSection: !selected
+         ? undefined
+         : [
+              {
+                 key: 'proteinFixed.input',
+                 render: (props: SettingsButtonContainerProps) => (
+                    <SettingsNumberInput
+                       title={t('settings.protein.protein_per_day') + ':'}
+                       value={protein.proteinPerDay || undefined}
+                       onChangeValue={(x) => handleChange({ protein: { type: 'proteinFixed', proteinPerDay: x ?? 0 } })}
+                       {...props}
+                       bottom
+                    />
+                 ),
+              },
+           ],
+   };
 }
 
-function manualProteinPerKg(
+function manualProteinPerKgView(
    { protein }: UserNutritionGoal,
    t: TFunction,
    handleChange: (newValue: Partial<UserNutritionGoal>) => void,
-): (SettingsItem | undefined)[] {
+): { settingsItem: SettingsItem; newSection?: SettingsItem[] } {
    const selected =
       protein?.type === 'proteinByBodyweight' &&
       !presetProteinPerKg.find((x) => x.amount === protein.proteinPerKgBodyweight);
 
-   return [
-      {
+   return {
+      settingsItem: {
          key: 'protein_per_kg',
          render: (props) => (
             <SettingsButtonLink
                title={t('settings.protein.manual_protein_per_kg')}
                selectable
-               style={{ marginTop: selected ? 16 : 0 }}
                {...props}
                selected={selected}
                onPress={() => handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: 2 } })}
             />
          ),
       },
-      selected
-         ? {
-              key: 'protein_per_kg.manual',
-              render: (props) => (
-                 <SettingsNumberInput
-                    title={t('settings.protein.protein_per_day_kg') + ':'}
-                    value={protein.proteinPerKgBodyweight || undefined}
-                    onChangeValue={(x) =>
-                       handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: x ?? 0 } })
-                    }
-                    style={{ marginBottom: 16 }}
-                    {...props}
-                 />
-              ),
-           }
-         : undefined,
-   ];
+      newSection: !selected
+         ? undefined
+         : [
+              {
+                 key: 'protein_per_kg.manual',
+                 render: (props) => (
+                    <SettingsNumberInput
+                       title={t('settings.protein.protein_per_day_kg') + ':'}
+                       value={protein.proteinPerKgBodyweight || undefined}
+                       onChangeValue={(x) =>
+                          handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: x ?? 0 } })
+                       }
+                       {...props}
+                    />
+                 ),
+              },
+           ],
+   };
 }
