@@ -5,6 +5,7 @@ import { ProductProperties } from 'src/types';
 import ProductCommonSection from './ProductCommonSection';
 import ProductLabelSection from './ProductLabelSection';
 import ProductNutritionalValuesSection from './ProductNutritionalValuesSection';
+import ProductServingsSection from './ProductServingsSection';
 
 type Props = {
    form: UseFormReturn<ProductProperties>;
@@ -13,7 +14,12 @@ type Props = {
 export default function ProductEditor({ form }: Props) {
    return (
       <SettingsList
-         settings={[ProductLabelSection(form), ProductCommonSection(form), ProductNutritionalValuesSection(form)]}
+         settings={[
+            ProductLabelSection(form),
+            ProductCommonSection(form),
+            ProductNutritionalValuesSection(form),
+            ProductServingsSection(form),
+         ]}
       />
    );
 }

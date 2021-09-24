@@ -46,6 +46,21 @@
         "large": "Large",
         "extraLarge": "Extra Large"
     },
+    "serving_type_descriptions": {
+        "package": "The size of the package when you buy the product.",
+        "bottle": "The size of the bottle when you buy the product.",
+        "portion": "One suggested portition.",
+        "cup": "One Cup (225ml) of the product.",
+        "ts": "One table spoon (15ml) of the product.",
+        "te": "One tea spoon (5ml) of the product.",
+        "slice": "One slice of the product (e. g. applicable for sliced cheese).",
+        "piece": "One piece of the product (e. g. applicable for gummy bears).",
+        "bread": "How much you use when you eat one bread with this product (e. g. applicable for cream cheese).",
+        "small": "One small unit of this product (e. g. one small potato).",
+        "medium": "One small unit of this product (e. g. one M egg)",
+        "large": "One small unit of this product (e. g. one L egg)",
+        "extraLarge": "One small unit of this product (e. g. one XL egg)."
+    },
     "product_label": "{{product, product}}",
     "custom_meal": "Custom meal",
     "remove": "Remove",
@@ -140,7 +155,15 @@
         "label_description": "Please copy the label from the product and include the producer if possible. Tags can be alternatives for searching.",
         "add_label": "Add label",
         "change_label": "Change label",
-        "product_name": "Product Name"
+        "product_name": "Product Name",
+        "servings": "Servings",
+        "add_servings": "Add servings",
+        "serving_categories": {
+            "product": "Product",
+            "kitchen_measurements": "Kitchen Measurements",
+            "applications": "Applications",
+            "quantities": "Quantities"
+        }
     },
     "languages": {
         "de": "German",

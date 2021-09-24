@@ -27,11 +27,13 @@ type Props = Omit<Omit<Omit<FlatListProps<any>, 'data'>, 'renderItem'>, 'keyExtr
 
 export default function SettingsList({ settings, style, ...props }: Props) {
    if (isSettingsSection(settings)) {
-      const sections = settings.map<SectionListData<SettingsItem>>(({ settings, renderHeader }, i) => ({
-         data: settings,
-         key: i.toString(),
-         renderHeader,
-      }));
+      const sections = settings
+         .filter((x) => x.settings.length > 0)
+         .map<SectionListData<SettingsItem>>(({ settings, renderHeader }, i) => ({
+            data: settings,
+            key: i.toString(),
+            renderHeader,
+         }));
 
       return (
          <KeyboardAvoidingView

@@ -13,9 +13,11 @@ export interface ProductEssentials {
    label: ProductLabelList;
 }
 
+export type ProductServings = { [key: string]: number };
+
 export interface ProductProperties extends ProductEssentials {
    code?: string | null;
-   servings: { [key: string]: number };
+   servings: ProductServings;
    defaultServing: string;
 }
 

@@ -1,13 +1,13 @@
 import { RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack/lib/typescript/src/types';
-import cuid from 'cuid';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductProperties } from 'src/types';
-import ProductEditor from './components/ProductEditor/ProductEditor';
-import { initialize } from './reducer';
+import ProductEditor from './ProductEditor/ProductEditor';
+import { initialize } from '../reducer';
+import { emptyProduct } from '../data';
 
 type Props = {
    navigation: NativeStackNavigationProp<RootNavigatorParamList>;
@@ -26,7 +26,7 @@ export default function CreateProduct({
       dispatch(initialize({ mode: 'create' }));
    }, []);
 
-   const form = useForm<ProductProperties>({ defaultValues: initialValue });
+   const form = useForm<ProductProperties>({ defaultValues: { ...emptyProduct, ...initialValue } });
 
    return <ProductEditor form={form} />;
 }

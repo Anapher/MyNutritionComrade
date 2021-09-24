@@ -8,7 +8,7 @@ import { SettingsSection } from 'src/components/Settings/SettingsList';
 import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
 import { TagLiquid } from 'src/consts';
 import { ProductProperties } from 'src/types';
-import { nutritionalInfo } from '../data';
+import { nutritionalInfo } from '../../data';
 
 export default function ProductNutritionalValuesSection({
    control,

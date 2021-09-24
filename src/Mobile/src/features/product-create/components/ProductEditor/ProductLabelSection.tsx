@@ -8,11 +8,11 @@ import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
 import { RootNavigatorParamList } from 'src/RootNavigator';
-import { ProductEssentials, ProductLabel } from 'src/types';
+import { ProductLabel, ProductProperties } from 'src/types';
 
 const supportedLanguages = ['de', 'en'];
 
-export default function ProductLabelSection({ setValue, watch }: UseFormReturn<ProductEssentials>): SettingsSection {
+export default function ProductLabelSection({ setValue, watch }: UseFormReturn<ProductProperties>): SettingsSection {
    const theme = useTheme();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const label = watch('label');

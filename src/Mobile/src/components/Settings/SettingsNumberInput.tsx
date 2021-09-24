@@ -12,6 +12,7 @@ type Props = SettingsButtonContainerProps & {
    onChangeValue: (v: number | undefined) => void;
    placeholder?: string;
    inputProps?: Omit<React.ComponentProps<typeof TextInput>, 'value'>;
+   rightAction?: React.ReactElement;
 };
 
 export default function SettingsNumberInput({
@@ -21,6 +22,7 @@ export default function SettingsNumberInput({
    placeholder,
    inputProps,
    titleStyle,
+   rightAction,
    ...props
 }: Props) {
    return (
@@ -28,12 +30,13 @@ export default function SettingsNumberInput({
          <View style={styles.container}>
             <Text style={[styles.title, titleStyle]}>{title}</Text>
             <NumberTextInput
-               style={styles.numberInput}
                value={value}
                onChangeValue={onChangeValue}
                placeholder={placeholder}
                {...inputProps}
+               style={[styles.numberInput, inputProps?.style]}
             />
+            {rightAction}
          </View>
       </SettingsButtonContainer>
    );

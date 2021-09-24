@@ -8,7 +8,7 @@ import { Appbar, IconButton } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
 import AddProduct from './features/product-add/components/AddProduct';
-import CreateProduct from './features/product-create/CreateProduct';
+import CreateProduct from './features/product-create/components/CreateProduct';
 import ProductNotFound from './features/product-create/components/ProductNotFound';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
@@ -21,9 +21,11 @@ import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/se
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
 import { ProductSearchConfig } from './services/search-engine/types';
-import { FoodPortion, Product, ProductLabel, ProductProperties } from './types';
+import { FoodPortion, Product, ProductLabel, ProductProperties, ProductServings } from './types';
 import { ProductLabelViewModel } from './features/product-create/types';
 import AddLabelScreen from './features/product-create/components/AddLabelScreen';
+import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
+import { UseFormReturn } from 'react-hook-form';
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +82,9 @@ export type RootNavigatorParamList = {
       onDelete?: () => void;
       mode: 'create' | 'change';
       onSubmit: (label: ProductLabelViewModel) => void;
+   };
+   ProductEditorServings: {
+      form: UseFormReturn<ProductProperties>;
    };
 };
 
@@ -152,6 +157,7 @@ export default function RootNavigator() {
             options={{ headerTitle: t('create_product.title') }}
          />
          <Stack.Screen name="ProductEditorAddLabel" component={AddLabelScreen} />
+         <Stack.Screen name="ProductEditorServings" component={ConfigureServingsScreen} />
       </Stack.Navigator>
    );
 }
