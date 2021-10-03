@@ -20,10 +20,6 @@
     <ProjectReference Include="..\CommunityCatalog.Core\CommunityCatalog.Core.csproj" />
     <ProjectReference Include="..\CommunityCatalog.Infrastructure\CommunityCatalog.Infrastructure.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Response\" />
-  </ItemGroup>
 	
 	<Import Project="../language.props" />
 </Project>

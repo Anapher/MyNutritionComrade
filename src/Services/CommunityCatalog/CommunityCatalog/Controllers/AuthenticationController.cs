@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CommunityCatalog.Core.Requests;
 using CommunityCatalog.Extensions;
 using CommunityCatalog.Models.Request;
+using CommunityCatalog.Models.Response;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,21 @@ namespace CommunityCatalog.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Login([FromBody] LoginRequestDto dto)
+        {
+            try
+            {
+                var result = await _mediator.Send(new LoginRequest(dto.EmailAddress, dto.Password));
+                return Ok(new LoginResponseDto(result));
+            }
+            catch (Exception e)
+            {
+                return e.ToError().ToActionResult();
+            }
         }
     }
 }

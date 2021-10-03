@@ -15,15 +15,13 @@ namespace CommunityCatalog.Core.UseCases
     public class LoginRequestPasswordUseCase : IRequestHandler<LoginRequestPasswordRequest>
     {
         private readonly IEmailSender _emailSender;
-        private readonly IEmailBlacklist _blacklist;
         private readonly IPasswordHandler _passwordHandler;
         private readonly IdentityOptions _options;
 
-        public LoginRequestPasswordUseCase(IEmailSender emailSender, IEmailBlacklist blacklist,
-            IPasswordHandler passwordHandler, IOptions<IdentityOptions> options)
+        public LoginRequestPasswordUseCase(IEmailSender emailSender, IPasswordHandler passwordHandler,
+            IOptions<IdentityOptions> options)
         {
             _emailSender = emailSender;
-            _blacklist = blacklist;
             _passwordHandler = passwordHandler;
             _options = options.Value;
         }
@@ -34,9 +32,6 @@ namespace CommunityCatalog.Core.UseCases
                 throw new FieldValidationError("The email address must not be empty",
                     ErrorCode.FieldValidation.ToString()).ToException();
 
-            var emailHashBytes = _passwordHandler.GetSaltedEmailHash(request.EmailAddress);
-            await CheckEmailAddressBanned(emailHashBytes);
-
             var passwordToken = _passwordHandler.GeneratePassword(request.EmailAddress,
                 TimeSpan.FromHours(_options.PasswordValidForHours));
 
@@ -44,13 +39,6 @@ namespace CommunityCatalog.Core.UseCases
             await _emailSender.SendPasswordToEmail(request.EmailAddress, passwordTokenString);
 
             return Unit.Value;
-        }
-
-        private async Task CheckEmailAddressBanned(byte[] hashBytes)
-        {
-            var emailHash = Base64UrlEncoder.Encode(hashBytes);
-            if (!await _blacklist.CheckEmailAddressOkay(emailHash))
-                throw ProductError.EmailAddressBanned().ToException();
         }
     }
 }
