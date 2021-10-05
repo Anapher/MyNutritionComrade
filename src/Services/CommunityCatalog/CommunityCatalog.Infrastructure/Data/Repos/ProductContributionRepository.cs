@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
 using CommunityCatalog.Core.Domain;
 using CommunityCatalog.Core.Gateways.Repos;
+using CommunityCatalog.Infrastructure.Serialization;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using MyNutritionComrade.Models;
 
 namespace CommunityCatalog.Infrastructure.Data.Repos
 {
@@ -12,6 +14,8 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
     {
         static ProductContributionRepository()
         {
+            BsonSerializer.RegisterSerializer(typeof(ServingType), new ServingTypeBsonSerializer());
+
             BsonClassMap.RegisterClassMap<ProductContribution>(config =>
             {
                 config.AutoMap();
@@ -58,9 +62,7 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
                 new CreateIndexOptions<ProductContribution>
                 {
                     Unique = true,
-                    PartialFilterExpression =
-                        Builders<ProductContribution>.Filter.Not(
-                            Builders<ProductContribution>.Filter.Eq(x => x.AppliedOnVersion, null)),
+                    PartialFilterExpression = Builders<ProductContribution>.Filter.Gte(x => x.AppliedOnVersion, 0),
                 }));
         }
     }

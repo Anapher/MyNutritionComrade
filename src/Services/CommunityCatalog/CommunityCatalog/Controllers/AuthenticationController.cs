@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityCatalog.Controllers
 {
+    [ApiController]
     [Route("api/v1/[controller]")]
     public class AuthenticationController : Controller
     {

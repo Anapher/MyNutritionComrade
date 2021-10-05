@@ -42,12 +42,12 @@ namespace CommunityCatalog.Core.Extensions
         public static ProductProperties ApplyPatchToProduct(IReadOnlyList<Operation> operations,
             ProductProperties product)
         {
-            var patch = new JsonPatchDocument(operations.ToList(), JsonOptions.Default.ContractResolver);
-            var copy = JToken.FromObject(product, JsonOptions.DefaultSerializer);
+            var patch = new JsonPatchDocument(operations.ToList(), JsonConfig.Default.ContractResolver);
+            var copy = JToken.FromObject(product, JsonConfig.DefaultSerializer);
 
             patch.ApplyToWithDefaultOptions(copy);
 
-            return copy.ToObject<ProductProperties>(JsonOptions.DefaultSerializer) ??
+            return copy.ToObject<ProductProperties>(JsonConfig.DefaultSerializer) ??
                    throw new InvalidOperationException("Invalid patch");
         }
     }

@@ -7,7 +7,7 @@ namespace CommunityCatalog.Core
     {
         public static Error InvalidPassword()
         {
-            return NotFound("The password you submitted is invalid.", NutritionComradeErrorCode.Auth_InvalidPassword);
+            return BadRequest("The password you submitted is invalid.", NutritionComradeErrorCode.Auth_InvalidPassword);
         }
     }
 }

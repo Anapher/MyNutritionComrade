@@ -8,23 +8,24 @@ namespace CommunityCatalog.Core.Domain
 {
     public record ProductContribution(string Id, string UserId, string ProductId, string PatchHash,
         ProductContributionStatus Status, string? StatusDescription, int? AppliedOnVersion,
-        IReadOnlyList<Operation> Operations, DateTimeOffset CreatedOn)
+        IReadOnlyList<Operation>? UndoOperations, IReadOnlyList<Operation> Operations, DateTimeOffset CreatedOn)
     {
         public static ProductContribution Create(string userId, string productId, IReadOnlyList<Operation> operations)
         {
             var patchHash = HashUtils.GetMd5ForObject(operations.OrderBy(x => x.path).ThenBy(x => x.op));
 
             return new ProductContribution(string.Empty, userId, productId, patchHash,
-                ProductContributionStatus.Pending, null, null, operations, DateTimeOffset.UtcNow);
+                ProductContributionStatus.Pending, null, null, null, operations, DateTimeOffset.UtcNow);
         }
 
-        public ProductContribution Applied(int version, string? description)
+        public ProductContribution Applied(int version, string? description, IReadOnlyList<Operation> undoOperations)
         {
             return this with
             {
                 AppliedOnVersion = version,
                 Status = ProductContributionStatus.Applied,
                 StatusDescription = description,
+                UndoOperations = undoOperations,
             };
         }
 

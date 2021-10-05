@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
 
+using System.Linq;
 using FluentValidation;
 using MyNutritionComrade.Models.Extensions;
 
@@ -20,9 +21,10 @@ namespace MyNutritionComrade.Models.Validation
                 labels.RuleFor(x => x.Value.Tags).UniqueItems();
                 labels.RuleFor(x => x.Key).NotEmpty().IsCulture();
             });
-            RuleForEach(x => x.Tags.Keys).OneOf(ProductProperties.AllowedTags);
-            RuleFor(x => x.Tags.Keys).UniqueItems();
-            RuleForEach(x => x.Tags.Values).Equal(true);
+
+            RuleFor(x => x.Tags).Must(x => x == null || x.Keys.All(ProductProperties.AllowedTags.Contains));
+            RuleFor(x => x.Tags).Must(x => x == null || x.Values.All(v => v));
+
             RuleFor(x => x.Servings).NotEmpty();
             RuleForEach(x => x.Servings).ChildRules(serving =>
             {

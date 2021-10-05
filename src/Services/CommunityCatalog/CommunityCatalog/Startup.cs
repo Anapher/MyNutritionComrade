@@ -1,24 +1,41 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Autofac;
 using CommunityCatalog.Core;
+using CommunityCatalog.Core.Errors;
 using CommunityCatalog.Core.Gateways.Services;
 using CommunityCatalog.Core.Options;
 using CommunityCatalog.Infrastructure;
 using CommunityCatalog.Infrastructure.Auth;
 using CommunityCatalog.Infrastructure.Data;
 using CommunityCatalog.Infrastructure.Email;
+using CommunityCatalog.Services;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyNutritionComrade.Models.Validation;
 
 namespace CommunityCatalog
 {
+    public class TestEmailSender : IEmailSender
+    {
+        public Task SendPasswordToEmail(string receiverEmailAddress, string password)
+        {
+            return Task.CompletedTask;
+        }
+    }
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -38,6 +55,9 @@ namespace CommunityCatalog
             services.Configure<AuthSettings>(Configuration.GetSection("AuthSettings"));
             services.Configure<JwtIssuerOptions>(Configuration.GetSection("JwtIssuerOptions"));
             services.Configure<IdentityOptions>(Configuration.GetSection("IdentityOptions"));
+            services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDb"));
+
+            services.AddSingleton<IEmailSender, TestEmailSender>();
 
             var jwtIssuerOptions = new JwtIssuerOptions();
             Configuration.GetSection("JwtIssuerOptions").Bind(jwtIssuerOptions);
@@ -68,10 +88,27 @@ namespace CommunityCatalog
                 configureOptions.SaveToken = true;
             });
 
-            // MongoDB
-            services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDb"));
+            services.AddMvc().ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<IMvcBuilder>>();
 
-            services.AddControllers();
+                    var error = new FieldValidationError(context.ModelState
+                        .Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
+                        .ToDictionary(x => x.Key, x => x.Value.Errors.First().ErrorMessage));
+
+                    logger.LogDebug("Invalid Model State: {@error}", error);
+                    return new BadRequestObjectResult(error);
+                };
+            }).AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+                fv.RegisterValidatorsFromAssemblyContaining<ProductValidator>();
+            }).AddNewtonsoftJson(x => JsonConfig.Apply(x.SerializerSettings));
+
+            services.AddHostedService<MongoDbBuilder>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CommunityCatalog", Version = "v1" });
@@ -99,6 +136,8 @@ namespace CommunityCatalog
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CommunityCatalog v1"));
             }
+
+            app.UseAuthentication();
 
             app.UseRouting();
 

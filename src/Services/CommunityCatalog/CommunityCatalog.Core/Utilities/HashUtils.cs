@@ -9,7 +9,7 @@ namespace CommunityCatalog.Core.Utilities
     {
         public static string GetMd5ForObject(object o)
         {
-            var json = JsonConvert.SerializeObject(o, JsonOptions.Default);
+            var json = JsonConvert.SerializeObject(o, JsonConfig.Default);
             var data = Encoding.UTF8.GetBytes(json);
 
             using var md5 = MD5.Create();

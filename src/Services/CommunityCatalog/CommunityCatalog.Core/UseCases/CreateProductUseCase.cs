@@ -14,11 +14,14 @@ namespace CommunityCatalog.Core.UseCases
 {
     public class CreateProductUseCase : IRequestHandler<CreateProductRequest, CreateProductResponse>
     {
-        private readonly IProductRepository _repository;
+        private readonly IProductRepository _productRepository;
+        private readonly IProductContributionRepository _contributionRepository;
 
-        public CreateProductUseCase(IProductRepository repository)
+        public CreateProductUseCase(IProductRepository productRepository,
+            IProductContributionRepository contributionRepository)
         {
-            _repository = repository;
+            _productRepository = productRepository;
+            _contributionRepository = contributionRepository;
         }
 
         public async Task<CreateProductResponse> Handle(CreateProductRequest request,
@@ -29,12 +32,14 @@ namespace CommunityCatalog.Core.UseCases
             var version = 1;
             var product = MapProductPropertiesToEntity(productProperties, version);
 
-            await _repository.Add(product);
+            await _productRepository.Add(product);
 
             var contribution = ProductContribution.Create(userId, product.Id, ImmutableList<Operation>.Empty)
-                .Applied(version, "Create product");
+                .Applied(version, "Create product", ImmutableList<Operation>.Empty);
 
-            throw new NotImplementedException();
+            await _contributionRepository.Add(contribution);
+
+            return new CreateProductResponse(product.Id);
         }
 
         private static VersionedProduct MapProductPropertiesToEntity(ProductProperties properties, int version)

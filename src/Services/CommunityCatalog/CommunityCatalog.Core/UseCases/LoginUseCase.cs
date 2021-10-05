@@ -38,7 +38,7 @@ namespace CommunityCatalog.Core.UseCases
             }
 
             var emailHash = _passwordHandler.GetSaltedEmailHash(request.EmailAddress);
-            var token = _jwtFactory.GenerateEncodedToken(Base64UrlEncoder.Encode(emailHash));
+            var token = _jwtFactory.GenerateEncodedToken(Base64UrlEncoder.Encode(emailHash), false);
             return token;
         }
     }

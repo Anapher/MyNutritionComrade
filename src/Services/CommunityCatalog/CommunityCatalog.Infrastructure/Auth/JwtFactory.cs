@@ -24,7 +24,7 @@ namespace CommunityCatalog.Infrastructure.Auth
             ThrowIfInvalidOptions(_jwtOptions);
         }
 
-        public async Task<string> GenerateEncodedToken(string email)
+        public async Task<string> GenerateEncodedToken(string email, bool isAdmin)
         {
             var claims = new[]
             {
@@ -32,7 +32,8 @@ namespace CommunityCatalog.Infrastructure.Auth
                 new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                 new Claim(JwtRegisteredClaimNames.Iat, _jwtOptions.IssuedAt.ToUnixTimeSeconds().ToString(),
                     ClaimValueTypes.Integer64),
-                new Claim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess),
+                new Claim(Constants.Strings.JwtClaimIdentifiers.Rol,
+                    isAdmin ? Constants.Strings.JwtRoles.Admin : Constants.Strings.JwtRoles.User),
             };
 
             // Create the JWT security token and encode it.

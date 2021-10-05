@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace CommunityCatalog.Core
 {
-    public static class JsonOptions
+    public static class JsonConfig
     {
         public static JsonSerializerSettings Default
         {

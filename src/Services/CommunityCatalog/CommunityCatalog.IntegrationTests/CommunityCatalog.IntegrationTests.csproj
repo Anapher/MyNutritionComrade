@@ -31,4 +31,5 @@
 		<EmbeddedResource Include="appsettings.IntegrationTest.json" />
 	</ItemGroup>
 
+	<Import Project="../language.props" />
 </Project>

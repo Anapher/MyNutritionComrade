@@ -28,7 +28,7 @@ namespace CommunityCatalog.Core.Tests.Extensions
         {
             // arrange
             var document = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
-                JsonOptions.Default.ContractResolver);
+                JsonConfig.Default.ContractResolver);
             document.Add(x => x.NutritionalInfo.Fat, 20);
             document.Add(x => x.NutritionalInfo.Protein, 18);
 
@@ -45,7 +45,7 @@ namespace CommunityCatalog.Core.Tests.Extensions
         {
             // arrange
             var document = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
-                JsonOptions.Default.ContractResolver);
+                JsonConfig.Default.ContractResolver);
             document.Add(x => x.NutritionalInfo.Fat, 20);
             document.Add(x => x.Code, "hello world");
             document.Add(x => x.DefaultServing, ServingType.Bottle);
@@ -62,7 +62,7 @@ namespace CommunityCatalog.Core.Tests.Extensions
         {
             // arrange
             var document = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
-                JsonOptions.Default.ContractResolver);
+                JsonConfig.Default.ContractResolver);
             document.Add(x => x.Tags![ProductProperties.TAG_LIQUID], true);
             document.Add(x => x.Servings[ServingType.Milliliter], 1);
             document.Remove(x => x.Servings[ServingType.Gram]);

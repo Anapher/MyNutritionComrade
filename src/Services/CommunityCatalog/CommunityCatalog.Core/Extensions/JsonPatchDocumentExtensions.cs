@@ -7,7 +7,7 @@ namespace CommunityCatalog.Core.Extensions
     {
         public static void ApplyToWithDefaultOptions(this JsonPatchDocument document, object target)
         {
-            document.ApplyTo(target, new ObjectAdapter(JsonOptions.Default.ContractResolver, error => { }));
+            document.ApplyTo(target, new ObjectAdapter(JsonConfig.Default.ContractResolver, error => { }));
         }
     }
 }
