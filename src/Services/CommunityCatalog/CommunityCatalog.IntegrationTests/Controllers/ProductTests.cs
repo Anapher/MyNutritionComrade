@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CommunityCatalog.IntegrationTests._Helpers;
 using CommunityCatalog.IntegrationTests.Extensions;
 using MyNutritionComrade.Models;
+using MyNutritionComrade.Models.Index;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,7 +42,7 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             // act
             var response = await Client.PostAsync("api/v1/product", JsonNetContent.Create(product));
 
-            // arrange
+            // assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -55,8 +57,42 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             // act
             var response = await Client.PostAsync("api/v1/product", JsonNetContent.Create(product));
 
-            // arrange
+            // assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetIndexFile_NotAuthenticated_ReturnNonEmptyUrl()
+        {
+            // act
+            var response = await Client.GetAsync("api/v1/product/index.json");
+
+            // assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var result = await response.Content.ReadFromJsonAsync<IReadOnlyList<RepositoryReference>>();
+            var repository = Assert.Single(result);
+
+            Assert.NotNull(repository.Url);
+        }
+
+        [Fact]
+        public async Task GetIndexFile_NotAuthenticated_ReturnValidUrl()
+        {
+            // arrange
+            var response = await Client.GetAsync("api/v1/product/index.json");
+            var result = await response.EnsureSuccessStatusCode().Content
+                .ReadFromJsonAsync<IReadOnlyList<RepositoryReference>>();
+            var repository = Assert.Single(result);
+
+            // act
+            response = await Client.GetAsync(repository.Url);
+
+            // assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var products = await response.Content.ReadFromJsonNetAsync<IReadOnlyList<Product>>();
+            Assert.NotNull(products);
         }
     }
 }

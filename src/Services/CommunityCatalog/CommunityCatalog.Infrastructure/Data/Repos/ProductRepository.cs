@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommunityCatalog.Core.Domain;
 using CommunityCatalog.Core.Gateways.Repos;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using MyNutritionComrade.Models;
 
 namespace CommunityCatalog.Infrastructure.Data.Repos
@@ -37,6 +40,26 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
         public async ValueTask<VersionedProduct?> FindById(string productId)
         {
             return await Collection.Find(x => x.Id == productId).FirstOrDefaultAsync();
+        }
+
+        public async ValueTask<DateTimeOffset?> GetLatestProductChange()
+        {
+            try
+            {
+                return await Collection.AsQueryable().MinAsync(x => x.ModifiedOn);
+            }
+            catch (InvalidOperationException)
+            {
+                if (await Collection.AsQueryable().CountAsync() == 0)
+                    return null;
+
+                throw;
+            }
+        }
+
+        public async ValueTask<IReadOnlyList<Product>> GetAll()
+        {
+            return await Collection.AsQueryable().ToListAsync();
         }
     }
 }
