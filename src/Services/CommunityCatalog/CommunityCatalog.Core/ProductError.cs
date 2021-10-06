@@ -47,5 +47,13 @@ namespace CommunityCatalog.Core
         {
             return InternalServerError("An unexpected error occurred.", NutritionComradeErrorCode.UnexpectedError);
         }
+
+        public static Error ProductWithEqualCodeAlreadyExists(string code, string existingProductId)
+        {
+            return BadRequest(
+                "A product with an equal product code already exists. Please note that the product code must be unique.",
+                NutritionComradeErrorCode.ProductCodeAlreadyExists,
+                new Dictionary<string, string> { { "code", code }, { "productId", existingProductId } });
+        }
     }
 }

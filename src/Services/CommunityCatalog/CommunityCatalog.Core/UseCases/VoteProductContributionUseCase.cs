@@ -34,7 +34,7 @@ namespace CommunityCatalog.Core.UseCases
             if (productContribution.UserId == userId)
                 throw ProductError.ProductContributionCreatorCannotVote().ToException();
 
-            await CreateVote(userId, contributionId, approve);
+            await CreateVote(userId, contributionId, productContribution.ProductId, approve);
 
             try
             {
@@ -51,9 +51,9 @@ namespace CommunityCatalog.Core.UseCases
             return Unit.Value;
         }
 
-        private async Task CreateVote(string userId, string contributionId, bool approve)
+        private async Task CreateVote(string userId, string contributionId, string productId, bool approve)
         {
-            var vote = new ProductContributionVote(userId, string.Empty, approve, DateTimeOffset.UtcNow);
+            var vote = new ProductContributionVote(userId, contributionId, productId, approve, DateTimeOffset.UtcNow);
             try
             {
                 await _voteRepository.Add(vote);

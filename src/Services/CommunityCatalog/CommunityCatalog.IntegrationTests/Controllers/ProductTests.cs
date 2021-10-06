@@ -2,8 +2,11 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using CommunityCatalog.Core;
+using CommunityCatalog.Core.Response;
 using CommunityCatalog.IntegrationTests._Helpers;
 using CommunityCatalog.IntegrationTests.Extensions;
+using CommunityCatalog.Models.Response;
 using MyNutritionComrade.Models;
 using MyNutritionComrade.Models.Index;
 using Xunit;
@@ -44,6 +47,9 @@ namespace CommunityCatalog.IntegrationTests.Controllers
 
             // assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var dto = await response.Content.ReadFromJsonNetAsync<ProductCreatedDto>();
+            Assert.NotNull(dto?.ProductId);
         }
 
         [Fact]
@@ -59,6 +65,27 @@ namespace CommunityCatalog.IntegrationTests.Controllers
 
             // assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Create_TwoProductsWithEqualCode_SecondCreateFails()
+        {
+            var product = TestValues.TestProduct with { Code = "123" };
+
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            await Api.CreateProduct(Client, product);
+
+            // act
+            var ex = await Assert.ThrowsAnyAsync<IdErrorException>(async () =>
+                await Api.CreateProduct(Client, product));
+            Assert.Equal(NutritionComradeErrorCode.ProductCodeAlreadyExists.ToString(), ex.Error.Code);
+
+            // assert
+            var products = await Api.GetAllProducts(Client);
+            var existingProduct = Assert.Single(products);
+
+            AssertHelper.AssertObjectsEqualJson(product, existingProduct);
         }
 
         [Fact]
@@ -79,20 +106,41 @@ namespace CommunityCatalog.IntegrationTests.Controllers
         [Fact]
         public async Task GetIndexFile_NotAuthenticated_ReturnValidUrl()
         {
+            var products = await Api.GetAllProducts(Client);
+            Assert.Empty(products);
+        }
+
+        private async Task<string> CreateProduct(ProductProperties? product = null)
+        {
             // arrange
-            var response = await Client.GetAsync("api/v1/product/index.json");
-            var result = await response.EnsureSuccessStatusCode().Content
-                .ReadFromJsonAsync<IReadOnlyList<RepositoryReference>>();
-            var repository = Assert.Single(result);
+            product ??= TestValues.TestProduct;
 
             // act
-            response = await Client.GetAsync(repository.Url);
+            var response = await Client.PostAsync("api/v1/product", JsonNetContent.Create(product));
 
             // assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var products = await response.Content.ReadFromJsonNetAsync<IReadOnlyList<Product>>();
-            Assert.NotNull(products);
+            var dto = await response.Content.ReadFromJsonNetAsync<ProductCreatedDto>();
+            Assert.NotNull(dto?.ProductId);
+
+            return dto?.ProductId!;
+        }
+
+        [Fact]
+        public async Task GetProductContributions_NewProduct_SingleContribution()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await CreateProduct();
+
+            // act
+            var response = await Client.GetAsync($"api/v1/product/{productId}/contributions");
+
+            // assert
+            var result = await response.EnsureSuccessStatusCode().Content
+                .ReadFromJsonNetAsync<IReadOnlyList<ProductContributionDto>>();
+            Assert.Single(result);
         }
     }
 }

@@ -4,6 +4,7 @@ using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Infrastructure.Serialization;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using MyNutritionComrade.Models;
 
@@ -19,7 +20,7 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
             BsonClassMap.RegisterClassMap<ProductContribution>(config =>
             {
                 config.AutoMap();
-                config.MapIdMember(x => x.Id);
+                config.MapIdMember(x => x.Id).SetIdGenerator(new StringObjectIdGenerator());
             });
         }
 

@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Requests;
+using CommunityCatalog.Core.Response;
 using CommunityCatalog.Extensions;
 using CommunityCatalog.Models.Response;
+using CommunityCatalog.Selectors;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using MyNutritionComrade.Models;
 using MyNutritionComrade.Models.Index;
@@ -33,6 +36,63 @@ namespace CommunityCatalog.Controllers
                 var userId = User.GetUserId();
                 var result = await _mediator.Send(new CreateProductRequest(userId, dto));
                 return Ok(new ProductCreatedDto(result.Id));
+            }
+            catch (Exception e)
+            {
+                return e.ToError().ToActionResult();
+            }
+        }
+
+        [HttpPatch("{productId}/preview")]
+        [Authorize]
+        public async Task<ActionResult> PreviewPatchProduct([FromBody] IReadOnlyList<Operation> operations,
+            string productId)
+        {
+            try
+            {
+                var result =
+                    await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return e.ToError().ToActionResult();
+            }
+        }
+
+        [HttpPatch("{productId}")]
+        [Authorize]
+        public async Task<ActionResult> PatchProduct([FromBody] IReadOnlyList<Operation> operations, string productId)
+        {
+            try
+            {
+                var userId = User.GetUserId();
+                var groups =
+                    await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
+                foreach (var operationsGroup in groups)
+                {
+                    await _mediator.Send(new CreateProductContributionRequest(userId, productId, operationsGroup));
+                }
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return e.ToError().ToActionResult();
+            }
+        }
+
+        [HttpGet("{productId}/contributions")]
+        [Authorize]
+        public async Task<ActionResult<IReadOnlyList<ProductContributionDto>>> GetProductContributions(string productId,
+            [FromServices] IQueryProductContributionsSelector selector)
+        {
+            try
+            {
+                var userId = User.GetUserId();
+                var result = await selector.GetContributions(productId, userId, null);
+
+                return Ok(result);
             }
             catch (Exception e)
             {

@@ -1,4 +1,5 @@
-﻿using CommunityCatalog.Core.Gateways.Services;
+﻿using System;
+using CommunityCatalog.Core.Gateways.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -51,6 +52,12 @@ namespace CommunityCatalog.IntegrationTests
                     "appsettings.IntegrationTest.json", false, false).Build();
 
             configuration["MongoDb:ConnectionString"] = _mongoDb.Runner.ConnectionString;
+            configuration["MongoDb:CollectionNames:VersionedProduct"] = "Product-" + Guid.NewGuid().ToString("N");
+            configuration["MongoDb:CollectionNames:ProductContribution"] =
+                "ProductContribution-" + Guid.NewGuid().ToString("N");
+            configuration["MongoDb:CollectionNames:ProductContributionVote"] =
+                "ProductContributionVote-" + Guid.NewGuid().ToString("N");
+
             return configuration;
         }
     }

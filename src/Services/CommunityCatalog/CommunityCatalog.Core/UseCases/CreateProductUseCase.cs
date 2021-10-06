@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityCatalog.Core.Domain;
+using CommunityCatalog.Core.Extensions;
 using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Requests;
 using CommunityCatalog.Core.Response;
@@ -32,7 +33,22 @@ namespace CommunityCatalog.Core.UseCases
             var version = 1;
             var product = MapProductPropertiesToEntity(productProperties, version);
 
-            await _productRepository.Add(product);
+            try
+            {
+                await _productRepository.Add(product);
+            }
+            catch (Exception)
+            {
+                if (product.Code != null)
+                {
+                    var existingProduct = await _productRepository.FindByCode(product.Code);
+                    if (existingProduct != null)
+                        throw ProductError.ProductWithEqualCodeAlreadyExists(product.Code, existingProduct.Id)
+                            .ToException();
+                }
+
+                throw;
+            }
 
             var contribution = ProductContribution.Create(userId, product.Id, ImmutableList<Operation>.Empty)
                 .Applied(version, "Create product", ImmutableList<Operation>.Empty);

@@ -115,6 +115,8 @@ namespace CommunityCatalog
             });
 
             services.AddSingleton<IEmailBlacklist, NoopBlacklist>();
+
+            services.AddAutoMapper(typeof(PresentationMappingProfile).Assembly);
         }
 
         // ConfigureContainer is where you can register things directly
@@ -125,6 +127,7 @@ namespace CommunityCatalog
         {
             builder.RegisterModule(new CoreModule());
             builder.RegisterModule(new InfrastructureModule());
+            builder.RegisterModule(new PresentationModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -12,6 +12,8 @@ namespace CommunityCatalog.Core.Gateways.Repos
 
         ValueTask<VersionedProduct?> FindById(string productId);
 
+        ValueTask<VersionedProduct?> FindByCode(string code);
+
         ValueTask<DateTimeOffset?> GetLatestProductChange();
 
         ValueTask<IReadOnlyList<Product>> GetAll();

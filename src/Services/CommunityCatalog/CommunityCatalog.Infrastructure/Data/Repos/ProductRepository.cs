@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityCatalog.Core.Domain;
 using CommunityCatalog.Core.Gateways.Repos;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -26,12 +27,6 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
         {
         }
 
-        public async Task CreateIndexes()
-        {
-            await Collection.Indexes.CreateOneAsync(new CreateIndexModel<VersionedProduct>(
-                Builders<VersionedProduct>.IndexKeys.Ascending(x => x.Code), new CreateIndexOptions { Unique = true }));
-        }
-
         public async ValueTask Add(VersionedProduct product)
         {
             await Collection.InsertOneAsync(product);
@@ -40,6 +35,11 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
         public async ValueTask<VersionedProduct?> FindById(string productId)
         {
             return await Collection.Find(x => x.Id == productId).FirstOrDefaultAsync();
+        }
+
+        public async ValueTask<VersionedProduct?> FindByCode(string code)
+        {
+            return await Collection.Find(x => x.Code == code).FirstOrDefaultAsync();
         }
 
         public async ValueTask<DateTimeOffset?> GetLatestProductChange()
@@ -60,6 +60,17 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
         public async ValueTask<IReadOnlyList<Product>> GetAll()
         {
             return await Collection.AsQueryable().ToListAsync();
+        }
+
+        public async Task CreateIndexes()
+        {
+            await Collection.Indexes.CreateOneAsync(new CreateIndexModel<VersionedProduct>(
+                Builders<VersionedProduct>.IndexKeys.Ascending(x => x.Code),
+                new CreateIndexOptions<VersionedProduct>
+                {
+                    Unique = true,
+                    PartialFilterExpression = Builders<VersionedProduct>.Filter.Type(x => x.Code, BsonType.String),
+                }));
         }
     }
 }

@@ -8,6 +8,7 @@
         ProductContributionInvalidStatus,
         ProductContributionCreatorCannotVote,
         ProductContributionAlreadyVoted,
+        ProductCodeAlreadyExists,
         UnexpectedError,
 
         Auth_InvalidPassword,

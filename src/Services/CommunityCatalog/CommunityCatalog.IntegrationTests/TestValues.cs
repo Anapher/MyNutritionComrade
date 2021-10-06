@@ -10,7 +10,7 @@ namespace CommunityCatalog.IntegrationTests
             new NutritionalInfo(100, 368, 7, 1.24, 58.7, 0.7, 13.5, 10.0, 0);
 
         public static ProductProperties TestProduct =>
-            new("1234",
+            new("123",
                 new Dictionary<string, ProductLabel>
                 {
                     { "de", new ProductLabel("Haferflocken", new[] { "Porridge" }) },
