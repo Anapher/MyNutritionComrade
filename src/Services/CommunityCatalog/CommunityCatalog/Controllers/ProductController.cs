@@ -5,6 +5,7 @@ using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Requests;
 using CommunityCatalog.Core.Response;
 using CommunityCatalog.Extensions;
+using CommunityCatalog.Models.Request;
 using CommunityCatalog.Models.Response;
 using CommunityCatalog.Selectors;
 using MediatR;
@@ -93,6 +94,24 @@ namespace CommunityCatalog.Controllers
                 var result = await selector.GetContributions(productId, userId, null);
 
                 return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return e.ToError().ToActionResult();
+            }
+        }
+
+        [HttpPost("{productId}/contributions/{contributionId}/vote")]
+        [Authorize]
+        public async Task<ActionResult<IReadOnlyList<ProductContributionDto>>> VoteContribution(string productId,
+            string contributionId, [FromBody] VoteContributionRequestDto request)
+        {
+            try
+            {
+                var userId = User.GetUserId();
+                await _mediator.Send(new VoteProductContributionRequest(userId, contributionId, request.Approve));
+
+                return Ok();
             }
             catch (Exception e)
             {

@@ -38,25 +38,35 @@ namespace CommunityCatalog.Selectors
                 query = query.Where(x => x.Status == status);
 
             var contributions = await query.ToListAsync();
-
-            var votes = await _contributionVoteCollection.AsQueryable().Where(x => x.ProductId == productId)
-                .GroupBy(x => x.ProductContributionId).Select(group =>
-                    new SelectedContributionStatistics(group.Key, group.Count(), group.Count(x => x.Approve)))
-                .ToListAsync();
-
-            var userVotes = await _contributionVoteCollection.AsQueryable()
-                .Where(x => x.ProductId == productId && x.UserId == userId).ToListAsync();
+            var voteStatistics = await GetContributionStatisticsOfProduct(productId);
+            var userVotes = await GetVotesOfUserForProductContributionsOfProduct(productId, userId);
 
             var result = new List<ProductContributionDto>();
             foreach (var contribution in contributions)
             {
-                var voting = votes.FirstOrDefault(x => x.Id == contribution.Id);
+                var voting = voteStatistics.FirstOrDefault(x => x.Id == contribution.Id);
                 var userVote = userVotes.FirstOrDefault(x => x.ProductContributionId == contribution.Id);
 
                 result.Add(MapContributionToDto(contribution, userId, voting, userVote));
             }
 
             return result;
+        }
+
+        private async Task<IReadOnlyList<SelectedContributionStatistics>> GetContributionStatisticsOfProduct(
+            string productId)
+        {
+            return await _contributionVoteCollection.AsQueryable().Where(x => x.ProductId == productId)
+                .GroupBy(x => x.ProductContributionId).Select(group =>
+                    new SelectedContributionStatistics(group.Key, group.Count(), group.Count(x => x.Approve)))
+                .ToListAsync();
+        }
+
+        private async Task<IReadOnlyList<ProductContributionVote>> GetVotesOfUserForProductContributionsOfProduct(
+            string productId, string userId)
+        {
+            return await _contributionVoteCollection.AsQueryable()
+                .Where(x => x.ProductId == productId && x.UserId == userId).ToListAsync();
         }
 
         private ProductContributionDto MapContributionToDto(ProductContribution contribution, string userId,

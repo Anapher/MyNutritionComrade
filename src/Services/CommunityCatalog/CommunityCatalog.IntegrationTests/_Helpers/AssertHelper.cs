@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using CommunityCatalog.Core;
+using CommunityCatalog.Core.Dto;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace CommunityCatalog.IntegrationTests._Helpers
@@ -19,6 +21,11 @@ namespace CommunityCatalog.IntegrationTests._Helpers
             t2 = JToken.FromObject(o2);
 
             Assert.Equal(t1.ToString(), t2.ToString());
+        }
+
+        public static void AssertErrorType(Error error, NutritionComradeErrorCode code)
+        {
+            Assert.Equal(code.ToString(), error.Code);
         }
     }
 }

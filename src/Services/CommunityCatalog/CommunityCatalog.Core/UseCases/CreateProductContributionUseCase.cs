@@ -36,7 +36,7 @@ namespace CommunityCatalog.Core.UseCases
                 if (existingContribution == null)
                     throw;
 
-                await _mediator.Send(new VoteProductContributionRequest(userId, contribution.Id, true));
+                await _mediator.Send(new VoteProductContributionRequest(userId, existingContribution.Id, true));
             }
 
             return Unit.Value;
