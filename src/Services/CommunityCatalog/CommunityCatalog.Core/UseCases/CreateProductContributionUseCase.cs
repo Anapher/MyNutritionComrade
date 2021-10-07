@@ -7,7 +7,7 @@ using MediatR;
 
 namespace CommunityCatalog.Core.UseCases
 {
-    public class CreateProductContributionUseCase : IRequestHandler<CreateProductContributionRequest>
+    public class CreateProductContributionUseCase : IRequestHandler<CreateProductContributionRequest, string>
     {
         private readonly IMediator _mediator;
         private readonly IProductContributionRepository _productContributionRepository;
@@ -19,7 +19,7 @@ namespace CommunityCatalog.Core.UseCases
             _productContributionRepository = productContributionRepository;
         }
 
-        public async Task<Unit> Handle(CreateProductContributionRequest request, CancellationToken cancellationToken)
+        public async Task<string> Handle(CreateProductContributionRequest request, CancellationToken cancellationToken)
         {
             var (userId, productId, changes) = request;
 
@@ -27,6 +27,7 @@ namespace CommunityCatalog.Core.UseCases
             try
             {
                 await _productContributionRepository.Add(contribution);
+                return contribution.Id;
             }
             catch
             {
@@ -37,9 +38,8 @@ namespace CommunityCatalog.Core.UseCases
                     throw;
 
                 await _mediator.Send(new VoteProductContributionRequest(userId, existingContribution.Id, true));
+                return existingContribution.Id;
             }
-
-            return Unit.Value;
         }
     }
 }

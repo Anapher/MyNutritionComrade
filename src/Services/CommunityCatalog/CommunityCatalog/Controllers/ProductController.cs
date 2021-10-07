@@ -63,19 +63,23 @@ namespace CommunityCatalog.Controllers
 
         [HttpPatch("{productId}")]
         [Authorize]
-        public async Task<ActionResult> PatchProduct([FromBody] IReadOnlyList<Operation> operations, string productId)
+        public async Task<ActionResult<IReadOnlyList<string>>> PatchProduct(
+            [FromBody] IReadOnlyList<Operation> operations, string productId)
         {
             try
             {
                 var userId = User.GetUserId();
                 var groups =
                     await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
+
+                var result = new List<string>();
                 foreach (var operationsGroup in groups)
                 {
-                    await _mediator.Send(new CreateProductContributionRequest(userId, productId, operationsGroup));
+                    result.Add(await _mediator.Send(
+                        new CreateProductContributionRequest(userId, productId, operationsGroup)));
                 }
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception e)
             {

@@ -13,7 +13,11 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
     {
         static ProductContributionVoteRepository()
         {
-            BsonClassMap.RegisterClassMap<ProductContributionVote>(config => config.AutoMap());
+            BsonClassMap.RegisterClassMap<ProductContributionVote>(config =>
+            {
+                config.AutoMap();
+                config.SetIgnoreExtraElements(true);
+            });
         }
 
         public ProductContributionVoteRepository(IOptions<MongoDbOptions> options) : base(options)

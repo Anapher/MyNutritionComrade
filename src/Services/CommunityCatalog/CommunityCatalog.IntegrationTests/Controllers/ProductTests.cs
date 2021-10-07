@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using CommunityCatalog.Core;
 using CommunityCatalog.Core.Domain;
+using CommunityCatalog.Core.Errors;
 using CommunityCatalog.Core.Response;
 using CommunityCatalog.IntegrationTests._Helpers;
 using CommunityCatalog.IntegrationTests.Extensions;
@@ -57,11 +58,10 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             await Factory.LoginAndSetupClient(Client);
 
             // act
-            await Api.CreateProduct(Client, product);
-            var response = await Client.PostAsync("api/v1/product", JsonNetContent.Create(product));
+            var ex = await Assert.ThrowsAsync<IdErrorException>(() => Api.CreateProduct(Client, product));
 
             // assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(ex.Error.Code, ErrorCode.FieldValidation.ToString());
         }
 
         [Fact]
@@ -194,11 +194,15 @@ namespace CommunityCatalog.IntegrationTests.Controllers
                 .Add(x => x.NutritionalInfo.Protein, 11);
 
             // act
-            await Api.PatchProduct(Client, productId, patch.Operations);
+            var createdIds = await Api.PatchProduct(Client, productId, patch.Operations);
 
             // assert
+            Assert.Equal(2, createdIds.Count);
+
             var contributions = await Api.GetProductContributions(Client, productId);
             Assert.Equal(3, contributions.Count);
+
+            Assert.All(createdIds, s => Assert.Contains(contributions, x => x.Id == s));
         }
 
         [Fact]
@@ -219,6 +223,51 @@ namespace CommunityCatalog.IntegrationTests.Controllers
 
             // assert
             AssertHelper.AssertErrorType(ex.Error, NutritionComradeErrorCode.ProductContributionCreatorCannotVote);
+        }
+
+        [Fact]
+        public async Task VoteContribution_IsCreator_ErrorCannotVote()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var createdContributions = await Api.PatchProduct(Client, productId, patch.Operations);
+            var contributionId = Assert.Single(createdContributions);
+
+            // act
+            var ex = await Assert.ThrowsAsync<IdErrorException>(() =>
+                Api.VoteProductContribution(Client, productId, contributionId, true));
+
+            // assert
+            AssertHelper.AssertErrorType(ex.Error, NutritionComradeErrorCode.ProductContributionCreatorCannotVote);
+        }
+
+        [Fact]
+        public async Task VoteContribution_IsOtherUser_AddVote()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+
+            await Factory.LoginAndSetupClient(Client);
+
+            // act
+            await Api.VoteProductContribution(Client, productId, contributionId, true);
+
+            // assert
+            var contributions = await Api.GetProductContributions(Client, productId);
+            var contribution = Assert.Single(contributions, x => x.Id == contributionId);
+            Assert.True(contribution.YourVote?.Approve);
+            Assert.Equal(new ProductContributionStatisticsDto(1, 1), contribution.Statistics);
         }
     }
 }

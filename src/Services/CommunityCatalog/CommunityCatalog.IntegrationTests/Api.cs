@@ -9,6 +9,7 @@ using CommunityCatalog.Core.Dto;
 using CommunityCatalog.Core.Response;
 using CommunityCatalog.IntegrationTests._Helpers;
 using CommunityCatalog.IntegrationTests.Extensions;
+using CommunityCatalog.Models.Request;
 using CommunityCatalog.Models.Response;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using MyNutritionComrade.Models;
@@ -65,9 +66,21 @@ namespace CommunityCatalog.IntegrationTests
             return result;
         }
 
-        public static async Task PatchProduct(HttpClient client, string productId, IReadOnlyList<Operation> operations)
+        public static async Task<IReadOnlyList<string>> PatchProduct(HttpClient client, string productId,
+            IReadOnlyList<Operation> operations)
         {
             var response = await client.PatchAsync($"api/v1/product/{productId}", JsonNetContent.Create(operations));
+            await ThrowOnError(response);
+
+            return await response.Content.ReadFromJsonNetAsync<IReadOnlyList<string>>() ??
+                   throw new InvalidOperationException("Result must not be null");
+        }
+
+        public static async Task VoteProductContribution(HttpClient client, string productId, string contributionId,
+            bool approve)
+        {
+            var response = await client.PostAsync($"api/v1/product/{productId}/contributions/{contributionId}/vote",
+                JsonNetContent.Create(new VoteContributionRequestDto(approve)));
             await ThrowOnError(response);
         }
 
