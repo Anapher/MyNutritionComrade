@@ -4,16 +4,13 @@ using MongoDB.Driver;
 
 namespace CommunityCatalog.Infrastructure.Data
 {
-    public abstract class MongoRepo<T> : IRepository
+    public abstract class MongoRepo<T> : MongoDataClass, IRepository
     {
         protected readonly IMongoCollection<T> Collection;
-        protected readonly MongoClient MongoClient;
 
-        protected MongoRepo(IOptions<MongoDbOptions> options)
+        protected MongoRepo(IOptions<MongoDbOptions> options) : base(options)
         {
-            MongoClient = new MongoClient(options.Value.ConnectionString);
-            var database = MongoClient.GetDatabase(options.Value.DatabaseName);
-            Collection = database.GetCollection<T>(options.Value.CollectionNames[typeof(T).Name]);
+            Collection = GetCollection<T>();
         }
     }
 }

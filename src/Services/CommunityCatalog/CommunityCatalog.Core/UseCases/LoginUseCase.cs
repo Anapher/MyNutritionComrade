@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityCatalog.Core.Extensions;
+using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Gateways.Services;
 using CommunityCatalog.Core.Requests;
 using MediatR;
@@ -11,16 +12,18 @@ namespace CommunityCatalog.Core.UseCases
 {
     public class LoginUseCase : IRequestHandler<LoginRequest, string>
     {
-        private readonly IPasswordHandler _passwordHandler;
+        private readonly IAdminRepository _adminRepository;
         private readonly IJwtFactory _jwtFactory;
+        private readonly IPasswordHandler _passwordHandler;
 
-        public LoginUseCase(IPasswordHandler passwordHandler, IJwtFactory jwtFactory)
+        public LoginUseCase(IPasswordHandler passwordHandler, IJwtFactory jwtFactory, IAdminRepository adminRepository)
         {
             _passwordHandler = passwordHandler;
             _jwtFactory = jwtFactory;
+            _adminRepository = adminRepository;
         }
 
-        public Task<string> Handle(LoginRequest request, CancellationToken cancellationToken)
+        public async Task<string> Handle(LoginRequest request, CancellationToken cancellationToken)
         {
             byte[] decodedPassword;
             try
@@ -37,8 +40,10 @@ namespace CommunityCatalog.Core.UseCases
                 throw AuthError.InvalidPassword().ToException();
             }
 
+            var isAdmin = await _adminRepository.IsAdmin(request.EmailAddress);
+
             var emailHash = _passwordHandler.GetSaltedEmailHash(request.EmailAddress);
-            var token = _jwtFactory.GenerateEncodedToken(Base64UrlEncoder.Encode(emailHash), false);
+            var token = await _jwtFactory.GenerateEncodedToken(Base64UrlEncoder.Encode(emailHash), isAdmin);
             return token;
         }
     }

@@ -51,7 +51,7 @@ namespace CommunityCatalog.Core.UseCases
             }
 
             var contribution = ProductContribution.Create(userId, product.Id, ImmutableList<Operation>.Empty)
-                .Applied(version, "Create product", ImmutableList<Operation>.Empty);
+                .Initialized(version, "Create product");
 
             await _contributionRepository.Add(contribution);
 

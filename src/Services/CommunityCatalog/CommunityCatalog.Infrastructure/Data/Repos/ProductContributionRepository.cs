@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommunityCatalog.Core.Domain;
 using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Infrastructure.Serialization;
@@ -42,6 +44,21 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
         public async ValueTask<ProductContribution?> FindById(string id)
         {
             return await Collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async ValueTask<IReadOnlyList<ProductContribution>> GetActiveContributions(string productId)
+        {
+            return await Collection.Find(x => x.ProductId == productId && x.Status == ProductContributionStatus.Pending)
+                .ToListAsync();
+        }
+
+        public async ValueTask ReplacePendingContribution(ProductContribution contribution)
+        {
+            var result = await Collection.ReplaceOneAsync(
+                x => x.Id == contribution.Id && x.Status == ProductContributionStatus.Pending, contribution);
+
+            if (result.ModifiedCount == 0)
+                throw new InvalidOperationException("Replacement was unsuccessful");
         }
 
         public async Task CreateIndexes()

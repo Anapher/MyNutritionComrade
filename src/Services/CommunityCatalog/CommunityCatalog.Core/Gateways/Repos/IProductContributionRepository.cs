@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommunityCatalog.Core.Domain;
 
 namespace CommunityCatalog.Core.Gateways.Repos
@@ -10,5 +11,9 @@ namespace CommunityCatalog.Core.Gateways.Repos
         ValueTask<ProductContribution?> FindByPatchHash(string productId, string patchHash);
 
         ValueTask<ProductContribution?> FindById(string id);
+
+        ValueTask<IReadOnlyList<ProductContribution>> GetActiveContributions(string productId);
+
+        ValueTask ReplacePendingContribution(ProductContribution contribution);
     }
 }

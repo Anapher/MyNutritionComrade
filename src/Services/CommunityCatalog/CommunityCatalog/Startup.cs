@@ -56,6 +56,7 @@ namespace CommunityCatalog
             services.Configure<JwtIssuerOptions>(Configuration.GetSection("JwtIssuerOptions"));
             services.Configure<IdentityOptions>(Configuration.GetSection("IdentityOptions"));
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDb"));
+            services.Configure<AdminOptions>(Configuration.GetSection("Admins"));
 
             services.AddSingleton<IEmailSender, TestEmailSender>();
 

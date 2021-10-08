@@ -14,9 +14,14 @@ namespace CommunityCatalog.IntegrationTests.Extensions
     public static class AuthenticationExtensions
     {
         public static async Task<string> LoginAndSetupClient(this CustomWebApplicationFactory factory,
-            HttpClient client, string? emailAddress = null)
+            HttpClient client, bool admin = false, string? emailAddress = null)
         {
             emailAddress ??= $"{Guid.NewGuid():N}@mynutritioncomrade.com";
+
+            if (admin)
+            {
+                factory.AddAdmin(emailAddress);
+            }
 
             var emailPasswordTask = factory.EmailSender.WaitForPassword(emailAddress);
             await RequestPassword(client, emailAddress);

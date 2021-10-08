@@ -1,10 +1,12 @@
 ﻿using System;
 using CommunityCatalog.Core.Gateways.Services;
+using CommunityCatalog.Infrastructure.Auth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 using Xunit.Abstractions;
@@ -15,6 +17,7 @@ namespace CommunityCatalog.IntegrationTests
     {
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly MongoDbFixture _mongoDb;
+        private readonly AdminOptions _adminOptions = new();
 
         public CustomWebApplicationFactory(MongoDbFixture mongoDb, ITestOutputHelper testOutputHelper)
         {
@@ -23,6 +26,14 @@ namespace CommunityCatalog.IntegrationTests
         }
 
         public EmailSenderMock EmailSender { get; } = new();
+
+        public void AddAdmin(string emailAddress)
+        {
+            lock (_adminOptions)
+            {
+                _adminOptions.AdminEmailAddresses.Add(emailAddress);
+            }
+        }
 
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
@@ -42,7 +53,11 @@ namespace CommunityCatalog.IntegrationTests
             builder.ConfigureAppConfiguration(configurationBuilder =>
                 configurationBuilder.AddConfiguration(configuration));
 
-            builder.ConfigureServices(services => { services.AddSingleton<IEmailSender>(EmailSender); });
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IEmailSender>(EmailSender);
+                services.AddSingleton<IOptions<AdminOptions>>(new OptionsWrapper<AdminOptions>(_adminOptions));
+            });
         }
 
         private IConfiguration StartMongoDbAndGetConfiguration()

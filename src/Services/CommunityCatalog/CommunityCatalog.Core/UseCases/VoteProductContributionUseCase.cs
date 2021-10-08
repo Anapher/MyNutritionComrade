@@ -9,7 +9,8 @@ using MediatR;
 
 namespace CommunityCatalog.Core.UseCases
 {
-    public class VoteProductContributionUseCase : IRequestHandler<VoteProductContributionRequest>
+    public class
+        VoteProductContributionUseCase : IRequestHandler<VoteProductContributionRequest, ProductContributionStatus>
     {
         private readonly IProductContributionRepository _repository;
         private readonly IProductContributionVoteRepository _voteRepository;
@@ -23,16 +24,17 @@ namespace CommunityCatalog.Core.UseCases
             _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(VoteProductContributionRequest request, CancellationToken cancellationToken)
+        public async Task<ProductContributionStatus> Handle(VoteProductContributionRequest request,
+            CancellationToken cancellationToken)
         {
             var (userId, contributionId, approve) = request;
 
             var productContribution = await _repository.FindById(contributionId);
             if (productContribution == null)
-                throw ProductError.ProductContributionNotFound(contributionId).ToException();
+                throw ProductContributionError.NotFound(contributionId).ToException();
 
             if (productContribution.UserId == userId)
-                throw ProductError.ProductContributionCreatorCannotVote().ToException();
+                throw ProductContributionError.CreatorCannotVote().ToException();
 
             await CreateVote(userId, contributionId, productContribution.ProductId, approve);
 
@@ -46,9 +48,7 @@ namespace CommunityCatalog.Core.UseCases
                 throw;
             }
 
-            await _mediator.Send(new CheckProductContributionVotesRequest(contributionId), cancellationToken);
-
-            return Unit.Value;
+            return await _mediator.Send(new CheckProductContributionVotesRequest(contributionId), cancellationToken);
         }
 
         private async Task CreateVote(string userId, string contributionId, string productId, bool approve)
@@ -62,7 +62,7 @@ namespace CommunityCatalog.Core.UseCases
             {
                 var existingVote = await _voteRepository.FindVote(contributionId, userId);
                 if (existingVote != null)
-                    throw ProductError.ProductContributionAlreadyVoted().ToException();
+                    throw ProductContributionError.AlreadyVoted().ToException();
 
                 throw;
             }
@@ -72,10 +72,10 @@ namespace CommunityCatalog.Core.UseCases
         {
             var productContribution = await _repository.FindById(contributionId);
             if (productContribution == null)
-                throw ProductError.ProductContributionNotFound(contributionId).ToException();
+                throw ProductContributionError.NotFound(contributionId).ToException();
 
             if (productContribution.Status != ProductContributionStatus.Pending)
-                throw ProductError.ProductContributionInvalidStatus().ToException();
+                throw ProductContributionError.InvalidStatus().ToException();
         }
     }
 }

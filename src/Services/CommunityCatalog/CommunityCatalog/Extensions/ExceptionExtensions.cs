@@ -11,7 +11,7 @@ namespace CommunityCatalog.Extensions
             if (e is IdErrorException idError)
                 return idError.Error;
 
-            return ProductError.UnexpectedError();
+            return CommonError.UnexpectedError();
         }
     }
 }

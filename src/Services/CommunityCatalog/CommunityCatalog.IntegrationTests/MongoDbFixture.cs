@@ -7,7 +7,7 @@ namespace CommunityCatalog.IntegrationTests
     {
         public MongoDbFixture()
         {
-            Runner = MongoDbRunner.Start();
+            Runner = MongoDbRunner.Start(null, null, null, true);
         }
 
         public void Dispose()

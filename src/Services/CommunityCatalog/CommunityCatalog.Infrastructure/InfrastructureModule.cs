@@ -16,6 +16,9 @@ namespace CommunityCatalog.Infrastructure
             builder.RegisterType<TokenFactory>().As<ITokenFactory>().SingleInstance();
 
             builder.RegisterAssemblyTypes(ThisAssembly).AssignableTo<IRepository>().AsImplementedInterfaces();
+            builder.RegisterAssemblyTypes(ThisAssembly).AssignableTo<ITransaction>().AsImplementedInterfaces();
+
+            builder.RegisterType<AdminRepository>().AsImplementedInterfaces().SingleInstance();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CommunityCatalog.Core.Domain;
 using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Requests;
 using CommunityCatalog.Core.Response;
@@ -69,14 +70,24 @@ namespace CommunityCatalog.Controllers
             try
             {
                 var userId = User.GetUserId();
+                var admin = User.IsAdmin();
+
                 var groups =
                     await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
 
                 var result = new List<string>();
                 foreach (var operationsGroup in groups)
                 {
-                    result.Add(await _mediator.Send(
-                        new CreateProductContributionRequest(userId, productId, operationsGroup)));
+                    var contributionId = await _mediator.Send(
+                        new CreateProductContributionRequest(userId, productId, operationsGroup));
+
+                    if (admin)
+                    {
+                        await _mediator.Send(new ApplyProductContributionRequest(contributionId,
+                            "Applied on creation because user is admin"));
+                    }
+
+                    result.Add(contributionId);
                 }
 
                 return Ok(result);
@@ -113,7 +124,24 @@ namespace CommunityCatalog.Controllers
             try
             {
                 var userId = User.GetUserId();
-                await _mediator.Send(new VoteProductContributionRequest(userId, contributionId, request.Approve));
+                var admin = User.IsAdmin();
+
+                var status =
+                    await _mediator.Send(new VoteProductContributionRequest(userId, contributionId, request.Approve));
+
+                if (admin && status == ProductContributionStatus.Pending)
+                {
+                    if (request.Approve)
+                    {
+                        await _mediator.Send(new ApplyProductContributionRequest(contributionId,
+                            "Immediately applied because admin voted approve."));
+                    }
+                    else
+                    {
+                        await _mediator.Send(new RejectProductContributionRequest(contributionId,
+                            "Immediately rejected because admin voted disapprove."));
+                    }
+                }
 
                 return Ok();
             }

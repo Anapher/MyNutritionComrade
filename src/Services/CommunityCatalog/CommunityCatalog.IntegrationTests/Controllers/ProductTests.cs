@@ -269,5 +269,179 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             Assert.True(contribution.YourVote?.Approve);
             Assert.Equal(new ProductContributionStatisticsDto(1, 1), contribution.Statistics);
         }
+
+        [Fact]
+        public async Task VoteContribution_EnoughVotes_ApplyAutomatically()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+
+            // act
+            for (var i = 0; i < 10; i++)
+            {
+                await Factory.LoginAndSetupClient(Client);
+                await Api.VoteProductContribution(Client, productId, contributionId, true);
+            }
+
+            // assert
+            var contributions = await Api.GetProductContributions(Client, productId);
+            var contribution = Assert.Single(contributions, x => x.Id == contributionId);
+            Assert.True(contribution.YourVote?.Approve);
+            Assert.Equal(ProductContributionStatus.Applied, contribution.Status);
+
+            var products = await Api.GetAllProducts(Client);
+            var product = Assert.Single(products, x => x.Id == productId);
+            Assert.Equal("hello world", product.Code);
+        }
+
+        [Fact]
+        public async Task VoteContribution_EnoughDownVotes_RejectAutomatically()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+
+            // act
+            for (var i = 0; i < 10; i++)
+            {
+                await Factory.LoginAndSetupClient(Client);
+                await Api.VoteProductContribution(Client, productId, contributionId, false);
+            }
+
+            // assert
+            var contributions = await Api.GetProductContributions(Client, productId);
+            var contribution = Assert.Single(contributions, x => x.Id == contributionId);
+            Assert.Equal(ProductContributionStatus.Rejected, contribution.Status);
+        }
+
+        [Fact]
+        public async Task VoteContribution_AlreadyApplied_BadRequest()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+            for (var i = 0; i < 10; i++)
+            {
+                await Factory.LoginAndSetupClient(Client);
+                await Api.VoteProductContribution(Client, productId, contributionId, true);
+            }
+
+            // act
+            await Factory.LoginAndSetupClient(Client);
+            var ex = await Assert.ThrowsAsync<IdErrorException>(() =>
+                Api.VoteProductContribution(Client, productId, contributionId, true));
+
+            // assert
+            AssertHelper.AssertErrorType(ex.Error, NutritionComradeErrorCode.ProductContributionInvalidStatus);
+        }
+
+        [Fact]
+        public async Task CreateContribution_IsAdmin_AutomaticallyApplyContribution()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client, true);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            // act
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+
+            // assert
+            var contributions = await Api.GetProductContributions(Client, productId);
+            var existingContribution = Assert.Single(contributions, x => x.Id == contributionId);
+            Assert.Equal(ProductContributionStatus.Applied, existingContribution.Status);
+        }
+
+        [Fact]
+        public async Task VoteContribution_ApproveAndIsAdmin_ImmediatelyApply()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+
+            // act
+            await Factory.LoginAndSetupClient(Client, true);
+            await Api.VoteProductContribution(Client, productId, contributionId, true);
+
+            // assert
+            var contributions = await Api.GetProductContributions(Client, productId);
+            var existingContribution = Assert.Single(contributions, x => x.Id == contributionId);
+            Assert.Equal(ProductContributionStatus.Applied, existingContribution.Status);
+
+            var products = await Api.GetAllProducts(Client);
+            var product = Assert.Single(products, x => x.Id == productId);
+            Assert.Equal("hello world", product.Code);
+        }
+
+        [Fact]
+        public async Task VoteContribution_DisapproveAndIsAdmin_ImmediatelyReject()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+
+            // act
+            await Factory.LoginAndSetupClient(Client, true);
+            await Api.VoteProductContribution(Client, productId, contributionId, false);
+
+            // assert
+            var contributions = await Api.GetProductContributions(Client, productId);
+            var existingContribution = Assert.Single(contributions, x => x.Id == contributionId);
+            Assert.Equal(ProductContributionStatus.Rejected, existingContribution.Status);
+        }
+
+        [Fact]
+        public async Task ApplyContribution_InvalidContributionsExist_RejectInvalidContributions()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+
+            var contributionId = Assert.Single(await Api.PatchProduct(Client, productId, patch.Operations));
+            for (var i = 0; i < 10; i++)
+            {
+                await Factory.LoginAndSetupClient(Client);
+                await Api.VoteProductContribution(Client, productId, contributionId, true);
+            }
+
+            // act
+            await Factory.LoginAndSetupClient(Client);
+            var ex = await Assert.ThrowsAsync<IdErrorException>(() =>
+                Api.VoteProductContribution(Client, productId, contributionId, true));
+
+            // assert
+            AssertHelper.AssertErrorType(ex.Error, NutritionComradeErrorCode.ProductContributionInvalidStatus);
+        }
     }
 }

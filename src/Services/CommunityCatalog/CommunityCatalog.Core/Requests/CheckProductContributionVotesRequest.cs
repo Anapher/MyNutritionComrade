@@ -1,6 +1,7 @@
-﻿using MediatR;
+﻿using CommunityCatalog.Core.Domain;
+using MediatR;
 
 namespace CommunityCatalog.Core.Requests
 {
-    public record CheckProductContributionVotesRequest(string ContributionId) : IRequest;
+    public record CheckProductContributionVotesRequest(string ContributionId) : IRequest<ProductContributionStatus>;
 }
