@@ -100,7 +100,11 @@ namespace ProductIndexCLI.Runners
         private static void SerializeToFile<T>(string filename, T data)
         {
             var result = JsonConvert.SerializeObject(data, Formatting.None,
-                new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    NullValueHandling = NullValueHandling.Ignore,
+                });
 
             File.WriteAllText(filename, result);
         }
