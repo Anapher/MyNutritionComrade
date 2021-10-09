@@ -1,12 +1,15 @@
-﻿using System;
+﻿using CommandLine;
+using ProductIndexCLI.Runners;
 
 namespace ProductIndexCLI
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            return Parser.Default.ParseArguments<BuilderOptions, ValidatorOptions>(args).MapResult(
+                (BuilderOptions options) => BuilderRunner.RunAndReturnExitCode(options),
+                (ValidatorOptions options) => ValidatorRunner.RunAndReturnExitCode(options), _ => 1);
         }
     }
 }
