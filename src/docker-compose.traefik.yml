@@ -9,3 +9,14 @@ services:
       - "traefik.http.routers.mynutritioncomrade.tls.certresolver=letsEncrypt"
       - "traefik.http.routers.mynutritioncomrade.tls=true"
       - "traefik.http.services.community-catalog.loadbalancer.healthcheck.path=/health/ready"
+    networks:
+      - traefik
+
+  mongo:
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external:
+      name: traefik_proxy
