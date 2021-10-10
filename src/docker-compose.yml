@@ -1,0 +1,19 @@
+version: "3.4"
+
+services:
+  mongo:
+    image: mongo
+
+  community-catalog:
+    image: ${DOCKER_REGISTRY-}community-catalog
+    build:
+      context: .
+      dockerfile: Services/CommunityCatalog/CommunityCatalog/Dockerfile
+    environment:
+      - MongoDb__ConnectionString=mongodb://mongo
+      - AuthSettings__SecretKey=${AUTH_SECRET_KEY}
+      - ASPNETCORE_ENVIRONMENT=${APP_ENVIRONMENT}
+      - IdentityOptions__SecretKey=${AUTH_SECRET_KEY}
+      - IdentityOptions__EmailSalt=${EMAIL_SALT}
+    depends_on:
+      - mongo

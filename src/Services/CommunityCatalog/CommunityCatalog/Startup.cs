@@ -15,11 +15,13 @@ using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -110,6 +112,17 @@ namespace CommunityCatalog
 
             services.AddHostedService<MongoDbBuilder>();
 
+            var mongoOptions = new MongoDbOptions();
+            Configuration.GetSection("MongoDb").Bind(mongoOptions);
+
+            var healthChecks = services.AddHealthChecks();
+            healthChecks.AddMongoDb(mongoOptions.ConnectionString);
+
+            services.Configure<HealthCheckPublisherOptions>(options =>
+            {
+                options.Predicate = check => check.Tags.Contains("ready");
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CommunityCatalog", Version = "v1" });
@@ -148,6 +161,14 @@ namespace CommunityCatalog
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health/ready",
+                    new HealthCheckOptions { Predicate = check => check.Tags.Contains("ready") });
+
+                endpoints.MapHealthChecks("/health/live", new HealthCheckOptions());
+            });
         }
     }
 }

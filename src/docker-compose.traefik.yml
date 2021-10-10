@@ -1,0 +1,11 @@
+version: "3.4"
+
+services:
+  community-catalog:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`nutritions.${SITE_HOST}`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.services.strive.loadbalancer.healthcheck.path=/health/ready"
+      - "traefik.http.routers.api.middlewares=cors@docker"
+      - "traefik.http.routers.api.tls=true"
