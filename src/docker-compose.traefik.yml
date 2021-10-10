@@ -4,8 +4,8 @@ services:
   community-catalog:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`nutritions.${SITE_HOST}`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.services.strive.loadbalancer.healthcheck.path=/health/ready"
-      - "traefik.http.routers.api.middlewares=cors@docker"
-      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.routers.mynutritioncomrade.rule=Host(`nutritions.${SITE_HOST}`)"
+      - "traefik.http.routers.mynutritioncomrade.entrypoints=websecure"
+      - "traefik.http.routers.mynutritioncomrade.tls.certresolver=letsEncrypt"
+      - "traefik.http.routers.mynutritioncomrade.tls=true"
+      - "traefik.http.services.community-catalog.loadbalancer.healthcheck.path=/health/ready"
