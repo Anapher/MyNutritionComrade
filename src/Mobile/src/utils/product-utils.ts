@@ -1,18 +1,14 @@
-import { TagLiquid } from 'src/consts';
-import { ProductEssentials } from 'src/types';
-
-/**
- * Return true if the product is a liquid
- * @param product the product
- */
-export function isProductLiquid(product: ProductEssentials): boolean {
-   return product.tags?.includes(TagLiquid) === true;
-}
+import { ProductEssentials, ProductTags } from 'src/types';
 
 /**
  * Return the base unit for the product. 'ml' for liquids, 'g' else
- * @param product the product
+ * @param value the product
  */
-export function getBaseUnit(product: ProductEssentials): string {
-   return isProductLiquid(product) ? 'ml' : 'g';
+export function getBaseUnit(value?: ProductEssentials | ProductTags): string {
+   const tags = isProduct(value) ? value.tags : value;
+   return tags?.liquid ? 'ml' : 'g';
+}
+
+function isProduct(product?: ProductEssentials | ProductTags): product is ProductEssentials {
+   return (product as ProductEssentials)?.label !== undefined;
 }

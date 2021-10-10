@@ -100,7 +100,7 @@ export const getServings: (isLiquid: boolean) => { [name in keyof ReturnType<typ
 export const emptyProduct: ProductProperties = {
    defaultServing: 'g',
    nutritionalInfo: {
-      volume: 0,
+      volume: 100,
       energy: 0,
       fat: 0,
       saturatedFat: 0,
@@ -110,7 +110,6 @@ export const emptyProduct: ProductProperties = {
       dietaryFiber: 0,
       sodium: 0,
    },
-   tags: [],
    servings: {
       g: 1,
    },

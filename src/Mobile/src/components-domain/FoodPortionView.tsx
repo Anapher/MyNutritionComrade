@@ -2,7 +2,6 @@ import Color from 'color';
 import React, { useMemo } from 'react';
 import { View, ViewStyle, StyleProp } from 'react-native';
 import { Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
-import { isProductLiquid } from 'src/utils/product-utils';
 import { roundNumber } from 'src/utils/string-utils';
 import { styles } from './food-portion-styles';
 import { FoodPortion, FoodPortionCustom, FoodPortionProduct, NutritionalInfo } from 'src/types';
@@ -34,7 +33,7 @@ export function ProductFoodPortionView({
          onLongPress={onLongPress}
          label={t('product_label', { product: foodPortion.product })}
          nutritionalInfo={nutritionalInfo}
-         isLiquid={isProductLiquid(foodPortion.product)}
+         isLiquid={Boolean(foodPortion.product.tags?.liquid)}
          containerStyle={containerStyle}
       />
    );

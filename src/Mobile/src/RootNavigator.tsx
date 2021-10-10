@@ -26,6 +26,7 @@ import { ProductLabelViewModel } from './features/product-create/types';
 import AddLabelScreen from './features/product-create/components/AddLabelScreen';
 import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
 import { UseFormReturn } from 'react-hook-form';
+import LoginScreen from './features/auth/components/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +87,7 @@ export type RootNavigatorParamList = {
    ProductEditorServings: {
       form: UseFormReturn<ProductProperties>;
    };
+   Login: { onAuthenticated?: () => void };
 };
 
 export default function RootNavigator() {
@@ -157,7 +159,16 @@ export default function RootNavigator() {
             options={{ headerTitle: t('create_product.title') }}
          />
          <Stack.Screen name="ProductEditorAddLabel" component={AddLabelScreen} />
-         <Stack.Screen name="ProductEditorServings" component={ConfigureServingsScreen} />
+         <Stack.Screen
+            name="ProductEditorServings"
+            component={ConfigureServingsScreen}
+            options={{ headerTitle: t('create_product.servings') }}
+         />
+         <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerTitle: t('auth.title'), presentation: 'modal' }}
+         />
       </Stack.Navigator>
    );
 }

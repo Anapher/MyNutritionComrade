@@ -7,9 +7,11 @@ export interface ProductLabel {
 
 export type ProductLabelList = { [language: string]: ProductLabel };
 
+export type ProductTags = { liquid?: boolean };
+
 export interface ProductEssentials {
    nutritionalInfo: NutritionalInfo;
-   tags?: string[];
+   tags?: ProductTags;
    label: ProductLabelList;
 }
 

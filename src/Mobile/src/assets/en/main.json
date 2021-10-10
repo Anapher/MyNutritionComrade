@@ -66,7 +66,8 @@
     "remove": "Remove",
     "change": "Change",
     "add": "Add",
-    "cancel": "Canel",
+    "cancel": "Cancel",
+    "create": "Create",
     "settings": {
         "personal_info": {
             "title": "Personal Information",
@@ -170,5 +171,15 @@
         "en": "English"
     },
     "language": "Language",
-    "save": "Save"
+    "save": "Save",
+    "auth": {
+        "title": "Login",
+        "login_description": "We will send you single use password. We will not save any data about you, especially not your email address."
+    },
+    "email": "Email address",
+    "next": "Next",
+    "errors": {
+        "no_response": "The server is unreachable.",
+        "response_no_success": "The server responded with code {{status}}. This is likely a bug."
+    }
 }

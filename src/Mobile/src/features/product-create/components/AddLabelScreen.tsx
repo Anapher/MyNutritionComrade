@@ -120,6 +120,7 @@ export default function AddLabelScreen({
                                  value={value}
                                  onChangeValue={onChange}
                                  placeholder={t('create_product.label_placeholder')}
+                                 autoFocus
                                  {...props}
                               />
                            )}

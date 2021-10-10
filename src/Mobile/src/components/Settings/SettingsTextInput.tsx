@@ -10,9 +10,18 @@ type Props = SettingsButtonContainerProps & {
    onChangeValue: (v: string | undefined) => void;
    placeholder?: string;
    titleStyle?: StyleProp<TextStyle>;
+   autoFocus?: boolean;
 };
 
-export default function SettingsTextInput({ title, value, onChangeValue, placeholder, titleStyle, ...props }: Props) {
+export default function SettingsTextInput({
+   title,
+   value,
+   onChangeValue,
+   placeholder,
+   titleStyle,
+   autoFocus,
+   ...props
+}: Props) {
    const theme = useTheme();
 
    return (
@@ -30,6 +39,7 @@ export default function SettingsTextInput({ title, value, onChangeValue, placeho
                onChangeText={onChangeValue}
                placeholder={placeholder}
                placeholderTextColor={theme.colors.disabled}
+               autoFocus={autoFocus}
             />
          </View>
       </SettingsButtonContainer>

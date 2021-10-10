@@ -8,7 +8,6 @@ import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
 import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
-import { TagLiquid } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductProperties } from 'src/types';
 import { baseUnits, getServings } from '../../data';
@@ -21,7 +20,7 @@ export default function ProductServingsSection(form: UseFormReturn<ProductProper
    const servings = watch('servings');
 
    const tags = watch('tags');
-   const isLiquid = Boolean(tags?.includes(TagLiquid));
+   const isLiquid = Boolean(tags?.liquid);
 
    return {
       renderHeader: () => <SettingsHeader label={t('create_product.servings')} />,
@@ -33,7 +32,7 @@ export default function ProductServingsSection(form: UseFormReturn<ProductProper
                render: (props) => (
                   <SettingsNumberInput
                      value={value}
-                     onChangeValue={() => {}}
+                     onChangeValue={(v) => form.setValue(`servings.${key}`, v as any)}
                      title={t((getServings(isLiquid) as any)[key].labelKey)}
                      {...props}
                   />

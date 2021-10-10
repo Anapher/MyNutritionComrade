@@ -4,5 +4,5 @@ export type DomainError = {
    type: ErrorType;
    message: string;
    code: string;
-   fields?: { [key: string]: string };
+   fields?: Record<string, string>;
 };

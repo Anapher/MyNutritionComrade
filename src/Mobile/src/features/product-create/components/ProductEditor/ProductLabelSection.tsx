@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from 'react-native-paper';
+import { Caption, useTheme } from 'react-native-paper';
 import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
@@ -12,11 +12,17 @@ import { ProductLabel, ProductProperties } from 'src/types';
 
 const supportedLanguages = ['de', 'en'];
 
-export default function ProductLabelSection({ setValue, watch }: UseFormReturn<ProductProperties>): SettingsSection {
+export default function ProductLabelSection({
+   setValue,
+   watch,
+   control,
+}: UseFormReturn<ProductProperties>): SettingsSection {
    const theme = useTheme();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const label = watch('label');
    const { t } = useTranslation();
+
+   const { errors } = useFormState({ control });
 
    const handleAddLabel = () => {
       navigation.push('ProductEditorAddLabel', {
@@ -71,13 +77,18 @@ export default function ProductLabelSection({ setValue, watch }: UseFormReturn<P
          {
             key: 'add-button',
             render: (props) => (
-               <SettingsButtonLink
-                  title={t('create_product.add_label')}
-                  onPress={handleAddLabel}
-                  {...props}
-                  textStyles={{ color: theme.colors.primary }}
-                  icon="arrow"
-               />
+               <>
+                  <SettingsButtonLink
+                     title={t('create_product.add_label')}
+                     onPress={handleAddLabel}
+                     {...props}
+                     textStyles={{ color: theme.colors.primary }}
+                     icon="arrow"
+                  />
+                  {errors.label && (
+                     <Caption style={{ color: theme.colors.error, margin: 24 }}>{errors.label.message}</Caption>
+                  )}
+               </>
             ),
          },
       ],

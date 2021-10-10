@@ -9,9 +9,8 @@ import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsSection } from 'src/components/Settings/SettingsList';
 import SettingsTextInput from 'src/components/Settings/SettingsTextInput';
-import { TagLiquid } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
-import { ProductProperties } from 'src/types';
+import { ProductProperties, ProductTags } from 'src/types';
 
 export default function ProductCommonSection({ control, setValue }: UseFormReturn<ProductProperties>): SettingsSection {
    const theme = useTheme();
@@ -19,14 +18,14 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
    const { t } = useTranslation();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
 
-   const handleChangeBaseUnit = (onChange: (newValue?: string[]) => void) => {
+   const handleChangeBaseUnit = (onChange: (newValue?: ProductTags) => void) => {
       showActionSheetWithOptions(
          {
             options: ['g', 'ml'],
             userInterfaceStyle: 'dark',
          },
          (i) => {
-            onChange(i === 0 ? undefined : [TagLiquid]);
+            onChange(i === 0 ? undefined : { liquid: true });
          },
       );
    };
@@ -50,7 +49,7 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
                      <SettingsButtonLink
                         title={t('create_product.base_unit')}
                         onPress={() => handleChangeBaseUnit(onChange)}
-                        secondary={value?.includes(TagLiquid) ? 'ml' : 'g'}
+                        secondary={value?.liquid ? 'ml' : 'g'}
                         {...props}
                         icon="arrow"
                      />
@@ -69,7 +68,7 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
                         title={t('create_product.barcode')}
                         value={value}
                         placeholder={t('create_product.enter_barcode')}
-                        onChangeValue={onChange}
+                        onChangeValue={(val) => onChange(val || undefined)}
                         {...props}
                      />
                   )}

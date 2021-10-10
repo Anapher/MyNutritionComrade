@@ -3,6 +3,10 @@ import { UserNutritionGoal, UserPersonalInfo, UserWeight } from './types';
 
 export type SettingsState = {
    firstStart: boolean;
+   auth?: {
+      token: string;
+      email: string;
+   };
    personalInfo: UserPersonalInfo;
    weight: UserWeight;
    nutritionGoal: UserNutritionGoal;

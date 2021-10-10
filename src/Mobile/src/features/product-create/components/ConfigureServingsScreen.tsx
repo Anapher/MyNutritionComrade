@@ -9,7 +9,6 @@ import { IconButton, useTheme } from 'react-native-paper';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import SettingsList, { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
 import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
-import { TagLiquid } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { getServings, ServingInfo } from '../data';
 
@@ -57,7 +56,7 @@ export default function ConfigureServingsScreen({
    const defaultServing = watch('defaultServing');
    const tags = watch('tags');
 
-   const isLiquid = Boolean(tags?.includes(TagLiquid));
+   const isLiquid = Boolean(tags?.liquid);
 
    const showServingInfo = (labelKey: string, descriptionKey: string) => () => {
       Alert.alert(t(labelKey), t(descriptionKey));
