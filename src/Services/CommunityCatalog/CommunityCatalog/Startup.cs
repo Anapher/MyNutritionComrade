@@ -34,6 +34,7 @@ namespace CommunityCatalog
     {
         public Task SendPasswordToEmail(string receiverEmailAddress, string password)
         {
+            Console.WriteLine($"[Email to {receiverEmailAddress}]: {password}");
             return Task.CompletedTask;
         }
     }
