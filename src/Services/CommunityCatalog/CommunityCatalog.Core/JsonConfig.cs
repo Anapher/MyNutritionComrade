@@ -23,6 +23,7 @@ namespace CommunityCatalog.Core
                 NamingStrategy = new CamelCaseNamingStrategy(true, true),
             };
             settings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy(true, true)));
+            settings.NullValueHandling = NullValueHandling.Ignore;
         }
 
         public static JsonSerializer DefaultSerializer => JsonSerializer.Create(Default);
