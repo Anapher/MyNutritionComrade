@@ -31,9 +31,9 @@ namespace CommunityCatalog.Infrastructure.Auth
         public DateTimeOffset IssuedAt => DateTimeOffset.UtcNow;
 
         /// <summary>
-        /// Set the timespan the token will be valid for (default is 120 min)
+        ///     Set the timespan the token will be valid for (default is 1 year)
         /// </summary>
-        public TimeSpan ValidFor { get; set; } = TimeSpan.FromMinutes(120);
+        public TimeSpan ValidFor { get; set; } = TimeSpan.FromDays(364.25);
 
         /// <summary>
         /// "jti" (JWT ID) Claim (default ID is a GUID)
