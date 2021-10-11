@@ -27,6 +27,7 @@ import AddLabelScreen from './features/product-create/components/AddLabelScreen'
 import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
 import { UseFormReturn } from 'react-hook-form';
 import LoginScreen from './features/auth/components/LoginScreen';
+import LoginScreenPassword from './features/auth/components/LoginScreenPassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -88,6 +89,7 @@ export type RootNavigatorParamList = {
       form: UseFormReturn<ProductProperties>;
    };
    Login: { onAuthenticated?: () => void };
+   LoginPassword: { onAuthenticated?: () => void; emailAddress: string };
 };
 
 export default function RootNavigator() {
@@ -167,6 +169,11 @@ export default function RootNavigator() {
          <Stack.Screen
             name="Login"
             component={LoginScreen}
+            options={{ headerTitle: t('auth.title'), presentation: 'modal' }}
+         />
+         <Stack.Screen
+            name="LoginPassword"
+            component={LoginScreenPassword}
             options={{ headerTitle: t('auth.title'), presentation: 'modal' }}
          />
       </Stack.Navigator>

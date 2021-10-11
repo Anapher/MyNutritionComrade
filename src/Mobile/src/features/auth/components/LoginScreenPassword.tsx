@@ -11,24 +11,28 @@ import { z } from 'zod';
 import api from 'src/services/api';
 import { AxiosError } from 'axios';
 import { applyAxiosError, axiosErrorToString, formatErrorMessage, tryExtractDomainError } from 'src/utils/error-utils';
+import { useDispatch } from 'react-redux';
+import { setAuthentication } from 'src/features/settings/reducer';
 
-const validation = z.object({ emailAddress: z.string().email() });
+const validation = z.object({ token: z.string().min(0) });
 
 type FormData = z.infer<typeof validation>;
 
 type Props = {
    navigation: NativeStackNavigationProp<RootNavigatorParamList>;
-   route: RouteProp<RootNavigatorParamList, 'Login'>;
+   route: RouteProp<RootNavigatorParamList, 'LoginPassword'>;
 };
 
-export default function LoginScreen({
+export default function LoginScreenPassword({
    navigation,
    route: {
-      params: { onAuthenticated },
+      params: { emailAddress, onAuthenticated },
    },
 }: Props) {
    const theme = useTheme();
    const { t } = useTranslation();
+   const dispatch = useDispatch();
+
    const [requestError, setRequestError] = useState<string | undefined>();
 
    const {
@@ -38,21 +42,24 @@ export default function LoginScreen({
       setError,
    } = useForm<FormData>({ mode: 'onChange', resolver: zodResolver(validation) });
 
-   const onSubmit = async ({ emailAddress }: FormData) => {
+   const onSubmit = async ({ token }: FormData) => {
       setRequestError(undefined);
 
       try {
-         await api.authentication.requestPassword(emailAddress);
-         navigation.replace('LoginPassword', { emailAddress, onAuthenticated });
+         const result = await api.authentication.login(emailAddress, token);
+         dispatch(setAuthentication({ email: emailAddress, token: result.jwt }));
+
+         navigation.pop(1);
+         onAuthenticated?.();
       } catch (error) {
-         applyAxiosError(error, setRequestError, setError, { emailAddress: 'emailAddress' });
+         applyAxiosError(error, setRequestError, setError, { password: 'token' });
       }
    };
 
    useLayoutEffect(() => {
       navigation.setOptions({
          headerRight: () => (
-            <Button title={t('next')} disabled={!isValid || isSubmitting} onPress={handleSubmit(onSubmit)} />
+            <Button title={t('auth.login')} disabled={!isValid || isSubmitting} onPress={handleSubmit(onSubmit)} />
          ),
       });
    }, [isValid, handleSubmit, isSubmitting]);
@@ -62,21 +69,21 @@ export default function LoginScreen({
          <Controller
             control={control}
             rules={{ required: true }}
-            name="emailAddress"
-            render={({ field: { onChange, value }, formState: { isSubmitting } }) => (
+            name="token"
+            render={({ field: { onChange, value }, formState: { isSubmitting, errors } }) => (
                <TextInput
                   disabled={isSubmitting}
-                  label={t('email')}
-                  autoCompleteType="email"
-                  textContentType="emailAddress"
-                  keyboardType="email-address"
+                  label={t('auth.password')}
+                  autoCompleteType="off"
+                  textContentType="password"
                   value={value}
                   onChangeText={onChange}
+                  error={Boolean(errors.token || requestError)}
                />
             )}
          />
          {requestError && <Text style={[styles.errorText, { color: theme.colors.error }]}>{requestError}</Text>}
-         <Text style={styles.descriptionText}>{t('auth.login_description')}</Text>
+         <Text style={styles.descriptionText}>{t('auth.password_description')}</Text>
       </View>
    );
 }

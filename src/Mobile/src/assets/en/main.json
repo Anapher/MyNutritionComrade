@@ -174,7 +174,10 @@
     "save": "Save",
     "auth": {
         "title": "Login",
-        "login_description": "We will send you single use password. We will not save any data about you, especially not your email address."
+        "login_description": "We will send you single use password. We will not save any data about you, especially not your email address.",
+        "login": "Login",
+        "password": "Password",
+        "password_description": "Please input the password we sent to your email address"
     },
     "email": "Email address",
     "next": "Next",

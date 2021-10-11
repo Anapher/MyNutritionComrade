@@ -1,17 +1,21 @@
+import { ProductLabelList } from 'src/types';
 import { z } from 'zod';
 
 const schema = z.object({
    code: z.string().min(1).optional(),
-   label: z.preprocess(
-      (val) => Object.values(val as any),
-      z
-         .object({
-            value: z.string().min(1),
-            tags: z.string().array().optional(),
-         })
-         .array()
-         .nonempty(),
-   ),
+   label: z
+      .preprocess(
+         (val) => Object.entries(val as ProductLabelList).map(([lang, value]) => ({ ...value, lang })),
+         z
+            .object({
+               value: z.string().min(1),
+               tags: z.string().array().optional(),
+               lang: z.string().length(2),
+            })
+            .array()
+            .nonempty(),
+      )
+      .transform((val) => Object.fromEntries(val.map((x) => [x.lang, { tags: x.tags, value: x.value }]))),
    defaultServing: z.string().min(1),
    servings: z.record(z.number().min(1).optional()),
    nutritionalInfo: z

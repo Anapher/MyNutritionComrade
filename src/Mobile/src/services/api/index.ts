@@ -1,3 +1,4 @@
 import * as authentication from './authentication';
+import * as product from './product';
 
-export default { authentication };
+export default { authentication, product };

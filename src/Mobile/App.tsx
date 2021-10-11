@@ -1,5 +1,6 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { NavigationContainer, Theme as NavTheme } from '@react-navigation/native';
+import axios from 'axios';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { DarkTheme, overlay, Provider as PaperProvider } from 'react-native-paper';
@@ -9,6 +10,8 @@ import InitializeRepo from 'src/features/repo-manager/components/InitializeRepo'
 import store from 'src/store';
 import RootNavigator from './src/RootNavigator';
 import './src/services/i18n';
+
+axios.defaults.baseURL = 'https://nutritions.openstrive.org/';
 
 const theme: Theme = {
    ...DarkTheme,

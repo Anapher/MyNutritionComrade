@@ -54,3 +54,4 @@ export const selectUserProteinPerDay = createSelector(
 );
 
 export const selectIsUserAuthenticated = (state: RootState) => Boolean(state.settings.auth);
+export const selectAuthInfo = (state: RootState) => state.settings.auth;

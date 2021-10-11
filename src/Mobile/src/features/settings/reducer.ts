@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserNutritionGoal, UserPersonalInfo, UserWeight } from './types';
 
+export type AuthSettings = {
+   token: string;
+   email: string;
+};
+
 export type SettingsState = {
    firstStart: boolean;
-   auth?: {
-      token: string;
-      email: string;
-   };
+   auth?: AuthSettings;
    personalInfo: UserPersonalInfo;
    weight: UserWeight;
    nutritionGoal: UserNutritionGoal;
@@ -35,9 +37,13 @@ const settingsSlice = createSlice({
       setNutritionGoal(state, { payload }: PayloadAction<UserNutritionGoal>) {
          state.nutritionGoal = payload;
       },
+      setAuthentication(state, { payload }: PayloadAction<AuthSettings>) {
+         state.auth = payload;
+      },
    },
 });
 
-export const { firstStartCompleted, setPersonalInfo, setWeight, setNutritionGoal } = settingsSlice.actions;
+export const { firstStartCompleted, setPersonalInfo, setWeight, setNutritionGoal, setAuthentication } =
+   settingsSlice.actions;
 
 export default settingsSlice.reducer;
