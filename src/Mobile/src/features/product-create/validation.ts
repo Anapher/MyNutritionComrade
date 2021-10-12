@@ -21,7 +21,7 @@ const schema = z.object({
    nutritionalInfo: z
       .object({
          volume: z.literal(100),
-         energy: z.number().min(0),
+         energy: z.number().min(1),
          fat: z.number().min(0),
          saturatedFat: z.number().min(0),
          carbohydrates: z.number().min(0),

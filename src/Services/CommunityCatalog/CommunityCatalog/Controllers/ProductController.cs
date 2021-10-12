@@ -165,7 +165,6 @@ namespace CommunityCatalog.Controllers
             [FromServices] IProductRepository repository)
         {
             var productsUrl = Url.ActionLink(nameof(GetAllProducts));
-
             var latestChange = await repository.GetLatestProductChange();
 
             return Ok(new List<RepositoryReference> { new(productsUrl, latestChange ?? DateTimeOffset.MinValue) });

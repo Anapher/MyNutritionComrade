@@ -1,16 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack/lib/typescript/src/types';
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'react-native';
+import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import config from 'src/config';
+import { updateRepository } from 'src/features/repo-manager/actions';
 import useSafeRequest from 'src/hooks/useSafeRequest';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import api from 'src/services/api';
 import { ProductProperties } from 'src/types';
-import { tryExtractDomainError } from 'src/utils/error-utils';
+import { applyAxiosError } from 'src/utils/error-utils';
 import { emptyProduct } from '../data';
 import { initialize } from '../reducer';
 import schema from '../validation';
@@ -30,6 +33,7 @@ export default function CreateProduct({
    const dispatch = useDispatch();
    const { t } = useTranslation();
    const { makeSafeRequest } = useSafeRequest();
+   const [requestError, setRequestError] = useState<string | undefined>();
 
    useEffect(() => {
       dispatch(initialize({ mode: 'create' }));
@@ -47,12 +51,11 @@ export default function CreateProduct({
 
    const handleCreate = async (data: ProductProperties) => {
       try {
-         console.log(data);
-
          await makeSafeRequest(async () => await api.product.create(data), true);
+         dispatch(updateRepository(config.writeRepository.key));
          navigation.pop(1);
       } catch (error) {
-         console.log(error);
+         applyAxiosError(error, setRequestError);
       }
    };
 
@@ -62,5 +65,10 @@ export default function CreateProduct({
       });
    }, [form]);
 
-   return <ProductEditor form={form} />;
+   return (
+      <>
+         {requestError && <Text>{requestError}</Text>}
+         <ProductEditor form={form} />
+      </>
+   );
 }

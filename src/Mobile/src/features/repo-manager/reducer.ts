@@ -14,7 +14,7 @@ const initialState: RepositoryInitState = {
 };
 
 const repoManagerSlice = createSlice({
-   name: 'repository-init',
+   name: 'repo-manager',
    initialState,
    reducers: {
       initialize(state) {

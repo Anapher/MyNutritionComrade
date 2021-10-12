@@ -28,15 +28,15 @@ export function axiosErrorToString(error: AxiosError): string {
 export function applyAxiosError<T>(
    error: any,
    setRequestError: (s: string) => void,
-   setError: UseFormSetError<T>,
-   errorMap: Record<string, FieldPath<T>>,
+   setError?: UseFormSetError<T>,
+   errorMap?: Record<string, FieldPath<T>>,
 ) {
    const axiosError = error as AxiosError;
    if (axiosError.isAxiosError) {
       const domainError = tryExtractDomainError(axiosError);
       if (domainError) {
          let appliedError = false;
-         if (domainError.fields) {
+         if (domainError.fields && setError && errorMap) {
             for (const [key, value] of Object.entries(domainError.fields)) {
                if (errorMap[key]) {
                   setError(errorMap[key], { message: value });

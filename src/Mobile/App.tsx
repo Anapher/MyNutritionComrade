@@ -6,12 +6,13 @@ import React from 'react';
 import { DarkTheme, overlay, Provider as PaperProvider } from 'react-native-paper';
 import { Theme } from 'react-native-paper/lib/typescript/types';
 import { Provider } from 'react-redux';
+import config from 'src/config';
 import InitializeRepo from 'src/features/repo-manager/components/InitializeRepo';
 import store from 'src/store';
 import RootNavigator from './src/RootNavigator';
 import './src/services/i18n';
 
-axios.defaults.baseURL = 'https://nutritions.openstrive.org/';
+axios.defaults.baseURL = config.writeRepository.baseUrl;
 
 const theme: Theme = {
    ...DarkTheme,
