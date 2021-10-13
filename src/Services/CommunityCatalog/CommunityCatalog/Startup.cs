@@ -1,11 +1,10 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using CommunityCatalog.Core;
-using CommunityCatalog.Core.Errors;
 using CommunityCatalog.Core.Gateways.Services;
 using CommunityCatalog.Core.Options;
+using CommunityCatalog.Extensions;
 using CommunityCatalog.Infrastructure;
 using CommunityCatalog.Infrastructure.Auth;
 using CommunityCatalog.Infrastructure.Data;
@@ -18,13 +17,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyNutritionComrade.Models.Validation;
@@ -93,24 +89,12 @@ namespace CommunityCatalog
                 configureOptions.SaveToken = true;
             });
 
-            services.AddMvc().ConfigureApiBehaviorOptions(options =>
-            {
-                options.InvalidModelStateResponseFactory = context =>
+            services.AddMvc().ConfigureApiBehaviorOptions(options => options.UseInvalidModelStateToError())
+                .AddFluentValidation(fv =>
                 {
-                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<IMvcBuilder>>();
-
-                    var error = new FieldValidationError(context.ModelState
-                        .Where(x => x.Value.ValidationState == ModelValidationState.Invalid)
-                        .ToDictionary(x => x.Key, x => x.Value.Errors.First().ErrorMessage));
-
-                    logger.LogDebug("Invalid Model State: {@error}", error);
-                    return new BadRequestObjectResult(error);
-                };
-            }).AddFluentValidation(fv =>
-            {
-                fv.RegisterValidatorsFromAssemblyContaining<Startup>();
-                fv.RegisterValidatorsFromAssemblyContaining<ProductValidator>();
-            }).AddNewtonsoftJson(x => JsonConfig.Apply(x.SerializerSettings));
+                    fv.RegisterValidatorsFromAssemblyContaining<Startup>();
+                    fv.RegisterValidatorsFromAssemblyContaining<ProductValidator>();
+                }).AddNewtonsoftJson(x => JsonConfig.Apply(x.SerializerSettings));
 
             services.AddHostedService<MongoDbBuilder>();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -53,7 +54,10 @@ namespace CommunityCatalog.IntegrationTests.Controllers
         public async Task Create_InvalidProduct_BadRequest()
         {
             // arrange
-            var product = TestValues.TestProduct with { Label = new Dictionary<string, ProductLabel>() };
+            var product = TestValues.TestProduct with
+            {
+                NutritionalInfo = TestValues.TestProduct.NutritionalInfo with { Energy = -1 },
+            };
 
             await Factory.LoginAndSetupClient(Client);
 
@@ -62,6 +66,8 @@ namespace CommunityCatalog.IntegrationTests.Controllers
 
             // assert
             Assert.Equal(ex.Error.Code, ErrorCode.FieldValidation.ToString());
+            Assert.All(ex.Error.Fields ?? ImmutableDictionary<string, string>.Empty,
+                pair => { Assert.All(pair.Key.Split('.'), segment => Assert.True(char.IsLower(segment[0]))); });
         }
 
         [Fact]
