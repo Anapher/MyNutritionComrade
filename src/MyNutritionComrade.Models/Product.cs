@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MyNutritionComrade.Models
 {
@@ -21,23 +22,9 @@ namespace MyNutritionComrade.Models
     /// <param name="Servings">The serving sizes of the product (e. g. 1g, 1 unit, 1 package, ...)</param>
     /// <param name="DefaultServing">The default serving referencing a key in <see cref="Servings" /></param>
     /// <param name="Tags">Tags of the product</param>
-    public record Product(string Id, string? Code, IReadOnlyDictionary<string, ProductLabel> Label,
-        NutritionalInfo NutritionalInfo, IReadOnlyDictionary<ServingType, double> Servings, ServingType DefaultServing,
+    public record Product(string Id, DateTimeOffset ModifiedOn, string? Code,
+        IReadOnlyDictionary<string, ProductLabel> Label, NutritionalInfo NutritionalInfo,
+        IReadOnlyDictionary<ServingType, double> Servings, ServingType DefaultServing,
         IReadOnlyDictionary<string, bool>? Tags) : ProductProperties(Code, Label, NutritionalInfo, Servings,
         DefaultServing, Tags);
-
-    public record ProductProperties(string? Code, IReadOnlyDictionary<string, ProductLabel> Label,
-        NutritionalInfo NutritionalInfo, IReadOnlyDictionary<ServingType, double> Servings, ServingType DefaultServing,
-        IReadOnlyDictionary<string, bool>? Tags)
-    {
-        /// <summary>
-        ///     This tag defines this product as a liquid substance
-        /// </summary>
-        public const string TAG_LIQUID = "liquid";
-
-        /// <summary>
-        ///     Get all allowed tags for a product
-        /// </summary>
-        public static readonly ISet<string> AllowedTags = new HashSet<string>(new List<string> { TAG_LIQUID });
-    }
 }

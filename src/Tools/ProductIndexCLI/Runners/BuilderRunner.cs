@@ -59,7 +59,7 @@ namespace ProductIndexCLI.Runners
             var maxTimestamp = DateTimeOffset.MinValue;
             foreach (var productFile in directory.GetFiles("*", SearchOption.TopDirectoryOnly))
             {
-                Product product;
+                ProductProperties product;
                 try
                 {
                     product = ValidatorRunner.ValidateFile(productFile);
@@ -71,7 +71,11 @@ namespace ProductIndexCLI.Runners
                 }
 
                 product = PatchProduct(product);
-                allProducts.Add(product);
+                var id = GetProductIdFromFilename(productFile.Name);
+                var modifiedOn = productFile.LastWriteTimeUtc;
+
+                allProducts.Add(new Product(id, modifiedOn, product.Code, product.Label, product.NutritionalInfo,
+                    product.Servings, product.DefaultServing, product.Tags));
 
                 maxTimestamp = MaxDateTime(maxTimestamp, productFile.LastWriteTimeUtc);
             }
@@ -87,6 +91,11 @@ namespace ProductIndexCLI.Runners
             Console.WriteLine($"Products -> {filename} ({new FileInfo(path).Length / 1024} KiB)");
 
             return new RepositoryReference("../" + filename, maxTimestamp);
+        }
+
+        private static string GetProductIdFromFilename(string name)
+        {
+            return Path.GetFileNameWithoutExtension(name);
         }
 
         private static void CreateIndexFile(IReadOnlyList<RepositoryReference> repos, DirectoryInfo outputDirectory)
@@ -109,7 +118,7 @@ namespace ProductIndexCLI.Runners
             File.WriteAllText(filename, result);
         }
 
-        public static Product PatchProduct(Product product)
+        public static ProductProperties PatchProduct(ProductProperties product)
         {
             if (product.Tags is { Count: 0 })
             {

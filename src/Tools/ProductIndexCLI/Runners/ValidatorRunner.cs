@@ -32,26 +32,19 @@ namespace ProductIndexCLI.Runners
             }
 
             Console.WriteLine($"Found {validatedCounter} valid files");
-
             return success ? 0 : 1;
         }
 
-        public static Product ValidateFile(FileInfo file)
+        public static ProductProperties ValidateFile(FileInfo file)
         {
-            var validator = new ProductValidator();
+            var validator = new ProductPropertiesValidator();
             var jsonText = File.ReadAllText(file.FullName);
 
-            var obj = JsonConvert.DeserializeObject<Product>(jsonText);
+            var obj = JsonConvert.DeserializeObject<ProductProperties>(jsonText);
 
             if (obj == null)
             {
                 throw new NullReferenceException("The object is null");
-            }
-
-            if (file.Name != $"{obj.Id}.json")
-            {
-                throw new ArgumentException(
-                    $"The product has the id {obj.Id}, but the file is named {file.Name}. Ids do not match");
             }
 
             validator.ValidateAndThrow(obj);
