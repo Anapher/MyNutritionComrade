@@ -10,7 +10,7 @@ export default function DownloadRepoWhenRequired() {
    const status = useSelector(selectInitializationResultStatus);
 
    useEffect(() => {
-      if (status === 'not-initialized') return;
+      if (!status) return;
 
       const handleDownload = () => dispatch(downloadRepositoryUpdates());
       handleDownload();

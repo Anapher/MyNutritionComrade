@@ -1,31 +1,20 @@
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import { retriveStoredRepository, StoredRepositoryData, StoredCatalog, storeRepository } from './product-data-storage';
-import { ProductRepositoryLink } from './product-repository-factory';
+import { ProductRepositoryLink } from './product-index-factory';
 import { Product } from 'src/types';
 import { isRelativeUrl } from 'src/utils/url-utils';
 
-export type ProductIndex = { url: string; timestamp: string };
-export type ProductIndexResponse = ProductIndex[];
+export type ProductCatalogInfo = { url: string; timestamp: string };
+export type ProductCatalogResponse = ProductCatalogInfo[];
 
-type ProgressReporter = (currentLink: ProductRepositoryLink) => void;
-
-export async function downloadProductRepositories(links: ProductRepositoryLink[], reporter?: ProgressReporter) {
-   console.log('download', links);
-
-   for (const link of links) {
-      reporter?.(link);
-      try {
-         await downloadProductRepository(link);
-      } catch (error) {
-         // ignore
-      }
-   }
-}
-
-async function downloadProductRepository(link: ProductRepositoryLink): Promise<void> {
+/**
+ * Fetch the index of the product repository and update all catalogs that are outdated and save them locally
+ * @param link the product repository link
+ */
+export async function updateProductRepository(link: ProductRepositoryLink): Promise<void> {
    const result = await axios.get(link.url);
-   const index: ProductIndexResponse = result.data;
+   const index: ProductCatalogResponse = result.data;
 
    const storedData = (await retriveStoredRepository(link)) ?? { lastUpdated: '', catalogs: {} };
    const updatedStoredData: StoredRepositoryData = { lastUpdated: DateTime.now().toISO(), catalogs: {} };
@@ -41,7 +30,7 @@ async function downloadProductRepository(link: ProductRepositoryLink): Promise<v
 }
 
 async function getCatalogData(
-   catalog: ProductIndex,
+   catalog: ProductCatalogInfo,
    link: ProductRepositoryLink,
    storedData: StoredRepositoryData,
 ): Promise<StoredCatalog | undefined> {
@@ -59,7 +48,7 @@ async function getCatalogData(
    }
 }
 
-async function downloadCatalogData(catalog: ProductIndex, link: ProductRepositoryLink): Promise<Product[]> {
+async function downloadCatalogData(catalog: ProductCatalogInfo, link: ProductRepositoryLink): Promise<Product[]> {
    let url = catalog.url;
    if (isRelativeUrl(url)) url = link.url + '/' + url;
 

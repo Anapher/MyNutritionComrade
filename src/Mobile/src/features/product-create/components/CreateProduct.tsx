@@ -1,21 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack/lib/typescript/src/types';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import config from 'src/config';
-import { updateRepository } from 'src/features/repo-manager/actions';
+import { updateRepository } from 'src/features/repo-manager/reducer';
 import useSafeRequest from 'src/hooks/useSafeRequest';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import api from 'src/services/api';
 import { ProductProperties } from 'src/types';
 import { applyAxiosError } from 'src/utils/error-utils';
 import { emptyProduct } from '../data';
-import { initialize } from '../reducer';
 import schema from '../validation';
 import ProductEditor from './ProductEditor/ProductEditor';
 
@@ -35,19 +34,20 @@ export default function CreateProduct({
    const { makeSafeRequest } = useSafeRequest();
    const [requestError, setRequestError] = useState<string | undefined>();
 
-   useEffect(() => {
-      dispatch(initialize({ mode: 'create' }));
-   }, []);
-
    const form = useForm<ProductProperties>({
       defaultValues: {
          ...emptyProduct,
-         // nutritionalInfo: { volume: 100 },
-         ...{ nutritionalInfo: emptyProduct.nutritionalInfo, label: { de: { value: 'Haferflocken' } } }, // for testing
+         nutritionalInfo: { volume: 100 },
          ...initialValue,
       },
       resolver: zodResolver(schema),
    });
+
+   const {
+      handleSubmit,
+      formState: { isSubmitting },
+      setError,
+   } = form;
 
    const handleCreate = async (data: ProductProperties) => {
       try {
@@ -55,15 +55,23 @@ export default function CreateProduct({
          dispatch(updateRepository(config.writeRepository.key));
          navigation.pop(1);
       } catch (error) {
-         applyAxiosError(error, setRequestError);
+         const domainError = applyAxiosError(error, setRequestError, setError);
+         console.log(domainError);
+
+         if (domainError) {
+            if (domainError.code === 'ProductCodeAlreadyExists') {
+               setError('code', { message: t('errors.ProductCodeAlreadyExists') });
+               setRequestError(undefined);
+            }
+         }
       }
    };
 
    useLayoutEffect(() => {
       navigation.setOptions({
-         headerRight: () => <Button title={t('create')} onPress={form.handleSubmit(handleCreate)} />,
+         headerRight: () => <Button title={t('create')} disabled={isSubmitting} onPress={handleSubmit(handleCreate)} />,
       });
-   }, [form]);
+   }, [handleSubmit]);
 
    return (
       <>

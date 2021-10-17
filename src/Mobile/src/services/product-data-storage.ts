@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Product } from 'src/types';
-import { ProductRepositoryLink } from './product-repository-factory';
+import { ProductRepositoryLink } from './product-index-factory';
 
 export type StoredCatalog = { timestamp: string; data: Product[] };
 

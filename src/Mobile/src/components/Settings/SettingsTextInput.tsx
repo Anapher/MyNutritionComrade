@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, StyleSheet, TextInput, TextStyle, View } from 'react-native';
+import { StyleProp, StyleSheet, TextInput, TextInputProps, TextStyle, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { DEFAULT_HEIGHT } from './config';
 import SettingsButtonContainer, { SettingsButtonContainerProps } from './SettingsButtonContainer';
@@ -11,6 +11,8 @@ type Props = SettingsButtonContainerProps & {
    placeholder?: string;
    titleStyle?: StyleProp<TextStyle>;
    autoFocus?: boolean;
+   inputProps?: TextInputProps;
+   error?: string;
 };
 
 export default function SettingsTextInput({
@@ -20,37 +22,46 @@ export default function SettingsTextInput({
    placeholder,
    titleStyle,
    autoFocus,
+   inputProps,
+   error,
    ...props
 }: Props) {
    const theme = useTheme();
 
    return (
       <SettingsButtonContainer {...props}>
-         <View style={styles.container}>
-            <Text style={[styles.title, titleStyle]}>{title}</Text>
-            <TextInput
-               style={[
-                  styles.input,
-                  {
-                     color: theme.colors.text,
-                  },
-               ]}
-               value={value ?? undefined}
-               onChangeText={onChangeValue}
-               placeholder={placeholder}
-               placeholderTextColor={theme.colors.disabled}
-               autoFocus={autoFocus}
-            />
+         <View style={styles.root}>
+            <View style={styles.container}>
+               <Text style={[styles.title, error ? { color: theme.colors.text } : undefined, titleStyle]}>{title}</Text>
+               <TextInput
+                  style={[
+                     styles.input,
+                     {
+                        color: theme.colors.text,
+                     },
+                  ]}
+                  value={value ?? undefined}
+                  onChangeText={onChangeValue}
+                  placeholder={placeholder}
+                  placeholderTextColor={theme.colors.disabled}
+                  autoFocus={autoFocus}
+                  {...inputProps}
+               />
+            </View>
+            {error && <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>}
          </View>
       </SettingsButtonContainer>
    );
 }
 
 const styles = StyleSheet.create({
+   root: {
+      marginHorizontal: 24,
+   },
    container: {
       display: 'flex',
       flexDirection: 'row',
-      marginHorizontal: 24,
+
       height: DEFAULT_HEIGHT,
       alignItems: 'center',
    },
@@ -62,5 +73,9 @@ const styles = StyleSheet.create({
    input: {
       flex: 1,
       fontSize: 17,
+   },
+   errorText: {
+      marginVertical: 8,
+      fontSize: 12,
    },
 });

@@ -18,11 +18,11 @@ export type InitializationResult =
    | InitializationResultNotInitialized;
 
 /**
- * Attempt to create a product repository from local data
+ * Attempt to create a product index from local data
  * @param repositories the product repositories that should be included
  * @returns the result depending on the retrived data
  */
-export async function createProductRepository(repositories: ProductRepositoryLink[]): Promise<InitializationResult> {
+export async function createProductIndex(repositories: ProductRepositoryLink[]): Promise<InitializationResult> {
    const products: Record<string, Product> = {};
    const reposThatNeedUpdate = new Array<string>();
    let hasProduct = false;

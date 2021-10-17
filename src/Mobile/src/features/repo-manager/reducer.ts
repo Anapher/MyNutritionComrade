@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { InitializationResult } from 'src/services/product-repository-factory';
+import { InitializationResult } from 'src/services/product-index-factory';
 
 export type RepositoryInitState = {
    status: 'initialized' | 'initializing' | 'not-initialized';
@@ -30,10 +30,18 @@ const repoManagerSlice = createSlice({
       downloadRepositoryUpdatesFinished(state) {
          state.downloading = false;
       },
+      updateRepository(state, _: PayloadAction<string>) {
+         state.downloading = true;
+      },
    },
 });
 
-export const { initialize, setInitializationResult, downloadRepositoryUpdates, downloadRepositoryUpdatesFinished } =
-   repoManagerSlice.actions;
+export const {
+   initialize,
+   setInitializationResult,
+   downloadRepositoryUpdates,
+   downloadRepositoryUpdatesFinished,
+   updateRepository,
+} = repoManagerSlice.actions;
 
 export default repoManagerSlice.reducer;

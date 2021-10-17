@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsSection } from 'src/components/Settings/SettingsList';
@@ -63,12 +63,19 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
                <Controller
                   name="code"
                   control={control}
-                  render={({ field: { value, onChange } }) => (
+                  render={({ field: { value, onChange }, fieldState: { error } }) => (
                      <SettingsTextInput
                         title={t('create_product.barcode')}
                         value={value}
                         placeholder={t('create_product.enter_barcode')}
                         onChangeValue={(val) => onChange(val || undefined)}
+                        inputProps={{
+                           autoCompleteType: 'off',
+                           textContentType: 'none',
+                           keyboardType: 'visible-password',
+                           autoCorrect: false,
+                        }}
+                        error={error?.message}
                         {...props}
                      />
                   )}

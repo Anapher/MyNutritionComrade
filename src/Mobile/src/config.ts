@@ -1,4 +1,4 @@
-import { ProductRepositoryLink } from 'src/services/product-repository-factory';
+import { ProductRepositoryLink } from 'src/services/product-index-factory';
 
 type WriteRepository = {
    key: string;

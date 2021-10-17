@@ -25,30 +25,40 @@ export function axiosErrorToString(error: AxiosError): string {
    return i18next.t('errors.response_no_success', { status: error.response.status });
 }
 
+/**
+ * Apply an error to a view
+ * @param error the error
+ * @param setRequestError set the request error if the error could not be matched to a field
+ * @param setError function to set errors on fields
+ * @param errorMap maps field keys of the FieldValidationError to form keys
+ * @returns the domain error if it could be extracted
+ */
 export function applyAxiosError<T>(
    error: any,
    setRequestError: (s: string) => void,
    setError?: UseFormSetError<T>,
    errorMap?: Record<string, FieldPath<T>>,
-) {
+): DomainError | undefined {
    const axiosError = error as AxiosError;
    if (axiosError.isAxiosError) {
       const domainError = tryExtractDomainError(axiosError);
       if (domainError) {
          let appliedError = false;
-         if (domainError.fields && setError && errorMap) {
+         if (domainError.fields && domainError.code === 'FieldValidation' && setError) {
             for (const [key, value] of Object.entries(domainError.fields)) {
-               if (errorMap[key]) {
-                  setError(errorMap[key], { message: value });
-                  appliedError = true;
+               if (errorMap) {
+                  if (errorMap[key]) setError(errorMap[key], { message: value });
+               } else {
+                  setError(key as any, { message: value });
                }
             }
          }
 
-         if (appliedError) return;
+         if (appliedError) return domainError;
       }
 
       setRequestError(axiosErrorToString(axiosError));
+      return domainError;
    } else {
       setRequestError(error?.toString());
    }

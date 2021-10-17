@@ -20,7 +20,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "RCTAsyncStorageExcludeFromBackup": false
-      }
+      },
+      "bundleIdentifier": "org.anapher.mynutritioncomrade"
     },
     "android": {
       "adaptiveIcon": {
