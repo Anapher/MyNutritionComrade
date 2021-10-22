@@ -28,14 +28,15 @@ namespace CommunityCatalog.Core.UseCases
         public async Task<CreateProductResponse> Handle(CreateProductRequest request,
             CancellationToken cancellationToken)
         {
-            var (userId, productProperties) = request;
+            var (userId, productProperties, mirrorInfo) = request;
 
             var version = 1;
-            var product = MapProductPropertiesToEntity(productProperties, version);
+            var product = MapProductPropertiesToProduct(productProperties);
+            var entity = new ProductDocument(product, version, DateTimeOffset.UtcNow, mirrorInfo);
 
             try
             {
-                await _productRepository.Add(product);
+                await _productRepository.Add(entity);
             }
             catch (Exception)
             {
@@ -43,28 +44,29 @@ namespace CommunityCatalog.Core.UseCases
                 {
                     var existingProduct = await _productRepository.FindByCode(product.Code);
                     if (existingProduct != null)
-                        throw ProductError.ProductWithEqualCodeAlreadyExists(product.Code, existingProduct.Id)
+                        throw ProductError.ProductWithEqualCodeAlreadyExists(product.Code, existingProduct.Product.Id)
                             .ToException();
                 }
 
                 throw;
             }
 
-            var contribution = ProductContribution.Create(userId, product.Id, ImmutableList<Operation>.Empty)
-                .Initialized(version, "Create product");
-
-            await _contributionRepository.Add(contribution);
+            await CreateInitialContribution(userId, product.Id, version);
 
             return new CreateProductResponse(product.Id);
         }
 
-        private static VersionedProduct MapProductPropertiesToEntity(ProductProperties properties, int version)
+        private async Task CreateInitialContribution(string userId, string productId, int version)
+        {
+            var contribution = ProductContribution.Create(userId, productId, ImmutableList<Operation>.Empty)
+                .Initialized(version, "Create product");
+            await _contributionRepository.Add(contribution);
+        }
+
+        private static Product MapProductPropertiesToProduct(ProductProperties properties)
         {
             var productId = Guid.NewGuid().ToString("N");
-
-            return new VersionedProduct(version, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, productId,
-                properties.Code, properties.Label, properties.NutritionalInfo, properties.Servings,
-                properties.DefaultServing, properties.Tags);
+            return Product.FromProperties(properties, productId, DateTimeOffset.UtcNow);
         }
     }
 }

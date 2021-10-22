@@ -6,20 +6,21 @@ using CommunityCatalog.Core.Gateways.Repos;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using MongoDB.Concurrency;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using MyNutritionComrade.Models;
 
 namespace CommunityCatalog.Infrastructure.Data.Repos
 {
-    public class ProductRepository : MongoRepo<VersionedProduct>, IProductRepository, IMongoIndexBuilder
+    public class ProductRepository : MongoRepo<ProductDocument>, IProductRepository, IMongoIndexBuilder
     {
         static ProductRepository()
         {
-            BsonClassMap.RegisterClassMap<Product>(config =>
+            BsonClassMap.RegisterClassMap<ProductDocument>(config =>
             {
                 config.AutoMap();
-                config.MapIdMember(x => x.Id);
+                config.MapIdMember(x => x.Product.Id);
             });
         }
 
@@ -27,26 +28,31 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
         {
         }
 
-        public async ValueTask Add(VersionedProduct product)
+        public async ValueTask Add(ProductDocument product)
         {
             await Collection.InsertOneAsync(product);
         }
 
-        public async ValueTask<VersionedProduct?> FindById(string productId)
+        public async ValueTask Update(ProductDocument product)
         {
-            return await Collection.Find(x => x.Id == productId).FirstOrDefaultAsync();
+            await Collection.Optimistic(x => x.ConcurrencyToken).UpdateAsync(product);
         }
 
-        public async ValueTask<VersionedProduct?> FindByCode(string code)
+        public async ValueTask<ProductDocument?> FindById(string productId)
         {
-            return await Collection.Find(x => x.Code == code).FirstOrDefaultAsync();
+            return await Collection.Find(x => x.Product.Id == productId).FirstOrDefaultAsync();
+        }
+
+        public async ValueTask<ProductDocument?> FindByCode(string code)
+        {
+            return await Collection.Find(x => x.Product.Code == code).FirstOrDefaultAsync();
         }
 
         public async ValueTask<DateTimeOffset?> GetLatestProductChange()
         {
             try
             {
-                return await Collection.AsQueryable().MinAsync(x => x.ModifiedOn);
+                return await Collection.AsQueryable().MaxAsync(x => x.Product.ModifiedOn);
             }
             catch (InvalidOperationException)
             {
@@ -59,17 +65,18 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
 
         public async ValueTask<IReadOnlyList<Product>> GetAll()
         {
-            return await Collection.AsQueryable().ToListAsync();
+            return await Collection.AsQueryable().Select(x => x.Product).ToListAsync();
         }
 
         public async Task CreateIndexes()
         {
-            await Collection.Indexes.CreateOneAsync(new CreateIndexModel<VersionedProduct>(
-                Builders<VersionedProduct>.IndexKeys.Ascending(x => x.Code),
-                new CreateIndexOptions<VersionedProduct>
+            await Collection.Indexes.CreateOneAsync(new CreateIndexModel<ProductDocument>(
+                Builders<ProductDocument>.IndexKeys.Ascending(x => x.Product.Code),
+                new CreateIndexOptions<ProductDocument>
                 {
                     Unique = true,
-                    PartialFilterExpression = Builders<VersionedProduct>.Filter.Type(x => x.Code, BsonType.String),
+                    PartialFilterExpression =
+                        Builders<ProductDocument>.Filter.Type(x => x.Product.Code, BsonType.String),
                 }));
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using CommunityCatalog.Core.Domain;
 using CommunityCatalog.Core.Errors;
 using CommunityCatalog.Core.Extensions;
@@ -24,16 +25,19 @@ namespace CommunityCatalog.Core.UseCases
         private readonly IProductRepository _productRepository;
         private readonly IProductUpdateTransaction _productUpdateTransaction;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
         public ApplyProductContributionUseCase(IProductContributionRepository contributionRepository,
             IProductRepository productRepository, IProductUpdateTransaction productUpdateTransaction,
-            IMediator mediator)
+            IMediator mediator, IMapper mapper)
         {
             _contributionRepository = contributionRepository;
             _productRepository = productRepository;
             _productUpdateTransaction = productUpdateTransaction;
             _mediator = mediator;
+            _mapper = mapper;
         }
+
 
         public async Task<Unit> Handle(ApplyProductContributionRequest request, CancellationToken cancellationToken)
         {
@@ -44,55 +48,54 @@ namespace CommunityCatalog.Core.UseCases
             if (contribution.Status != ProductContributionStatus.Pending)
                 throw ProductContributionError.InvalidStatus().ToException();
 
-            var product = await _productRepository.FindById(contribution.ProductId);
-            if (product == null)
+            var productDocument = await _productRepository.FindById(contribution.ProductId);
+            if (productDocument == null)
                 throw ProductError.ProductNotFound(contribution.ProductId).ToException();
 
-            var patchedProduct = ApplyPatch(product, contribution.Operations);
+            var patchedProduct = ApplyPatch(productDocument.Product, contribution.Operations);
             if (patchedProduct == null)
                 throw new FieldValidationError(".", "Must not be null").ToException();
 
             ValidateProduct(patchedProduct);
 
-            var newProductVersion = product.Version + 1;
-            var newContribution = contribution.Applied(newProductVersion, request.StatusDescription, product);
-            var newProduct = product with
+            var backupProductProperties = _mapper.Map<ProductProperties>(productDocument.Product);
+
+            var newProductVersion = productDocument.Version + 1;
+            var newContribution = contribution.Applied(newProductVersion, request.StatusDescription,
+                backupProductProperties);
+
+            var newProductDocument = productDocument with
             {
                 Version = newProductVersion,
-                ModifiedOn = DateTimeOffset.UtcNow,
-
-                // copy properties
-                Code = patchedProduct.Code,
-                Label = patchedProduct.Label,
-                NutritionalInfo = patchedProduct.NutritionalInfo,
-                Servings = patchedProduct.Servings,
-                DefaultServing = patchedProduct.DefaultServing,
-                Tags = patchedProduct.Tags,
+                Product = Product.FromProperties(patchedProduct, productDocument.Product.Id, DateTimeOffset.UtcNow),
             };
 
-            await _productUpdateTransaction.UpdateProduct(newProduct, newContribution, product.Version);
+            await _productUpdateTransaction.UpdateProduct(newProductDocument, newContribution, productDocument.Version);
 
-            await RemoveNowInvalidContributions(newProduct);
+            await RemoveNowInvalidContributions(newProductDocument.Product, newProductDocument.Version);
 
             return Unit.Value;
         }
 
-        private async Task RemoveNowInvalidContributions(VersionedProduct newProduct)
+        private async Task RemoveNowInvalidContributions(Product product, int version)
         {
-            var contributions = await _contributionRepository.GetActiveContributions(newProduct.Id);
+            var contributions = await _contributionRepository.GetActiveContributions(product.Id);
 
             foreach (var contribution in contributions)
             {
-                var patched = ApplyPatch(newProduct, contribution.Operations);
+                var patched = ApplyPatch(product, contribution.Operations);
                 try
                 {
                     ValidateProduct(patched ?? throw new InvalidOperationException("Product is null"));
+                    continue;
                 }
                 catch (Exception)
                 {
-                    await _mediator.Send(new RejectProductContributionRequest(contribution.Id,
-                        $"Automatically rejected because invalid after version {newProduct.Version}"));
+                    // ignored
                 }
+
+                await _mediator.Send(new RejectProductContributionRequest(contribution.Id,
+                    $"Automatically rejected because invalid after version {version}"));
             }
         }
 
@@ -106,7 +109,7 @@ namespace CommunityCatalog.Core.UseCases
             return productDocument.ToObject<ProductProperties>();
         }
 
-        private void ValidateProduct(ProductProperties product)
+        private static void ValidateProduct(ProductProperties product)
         {
             var validator = new ProductPropertiesValidator();
             var validationResult = validator.Validate(product);

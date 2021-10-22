@@ -13,10 +13,10 @@ namespace CommunityCatalog.Infrastructure.Data.Transactions
         {
         }
 
-        public async ValueTask UpdateProduct(VersionedProduct product, ProductContribution productContribution,
+        public async ValueTask UpdateProduct(ProductDocument product, ProductContribution productContribution,
             int baseProductVersion)
         {
-            var productsCollection = GetCollection<VersionedProduct>();
+            var productsCollection = GetCollection<ProductDocument>();
             var contributionsCollection = GetCollection<ProductContribution>();
 
             using var session = await MongoClient.StartSessionAsync();
@@ -24,8 +24,8 @@ namespace CommunityCatalog.Infrastructure.Data.Transactions
             session.StartTransaction();
 
             await productsCollection.ReplaceOneAsync(session,
-                Builders<VersionedProduct>.Filter.Where(x => x.Id == product.Id && x.Version == baseProductVersion),
-                product);
+                Builders<ProductDocument>.Filter.Where(x =>
+                    x.Product.Id == product.Product.Id && x.Version == baseProductVersion), product);
 
             await contributionsCollection.ReplaceOneAsync(session,
                 Builders<ProductContribution>.Filter.Where(x =>

@@ -30,12 +30,12 @@ namespace CommunityCatalog.IntegrationTests
             return dto.ProductId;
         }
 
-        public static async Task<IReadOnlyList<RepositoryReference>> GetAllRepositories(HttpClient client)
+        public static async Task<IReadOnlyList<ProductCatalogReference>> GetAllRepositories(HttpClient client)
         {
             var response = await client.GetAsync("api/v1/product/index.json");
             await ThrowOnError(response);
 
-            return await response.Content.ReadFromJsonAsync<IReadOnlyList<RepositoryReference>>() ??
+            return await response.Content.ReadFromJsonAsync<IReadOnlyList<ProductCatalogReference>>() ??
                    throw new InvalidOperationException("Result must not be null");
         }
 

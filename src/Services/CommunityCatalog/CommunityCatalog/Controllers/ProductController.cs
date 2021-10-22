@@ -161,13 +161,13 @@ namespace CommunityCatalog.Controllers
 
         [HttpGet("index.json")]
         [AllowAnonymous]
-        public async Task<ActionResult<IReadOnlyList<RepositoryReference>>> GetIndexFile(
+        public async Task<ActionResult<IReadOnlyList<ProductCatalogReference>>> GetIndexFile(
             [FromServices] IProductRepository repository)
         {
             var productsUrl = Url.ActionLink(nameof(GetAllProducts));
             var latestChange = await repository.GetLatestProductChange();
 
-            return Ok(new List<RepositoryReference> { new(productsUrl, latestChange ?? DateTimeOffset.MinValue) });
+            return Ok(new List<ProductCatalogReference> { new(productsUrl, latestChange ?? DateTimeOffset.MinValue) });
         }
     }
 }

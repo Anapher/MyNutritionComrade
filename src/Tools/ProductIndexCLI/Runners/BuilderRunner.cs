@@ -23,7 +23,7 @@ namespace ProductIndexCLI.Runners
                 return 1;
             }
 
-            var repos = new List<RepositoryReference>
+            var repos = new List<ProductCatalogReference>
             {
                 CreateRepository(productsDirectory, outputDirectory, "products"),
             };
@@ -49,7 +49,7 @@ namespace ProductIndexCLI.Runners
             return $"products-{noPathSeparator}";
         }
 
-        private static RepositoryReference CreateRepository(DirectoryInfo directory, DirectoryInfo outputDirectory,
+        private static ProductCatalogReference CreateRepository(DirectoryInfo directory, DirectoryInfo outputDirectory,
             string productRepositoryName)
         {
             var allProducts = new List<Product>();
@@ -90,7 +90,7 @@ namespace ProductIndexCLI.Runners
 
             Console.WriteLine($"Products -> {filename} ({new FileInfo(path).Length / 1024} KiB)");
 
-            return new RepositoryReference("../" + filename, maxTimestamp);
+            return new ProductCatalogReference("../" + filename, maxTimestamp);
         }
 
         private static string GetProductIdFromFilename(string name)
@@ -98,7 +98,7 @@ namespace ProductIndexCLI.Runners
             return Path.GetFileNameWithoutExtension(name);
         }
 
-        private static void CreateIndexFile(IReadOnlyList<RepositoryReference> repos, DirectoryInfo outputDirectory)
+        private static void CreateIndexFile(IReadOnlyList<ProductCatalogReference> repos, DirectoryInfo outputDirectory)
         {
             var indexFile = new FileInfo(Path.Combine(outputDirectory.FullName, "index.json"));
             SerializeToFile(indexFile.FullName, repos);

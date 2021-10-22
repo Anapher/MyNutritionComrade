@@ -8,11 +8,13 @@ namespace CommunityCatalog.Core.Gateways.Repos
 {
     public interface IProductRepository
     {
-        ValueTask Add(VersionedProduct product);
+        ValueTask Add(ProductDocument product);
 
-        ValueTask<VersionedProduct?> FindById(string productId);
+        ValueTask Update(ProductDocument product);
 
-        ValueTask<VersionedProduct?> FindByCode(string code);
+        ValueTask<ProductDocument?> FindById(string productId);
+
+        ValueTask<ProductDocument?> FindByCode(string code);
 
         ValueTask<DateTimeOffset?> GetLatestProductChange();
 

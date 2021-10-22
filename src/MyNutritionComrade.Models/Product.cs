@@ -26,5 +26,12 @@ namespace MyNutritionComrade.Models
         IReadOnlyDictionary<string, ProductLabel> Label, NutritionalInfo NutritionalInfo,
         IReadOnlyDictionary<ServingType, double> Servings, ServingType DefaultServing,
         IReadOnlyDictionary<string, bool>? Tags) : ProductProperties(Code, Label, NutritionalInfo, Servings,
-        DefaultServing, Tags);
+        DefaultServing, Tags)
+    {
+        public static Product FromProperties(ProductProperties properties, string id, DateTimeOffset modifiedOn)
+        {
+            return new Product(id, modifiedOn, properties.Code, properties.Label, properties.NutritionalInfo,
+                properties.Servings, properties.DefaultServing, properties.Tags);
+        }
+    }
 }

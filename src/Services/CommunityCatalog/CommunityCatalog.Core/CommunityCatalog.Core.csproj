@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.2.0" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.10" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
@@ -14,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libs\JsonPatchGenerator\JsonPatchGenerator.csproj" />
     <ProjectReference Include="..\..\..\MyNutritionComrade.Models\MyNutritionComrade.Models.csproj" />
   </ItemGroup>
 

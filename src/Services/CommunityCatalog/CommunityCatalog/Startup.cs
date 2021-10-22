@@ -122,6 +122,8 @@ namespace CommunityCatalog
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
             });
+
+            services.AddHttpClient();
         }
 
         // ConfigureContainer is where you can register things directly

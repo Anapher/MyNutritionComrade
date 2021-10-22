@@ -5,7 +5,7 @@ namespace CommunityCatalog.Core.Gateways.Transactions
 {
     public interface IProductUpdateTransaction
     {
-        ValueTask UpdateProduct(VersionedProduct product, ProductContribution productContribution,
+        ValueTask UpdateProduct(ProductDocument product, ProductContribution productContribution,
             int baseProductVersion);
     }
 }

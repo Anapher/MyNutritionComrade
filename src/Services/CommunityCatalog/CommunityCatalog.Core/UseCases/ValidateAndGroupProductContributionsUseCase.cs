@@ -25,22 +25,22 @@ namespace CommunityCatalog.Core.UseCases
         public async Task<IReadOnlyList<ProductOperationsGroup>> Handle(
             ValidateAndGroupProductContributionsRequest request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.FindById(request.ProductId);
-            if (product == null)
+            var productDocument = await _productRepository.FindById(request.ProductId);
+            if (productDocument == null)
                 throw ProductError.ProductNotFound(request.ProductId).ToException();
 
             var operations = JsonUtils
-                .FilterRedundantOperations(request.Operations, product, JsonConfig.DefaultSerializer).ToList();
+                .FilterRedundantOperations(request.Operations, productDocument, JsonConfig.DefaultSerializer).ToList();
             if (!operations.Any())
                 throw ProductError.NoPatchOperations().ToException();
 
             var groups = ProductOperationsGroup.GroupOperations(operations).ToList();
-            ValidateGroups(groups, product);
+            ValidateGroups(groups, productDocument.Product);
 
             return groups;
         }
 
-        private void ValidateGroups(IEnumerable<ProductOperationsGroup> groups, ProductProperties product)
+        private static void ValidateGroups(IEnumerable<ProductOperationsGroup> groups, ProductProperties product)
         {
             var validator = new ProductPropertiesValidator();
 
