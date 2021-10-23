@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CommunityCatalog.Core;
+using CommunityCatalog.Core.Gateways.Services;
 using CommunityCatalog.Extensions;
 using MyNutritionComrade.Models;
 using MyNutritionComrade.Models.Index;

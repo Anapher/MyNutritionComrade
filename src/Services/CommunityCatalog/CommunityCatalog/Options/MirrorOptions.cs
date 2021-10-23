@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using CommunityCatalog.Infrastructure.Mirrors;
+using CommunityCatalog.Core.Domain;
 
 namespace CommunityCatalog.Options
 {

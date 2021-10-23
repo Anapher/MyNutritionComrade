@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MyNutritionComrade.Models;
 using MyNutritionComrade.Models.Index;
 
-namespace CommunityCatalog.Services
+namespace CommunityCatalog.Core.Gateways.Services
 {
     public interface IMirrorClient
     {

@@ -9,6 +9,7 @@ using CommunityCatalog.Core.Requests;
 using JsonPatchGenerator;
 using MediatR;
 using MyNutritionComrade.Models;
+using Newtonsoft.Json.Linq;
 
 namespace CommunityCatalog.Core.UseCases
 {
@@ -71,6 +72,12 @@ namespace CommunityCatalog.Core.UseCases
 
             if (!patch.Operations.Any())
                 return;
+
+            foreach (var operation in patch.Operations)
+            {
+                if (operation.value is JToken jToken)
+                    operation.value = jToken.ToObject<object>();
+            }
 
             var groups =
                 await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, patch.Operations));

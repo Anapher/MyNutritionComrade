@@ -100,7 +100,7 @@ namespace CommunityCatalog.Core.UseCases
 
         private static ProductProperties? ApplyPatch(ProductProperties product, IReadOnlyList<Operation> operations)
         {
-            var productDocument = JToken.FromObject(product);
+            var productDocument = JToken.FromObject(product, JsonConfig.DefaultSerializer);
 
             var patchDocument = new JsonPatchDocument(operations.ToList(), JsonConfig.Default.ContractResolver);
             patchDocument.ApplyToWithDefaultOptions(productDocument);
