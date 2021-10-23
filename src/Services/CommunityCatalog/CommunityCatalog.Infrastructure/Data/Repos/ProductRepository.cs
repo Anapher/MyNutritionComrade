@@ -20,7 +20,7 @@ namespace CommunityCatalog.Infrastructure.Data.Repos
             BsonClassMap.RegisterClassMap<ProductDocument>(config =>
             {
                 config.AutoMap();
-                config.MapIdMember(x => x.Product.Id);
+                config.MapIdMember(x => x.ProductId);
             });
         }
 

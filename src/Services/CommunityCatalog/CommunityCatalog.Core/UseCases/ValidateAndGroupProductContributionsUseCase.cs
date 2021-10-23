@@ -30,7 +30,8 @@ namespace CommunityCatalog.Core.UseCases
                 throw ProductError.ProductNotFound(request.ProductId).ToException();
 
             var operations = JsonUtils
-                .FilterRedundantOperations(request.Operations, productDocument, JsonConfig.DefaultSerializer).ToList();
+                .FilterRedundantOperations(request.Operations, productDocument.Product, JsonConfig.DefaultSerializer)
+                .ToList();
             if (!operations.Any())
                 throw ProductError.NoPatchOperations().ToException();
 

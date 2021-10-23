@@ -8,6 +8,6 @@ namespace CommunityCatalog.Infrastructure.Data
 
         public string DatabaseName { get; set; } = "MyNutritionComrade";
 
-        public Dictionary<string, string> CollectionNames { get; set; } = new() { { "Product", "Product" } };
+        public Dictionary<string, string> CollectionNames { get; set; } = new() { { "ProductDocument", "Product" } };
     }
 }

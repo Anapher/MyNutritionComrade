@@ -67,7 +67,7 @@ namespace CommunityCatalog.IntegrationTests
                     "appsettings.IntegrationTest.json", false, false).Build();
 
             configuration["MongoDb:ConnectionString"] = _mongoDb.Runner.ConnectionString;
-            configuration["MongoDb:CollectionNames:VersionedProduct"] = "Product-" + Guid.NewGuid().ToString("N");
+            configuration["MongoDb:CollectionNames:ProductDocument"] = "Product-" + Guid.NewGuid().ToString("N");
             configuration["MongoDb:CollectionNames:ProductContribution"] =
                 "ProductContribution-" + Guid.NewGuid().ToString("N");
             configuration["MongoDb:CollectionNames:ProductContributionVote"] =
