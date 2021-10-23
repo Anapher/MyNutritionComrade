@@ -38,7 +38,6 @@ namespace CommunityCatalog.Core.UseCases
             _mapper = mapper;
         }
 
-
         public async Task<Unit> Handle(ApplyProductContributionRequest request, CancellationToken cancellationToken)
         {
             var contribution = await _contributionRepository.FindById(request.ContributionId);

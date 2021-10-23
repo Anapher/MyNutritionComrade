@@ -10,6 +10,7 @@
         ProductContributionAlreadyVoted,
         ProductCodeAlreadyExists,
         UnexpectedError,
+        ProductIsReadOnly,
 
         Auth_InvalidPassword,
     }

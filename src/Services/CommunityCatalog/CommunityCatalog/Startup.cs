@@ -124,6 +124,8 @@ namespace CommunityCatalog
             });
 
             services.AddHttpClient();
+            services.AddHostedService<MirrorSynchronizer>();
+            services.AddSingleton<IMirrorClient, HttpMirrorClient>();
         }
 
         // ConfigureContainer is where you can register things directly

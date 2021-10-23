@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CommunityCatalog.Core;
 using CommunityCatalog.Core.Domain;
+using CommunityCatalog.Core.Extensions;
 using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Requests;
 using CommunityCatalog.Core.Response;
@@ -23,10 +25,12 @@ namespace CommunityCatalog.Controllers
     public class ProductController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IProductRepository _productRepository;
 
-        public ProductController(IMediator mediator)
+        public ProductController(IMediator mediator, IProductRepository productRepository)
         {
             _mediator = mediator;
+            _productRepository = productRepository;
         }
 
         [HttpPost]
@@ -52,6 +56,8 @@ namespace CommunityCatalog.Controllers
         {
             try
             {
+                await EnsureProductWritable(productId);
+
                 var result =
                     await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
                 return Ok(result);
@@ -69,6 +75,8 @@ namespace CommunityCatalog.Controllers
         {
             try
             {
+                await EnsureProductWritable(productId);
+
                 var userId = User.GetUserId();
                 var admin = User.IsAdmin();
 
@@ -96,6 +104,16 @@ namespace CommunityCatalog.Controllers
             {
                 return e.ToError().ToActionResult();
             }
+        }
+
+        private async Task EnsureProductWritable(string productId)
+        {
+            var productDocument = await _productRepository.FindById(productId);
+            if (productDocument == null)
+                throw ProductError.ProductNotFound(productId).ToException();
+
+            if (productDocument.MirrorInfo?.ReadOnly == true)
+                throw ProductError.ProductIsReadOnly(productId).ToException();
         }
 
         [HttpGet("{productId}/contributions")]

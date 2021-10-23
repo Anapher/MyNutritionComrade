@@ -1,36 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CommunityCatalog.Core;
 using CommunityCatalog.Core.Requests;
-using CommunityCatalog.Extensions;
 using CommunityCatalog.Infrastructure.Mirrors;
 using CommunityCatalog.Options;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyNutritionComrade.Models;
-using MyNutritionComrade.Models.Index;
 
 namespace CommunityCatalog.Services
 {
     public class MirrorSynchronizer : PeriodicBackgroundJob
     {
+        private readonly IMirrorClient _mirrorClient;
         private readonly IMediator _mediator;
         private readonly ILogger<MirrorSynchronizer> _logger;
         private readonly MirrorOptions _options;
-        private readonly HttpClient _httpClient;
 
-        public MirrorSynchronizer(IOptions<MirrorOptions> options, IHttpClientFactory httpClientFactory,
-            IMediator mediator, ILogger<MirrorSynchronizer> logger)
+        public MirrorSynchronizer(IOptions<MirrorOptions> options, IMirrorClient mirrorClient, IMediator mediator,
+            ILogger<MirrorSynchronizer> logger)
         {
+            _mirrorClient = mirrorClient;
             _mediator = mediator;
             _logger = logger;
             _options = options.Value;
-            _httpClient = httpClientFactory.CreateClient();
         }
 
         protected override async Task RunAsync(CancellationToken cancellationToken)
@@ -39,24 +34,28 @@ namespace CommunityCatalog.Services
 
             foreach (var mirror in _options.Indexes)
             {
-                await SynchronizeMirror(mirror);
+                try
+                {
+                    await SynchronizeMirror(mirror);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Error synchronizing index {url}", mirror.IndexUrl);
+                }
             }
         }
 
         private async Task SynchronizeMirror(ProductIndexMirror mirror)
         {
-            var request = await _httpClient.GetAsync(mirror.IndexUrl);
-            var catalogs = await request.EnsureSuccessStatusCode().Content
-                .ReadFromJsonAsync<IReadOnlyList<ProductCatalogReference>>();
-
-            if (catalogs == null) throw new InvalidOperationException("Catalog list must not be null");
+            var catalogs = await _mirrorClient.FetchCatalogsFromIndex(mirror.IndexUrl);
 
             foreach (var catalogReference in catalogs)
             {
                 var catalogUrl = BuildProductCatalogUrl(mirror.IndexUrl, catalogReference.Url);
                 try
                 {
-                    await SynchronizeCatalog(catalogUrl, mirror.IndexUrl);
+                    await SynchronizeCatalog(catalogUrl, mirror.IndexUrl,
+                        !mirror.WriteableCatalogs.Contains(catalogReference.Url));
                 }
                 catch (Exception e)
                 {
@@ -65,19 +64,15 @@ namespace CommunityCatalog.Services
             }
         }
 
-        private async Task SynchronizeCatalog(string url, string indexUrl)
+        private async Task SynchronizeCatalog(string url, string indexUrl, bool readOnly)
         {
-            var request = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-            var products = await request.EnsureSuccessStatusCode().Content
-                .ReadFromJsonNetAsync<IReadOnlyList<Product>>(JsonConfig.DefaultSerializer);
-
-            if (products == null) throw new InvalidOperationException("Product list must not be null");
+            var products = await _mirrorClient.FetchProductsFromCatalog(url);
 
             foreach (var product in products)
             {
                 try
                 {
-                    await SynchronizeProduct(product, indexUrl);
+                    await SynchronizeProduct(product, indexUrl, readOnly);
                 }
                 catch (Exception e)
                 {
@@ -86,9 +81,9 @@ namespace CommunityCatalog.Services
             }
         }
 
-        private async Task SynchronizeProduct(Product product, string indexUrl)
+        private async Task SynchronizeProduct(Product product, string indexUrl, bool readOnly)
         {
-            await _mediator.Send(new SynchronizeProductRequest(product, indexUrl));
+            await _mediator.Send(new SynchronizeProductRequest(product, indexUrl, readOnly));
         }
 
         private static string BuildProductCatalogUrl(string mirrorIndexUrl, string catalogUrl)

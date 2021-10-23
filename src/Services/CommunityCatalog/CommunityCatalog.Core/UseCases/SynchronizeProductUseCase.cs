@@ -29,16 +29,18 @@ namespace CommunityCatalog.Core.UseCases
 
         public async Task<Unit> Handle(SynchronizeProductRequest request, CancellationToken cancellationToken)
         {
+            var mirrorInfo = CreateMirrorInfo(request);
+
             var product = await _productRepository.FindById(request.Product.Id);
             if (product == null)
             {
-                await AddNewProduct(request, new ProductMirrorInfo(request.Product, request.IndexUrl));
+                await AddNewProduct(request, mirrorInfo);
                 return Unit.Value;
             }
 
             if (product.MirrorInfo == null)
             {
-                await CreateMirrorForProduct(product, request);
+                await SetMirrorForProduct(product, mirrorInfo);
                 return Unit.Value;
             }
 
@@ -49,7 +51,7 @@ namespace CommunityCatalog.Core.UseCases
             if (request.Product.ModifiedOn > product.MirrorInfo.ProductVersion.ModifiedOn)
             {
                 // if the product at the mirror has updated since the last synchronization
-                await CreateMirrorForProduct(product, request);
+                await SetMirrorForProduct(product, mirrorInfo);
                 await CreateAndApplyPatchesForProduct(request.Product, product.MirrorInfo.ProductVersion);
                 return Unit.Value;
             }
@@ -89,12 +91,14 @@ namespace CommunityCatalog.Core.UseCases
             await _mediator.Send(new CreateProductRequest(SYSTEM_USERID, request.Product, mirrorInfo));
         }
 
-        private async Task CreateMirrorForProduct(ProductDocument product, SynchronizeProductRequest request)
+        private async Task SetMirrorForProduct(ProductDocument product, ProductMirrorInfo mirrorInfo)
         {
-            await _productRepository.Update(product with
-            {
-                MirrorInfo = new ProductMirrorInfo(request.Product, request.IndexUrl),
-            });
+            await _productRepository.Update(product with { MirrorInfo = mirrorInfo });
+        }
+
+        private static ProductMirrorInfo CreateMirrorInfo(SynchronizeProductRequest request)
+        {
+            return new ProductMirrorInfo(request.Product, request.IndexUrl, request.ReadOnly);
         }
     }
 }

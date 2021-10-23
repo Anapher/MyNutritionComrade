@@ -39,6 +39,12 @@ namespace CommunityCatalog.Core
                 new Dictionary<string, string> { { "productId", productId } });
         }
 
+        public static Error ProductIsReadOnly(string productId)
+        {
+            return NotFound("The product is read only.", NutritionComradeErrorCode.ProductIsReadOnly,
+                new Dictionary<string, string> { { "productId", productId } });
+        }
+
         public static Error NoPatchOperations()
         {
             return NotFound(

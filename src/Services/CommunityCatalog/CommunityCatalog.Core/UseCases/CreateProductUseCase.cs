@@ -29,9 +29,10 @@ namespace CommunityCatalog.Core.UseCases
             CancellationToken cancellationToken)
         {
             var (userId, productProperties, mirrorInfo) = request;
+            var productId = mirrorInfo?.ProductVersion.Id ?? GenerateProductId();
 
             var version = 1;
-            var product = MapProductPropertiesToProduct(productProperties);
+            var product = MapProductPropertiesToProduct(productProperties, productId);
             var entity = new ProductDocument(product, version, DateTimeOffset.UtcNow, mirrorInfo);
 
             try
@@ -56,6 +57,11 @@ namespace CommunityCatalog.Core.UseCases
             return new CreateProductResponse(product.Id);
         }
 
+        private static string GenerateProductId()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
+
         private async Task CreateInitialContribution(string userId, string productId, int version)
         {
             var contribution = ProductContribution.Create(userId, productId, ImmutableList<Operation>.Empty)
@@ -63,9 +69,8 @@ namespace CommunityCatalog.Core.UseCases
             await _contributionRepository.Add(contribution);
         }
 
-        private static Product MapProductPropertiesToProduct(ProductProperties properties)
+        private static Product MapProductPropertiesToProduct(ProductProperties properties, string productId)
         {
-            var productId = Guid.NewGuid().ToString("N");
             return Product.FromProperties(properties, productId, DateTimeOffset.UtcNow);
         }
     }
