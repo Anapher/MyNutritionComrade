@@ -101,6 +101,8 @@ namespace CommunityCatalog
             var mongoOptions = new MongoDbOptions();
             Configuration.GetSection("MongoDb").Bind(mongoOptions);
 
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MongoConcurrencyPipeline<,>));
+
             var healthChecks = services.AddHealthChecks();
             healthChecks.AddMongoDb(mongoOptions.ConnectionString);
 
