@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using CommunityCatalog.Core.Domain;
 
 namespace CommunityCatalog.Options
 {
     public class MirrorOptions
     {
-        public IReadOnlyList<ProductIndexMirror> Indexes { get; set; } = ImmutableList<ProductIndexMirror>.Empty;
+        public ProductIndexMirror[] Indexes { get; set; } = Array.Empty<ProductIndexMirror>();
 
         public TimeSpan PollFrequency { get; set; } = TimeSpan.FromHours(24);
     }

@@ -27,8 +27,14 @@ namespace CommunityCatalog.Core.UseCases
 
         public async Task<Unit> Handle(SynchronizeMirrorsRequest request, CancellationToken cancellationToken)
         {
+            if (!request.Mirrors.Any())
+            {
+                _logger.LogDebug("Requested to synchronize mirrors, but no mirrors were found");
+            }
+
             foreach (var mirror in request.Mirrors)
             {
+                _logger.LogDebug("Synchronize mirror {url}", mirror.IndexUrl);
                 try
                 {
                     await SynchronizeMirror(mirror);
@@ -45,6 +51,8 @@ namespace CommunityCatalog.Core.UseCases
         private async Task SynchronizeMirror(ProductIndexMirror mirror)
         {
             var catalogs = await _mirrorClient.FetchCatalogsFromIndex(mirror.IndexUrl);
+
+            _logger.LogDebug("Found {count} catalogs", catalogs.Count);
 
             foreach (var catalogReference in catalogs)
             {
@@ -64,6 +72,8 @@ namespace CommunityCatalog.Core.UseCases
         private async Task SynchronizeCatalog(string url, string indexUrl, bool readOnly)
         {
             var products = await _mirrorClient.FetchProductsFromCatalog(url);
+
+            _logger.LogDebug("Synchronize {count} products from catalog {catalogUrl}", products.Count, url);
 
             foreach (var product in products)
             {

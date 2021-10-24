@@ -1,6 +1,7 @@
 ﻿using System;
 using CommunityCatalog.Core.Gateways.Services;
 using CommunityCatalog.Infrastructure.Auth;
+using CommunityCatalog.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -48,7 +49,7 @@ namespace CommunityCatalog.IntegrationTests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            var configuration = StartMongoDbAndGetConfiguration();
+            var configuration = GetTestConfiguration();
 
             builder.ConfigureAppConfiguration(configurationBuilder =>
                 configurationBuilder.AddConfiguration(configuration));
@@ -57,10 +58,11 @@ namespace CommunityCatalog.IntegrationTests
             {
                 services.AddSingleton<IEmailSender>(EmailSender);
                 services.AddSingleton<IOptions<AdminOptions>>(new OptionsWrapper<AdminOptions>(_adminOptions));
+                services.AddSingleton<IOptions<MirrorOptions>>(new OptionsWrapper<MirrorOptions>(new MirrorOptions()));
             });
         }
 
-        private IConfiguration StartMongoDbAndGetConfiguration()
+        private IConfiguration GetTestConfiguration()
         {
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(new EmbeddedFileProvider(typeof(CustomWebApplicationFactory).Assembly),

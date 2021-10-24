@@ -38,10 +38,10 @@ namespace CommunityCatalog.IntegrationTests.Services
 
         private void AddIndex(string indexUrl, Dictionary<string, CatalogData> catalogs)
         {
-            _factory.Options.Indexes = _factory.Options.Indexes.Concat(new List<ProductIndexMirror>
+            _factory.Options.Indexes = _factory.Options.Indexes.Concat(new ProductIndexMirror[]
             {
-                new(indexUrl, catalogs.Where(x => x.Value.Writeable).Select(x => x.Key).ToList()),
-            }).ToList();
+                new(indexUrl, catalogs.Where(x => x.Value.Writeable).Select(x => x.Key).ToArray()),
+            }).ToArray();
 
             _factory.MirrorClientMock.Setup(x => x.FetchCatalogsFromIndex(indexUrl)).ReturnsAsync(() =>
                 catalogs.Select(x => new ProductCatalogReference(x.Key, x.Value.ModifiedOn)).ToList());

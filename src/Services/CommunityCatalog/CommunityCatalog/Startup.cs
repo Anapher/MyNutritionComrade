@@ -9,6 +9,7 @@ using CommunityCatalog.Infrastructure;
 using CommunityCatalog.Infrastructure.Auth;
 using CommunityCatalog.Infrastructure.Data;
 using CommunityCatalog.Infrastructure.Email;
+using CommunityCatalog.Options;
 using CommunityCatalog.Services;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -57,6 +58,7 @@ namespace CommunityCatalog
             services.Configure<IdentityOptions>(Configuration.GetSection("IdentityOptions"));
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDb"));
             services.Configure<AdminOptions>(Configuration.GetSection("Admins"));
+            services.Configure<MirrorOptions>(Configuration.GetSection("Mirror"));
 
             services.AddSingleton<IEmailSender, TestEmailSender>();
 
