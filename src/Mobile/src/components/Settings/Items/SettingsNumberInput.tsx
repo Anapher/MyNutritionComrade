@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleProp, StyleSheet, TextInput, TextStyle, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import NumberTextInput from '../NumberTextInput';
-import { DEFAULT_HEIGHT } from './config';
-import SettingsButtonContainer, { SettingsButtonContainerProps } from './SettingsButtonContainer';
+import NumberTextInput from '../../NumberTextInput';
+import { DEFAULT_HEIGHT } from '../config';
+import SettingItem, { SettingItemProps } from '../SettingItem';
 
-type Props = SettingsButtonContainerProps & {
+type Props = SettingItemProps & {
    title: string;
    titleStyle?: StyleProp<TextStyle>;
    value: number | undefined;
@@ -26,7 +26,7 @@ export default function SettingsNumberInput({
    ...props
 }: Props) {
    return (
-      <SettingsButtonContainer {...props}>
+      <SettingItem {...props}>
          <View style={styles.container}>
             <Text style={[styles.title, titleStyle]}>{title}</Text>
             <NumberTextInput
@@ -38,7 +38,7 @@ export default function SettingsNumberInput({
             />
             {rightAction}
          </View>
-      </SettingsButtonContainer>
+      </SettingItem>
    );
 }
 

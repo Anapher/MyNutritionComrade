@@ -2,12 +2,11 @@ import Slider from '@react-native-community/slider';
 import { TFunction } from 'i18next';
 import React from 'react';
 import { View } from 'react-native';
-import { Caption, Paragraph, Text } from 'react-native-paper';
-import SettingsButtonContainer from 'src/components/Settings/SettingsButtonContainer';
+import { Caption, Paragraph } from 'react-native-paper';
+import SettingItem from 'src/components/Settings/SettingItem';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsSection } from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
-import { CaloriesMifflinStJeorNutritionGoal, UserNutritionGoal } from '../../types';
+import { CaloriesMifflinStJeorNutritionGoal } from '../../types';
 import getActivityLevelSelectionItems from './ActivityLevelSelection';
 import CaloriesCalculationResult from './CaloriesCalculationResult';
 
@@ -31,8 +30,8 @@ export default function getSections(
          settings: [
             {
                key: 'balance',
-               render: (props) => (
-                  <SettingsButtonContainer padding {...props}>
+               render: () => (
+                  <SettingItem padding>
                      <Slider
                         minimumValue={-1000}
                         maximumValue={1000}
@@ -40,7 +39,7 @@ export default function getSections(
                         value={goal.calorieBalance}
                         onValueChange={(value) => handleChange({ calorieBalance: value })}
                      />
-                  </SettingsButtonContainer>
+                  </SettingItem>
                ),
             },
          ],

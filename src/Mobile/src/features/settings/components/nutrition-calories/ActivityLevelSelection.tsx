@@ -1,5 +1,5 @@
 import { TFunction } from 'i18next';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
 import { SettingsItem } from 'src/components/Settings/SettingsList';
 import { CaloriesMifflinStJeorNutritionGoal } from '../../types';
 import React from 'react';
@@ -34,14 +34,13 @@ export default function getActivityLevelSelectionItems(
 ): SettingsItem[] {
    return referencePalFactors.map<SettingsItem>(({ key, value }) => ({
       key,
-      render: (props) => (
+      render: () => (
          <SettingsButtonLink
             title={t(`settings.calories.activity_level.${key}.description`)}
             secondary={value.toString()}
             selectable
             selected={caloriesGoal.palFactor === value}
             onPress={() => handleChange({ palFactor: value })}
-            {...props}
          />
       ),
    }));

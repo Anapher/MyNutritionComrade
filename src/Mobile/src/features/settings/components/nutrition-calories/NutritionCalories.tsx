@@ -1,12 +1,10 @@
 import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
-import { Caption, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
-import SettingsList, { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
+import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
+import SettingsList, { SettingsSection } from 'src/components/Settings/SettingsList';
 import { setNutritionGoal } from '../../reducer';
 import { selectNutritionGoal } from '../../selectors';
 import { UserNutritionGoal } from '../../types';
@@ -30,19 +28,18 @@ export default function NutritionCalories() {
                settings: [
                   {
                      key: 'manual',
-                     render: (props) => (
+                     render: () => (
                         <SettingsButtonLink
                            title={t('settings.calories.manual_value')}
                            selectable
                            selected={calories?.type === 'caloriesFixed'}
                            onPress={() => handleChange({ calories: { type: 'caloriesFixed', caloriesPerDay: 2000 } })}
-                           {...props}
                         />
                      ),
                   },
                   {
                      key: 'calculate',
-                     render: (props) => (
+                     render: () => (
                         <SettingsButtonLink
                            title={t('settings.calories.calculate_value')}
                            selectable
@@ -57,13 +54,12 @@ export default function NutritionCalories() {
                                  },
                               })
                            }
-                           {...props}
                         />
                      ),
                   },
                   {
                      key: 'none',
-                     render: (props) => (
+                     render: () => (
                         <SettingsButtonLink
                            title={t('settings.calories.none')}
                            selectable
@@ -73,7 +69,6 @@ export default function NutritionCalories() {
                                  calories: undefined,
                               })
                            }
-                           {...props}
                         />
                      ),
                   },
@@ -99,14 +94,13 @@ function getOptionsSection(
                settings: [
                   {
                      key: 'caloriesValue',
-                     render: (props) => (
+                     render: () => (
                         <SettingsNumberInput
                            value={calories.caloriesPerDay}
                            title={t('settings.calories.calorie_intake_day')}
                            onChangeValue={(value) =>
                               handleChange({ calories: { type: 'caloriesFixed', caloriesPerDay: value ?? 0 } })
                            }
-                           {...props}
                         />
                      ),
                   },

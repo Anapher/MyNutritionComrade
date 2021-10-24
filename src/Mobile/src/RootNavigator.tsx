@@ -2,14 +2,20 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { BarCodeScanningResult } from 'expo-camera';
 import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'react-native';
-import { Appbar, IconButton } from 'react-native-paper';
+import { IconButton } from 'react-native-paper';
 import { useSelector } from 'react-redux';
+import LoginScreen from './features/auth/components/LoginScreen';
+import LoginScreenPassword from './features/auth/components/LoginScreenPassword';
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
 import AddProduct from './features/product-add/components/AddProduct';
+import AddLabelScreen from './features/product-create/components/AddLabelScreen';
+import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
 import CreateProduct from './features/product-create/components/CreateProduct';
 import ProductNotFound from './features/product-create/components/ProductNotFound';
+import { ProductLabelViewModel } from './features/product-create/types';
+import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
 import NutritionCalories from './features/settings/components/nutrition-calories/NutritionCalories';
@@ -21,13 +27,7 @@ import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/se
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
 import { ProductSearchConfig } from './services/search-engine/types';
-import { FoodPortion, Product, ProductLabel, ProductProperties, ProductServings } from './types';
-import { ProductLabelViewModel } from './features/product-create/types';
-import AddLabelScreen from './features/product-create/components/AddLabelScreen';
-import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
-import { UseFormReturn } from 'react-hook-form';
-import LoginScreen from './features/auth/components/LoginScreen';
-import LoginScreenPassword from './features/auth/components/LoginScreenPassword';
+import { FoodPortion, Product, ProductContributionStatusDto, ProductProperties } from './types';
 
 const Stack = createNativeStackNavigator();
 
@@ -90,6 +90,7 @@ export type RootNavigatorParamList = {
    };
    Login: { onAuthenticated?: () => void };
    LoginPassword: { onAuthenticated?: () => void; emailAddress: string };
+   ProductOverview: { product: Product; contributionStatus?: ProductContributionStatusDto | null };
 };
 
 export default function RootNavigator() {
@@ -176,6 +177,7 @@ export default function RootNavigator() {
             component={LoginScreenPassword}
             options={{ headerTitle: t('auth.title'), presentation: 'modal' }}
          />
+         <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
       </Stack.Navigator>
    );
 }

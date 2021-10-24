@@ -1,3 +1,5 @@
+import { Operation } from 'fast-json-patch';
+
 // --------------------- Product ---------------------
 
 export interface ProductLabel {
@@ -25,6 +27,7 @@ export interface ProductProperties extends ProductEssentials {
 
 export interface Product extends ProductProperties {
    id: string;
+   modifiedOn: string;
 }
 
 export interface NutritionalInfo {
@@ -87,3 +90,25 @@ export interface RecentMealSuggestion {
    time: ConsumptionTime;
    date: string;
 }
+
+export type ProductContributionStatusDto = {
+   readOnly: boolean;
+   openContributions: number;
+};
+
+export type ProductContributionStatus = 'pending' | 'applied' | 'rejected';
+
+export type YourVoteDto = { approve: boolean; createdOn: string };
+export type ProductContributionStatisticsDto = { totalVotes: number; approveVotes: number };
+
+export type ProductContributionDto = {
+   id: string;
+   productId: string;
+   status: ProductContributionStatus;
+   statusDescription?: string;
+   operations: Operation[];
+   createdOn: string;
+   createdByYou: boolean;
+   statistics: ProductContributionStatisticsDto;
+   yourVote?: YourVoteDto;
+};

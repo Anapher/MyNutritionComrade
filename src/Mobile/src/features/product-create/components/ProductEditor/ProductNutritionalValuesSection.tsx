@@ -6,7 +6,7 @@ import { Caption, useTheme } from 'react-native-paper';
 import { TEXT_PADDING_LEFT } from 'src/components/Settings/config';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsSection } from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
+import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
 import { ProductProperties } from 'src/types';
 import { getBaseUnit } from 'src/utils/product-utils';
 import { nutritionalInfo } from '../../data';
@@ -35,7 +35,7 @@ export default function ProductNutritionalValuesSection({
       ),
       settings: nutritionalInfo.map(({ name, translationKey, unit, inset }) => ({
          key: name,
-         render: (props) => (
+         render: () => (
             <Controller
                control={control}
                name={`nutritionalInfo.${name}` as any}
@@ -55,7 +55,6 @@ export default function ProductNutritionalValuesSection({
                         selectTextOnFocus: true,
                         blurOnSubmit: false,
                      }}
-                     {...props}
                   />
                )}
             />

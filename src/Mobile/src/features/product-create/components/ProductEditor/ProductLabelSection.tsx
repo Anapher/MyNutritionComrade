@@ -4,7 +4,7 @@ import React from 'react';
 import { UseFormReturn, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Caption, useTheme } from 'react-native-paper';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
 import { RootNavigatorParamList } from 'src/RootNavigator';
@@ -61,7 +61,7 @@ export default function ProductLabelSection({
       settings: [
          ...Object.entries(label ?? {}).map<SettingsItem>(([language, value]) => ({
             key: language,
-            render: (props) => {
+            render: () => {
                const hasTags = Boolean(value.tags && value.tags.length > 0);
                return (
                   <SettingsButtonLink
@@ -69,19 +69,17 @@ export default function ProductLabelSection({
                      secondary={t(`languages.${language}`) + (hasTags ? ' | ' + value.tags?.join(', ') : '')}
                      showSecondaryBelow={hasTags}
                      onPress={() => handleChangeLabel(language, value)}
-                     {...props}
                   />
                );
             },
          })),
          {
             key: 'add-button',
-            render: (props) => (
+            render: () => (
                <>
                   <SettingsButtonLink
                      title={t('create_product.add_label')}
                      onPress={handleAddLabel}
-                     {...props}
                      textStyles={{ color: theme.colors.primary }}
                      icon="arrow"
                   />

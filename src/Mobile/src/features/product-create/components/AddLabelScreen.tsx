@@ -6,9 +6,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, StyleSheet } from 'react-native';
 import { Caption, useTheme } from 'react-native-paper';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
 import SettingsList, { SettingsSection } from 'src/components/Settings/SettingsList';
-import SettingsTextInput from 'src/components/Settings/SettingsTextInput';
+import SettingsTextInput from 'src/components/Settings/Items/SettingsTextInput';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductLabelViewModel } from '../types';
 
@@ -86,7 +86,7 @@ export default function AddLabelScreen({
                settings: [
                   {
                      key: 'language',
-                     render: (props) => (
+                     render: () => (
                         <Controller
                            control={control}
                            name="language"
@@ -96,7 +96,6 @@ export default function AddLabelScreen({
                                  title={t('language')}
                                  onPress={() => handleSelectLanguage(onChange)}
                                  secondary={t(`languages.${value}`)}
-                                 {...props}
                               />
                            )}
                         />
@@ -108,7 +107,7 @@ export default function AddLabelScreen({
                settings: [
                   {
                      key: 'label',
-                     render: (props) => (
+                     render: () => (
                         <Controller
                            control={control}
                            name="value"
@@ -121,7 +120,6 @@ export default function AddLabelScreen({
                                  onChangeValue={onChange}
                                  placeholder={t('create_product.label_placeholder')}
                                  autoFocus
-                                 {...props}
                               />
                            )}
                         />
@@ -129,7 +127,7 @@ export default function AddLabelScreen({
                   },
                   {
                      key: 'tags',
-                     render: (props) => (
+                     render: () => (
                         <>
                            <Controller
                               control={control}
@@ -141,7 +139,6 @@ export default function AddLabelScreen({
                                     value={value}
                                     placeholder={t('create_product.tags_placeholder')}
                                     onChangeValue={onChange}
-                                    {...props}
                                  />
                               )}
                            />
@@ -157,12 +154,11 @@ export default function AddLabelScreen({
                        settings: [
                           {
                              key: 'remove',
-                             render: (props) => (
+                             render: () => (
                                 <SettingsButtonLink
                                    textStyles={{ color: theme.colors.primary }}
                                    title={t('remove')}
                                    onPress={handleDelete}
-                                   {...props}
                                 />
                              ),
                           },

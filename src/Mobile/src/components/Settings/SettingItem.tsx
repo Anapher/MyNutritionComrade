@@ -1,20 +1,19 @@
 import Color from 'color';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Divider, Surface, useTheme } from 'react-native-paper';
 import { BORDER_ROUNDING, TEXT_PADDING_LEFT } from './config';
+import { ItemContext } from './ItemContext';
 
-export type SettingsButtonContainerProps = {
-   top?: boolean;
-   bottom?: boolean;
-   style?: ViewStyle;
+export type SettingItemProps = {
+   children?: React.ReactChild;
    padding?: boolean;
+   style?: ViewStyle;
 };
 
-type Props = SettingsButtonContainerProps & { children?: React.ReactElement };
-
-export default function SettingsButtonContainer({ children, top, bottom, style, padding }: Props) {
+export default function SettingItem({ children, padding, style }: SettingItemProps) {
    const theme = useTheme();
+   const { bottom, top } = useContext(ItemContext);
 
    return (
       <Surface

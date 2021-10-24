@@ -3,12 +3,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { SettingsButtonContainerProps } from 'src/components/Settings/SettingsButtonContainer';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { selectNutritionGoal } from '../../selectors';
 
-export default function SettingsItem(props: SettingsButtonContainerProps) {
+export default function SettingsItem() {
    const { t } = useTranslation();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const nutritionGoal = useSelector(selectNutritionGoal);
@@ -28,7 +27,6 @@ export default function SettingsItem(props: SettingsButtonContainerProps) {
          onPress={() => navigation.push('SettingsNutritionGoalProtein')}
          icon="arrow"
          secondary={summary}
-         {...props}
       />
    );
 }

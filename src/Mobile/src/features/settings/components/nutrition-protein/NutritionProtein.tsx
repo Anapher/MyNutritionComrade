@@ -2,10 +2,9 @@ import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { SettingsButtonContainerProps } from 'src/components/Settings/SettingsButtonContainer';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
 import SettingsList, { SettingsItem } from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
+import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
 import { setNutritionGoal } from '../../reducer';
 import { selectNutritionGoal } from '../../selectors';
 import { UserNutritionGoal } from '../../types';
@@ -38,7 +37,7 @@ export default function NutritionProtein() {
                   manualProteinItems.settingsItem,
                   ...presetProteinPerKg.map<SettingsItem>(({ key, amount }) => ({
                      key,
-                     render: (props) => (
+                     render: () => (
                         <SettingsButtonLink
                            title={t(`settings.protein.${key}`)}
                            secondary={t(`settings.protein.${key}_description`)}
@@ -50,18 +49,16 @@ export default function NutritionProtein() {
                            onPress={() =>
                               handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: amount } })
                            }
-                           {...props}
                         />
                      ),
                   })),
                   {
                      key: 'none',
-                     render: (props) => (
+                     render: () => (
                         <SettingsButtonLink
                            title={t('settings.protein.none')}
                            selectable
                            selected={!protein}
-                           {...props}
                            onPress={() => handleChange({ protein: undefined })}
                         />
                      ),
@@ -85,13 +82,12 @@ function proteinFixedView(
    return {
       settingsItem: {
          key: 'proteinFixed',
-         render: (props) => (
+         render: () => (
             <SettingsButtonLink
                title={t('settings.protein.manual_protein_per_day')}
                selectable
                selected={selected}
                onPress={() => handleChange({ protein: { type: 'proteinFixed', proteinPerDay: 120 } })}
-               {...props}
             />
          ),
       },
@@ -100,13 +96,11 @@ function proteinFixedView(
          : [
               {
                  key: 'proteinFixed.input',
-                 render: (props: SettingsButtonContainerProps) => (
+                 render: () => (
                     <SettingsNumberInput
                        title={t('settings.protein.protein_per_day') + ':'}
                        value={protein.proteinPerDay || undefined}
                        onChangeValue={(x) => handleChange({ protein: { type: 'proteinFixed', proteinPerDay: x ?? 0 } })}
-                       {...props}
-                       bottom
                     />
                  ),
               },
@@ -126,11 +120,10 @@ function manualProteinPerKgView(
    return {
       settingsItem: {
          key: 'protein_per_kg',
-         render: (props) => (
+         render: () => (
             <SettingsButtonLink
                title={t('settings.protein.manual_protein_per_kg')}
                selectable
-               {...props}
                selected={selected}
                onPress={() => handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: 2 } })}
             />
@@ -141,14 +134,13 @@ function manualProteinPerKgView(
          : [
               {
                  key: 'protein_per_kg.manual',
-                 render: (props) => (
+                 render: () => (
                     <SettingsNumberInput
                        title={t('settings.protein.protein_per_day_kg') + ':'}
                        value={protein.proteinPerKgBodyweight || undefined}
                        onChangeValue={(x) =>
                           handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: x ?? 0 } })
                        }
-                       {...props}
                     />
                  ),
               },

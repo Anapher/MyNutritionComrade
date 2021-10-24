@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 import { Caption, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { BORDER_ROUNDING, DEFAULT_HEIGHT, TEXT_PADDING_LEFT } from './config';
-import SettingsButtonContainer, { SettingsButtonContainerProps } from './SettingsButtonContainer';
+import { BORDER_ROUNDING, DEFAULT_HEIGHT, TEXT_PADDING_LEFT } from '../config';
+import { ItemContext } from '../ItemContext';
+import SettingItem, { SettingItemProps } from '../SettingItem';
 
-type Props = SettingsButtonContainerProps & {
+type Props = SettingItemProps & {
    onPress?: () => void;
    title: string;
    secondary?: string;
@@ -30,16 +31,17 @@ export default function SettingsButtonLink({
    ...props
 }: Props) {
    const theme = useTheme();
+   const { top, bottom } = useContext(ItemContext);
 
    return (
-      <SettingsButtonContainer {...props}>
+      <SettingItem {...props}>
          <TouchableRipple
             onPress={onPress}
             style={[
                styles.container,
                showSecondaryBelow ? undefined : styles.maxHeight,
-               props.top ? styles.surfaceTop : undefined,
-               props.bottom ? styles.surfaceBottom : undefined,
+               top ? styles.surfaceTop : undefined,
+               bottom ? styles.surfaceBottom : undefined,
             ]}
          >
             <View style={styles.content}>
@@ -54,7 +56,7 @@ export default function SettingsButtonLink({
                         {secondary}
                      </Text>
                   )}
-                  {showSecondaryBelow && <Caption>{secondary}</Caption>}
+                  {showSecondaryBelow && secondary && <Caption>{secondary}</Caption>}
                </View>
                {icon === 'arrow' && (
                   <Icon name="chevron-right" size={28} style={{ marginVertical: -2 }} color={theme.colors.disabled} />
@@ -64,7 +66,7 @@ export default function SettingsButtonLink({
                )}
             </View>
          </TouchableRipple>
-      </SettingsButtonContainer>
+      </SettingItem>
    );
 }
 

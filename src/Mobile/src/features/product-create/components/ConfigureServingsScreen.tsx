@@ -4,11 +4,11 @@ import { TFunction } from 'i18next';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Alert, SectionListData } from 'react-native';
+import { Alert } from 'react-native';
 import { IconButton, useTheme } from 'react-native-paper';
+import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import SettingsList, { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { getServings, ServingInfo } from '../data';
 
@@ -71,7 +71,7 @@ export default function ConfigureServingsScreen({
                   .filter((x) => x.predefinedValue !== 0)
                   .map<SettingsItem>(({ id, labelKey, descriptionKey, predefinedValue }) => ({
                      key: id,
-                     render: (props) => (
+                     render: () => (
                         <Controller
                            control={control}
                            name={`servings.${id}`}
@@ -89,7 +89,6 @@ export default function ConfigureServingsScreen({
                                           onPress={showServingInfo(labelKey, descriptionKey)}
                                        />
                                     }
-                                    {...props}
                                  />
                               ) : (
                                  <SettingsNumberInput
@@ -98,7 +97,6 @@ export default function ConfigureServingsScreen({
                                     value={predefinedValue}
                                     inputProps={{ editable: false, style: { color: theme.colors.disabled } }}
                                     titleStyle={{ color: theme.colors.disabled }}
-                                    {...props}
                                  />
                               )
                            }

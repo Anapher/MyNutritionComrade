@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { Caption } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
 import SettingsList from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/SettingsNumberInput';
+import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
 import { setPersonalInfo } from '../../reducer';
 import { selectPersonalInfo } from '../../selectors';
 import { UserPersonalInfo } from '../../types';
@@ -44,42 +44,47 @@ export default function PersonalInfo() {
       <SettingsList
          settings={[
             {
-               key: 'gender',
-               render: (props) => (
-                  <SettingsButtonLink
-                     onPress={handlePressGender}
-                     title={t('settings.personal_info.gender')}
-                     secondary={t(`settings.personal_info.${values.gender}`)}
-                     formLayout
-                     {...props}
-                  />
-               ),
-            },
-            {
-               key: 'height',
-               render: (props) => (
-                  <SettingsNumberInput
-                     title={t('settings.personal_info.height')}
-                     value={values.height !== undefined ? values.height * 100 : undefined}
-                     onChangeValue={(x) => handleChange({ height: x ? x / 100 : undefined })}
-                     placeholder="Enter height"
-                     {...props}
-                  />
-               ),
-            },
-            {
-               key: 'age',
-               render: (props) => (
-                  <SettingsNumberInput
-                     title={t('settings.personal_info.age')}
-                     value={age}
-                     onChangeValue={(years) =>
-                        handleChange({ birthday: years ? DateTime.utc().minus({ years }).toISODate() : undefined })
-                     }
-                     placeholder="Enter age"
-                     {...props}
-                  />
-               ),
+               settings: [
+                  {
+                     key: 'gender',
+                     render: () => (
+                        <SettingsButtonLink
+                           onPress={handlePressGender}
+                           title={t('settings.personal_info.gender')}
+                           secondary={
+                              values.gender ? t(`settings.personal_info.${values.gender}`) : t('settings.not_set')
+                           }
+                           formLayout
+                        />
+                     ),
+                  },
+                  {
+                     key: 'height',
+                     render: () => (
+                        <SettingsNumberInput
+                           title={t('settings.personal_info.height')}
+                           value={values.height !== undefined ? values.height * 100 : undefined}
+                           onChangeValue={(x) => handleChange({ height: x ? x / 100 : undefined })}
+                           placeholder={t('settings.personal_info.enter_height')}
+                        />
+                     ),
+                  },
+                  {
+                     key: 'age',
+                     render: () => (
+                        <SettingsNumberInput
+                           title={t('settings.personal_info.age')}
+                           value={age}
+                           onChangeValue={(years) =>
+                              handleChange({
+                                 birthday: years ? DateTime.utc().minus({ years }).toISODate() : undefined,
+                              })
+                           }
+                           placeholder={t('settings.personal_info.enter_age')}
+                        />
+                     ),
+                  },
+               ],
             },
          ]}
          ListFooterComponent={() => (
@@ -92,7 +97,7 @@ export default function PersonalInfo() {
 const styles = StyleSheet.create({
    privacyNotice: {
       margin: 24,
-      marginTop: 16,
+      marginTop: 0,
    },
    toggleContainer: {
       display: 'flex',

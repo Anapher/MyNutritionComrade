@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleProp, StyleSheet, TextInput, TextInputProps, TextStyle, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
-import { DEFAULT_HEIGHT } from './config';
-import SettingsButtonContainer, { SettingsButtonContainerProps } from './SettingsButtonContainer';
+import { DEFAULT_HEIGHT } from '../config';
+import SettingItem, { SettingItemProps } from '../SettingItem';
 
-type Props = SettingsButtonContainerProps & {
+type Props = SettingItemProps & {
    title: string;
    value: string | undefined | null;
    onChangeValue: (v: string | undefined) => void;
@@ -29,7 +29,7 @@ export default function SettingsTextInput({
    const theme = useTheme();
 
    return (
-      <SettingsButtonContainer {...props}>
+      <SettingItem {...props}>
          <View style={styles.root}>
             <View style={styles.container}>
                <Text style={[styles.title, error ? { color: theme.colors.text } : undefined, titleStyle]}>{title}</Text>
@@ -50,7 +50,7 @@ export default function SettingsTextInput({
             </View>
             {error && <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>}
          </View>
-      </SettingsButtonContainer>
+      </SettingItem>
    );
 }
 

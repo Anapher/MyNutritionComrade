@@ -4,11 +4,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Text, useTheme } from 'react-native-paper';
-import SettingsButtonLink from 'src/components/Settings/SettingsButtonLink';
+import { useTheme } from 'react-native-paper';
+import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
+import SettingsTextInput from 'src/components/Settings/Items/SettingsTextInput';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsSection } from 'src/components/Settings/SettingsList';
-import SettingsTextInput from 'src/components/Settings/SettingsTextInput';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductProperties, ProductTags } from 'src/types';
 
@@ -41,7 +41,7 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
       settings: [
          {
             key: 'unit',
-            render: (props) => (
+            render: () => (
                <Controller
                   name="tags"
                   control={control}
@@ -50,7 +50,6 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
                         title={t('create_product.base_unit')}
                         onPress={() => handleChangeBaseUnit(onChange)}
                         secondary={value?.liquid ? 'ml' : 'g'}
-                        {...props}
                         icon="arrow"
                      />
                   )}
@@ -59,7 +58,7 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
          },
          {
             key: 'barcode',
-            render: (props) => (
+            render: () => (
                <Controller
                   name="code"
                   control={control}
@@ -76,7 +75,6 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
                            autoCorrect: false,
                         }}
                         error={error?.message}
-                        {...props}
                      />
                   )}
                />
@@ -84,13 +82,8 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
          },
          {
             key: 'scan-barcode',
-            render: (props) => (
-               <SettingsButtonLink
-                  title={t('create_product.scan_barcode')}
-                  onPress={handleScanBarcode}
-                  {...props}
-                  icon="arrow"
-               />
+            render: () => (
+               <SettingsButtonLink title={t('create_product.scan_barcode')} onPress={handleScanBarcode} icon="arrow" />
             ),
          },
       ],

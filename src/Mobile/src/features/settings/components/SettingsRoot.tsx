@@ -13,14 +13,14 @@ export default function SettingsRoot() {
          settings={[
             {
                settings: [
-                  { key: 'personal', render: (props) => <PersonalInfoSettingsItem {...props} /> },
-                  { key: 'weight', render: (props) => <WeightSettingsItem {...props} /> },
+                  { key: 'personal', render: () => <PersonalInfoSettingsItem /> },
+                  { key: 'weight', render: () => <WeightSettingsItem /> },
                ],
             },
             {
                settings: [
-                  { key: 'calories', render: (props) => <NutritionGoalCaloriesSettingsItem {...props} /> },
-                  { key: 'protein', render: (props) => <NutritionGoalProteinSettingsItem {...props} /> },
+                  { key: 'calories', render: () => <NutritionGoalCaloriesSettingsItem /> },
+                  { key: 'protein', render: () => <NutritionGoalProteinSettingsItem /> },
                ],
             },
          ]}

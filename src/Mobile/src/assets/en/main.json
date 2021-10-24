@@ -79,7 +79,9 @@
             "age": "Age",
             "summary": {
                 "years_old": "{{age}} years old"
-            }
+            },
+            "enter_height": "Enter height",
+            "enter_age": "Enter age"
         },
         "weight": {
             "title": "Weight",
