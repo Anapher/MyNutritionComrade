@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using CommunityCatalog.Core.Extensions;
 using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Requests;
@@ -16,10 +17,12 @@ namespace CommunityCatalog.Core.UseCases
         ValidateAndGroupProductContributionsRequest, IReadOnlyList<ProductOperationsGroup>>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IMapper _mapper;
 
-        public ValidateAndGroupProductContributionsUseCase(IProductRepository productRepository)
+        public ValidateAndGroupProductContributionsUseCase(IProductRepository productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
         public async Task<IReadOnlyList<ProductOperationsGroup>> Handle(
@@ -29,8 +32,10 @@ namespace CommunityCatalog.Core.UseCases
             if (productDocument == null)
                 throw ProductError.ProductNotFound(request.ProductId).ToException();
 
+            var productProperties = _mapper.Map<ProductProperties>(productDocument.Product);
+
             var operations = JsonUtils
-                .FilterRedundantOperations(request.Operations, productDocument.Product, JsonConfig.DefaultSerializer)
+                .FilterRedundantOperations(request.Operations, productProperties, JsonConfig.DefaultSerializer)
                 .ToList();
             if (!operations.Any())
                 throw ProductError.NoPatchOperations().ToException();
