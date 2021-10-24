@@ -37,7 +37,7 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
    };
 
    return {
-      renderHeader: () => <SettingsHeader label="Properties" />,
+      renderHeader: () => <SettingsHeader label={t('product_properties')} />,
       settings: [
          {
             key: 'unit',

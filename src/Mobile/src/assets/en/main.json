@@ -187,5 +187,6 @@
         "no_response": "The server is unreachable.",
         "response_no_success": "The server responded with code {{status}}. This is likely a bug.",
         "ProductCodeAlreadyExists": "There already exists a product with the same code."
-    }
+    },
+    "product_properties": "Properties"
 }

@@ -112,3 +112,7 @@ export type ProductContributionDto = {
    statistics: ProductContributionStatisticsDto;
    yourVote?: YourVoteDto;
 };
+
+export type ProductOperationsGroup = {
+   operations: Operation[];
+};

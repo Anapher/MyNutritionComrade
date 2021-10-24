@@ -7,6 +7,7 @@ using CommunityCatalog.Core.Extensions;
 using CommunityCatalog.Core.Gateways.Repos;
 using CommunityCatalog.Core.Requests;
 using CommunityCatalog.Core.Response;
+using CommunityCatalog.Core.Services;
 using CommunityCatalog.Extensions;
 using CommunityCatalog.Models.Request;
 using CommunityCatalog.Models.Response;
@@ -51,8 +52,8 @@ namespace CommunityCatalog.Controllers
 
         [HttpPatch("{productId}/preview")]
         [Authorize]
-        public async Task<ActionResult> PreviewPatchProduct([FromBody] IReadOnlyList<Operation> operations,
-            string productId)
+        public async Task<ActionResult<IReadOnlyList<ProductOperationsGroup>>> PreviewPatchProduct(
+            [FromBody] IReadOnlyList<Operation> operations, string productId)
         {
             try
             {

@@ -77,6 +77,10 @@ export default function AddProduct({
 
    const isBaseUnitSelected = servingType === getBaseUnit(product);
 
+   const handleOpenProductOverview = () => {
+      navigation.push('ProductOverview', { product });
+   };
+
    return (
       <View style={styles.root}>
          <View>
@@ -115,7 +119,13 @@ export default function AddProduct({
          </View>
          <SafeAreaView>
             <View style={styles.bottomButtonContainer}>
-               <FlatButton style={styles.bottomButton} text="Show product" icon="database" center onPress={() => {}} />
+               <FlatButton
+                  style={styles.bottomButton}
+                  text="Show product"
+                  icon="database"
+                  center
+                  onPress={handleOpenProductOverview}
+               />
                <FlatButton
                   style={[styles.bottomButton, { backgroundColor: Color('#e67e22').alpha(0.3).string() }]}
                   text="5 changes to vote"

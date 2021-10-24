@@ -11,6 +11,7 @@ import LoginScreenPassword from './features/auth/components/LoginScreenPassword'
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
 import AddProduct from './features/product-add/components/AddProduct';
 import AddLabelScreen from './features/product-create/components/AddLabelScreen';
+import ChangeProduct from './features/product-create/components/ChangeProduct';
 import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
 import CreateProduct from './features/product-create/components/CreateProduct';
 import ProductNotFound from './features/product-create/components/ProductNotFound';
@@ -91,6 +92,7 @@ export type RootNavigatorParamList = {
    Login: { onAuthenticated?: () => void };
    LoginPassword: { onAuthenticated?: () => void; emailAddress: string };
    ProductOverview: { product: Product; contributionStatus?: ProductContributionStatusDto | null };
+   ChangeProduct: { product: Product };
 };
 
 export default function RootNavigator() {
@@ -178,6 +180,7 @@ export default function RootNavigator() {
             options={{ headerTitle: t('auth.title'), presentation: 'modal' }}
          />
          <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
+         <Stack.Screen name="ChangeProduct" component={ChangeProduct} />
       </Stack.Navigator>
    );
 }
