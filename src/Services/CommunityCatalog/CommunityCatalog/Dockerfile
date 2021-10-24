@@ -11,10 +11,14 @@ COPY ["Services/CommunityCatalog/CommunityCatalog/CommunityCatalog.csproj", "Ser
 COPY ["Services/CommunityCatalog/CommunityCatalog.Core/CommunityCatalog.Core.csproj", "Services/CommunityCatalog/CommunityCatalog.Core/"]
 COPY ["Services/CommunityCatalog/CommunityCatalog.Infrastructure/CommunityCatalog.Infrastructure.csproj", "Services/CommunityCatalog/CommunityCatalog.Infrastructure/"]
 COPY ["MyNutritionComrade.Models/MyNutritionComrade.Models.csproj", "MyNutritionComrade.Models/"]
+COPY ["Libs/JsonPatchGenerator.csproj", "Libs/"]
 
 RUN dotnet restore "Services/CommunityCatalog/CommunityCatalog/CommunityCatalog.csproj"
+
 COPY ["Services/CommunityCatalog/", "Services/CommunityCatalog/"]
 COPY ["MyNutritionComrade.Models/", "MyNutritionComrade.Models/"]
+COPY ["Libs/", "Libs/"]
+
 WORKDIR "/src/Services/CommunityCatalog/CommunityCatalog"
 
 FROM build AS publish
