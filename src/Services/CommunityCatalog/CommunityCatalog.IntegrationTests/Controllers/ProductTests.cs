@@ -449,5 +449,39 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             // assert
             AssertHelper.AssertErrorType(ex.Error, NutritionComradeErrorCode.ProductContributionInvalidStatus);
         }
+
+        [Fact]
+        public async Task GetProductContributionStatus_ProductDoesNotExist_ReturnNotFound()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+
+            // act
+            var ex = await Assert.ThrowsAsync<IdErrorException>(() =>
+                Api.GetProductContributionStatusDto(Client, "non-existing-product"));
+
+            // assert
+            AssertHelper.AssertErrorType(ex.Error, NutritionComradeErrorCode.ProductNotFound);
+        }
+
+        [Fact]
+        public async Task GetProductContributionStatus_ProductExists_ReturnInfo()
+        {
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+
+            var productId = await Api.CreateProduct(Client, TestValues.TestProduct);
+
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Code, "hello world");
+            await Api.PatchProduct(Client, productId, patch.Operations);
+
+            // act
+            var status = await Api.GetProductContributionStatusDto(Client, productId);
+
+            // assert
+            Assert.Equal(1, status.OpenContributions);
+            Assert.False(status.ReadOnly);
+        }
     }
 }

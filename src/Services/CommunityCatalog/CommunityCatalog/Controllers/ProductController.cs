@@ -106,16 +106,6 @@ namespace CommunityCatalog.Controllers
             }
         }
 
-        private async Task EnsureProductWritable(string productId)
-        {
-            var productDocument = await _productRepository.FindById(productId);
-            if (productDocument == null)
-                throw ProductError.ProductNotFound(productId).ToException();
-
-            if (productDocument.MirrorInfo?.ReadOnly == true)
-                throw ProductError.ProductIsReadOnly(productId).ToException();
-        }
-
         [HttpGet("{productId}/contributions")]
         [Authorize]
         public async Task<ActionResult<IReadOnlyList<ProductContributionDto>>> GetProductContributions(string productId,
@@ -126,6 +116,22 @@ namespace CommunityCatalog.Controllers
                 var userId = User.GetUserId();
                 var result = await selector.GetContributions(productId, userId, null);
 
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return e.ToError().ToActionResult();
+            }
+        }
+
+        [HttpGet("{productId}/contributions/status")]
+        [Authorize]
+        public async Task<ActionResult<ProductContributionStatusDto>> GetProductContributionStatus(string productId,
+            [FromServices] IFetchProductContributionStatusSelector selector)
+        {
+            try
+            {
+                var result = await selector.GetStatus(productId);
                 return Ok(result);
             }
             catch (Exception e)
@@ -186,6 +192,16 @@ namespace CommunityCatalog.Controllers
             var latestChange = await repository.GetLatestProductChange();
 
             return Ok(new List<ProductCatalogReference> { new(productsUrl, latestChange ?? DateTimeOffset.MinValue) });
+        }
+
+        private async Task EnsureProductWritable(string productId)
+        {
+            var productDocument = await _productRepository.FindById(productId);
+            if (productDocument == null)
+                throw ProductError.ProductNotFound(productId).ToException();
+
+            if (productDocument.MirrorInfo?.ReadOnly == true)
+                throw ProductError.ProductIsReadOnly(productId).ToException();
         }
     }
 }

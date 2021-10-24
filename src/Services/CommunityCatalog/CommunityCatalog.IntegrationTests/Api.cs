@@ -60,10 +60,8 @@ namespace CommunityCatalog.IntegrationTests
             var response = await client.GetAsync($"api/v1/product/{productId}/contributions");
             await ThrowOnError(response);
 
-            var result = await response.Content.ReadFromJsonNetAsync<IReadOnlyList<ProductContributionDto>>() ??
-                         throw new InvalidOperationException("Result must not be null");
-
-            return result;
+            return await response.Content.ReadFromJsonNetAsync<IReadOnlyList<ProductContributionDto>>() ??
+                   throw new InvalidOperationException("Result must not be null");
         }
 
         public static async Task<IReadOnlyList<string>> PatchProduct(HttpClient client, string productId,
@@ -82,6 +80,16 @@ namespace CommunityCatalog.IntegrationTests
             var response = await client.PostAsync($"api/v1/product/{productId}/contributions/{contributionId}/vote",
                 JsonNetContent.Create(new VoteContributionRequestDto(approve)));
             await ThrowOnError(response);
+        }
+
+        public static async Task<ProductContributionStatusDto> GetProductContributionStatusDto(HttpClient client,
+            string productId)
+        {
+            var response = await client.GetAsync($"api/v1/product/{productId}/contributions/status");
+            await ThrowOnError(response);
+
+            return await response.Content.ReadFromJsonNetAsync<ProductContributionStatusDto>() ??
+                   throw new InvalidOperationException("Result must not be null");
         }
 
         private static async Task<HttpResponseMessage> ThrowOnError(HttpResponseMessage message)
