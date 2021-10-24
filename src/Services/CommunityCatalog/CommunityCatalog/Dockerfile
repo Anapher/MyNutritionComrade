@@ -11,7 +11,7 @@ COPY ["Services/CommunityCatalog/CommunityCatalog/CommunityCatalog.csproj", "Ser
 COPY ["Services/CommunityCatalog/CommunityCatalog.Core/CommunityCatalog.Core.csproj", "Services/CommunityCatalog/CommunityCatalog.Core/"]
 COPY ["Services/CommunityCatalog/CommunityCatalog.Infrastructure/CommunityCatalog.Infrastructure.csproj", "Services/CommunityCatalog/CommunityCatalog.Infrastructure/"]
 COPY ["MyNutritionComrade.Models/MyNutritionComrade.Models.csproj", "MyNutritionComrade.Models/"]
-COPY ["Libs/JsonPatchGenerator/JsonPatchGenerator.csproj", "Libs/"]
+COPY ["Libs/JsonPatchGenerator/JsonPatchGenerator.csproj", "Libs/JsonPatchGenerator/"]
 
 RUN dotnet restore "Services/CommunityCatalog/CommunityCatalog/CommunityCatalog.csproj"
 
