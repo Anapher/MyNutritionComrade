@@ -170,12 +170,35 @@
         },
         "default_serving": "Default serving"
     },
+    "change_product": {
+        "title": "Change product"
+    },
+    "add_product": {
+        "show_product": "Show product",
+        "show_history": "Show history",
+        "contributions_pending_one": "One contribution pending",
+        "contributions_pending_other": "{{count}} contributions pending"
+    },
     "languages": {
         "de": "German",
         "en": "English"
     },
     "review_changes": {
-        "title": "Review changes"
+        "title": "Review changes",
+        "type": {
+            "add": "Add",
+            "remove": "Remove",
+            "modify": "Modify",
+            "initialize": "Initialize"
+        }
+    },
+    "product_contributions": {
+        "title": "Product contributions",
+        "approve_percentage": "{{value}}% approved",
+        "contribution_from_you": "This contribution was made by you. Thank you ❤",
+        "initialize_product": "Initialize product",
+        "applied": "Applied",
+        "rejected": "Rejected"
     },
     "language": "Language",
     "save": "Save",
@@ -194,5 +217,8 @@
         "response_no_success": "The server responded with code {{status}}. This is likely a bug.",
         "ProductCodeAlreadyExists": "There already exists a product with the same code."
     },
-    "product_properties": "Properties"
+    "product_properties": "Properties",
+    "error_occurred": "Error occurred",
+    "retry": "Retry",
+    "loading_message": "Loading..."
 }

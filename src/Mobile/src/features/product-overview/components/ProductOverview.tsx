@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import React from 'react';
+import { View } from 'react-native';
 import SettingsList from 'src/components/Settings/SettingsList';
 import StatusIndicator from 'src/components/StatusIndicator';
+import useRequestData from 'src/hooks/useRequestData';
 import api from 'src/services/api';
-import { Product, ProductContributionDto, ProductContributionStatusDto } from 'src/types';
+import { Product, ProductContributionStatusDto } from 'src/types';
 import ProductOverviewActions from './ProductOverviewActions';
 import ProductOverviewCommon from './ProductOverviewCommon';
 import ProductOverviewLabels from './ProductOverviewLabels';
@@ -17,16 +17,7 @@ type Props = {
 };
 
 export default function ProductOverview({ product, contributionStatus }: Props) {
-   const [status, setStatus] = useState(contributionStatus);
-
-   useEffect(() => {
-      if (status === undefined) {
-         (async () => {
-            const result = await api.product.getContributionStatus(product.id);
-            setStatus(result);
-         })();
-      }
-   }, [status]);
+   const [status, loading] = useRequestData(() => api.product.getContributionStatus(product.id), contributionStatus);
 
    return (
       <View>
@@ -39,7 +30,7 @@ export default function ProductOverview({ product, contributionStatus }: Props) 
                ProductOverviewActions(product, status),
             ]}
          />
-         <StatusIndicator status={status ? 'none' : 'loading'} />
+         <StatusIndicator status={loading ? 'none' : 'loading'} />
       </View>
    );
 }

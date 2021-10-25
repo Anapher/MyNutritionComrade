@@ -9,6 +9,7 @@ import {
    StyleSheet,
    View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ItemContext } from './ItemContext';
 
 export type SettingsItem = {
@@ -49,6 +50,7 @@ export default function SettingsList({ settings, style, ...props }: Props) {
             keyExtractor={(item) => item.key}
             renderSectionFooter={() => <View style={{ marginBottom: 32 }} />}
             renderSectionHeader={({ section }) => section.renderHeader?.()}
+            ListFooterComponent={<SafeAreaView />}
             {...props}
          />
       </KeyboardAvoidingView>

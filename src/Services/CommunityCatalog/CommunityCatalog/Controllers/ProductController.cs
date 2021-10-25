@@ -143,8 +143,8 @@ namespace CommunityCatalog.Controllers
 
         [HttpPost("{productId}/contributions/{contributionId}/vote")]
         [Authorize]
-        public async Task<ActionResult<IReadOnlyList<ProductContributionDto>>> VoteContribution(string productId,
-            string contributionId, [FromBody] VoteContributionRequestDto request)
+        public async Task<ActionResult> VoteContribution(string productId, string contributionId,
+            [FromBody] VoteContributionRequestDto request)
         {
             try
             {

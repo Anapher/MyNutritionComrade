@@ -184,9 +184,17 @@ export default function RootNavigator() {
             options={{ headerTitle: t('auth.title'), presentation: 'modal' }}
          />
          <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
-         <Stack.Screen name="ChangeProduct" component={ChangeProduct} />
+         <Stack.Screen
+            name="ChangeProduct"
+            component={ChangeProduct}
+            options={{ headerTitle: t('change_product.title') }}
+         />
          <Stack.Screen name="ReviewProductChanges" component={ReviewChangesScreen} />
-         <Stack.Screen name="ProductContributions" component={ProductContributionsScreen} />
+         <Stack.Screen
+            name="ProductContributions"
+            component={ProductContributionsScreen}
+            options={{ headerTitle: t('product_contributions.title') }}
+         />
       </Stack.Navigator>
    );
 }

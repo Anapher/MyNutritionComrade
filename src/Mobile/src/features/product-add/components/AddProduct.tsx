@@ -1,21 +1,19 @@
 import { RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack/lib/typescript/src/types';
-import Color from 'color';
 import React, { useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Dimensions, Platform, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { overlay, Text, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import CurvedSlider from 'src/components/CurvedSlider/CurvedSlider';
-import FlatButton from 'src/components/FlatButton';
 import NumberTextInput from 'src/components/NumberTextInput';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { getBaseUnit } from 'src/utils/product-utils';
 import { initialize, setAmount, setServingType } from '../reducer';
 import { selectSlider } from '../selectors';
+import AddProductFooter from './AddProductFooter';
 import useAddProductHeader from './AddProductHeader';
-import AddProductHeader from './AddProductHeader';
 import ServingInfo from './ServingInfo';
 import ServingSelection from './ServingSelection';
 
@@ -77,10 +75,6 @@ export default function AddProduct({
 
    const isBaseUnitSelected = servingType === getBaseUnit(product);
 
-   const handleOpenProductOverview = () => {
-      navigation.push('ProductOverview', { product });
-   };
-
    return (
       <View style={styles.root}>
          <View>
@@ -118,22 +112,7 @@ export default function AddProduct({
             </View>
          </View>
          <SafeAreaView>
-            <View style={styles.bottomButtonContainer}>
-               <FlatButton
-                  style={styles.bottomButton}
-                  text="Show product"
-                  icon="database"
-                  center
-                  onPress={handleOpenProductOverview}
-               />
-               <FlatButton
-                  style={[styles.bottomButton, { backgroundColor: Color('#e67e22').alpha(0.3).string() }]}
-                  text="5 changes to vote"
-                  icon="poll-box"
-                  center
-                  onPress={() => {}}
-               />
-            </View>
+            <AddProductFooter product={product} />
          </SafeAreaView>
       </View>
    );
@@ -172,12 +151,5 @@ const styles = StyleSheet.create({
    volumeText: {
       fontSize: 36,
       borderBottomColor: 'white',
-   },
-   bottomButtonContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-   },
-   bottomButton: {
-      flex: 1,
    },
 });

@@ -8,7 +8,13 @@ type Props = ViewProps & {
 };
 
 export default function SettingsView({ settings, ...props }: Props) {
-   return <View {...props}>{settings.map((item, i) => RenderSettingsItem(item, i, settings))}</View>;
+   return (
+      <View {...props}>
+         {settings.map((item, i) => (
+            <React.Fragment key={item.key}>{RenderSettingsItem(item, i, settings)}</React.Fragment>
+         ))}
+      </View>
+   );
 }
 
 const RenderSettingsItem = (item: SettingsItem, index: number, allSettings: SettingsItem[]) => {
