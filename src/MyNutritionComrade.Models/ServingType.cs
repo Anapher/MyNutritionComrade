@@ -43,7 +43,7 @@ namespace MyNutritionComrade.Models
             Large,
             ExtraLarge,
             Small,
-            Medium
+            Medium,
         };
 
         public override string ToString()

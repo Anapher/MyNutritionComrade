@@ -29,7 +29,6 @@ export default function ChangeProduct({
       params: { product },
    },
 }: Props) {
-   const dispatch = useDispatch();
    const { t } = useTranslation();
    const { makeSafeRequest } = useSafeRequest();
    const [requestError, setRequestError] = useState<string | undefined>();
@@ -53,11 +52,9 @@ export default function ChangeProduct({
             true,
          );
 
-         console.log(operationGroups);
+         navigation.push('ReviewProductChanges', { product, changes: operationGroups });
       } catch (error) {
          const domainError = applyAxiosError(error, setRequestError, setError);
-         console.log(domainError);
-
          if (domainError) {
             if (domainError.code === 'ProductCodeAlreadyExists') {
                setError('code', { message: t('errors.ProductCodeAlreadyExists') });

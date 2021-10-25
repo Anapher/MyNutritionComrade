@@ -450,6 +450,41 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             AssertHelper.AssertErrorType(ex.Error, NutritionComradeErrorCode.ProductContributionInvalidStatus);
         }
 
+        private static JsonPatchDocument<ProductProperties> CreateProductPatchDocument()
+        {
+            return new(new List<Operation<ProductProperties>>(), JsonConfig.Default.ContractResolver);
+        }
+
+        public static readonly TheoryData<JsonPatchDocument<ProductProperties>> InvalidPatches = new()
+        {
+            CreateProductPatchDocument().Remove(x => x.Label["de"].Value),
+            CreateProductPatchDocument().Add(x => x.Label["de"].Value, ""),
+            CreateProductPatchDocument().Add(x => x.Label["en"].Value, "hello world"),
+            CreateProductPatchDocument().Add(x => x.Label["en"].Tags, "test"),
+        };
+
+        [Fact]
+        public async Task PreviewPatchProduct_SubmitOperations_ReturnGroups()
+        {
+            var product = new ProductProperties(null,
+                new Dictionary<string, ProductLabel> { { "de", new ProductLabel("Magerquark") } },
+                NutritionalInfo.Empty with { Energy = 200, Volume = 100 },
+                new Dictionary<ServingType, double> { { ServingType.Gram, 1 } }, ServingType.Gram, null);
+
+            // arrange
+            await Factory.LoginAndSetupClient(Client);
+            var productId = await Api.CreateProduct(Client, product);
+
+            // act
+            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver).Add(x => x.Label["en"].Value, "Magerquark frisch");
+
+            var result = await Api.PreviewPatchProduct(Client, productId, patch.Operations);
+
+            // assert
+            Assert.Single(result);
+        }
+
         [Fact]
         public async Task GetProductContributionStatus_ProductDoesNotExist_ReturnNotFound()
         {

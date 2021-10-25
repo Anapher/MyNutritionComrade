@@ -94,8 +94,9 @@ const allServings = (isLiquid: boolean) => ({
    },
 });
 
-export const getServings: (isLiquid: boolean) => { [name in keyof ReturnType<typeof allServings>]: ServingInfo } =
-   allServings;
+export type ServingType = keyof ReturnType<typeof allServings>;
+
+export const getServings: (isLiquid: boolean) => { [name in ServingType]: ServingInfo } = allServings;
 
 export const emptyProduct: ProductProperties = {
    defaultServing: 'g',

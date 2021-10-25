@@ -58,6 +58,38 @@ namespace CommunityCatalog.Core.Tests.Extensions
         }
 
         [Fact]
+        public void GroupOperations_CreateServingAndSetAsDefaultServing_MergeIntoGroup()
+        {
+            // arrange
+            var document = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver);
+            document.Add(x => x.DefaultServing, ServingType.Bottle);
+            document.Add(x => x.Servings[ServingType.Bottle], 12);
+
+            // act
+            var result = ProductOperationsGroup.GroupOperations(document.Operations);
+
+            // assert
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public void GroupOperations_CreateServingDifferentAndSetAsDefaultServing_MergeIntoGroup()
+        {
+            // arrange
+            var document = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
+                JsonConfig.Default.ContractResolver);
+            document.Add(x => x.DefaultServing, ServingType.Bottle);
+            document.Add(x => x.Servings[ServingType.Piece], 50);
+
+            // act
+            var result = ProductOperationsGroup.GroupOperations(document.Operations);
+
+            // assert
+            Assert.Equal(2, result.Count());
+        }
+
+        [Fact]
         public void GroupOperations_ItemStateChange_Group()
         {
             // arrange

@@ -18,3 +18,12 @@ export async function previewPatchProduct(
    const result = await axios.patch(`/api/v1/product/${productId}/preview`, operations);
    return result.data as any;
 }
+
+export async function patchProduct(productId: string, operations: Operation[]): Promise<void> {
+   await axios.patch(`/api/v1/product/${productId}`, operations);
+}
+
+export async function getProductContributions(productId: string) {
+   const result = await axios.get(`/api/v1/product/${productId}/contributions`);
+   return result.data as any;
+}

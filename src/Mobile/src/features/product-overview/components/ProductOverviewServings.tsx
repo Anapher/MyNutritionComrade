@@ -5,7 +5,7 @@ import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
 import { baseUnits, getServings } from 'src/features/product-create/data';
 import { Product } from 'src/types';
-import { getBaseUnit } from 'src/utils/product-utils';
+import { formatNutritionalValue, getBaseUnit } from 'src/utils/product-utils';
 
 export default function ProductOverviewServings(product: Product): SettingsSection {
    const { t } = useTranslation();
@@ -20,7 +20,7 @@ export default function ProductOverviewServings(product: Product): SettingsSecti
             key,
             render: () => (
                <SettingsReadOnlyKeyValue title={t((getServings(isLiquid) as any)[key].labelKey)}>
-                  {value + ' ' + baseUnit}
+                  {formatNutritionalValue(value, baseUnit)}
                </SettingsReadOnlyKeyValue>
             ),
          })),

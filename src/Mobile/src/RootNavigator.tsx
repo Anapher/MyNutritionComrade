@@ -10,11 +10,13 @@ import LoginScreen from './features/auth/components/LoginScreen';
 import LoginScreenPassword from './features/auth/components/LoginScreenPassword';
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
 import AddProduct from './features/product-add/components/AddProduct';
+import ProductContributionsScreen from './features/product-contributions/components/ProductContributionsScreen';
 import AddLabelScreen from './features/product-create/components/AddLabelScreen';
 import ChangeProduct from './features/product-create/components/ChangeProduct';
 import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
 import CreateProduct from './features/product-create/components/CreateProduct';
 import ProductNotFound from './features/product-create/components/ProductNotFound';
+import ReviewChangesScreen from './features/product-create/components/ReviewChangesScreen';
 import { ProductLabelViewModel } from './features/product-create/types';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
@@ -28,7 +30,7 @@ import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/se
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
 import { ProductSearchConfig } from './services/search-engine/types';
-import { FoodPortion, Product, ProductContributionStatusDto, ProductProperties } from './types';
+import { FoodPortion, Product, ProductContributionStatusDto, ProductOperationsGroup, ProductProperties } from './types';
 
 const Stack = createNativeStackNavigator();
 
@@ -93,6 +95,8 @@ export type RootNavigatorParamList = {
    LoginPassword: { onAuthenticated?: () => void; emailAddress: string };
    ProductOverview: { product: Product; contributionStatus?: ProductContributionStatusDto | null };
    ChangeProduct: { product: Product };
+   ReviewProductChanges: { product: Product; changes: ProductOperationsGroup[] };
+   ProductContributions: { product: Product };
 };
 
 export default function RootNavigator() {
@@ -181,6 +185,8 @@ export default function RootNavigator() {
          />
          <Stack.Screen name="ProductOverview" component={ProductOverviewScreen} />
          <Stack.Screen name="ChangeProduct" component={ChangeProduct} />
+         <Stack.Screen name="ReviewProductChanges" component={ReviewChangesScreen} />
+         <Stack.Screen name="ProductContributions" component={ProductContributionsScreen} />
       </Stack.Navigator>
    );
 }

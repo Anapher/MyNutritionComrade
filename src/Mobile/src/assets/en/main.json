@@ -151,6 +151,7 @@
         "enter_barcode": "Enter barcode here",
         "scan_barcode": "Scan barcode",
         "average_nutritional_values": "Ø Nutritional Values / {{base}}",
+        "nutritional_values": "Nutritional Values",
         "label": "Label",
         "label_placeholder": "Name and producer",
         "tags": "Tags",
@@ -166,11 +167,15 @@
             "kitchen_measurements": "Kitchen Measurements",
             "applications": "Applications",
             "quantities": "Quantities"
-        }
+        },
+        "default_serving": "Default serving"
     },
     "languages": {
         "de": "German",
         "en": "English"
+    },
+    "review_changes": {
+        "title": "Review changes"
     },
     "language": "Language",
     "save": "Save",
@@ -183,6 +188,7 @@
     },
     "email": "Email address",
     "next": "Next",
+    "submit": "Submit",
     "errors": {
         "no_response": "The server is unreachable.",
         "response_no_success": "The server responded with code {{status}}. This is likely a bug.",

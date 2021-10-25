@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { Text } from 'react-native-paper';
 import SettingsList from 'src/components/Settings/SettingsList';
+import StatusIndicator from 'src/components/StatusIndicator';
 import api from 'src/services/api';
 import { Product, ProductContributionDto, ProductContributionStatusDto } from 'src/types';
 import ProductOverviewActions from './ProductOverviewActions';
@@ -11,10 +14,9 @@ import ProductOverviewServings from './ProductOverviewServings';
 type Props = {
    product: Product;
    contributionStatus?: ProductContributionStatusDto | null;
-   contributions?: ProductContributionDto[];
 };
 
-export default function ProductOverview({ product, contributions, contributionStatus }: Props) {
+export default function ProductOverview({ product, contributionStatus }: Props) {
    const [status, setStatus] = useState(contributionStatus);
 
    useEffect(() => {
@@ -27,14 +29,17 @@ export default function ProductOverview({ product, contributions, contributionSt
    }, [status]);
 
    return (
-      <SettingsList
-         settings={[
-            ProductOverviewLabels(product),
-            ProductOverviewNutritions(product),
-            ProductOverviewCommon(product),
-            ProductOverviewServings(product),
-            ProductOverviewActions(product, status),
-         ]}
-      />
+      <View>
+         <SettingsList
+            settings={[
+               ProductOverviewLabels(product),
+               ProductOverviewNutritions(product),
+               ProductOverviewCommon(product),
+               ProductOverviewServings(product),
+               ProductOverviewActions(product, status),
+            ]}
+         />
+         <StatusIndicator status={status ? 'none' : 'loading'} />
+      </View>
    );
 }

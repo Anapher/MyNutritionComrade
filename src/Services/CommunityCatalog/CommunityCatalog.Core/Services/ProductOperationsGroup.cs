@@ -15,7 +15,9 @@ namespace CommunityCatalog.Core.Services
 
             var definitions = new List<OperationGroupDefinition>
             {
-                new ItemStateOperationGroupDefinition(), new NutritionalInfoGroupDefinition(),
+                new ItemStateOperationGroupDefinition(),
+                new NutritionalInfoGroupDefinition(),
+                new DefaultServingGroupIfServingIsAddedDefinition(),
             };
 
             var result = new List<ProductOperationsGroup>();
@@ -45,6 +47,29 @@ namespace CommunityCatalog.Core.Services
             }
         }
 
+        private class DefaultServingGroupIfServingIsAddedDefinition : OperationGroupDefinition
+        {
+            public override IEnumerable<ProductOperationsGroup> FindGroupsAndRemove(IList<Operation> operations)
+            {
+                var defaultServingOp = operations.FirstOrDefault(x => x.path == "/defaultServing");
+                if (defaultServingOp != null)
+                {
+                    var newDefaultServingType = defaultServingOp.value;
+
+                    var addedServingTypeOp =
+                        operations.FirstOrDefault(x => x.path == $"/servings/{newDefaultServingType}");
+
+                    if (addedServingTypeOp != null)
+                    {
+                        operations.Remove(defaultServingOp);
+                        operations.Remove(addedServingTypeOp);
+
+                        yield return new ProductOperationsGroup(new[] { defaultServingOp, addedServingTypeOp });
+                    }
+                }
+            }
+        }
+
         private class ItemStateOperationGroupDefinition : OperationGroupDefinition
         {
             public override IEnumerable<ProductOperationsGroup> FindGroupsAndRemove(IList<Operation> operations)
@@ -62,7 +87,6 @@ namespace CommunityCatalog.Core.Services
                              x.path == $"/tags/{ProductProperties.TAG_LIQUID}");
                     if (tagsChangeOp == null)
                         throw new Exception("If the serving g is changed, the tags must also be adjusted");
-
 
                     yield return new ProductOperationsGroup(new List<Operation>
                     {

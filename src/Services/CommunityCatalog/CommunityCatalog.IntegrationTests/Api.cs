@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityCatalog.Core;
 using CommunityCatalog.Core.Dto;
 using CommunityCatalog.Core.Response;
+using CommunityCatalog.Core.Services;
 using CommunityCatalog.IntegrationTests._Helpers;
 using CommunityCatalog.IntegrationTests.Extensions;
 using CommunityCatalog.Models.Request;
@@ -89,6 +90,17 @@ namespace CommunityCatalog.IntegrationTests
             await ThrowOnError(response);
 
             return await response.Content.ReadFromJsonNetAsync<ProductContributionStatusDto>() ??
+                   throw new InvalidOperationException("Result must not be null");
+        }
+
+        public static async Task<IReadOnlyList<ProductOperationsGroup>> PreviewPatchProduct(HttpClient client,
+            string productId, IReadOnlyList<Operation> operations)
+        {
+            var response =
+                await client.PatchAsync($"api/v1/product/{productId}/preview", JsonNetContent.Create(operations));
+            await ThrowOnError(response);
+
+            return await response.Content.ReadFromJsonNetAsync<IReadOnlyList<ProductOperationsGroup>>() ??
                    throw new InvalidOperationException("Result must not be null");
         }
 

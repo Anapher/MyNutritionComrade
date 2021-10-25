@@ -18,6 +18,10 @@ export default function ProductOverviewActions(
       navigation.push('ChangeProduct', { product });
    };
 
+   const handleOpenContributions = () => {
+      navigation.push('ProductContributions', { product });
+   };
+
    return {
       settings: [
          status && {
@@ -27,6 +31,7 @@ export default function ProductOverviewActions(
                   title="Show contributions"
                   textStyles={{ color: theme.colors.primary }}
                   icon="arrow"
+                  onPress={handleOpenContributions}
                />
             ),
          },

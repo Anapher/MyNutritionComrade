@@ -3,17 +3,20 @@ import React, { useContext } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Divider, Surface, useTheme } from 'react-native-paper';
 import { BORDER_ROUNDING, TEXT_PADDING_LEFT } from './config';
-import { ItemContext } from './ItemContext';
+import { ItemContext, ItemContextInfo } from './ItemContext';
 
 export type SettingItemProps = {
    children?: React.ReactChild;
    padding?: boolean;
    style?: ViewStyle;
+   itemContextOverride?: ItemContextInfo;
 };
 
-export default function SettingItem({ children, padding, style }: SettingItemProps) {
+export default function SettingItem({ children, padding, style, itemContextOverride }: SettingItemProps) {
    const theme = useTheme();
-   const { bottom, top } = useContext(ItemContext);
+   const context = useContext(ItemContext);
+
+   const { top, bottom } = itemContextOverride || context;
 
    return (
       <Surface
