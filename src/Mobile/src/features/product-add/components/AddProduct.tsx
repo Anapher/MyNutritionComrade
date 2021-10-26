@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import CurvedSlider from 'src/components/CurvedSlider/CurvedSlider';
 import NumberTextInput from 'src/components/NumberTextInput';
 import { RootNavigatorParamList } from 'src/RootNavigator';
-import { getBaseUnit } from 'src/utils/product-utils';
+import { formatNutritionalValue, getBaseUnit } from 'src/utils/product-utils';
 import { initialize, setAmount, setServingType } from '../reducer';
 import { selectSlider } from '../selectors';
 import AddProductFooter from './AddProductFooter';
@@ -73,7 +73,8 @@ export default function AddProduct({
    const handleChangeServingType = (newServingType: string) => dispatch(setServingType(newServingType));
    const handleChangeAmount = (newAmount?: number) => dispatch(setAmount(newAmount || 0));
 
-   const isBaseUnitSelected = servingType === getBaseUnit(product);
+   const baseUnit = getBaseUnit(product);
+   const isBaseUnitSelected = servingType === baseUnit;
 
    return (
       <View style={styles.root}>
@@ -93,7 +94,11 @@ export default function AddProduct({
                   showBottomLine
                />
                <View style={[styles.row, { opacity: 0.6 }]}>
-                  <Text>{isBaseUnitSelected ? '' : amount * product.servings[servingType]}g</Text>
+                  <Text>
+                     {isBaseUnitSelected
+                        ? ''
+                        : formatNutritionalValue(amount * product.servings[servingType], baseUnit)}
+                  </Text>
                </View>
             </View>
             <View style={styles.sliderContainer}>
