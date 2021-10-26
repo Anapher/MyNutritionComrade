@@ -461,10 +461,19 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             CreateProductPatchDocument().Add(x => x.Label["de"].Value, ""),
             CreateProductPatchDocument().Add(x => x.Label["en"].Value, "hello world"),
             CreateProductPatchDocument().Add(x => x.Label["en"].Tags, "test"),
+            CreateProductPatchDocument().Add(x => x.Code, ""),
+            CreateProductPatchDocument().Add(x => x.NutritionalInfo.Volume, 50),
+            CreateProductPatchDocument().Add(x => x.NutritionalInfo.Carbohydrates, 101),
+            CreateProductPatchDocument().Add(x => x.NutritionalInfo, null!),
+            CreateProductPatchDocument().Remove(x => x.NutritionalInfo),
+            CreateProductPatchDocument().Remove(x => x.Label),
+            CreateProductPatchDocument().Remove(x => x.DefaultServing),
         };
 
-        [Fact]
-        public async Task PreviewPatchProduct_SubmitOperations_ReturnGroups()
+        [Theory]
+        [MemberData(nameof(InvalidPatches))]
+        public async Task PreviewPatchProduct_InvalidOperations_ReturnError(
+            JsonPatchDocument<ProductProperties> patchDocument)
         {
             var product = new ProductProperties(null,
                 new Dictionary<string, ProductLabel> { { "de", new ProductLabel("Magerquark") } },
@@ -476,13 +485,8 @@ namespace CommunityCatalog.IntegrationTests.Controllers
             var productId = await Api.CreateProduct(Client, product);
 
             // act
-            var patch = new JsonPatchDocument<ProductProperties>(new List<Operation<ProductProperties>>(),
-                JsonConfig.Default.ContractResolver).Add(x => x.Label["en"].Value, "Magerquark frisch");
-
-            var result = await Api.PreviewPatchProduct(Client, productId, patch.Operations);
-
-            // assert
-            Assert.Single(result);
+            await Assert.ThrowsAsync<IdErrorException>(() =>
+                Api.PreviewPatchProduct(Client, productId, patchDocument.Operations));
         }
 
         [Fact]
