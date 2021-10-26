@@ -170,6 +170,12 @@
         },
         "default_serving": "Default serving"
     },
+    "barcode_scanner": {
+        "product_not_found": "Product not found",
+        "product_not_found_message": "Would you mind taking two minutes to add the product to our database?",
+        "add_product": "Add product",
+        "go_back": "Go back"
+    },
     "change_product": {
         "title": "Change product"
     },

@@ -25,6 +25,8 @@ import {
 import { selectedDateLoaded, setSelectedDate } from './reducer';
 import { getSelectedDate, selectConsumedPortions } from './selectors';
 import { selectedProductAmount } from '../product-search/actions';
+import i18next from 'src/services/i18n';
+import { Alert } from 'react-native';
 
 function* loadSelectedDate({ payload }: PayloadAction<string>) {
    const database: SQLiteDatabase = yield call(getDatabase);
@@ -85,7 +87,7 @@ function* onBarcodeScannedAction({
          navigation.replace('AddProduct', {
             product,
             onSubmitPop: 1,
-            submitTitle: 'Submit title',
+            submitTitle: i18next.t('add'),
             onSubmitAction: selectedProductAmount({
                amount: 0,
                servingType: '',
@@ -96,7 +98,22 @@ function* onBarcodeScannedAction({
          return;
       }
    }
-   navigation.replace('ProductNotFound');
+
+   navigation.goBack();
+
+   const handleCreateProduct = () => {
+      navigation.push('CreateProduct', { initialValue: { code: result.data } });
+   };
+
+   Alert.alert(
+      i18next.t('barcode_scanner.product_not_found'),
+      i18next.t('barcode_scanner.product_not_found_message'),
+      [
+         { text: i18next.t('barcode_scanner.add_product'), style: 'default', onPress: handleCreateProduct },
+         { text: i18next.t('barcode_scanner.go_back'), style: 'cancel' },
+      ],
+      { cancelable: true },
+   );
 }
 
 function* diarySaga() {

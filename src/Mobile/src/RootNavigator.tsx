@@ -15,7 +15,6 @@ import AddLabelScreen from './features/product-create/components/AddLabelScreen'
 import ChangeProduct from './features/product-create/components/ChangeProduct';
 import ConfigureServingsScreen from './features/product-create/components/ConfigureServingsScreen';
 import CreateProduct from './features/product-create/components/CreateProduct';
-import ProductNotFound from './features/product-create/components/ProductNotFound';
 import ReviewChangesScreen from './features/product-create/components/ReviewChangesScreen';
 import { ProductLabelViewModel } from './features/product-create/types';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
@@ -71,7 +70,6 @@ export type RootNavigatorParamList = {
       showCodeScannedAnimation?: boolean;
       keepOpen?: boolean;
    };
-   ProductNotFound: undefined;
    Settings: undefined;
    SettingsPersonalInfo: undefined;
    SettingsWeight: undefined;
@@ -138,7 +136,6 @@ export default function RootNavigator() {
                animationTypeForReplace: 'pop',
             }}
          />
-         <Stack.Screen name="ProductNotFound" component={ProductNotFound} />
          <Stack.Screen
             name="Settings"
             component={SettingsRoot}
