@@ -157,7 +157,7 @@ export default function AddLabelScreen({
                              render: () => (
                                 <SettingsButtonLink
                                    textStyles={{ color: theme.colors.primary }}
-                                   title={t('remove')}
+                                   title={t('common:remove')}
                                    onPress={handleDelete}
                                 />
                              ),

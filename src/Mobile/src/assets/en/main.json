@@ -179,6 +179,9 @@
         "contributions_pending_one": "One contribution pending",
         "contributions_pending_other": "{{count}} contributions pending"
     },
+    "consumption_actions": {
+        "change_amount": "Change amount"
+    },
     "languages": {
         "de": "German",
         "en": "English"

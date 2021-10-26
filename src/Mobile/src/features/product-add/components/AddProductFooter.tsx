@@ -29,8 +29,6 @@ export default function AddProductFooter({ product }: Props) {
       navigation.push('ProductContributions', { product });
    };
 
-   console.log(data?.openContributions);
-
    return (
       <View style={styles.bottomButtonContainer}>
          <FlatButton

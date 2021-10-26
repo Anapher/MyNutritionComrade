@@ -1,9 +1,9 @@
-import { NavigationProp, useNavigation } from '@react-navigation/core';
+import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SectionList, SectionListData, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { Divider, Portal } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import FoodPortionHeader from 'src/components-domain/FoodPortionHeader';
 import { ConsumptionTimes } from 'src/consts';
@@ -13,7 +13,6 @@ import { getConsumedPortionId } from 'src/utils/food-portion-utils';
 import { addConsumption, barcodeScannedAddProduct } from '../actions';
 import ConsumedFoodItem from './ConsumedFoodItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
-import FoodPortionDialog, { ShowOptionsInfo } from './FoodPortionDialog';
 
 type Props = {
    style?: StyleProp<ViewStyle>;
@@ -25,7 +24,6 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
    const dispatch = useDispatch();
    const { t } = useTranslation();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
-   const [foodPortionOptions, setFoodPortionOptions] = useState<ShowOptionsInfo | undefined>();
 
    const sections = useMemo(
       () =>
@@ -55,37 +53,32 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
    };
 
    return (
-      <>
-         <SectionList
-            style={style}
-            sections={sections}
-            keyExtractor={getConsumedPortionId}
-            stickySectionHeadersEnabled={false}
-            ItemSeparatorComponent={() => <Divider />}
-            renderItem={({ item }) => <ConsumedFoodItem consumed={item} showOptions={setFoodPortionOptions} />}
-            renderSectionHeader={({ section: { key } }) => {
-               const section = sections.find((x) => x.key === key)!;
-               return (
-                  <FoodPortionHeader
-                     foodPortions={section.data.map((x) => x.foodPortion)}
-                     header={t(`consumption_time.${section.time}`)}
-                     style={styles.sectionHeader}
-                  />
-               );
-            }}
-            renderSectionFooter={({ section }) => (
-               <ConsumptionTimeFooter
-                  style={styles.sectionFooter}
-                  section={section}
-                  onAddFood={() => handleAddFood(section.time)}
-                  onScanBarcode={() => handleScanBarcode(section.time)}
+      <SectionList
+         style={style}
+         sections={sections}
+         keyExtractor={getConsumedPortionId}
+         stickySectionHeadersEnabled={false}
+         ItemSeparatorComponent={() => <Divider />}
+         renderItem={({ item }) => <ConsumedFoodItem consumed={item} />}
+         renderSectionHeader={({ section: { key } }) => {
+            const section = sections.find((x) => x.key === key)!;
+            return (
+               <FoodPortionHeader
+                  foodPortions={section.data.map((x) => x.foodPortion)}
+                  header={t(`consumption_time.${section.time}`)}
+                  style={styles.sectionHeader}
                />
-            )}
-         />
-         <Portal>
-            <FoodPortionDialog value={foodPortionOptions} onDismiss={() => setFoodPortionOptions(undefined)} />
-         </Portal>
-      </>
+            );
+         }}
+         renderSectionFooter={({ section }) => (
+            <ConsumptionTimeFooter
+               style={styles.sectionFooter}
+               section={section}
+               onAddFood={() => handleAddFood(section.time)}
+               onScanBarcode={() => handleScanBarcode(section.time)}
+            />
+         )}
+      />
    );
 }
 
