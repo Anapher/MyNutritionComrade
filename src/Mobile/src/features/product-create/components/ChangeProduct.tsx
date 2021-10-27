@@ -49,7 +49,7 @@ export default function ChangeProduct({
          const operations = compare(product, data);
          const operationGroups = await makeSafeRequest(
             async () => await api.product.previewPatchProduct(product.id, operations),
-            true,
+            false,
          );
 
          navigation.push('ReviewProductChanges', { product, changes: operationGroups });

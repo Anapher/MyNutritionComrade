@@ -4,13 +4,16 @@ import React, { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, FlatList, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
 import getPatchView from 'src/components-domain/ProductPatchGroup';
 import ProductPatchStatusChip from 'src/components-domain/ProductPatchStatusChip';
 import SettingItem from 'src/components/Settings/SettingItem';
+import config from 'src/config';
+import { updateRepository } from 'src/features/repo-manager/reducer';
 import useSafeRequest from 'src/hooks/useSafeRequest';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import api from 'src/services/api';
+import { showErrorAlert } from 'src/utils/error-alert';
 
 type Props = {
    navigation: NativeStackNavigationProp<RootNavigatorParamList>;
@@ -24,18 +27,26 @@ export default function ReviewChangesScreen({
    navigation,
 }: Props) {
    const { t } = useTranslation();
+   const dispatch = useDispatch();
    const changeViews = changes.map((x) => getPatchView(x.operations, product, t));
    const { makeSafeRequest } = useSafeRequest();
 
    const handleSubmit = async () => {
-      await makeSafeRequest(
-         async () =>
-            await api.product.patchProduct(
-               product.id,
-               changes.flatMap((x) => x.operations),
-            ),
-         true,
-      );
+      try {
+         await makeSafeRequest(
+            async () =>
+               await api.product.patchProduct(
+                  product.id,
+                  changes.flatMap((x) => x.operations),
+               ),
+            true,
+         );
+      } catch (error) {
+         showErrorAlert(error);
+         return;
+      }
+
+      dispatch(updateRepository(config.writeRepository.key));
 
       navigation.pop(2);
    };

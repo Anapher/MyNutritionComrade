@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, StyleProp, View, ViewStyle } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -11,8 +11,9 @@ type Props = {
    color?: string;
    onPress?: () => void;
    disabled?: boolean;
+   style?: StyleProp<ViewStyle>;
 };
-export default function AnimatedIconButton({ name, size, onPress, color = 'black', disabled }: Props) {
+export default function AnimatedIconButton({ name, size, onPress, color = 'black', disabled, style }: Props) {
    const animation = useRef(new Animated.Value(0)).current;
 
    const onTouchablePress = useCallback(() => {
@@ -26,7 +27,11 @@ export default function AnimatedIconButton({ name, size, onPress, color = 'black
    }, [onPress, animation]);
 
    return (
-      <TouchableWithoutFeedback disabled={disabled} onPress={onPress === undefined ? undefined : onTouchablePress}>
+      <TouchableWithoutFeedback
+         disabled={disabled}
+         onPress={onPress === undefined ? undefined : onTouchablePress}
+         style={style}
+      >
          <View style={{ position: 'relative' }}>
             <Icon name={name} size={size} color={color} />
             <AnimatedIcon

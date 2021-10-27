@@ -208,7 +208,7 @@
     },
     "product_contributions": {
         "title": "Product contributions",
-        "approve_percentage": "{{value}}% approved",
+        "approved": "approved",
         "contribution_from_you": "This contribution was made by you. Thank you ❤",
         "initialize_product": "Initialize product",
         "applied": "Applied",

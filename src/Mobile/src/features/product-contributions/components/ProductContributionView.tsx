@@ -14,6 +14,7 @@ import VoteButton from './VoteButton';
 type Props = {
    data: ProductContributionDto;
    product: Product;
+   onRefresh: () => void;
 };
 
 export default function ProductContributionView(props: Props) {
@@ -30,7 +31,7 @@ export default function ProductContributionView(props: Props) {
    );
 }
 
-function VoteControls({ data }: Props) {
+function VoteControls({ data, onRefresh }: Props) {
    const { t } = useTranslation();
    const { makeSafeRequest } = useSafeRequest();
 
@@ -39,6 +40,7 @@ function VoteControls({ data }: Props) {
       setPendingVote(vote);
       try {
          await makeSafeRequest(() => api.product.voteContribution(data.productId, data.id, vote), true);
+         onRefresh();
       } catch (error) {
          showErrorAlert(error);
       }
@@ -47,32 +49,29 @@ function VoteControls({ data }: Props) {
    if (data.status !== 'pending') return null;
 
    return (
-      <View style={{ alignItems: 'center' }}>
-         <View style={{ marginVertical: -16 }}>
-            <VoteButton
-               disabled={data.createdByYou}
-               isUpvote
-               existingVote={data.yourVote?.approve}
-               pendingVote={pendingVote}
-               onVote={() => handleVote(true)}
-            />
-         </View>
+      <View style={{ alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
+         <VoteButton
+            style={{ marginVertical: -16, marginHorizontal: -8 }}
+            disabled={data.createdByYou}
+            isUpvote
+            existingVote={data.yourVote?.approve}
+            pendingVote={pendingVote}
+            onVote={() => handleVote(true)}
+         />
          <Text style={styles.voteText}>{data.statistics.totalVotes}</Text>
-         <View style={{ marginVertical: -16 }}>
-            <VoteButton
-               disabled={data.createdByYou}
-               existingVote={data.yourVote?.approve}
-               pendingVote={pendingVote}
-               onVote={() => handleVote(false)}
-            />
-         </View>
+         <VoteButton
+            style={{ marginVertical: -16, marginHorizontal: -8 }}
+            disabled={data.createdByYou}
+            existingVote={data.yourVote?.approve}
+            pendingVote={pendingVote}
+            onVote={() => handleVote(false)}
+         />
          {data.statistics.totalVotes > 0 && (
-            <View style={{ alignItems: 'center' }}>
+            <View style={styles.voteProportionContainer}>
                <Text style={styles.voteProportionText}>
-                  {t('product_contributions.approve_percentage', {
-                     value: formatNumber((data.statistics.approveVotes / data.statistics.totalVotes) * 100),
-                  })}
+                  {formatNumber((data.statistics.approveVotes / data.statistics.totalVotes) * 100)}%
                </Text>
+               <Text style={styles.voteProportionText}>{t('product_contributions.approved')}</Text>
             </View>
          )}
       </View>
@@ -100,7 +99,7 @@ function ProductContributionContent({ data, product }: Props) {
       const info = getPatchView(data.operations, product, t);
 
       return (
-         <View>
+         <View style={{ flex: 1, marginRight: 8 }}>
             <View style={styles.row}>
                <ProductPatchStatusChip status={info.type} />
                <Text style={styles.titleText}>{info.title}</Text>
@@ -145,6 +144,10 @@ const styles = StyleSheet.create({
    voteText: {
       fontSize: 16,
       fontWeight: '700',
+   },
+   voteProportionContainer: {
+      alignItems: 'center',
+      marginTop: 8,
    },
    voteProportionText: {
       fontSize: 9,

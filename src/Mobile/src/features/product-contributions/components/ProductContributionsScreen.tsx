@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import _ from 'lodash';
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FullScreenError from 'src/components/FullScreenError';
 import FullScreenLoading from 'src/components/FullScreenLoading';
 import SettingItem from 'src/components/Settings/SettingItem';
@@ -28,7 +28,7 @@ export default function ProductContributionsScreen({
 
    const { bottom } = useSafeAreaInsets();
 
-   if (isLoading) {
+   if (isLoading && !contributions) {
       return <FullScreenLoading />;
    }
 
@@ -41,7 +41,7 @@ export default function ProductContributionsScreen({
          style={styles.list}
          data={_.orderBy(
             contributions,
-            [(x) => x.status === 'pending', (x) => x.yourVote, (x) => x.createdOn],
+            [(x) => x.status === 'pending', (x) => Boolean(x.yourVote), (x) => x.createdOn],
             ['desc', 'asc', 'desc'],
          )}
          keyExtractor={({ id }) => id}
@@ -49,7 +49,7 @@ export default function ProductContributionsScreen({
          onRefresh={() => onRetry()}
          renderItem={({ item }) => (
             <SettingItem itemContextOverride={{ top: true, bottom: true }} style={styles.item} padding>
-               <ProductContributionView data={item} product={product} />
+               <ProductContributionView data={item} product={product} onRefresh={onRetry} />
             </SettingItem>
          )}
          ListFooterComponent={() => <View style={{ marginBottom: bottom }} />}
