@@ -38,16 +38,9 @@ namespace CommunityCatalog.Controllers
         [Authorize]
         public async Task<ActionResult> CreateProduct([FromBody] ProductProperties dto)
         {
-            try
-            {
-                var userId = User.GetUserId();
-                var result = await _mediator.Send(new CreateProductRequest(userId, dto));
-                return Ok(new ProductCreatedDto(result.Id));
-            }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
+            var userId = User.GetUserId();
+            var result = await _mediator.Send(new CreateProductRequest(userId, dto));
+            return Ok(new ProductCreatedDto(result.Id));
         }
 
         [HttpPatch("{productId}/preview")]
@@ -55,18 +48,11 @@ namespace CommunityCatalog.Controllers
         public async Task<ActionResult<IReadOnlyList<ProductOperationsGroup>>> PreviewPatchProduct(
             [FromBody] IReadOnlyList<Operation> operations, string productId)
         {
-            try
-            {
-                await EnsureProductWritable(productId);
+            await EnsureProductWritable(productId);
 
-                var result =
+            var result =
                     await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
+            return Ok(result);
         }
 
         [HttpPatch("{productId}")]
@@ -74,37 +60,29 @@ namespace CommunityCatalog.Controllers
         public async Task<ActionResult<IReadOnlyList<string>>> PatchProduct(
             [FromBody] IReadOnlyList<Operation> operations, string productId)
         {
-            try
+            await EnsureProductWritable(productId);
+
+            var userId = User.GetUserId();
+            var admin = User.IsAdmin();
+
+            var groups = await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
+
+            var result = new List<string>();
+            foreach (var operationsGroup in groups)
             {
-                await EnsureProductWritable(productId);
+                var contributionId = await _mediator.Send(
+                    new CreateProductContributionRequest(userId, productId, operationsGroup));
 
-                var userId = User.GetUserId();
-                var admin = User.IsAdmin();
-
-                var groups =
-                    await _mediator.Send(new ValidateAndGroupProductContributionsRequest(productId, operations));
-
-                var result = new List<string>();
-                foreach (var operationsGroup in groups)
+                if (admin)
                 {
-                    var contributionId = await _mediator.Send(
-                        new CreateProductContributionRequest(userId, productId, operationsGroup));
-
-                    if (admin)
-                    {
-                        await _mediator.Send(new ApplyProductContributionRequest(contributionId,
-                            "Applied on creation because user is admin"));
-                    }
-
-                    result.Add(contributionId);
+                    await _mediator.Send(new ApplyProductContributionRequest(contributionId,
+                        "Applied on creation because user is admin"));
                 }
 
-                return Ok(result);
+                result.Add(contributionId);
             }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
+
+            return Ok(result);
         }
 
         [HttpGet("{productId}/contributions")]
@@ -112,17 +90,10 @@ namespace CommunityCatalog.Controllers
         public async Task<ActionResult<IReadOnlyList<ProductContributionDto>>> GetProductContributions(string productId,
             [FromServices] IQueryProductContributionsSelector selector)
         {
-            try
-            {
-                var userId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null;
-                var result = await selector.GetContributions(productId, userId, null);
+            var userId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null;
+            var result = await selector.GetContributions(productId, userId, null);
 
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
+            return Ok(result);
         }
 
         [HttpGet("{productId}/contributions/status")]
@@ -130,15 +101,8 @@ namespace CommunityCatalog.Controllers
         public async Task<ActionResult<ProductContributionStatusDto>> GetProductContributionStatus(string productId,
             [FromServices] IFetchProductContributionStatusSelector selector)
         {
-            try
-            {
-                var result = await selector.GetStatus(productId);
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
+            var result = await selector.GetStatus(productId);
+            return Ok(result);
         }
 
         [HttpPost("{productId}/contributions/{contributionId}/vote")]
@@ -146,34 +110,27 @@ namespace CommunityCatalog.Controllers
         public async Task<ActionResult> VoteContribution(string productId, string contributionId,
             [FromBody] VoteContributionRequestDto request)
         {
-            try
+            var userId = User.GetUserId();
+            var admin = User.IsAdmin();
+
+            var status =
+                await _mediator.Send(new VoteProductContributionRequest(userId, contributionId, request.Approve));
+
+            if (admin && status == ProductContributionStatus.Pending)
             {
-                var userId = User.GetUserId();
-                var admin = User.IsAdmin();
-
-                var status =
-                    await _mediator.Send(new VoteProductContributionRequest(userId, contributionId, request.Approve));
-
-                if (admin && status == ProductContributionStatus.Pending)
+                if (request.Approve)
                 {
-                    if (request.Approve)
-                    {
-                        await _mediator.Send(new ApplyProductContributionRequest(contributionId,
-                            "Immediately applied because admin voted approve."));
-                    }
-                    else
-                    {
-                        await _mediator.Send(new RejectProductContributionRequest(contributionId,
-                            "Immediately rejected because admin voted disapprove."));
-                    }
+                    await _mediator.Send(new ApplyProductContributionRequest(contributionId,
+                        "Immediately applied because admin voted approve."));
                 }
+                else
+                {
+                    await _mediator.Send(new RejectProductContributionRequest(contributionId,
+                        "Immediately rejected because admin voted disapprove."));
+                }
+            }
 
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
+            return Ok();
         }
 
         [HttpGet]

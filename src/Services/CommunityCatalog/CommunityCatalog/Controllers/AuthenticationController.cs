@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CommunityCatalog.Core.Requests;
-using CommunityCatalog.Extensions;
 using CommunityCatalog.Models.Request;
 using CommunityCatalog.Models.Response;
 using MediatR;
@@ -25,15 +23,7 @@ namespace CommunityCatalog.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> RequestPassword([FromBody] RequestPasswordDto dto)
         {
-            try
-            {
-                await _mediator.Send(new LoginRequestPasswordRequest(dto.EmailAddress));
-            }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
-
+            await _mediator.Send(new LoginRequestPasswordRequest(dto.EmailAddress));
             return Ok();
         }
 
@@ -41,15 +31,8 @@ namespace CommunityCatalog.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Login([FromBody] LoginRequestDto dto)
         {
-            try
-            {
-                var result = await _mediator.Send(new LoginRequest(dto.EmailAddress, dto.Password));
-                return Ok(new LoginResponseDto(result));
-            }
-            catch (Exception e)
-            {
-                return e.ToError().ToActionResult();
-            }
+            var result = await _mediator.Send(new LoginRequest(dto.EmailAddress, dto.Password));
+            return Ok(new LoginResponseDto(result));
         }
     }
 }
