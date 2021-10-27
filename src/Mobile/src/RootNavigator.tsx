@@ -170,7 +170,7 @@ export default function RootNavigator() {
          <Stack.Screen
             name="ProductEditorServings"
             component={ConfigureServingsScreen}
-            options={{ headerTitle: t('create_product.servings') }}
+            options={{ headerTitle: t('product_properties.servings') }}
          />
          <Stack.Screen
             name="Login"

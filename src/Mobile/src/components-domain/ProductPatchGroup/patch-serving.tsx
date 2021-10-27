@@ -18,7 +18,7 @@ export default function patchServing(operation: Operation, currentProduct: Produ
 
    return {
       type: getPropertyOperationType(operation, currentProduct.servings[servingType]),
-      title: t('create_product.servings'),
+      title: t('product_properties.servings'),
       view: (
          <View style={styles.line}>
             <Text>{t(servingInfo.labelKey)}: </Text>

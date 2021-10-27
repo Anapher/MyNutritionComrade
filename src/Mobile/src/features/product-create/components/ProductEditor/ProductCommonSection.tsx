@@ -43,7 +43,7 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
                   control={control}
                   render={({ field: { value, onChange } }) => (
                      <SettingsButtonLink
-                        title={t('create_product.base_unit')}
+                        title={t('product_properties.base_unit')}
                         onPress={() => handleChangeBaseUnit(onChange)}
                         secondary={value?.liquid ? 'ml' : 'g'}
                         icon="arrow"
@@ -60,7 +60,7 @@ export default function ProductCommonSection({ control, setValue }: UseFormRetur
                   control={control}
                   render={({ field: { value, onChange }, fieldState: { error } }) => (
                      <SettingsTextInput
-                        title={t('create_product.barcode')}
+                        title={t('product_properties.barcode')}
                         value={value}
                         placeholder={t('create_product.enter_barcode')}
                         onChangeValue={(val) => onChange(val || undefined)}

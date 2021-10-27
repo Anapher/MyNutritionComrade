@@ -28,7 +28,7 @@ export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }
       case 'product':
          const handleChangeProductAmount = () => {
             navigation.navigate('AddProduct', {
-               submitTitle: t('change'),
+               submitTitle: t('common:change'),
                product: foodPortion.product,
                amount: foodPortion.amount,
                servingType: foodPortion.servingType,

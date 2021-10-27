@@ -1,16 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, StyleSheet, View } from 'react-native';
 import { Text, TextInput, useTheme } from 'react-native-paper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
-import { z } from 'zod';
 import api from 'src/services/api';
-import { AxiosError } from 'axios';
-import { applyAxiosError, axiosErrorToString, formatErrorMessage, tryExtractDomainError } from 'src/utils/error-utils';
+import { applyAxiosError } from 'src/utils/error-utils';
+import { z } from 'zod';
 
 const validation = z.object({ emailAddress: z.string().email() });
 
@@ -52,7 +51,7 @@ export default function LoginScreen({
    useLayoutEffect(() => {
       navigation.setOptions({
          headerRight: () => (
-            <Button title={t('next')} disabled={!isValid || isSubmitting} onPress={handleSubmit(onSubmit)} />
+            <Button title={t('common:next')} disabled={!isValid || isSubmitting} onPress={handleSubmit(onSubmit)} />
          ),
       });
    }, [isValid, handleSubmit, isSubmitting]);

@@ -66,7 +66,9 @@ export default function ChangeProduct({
 
    useLayoutEffect(() => {
       navigation.setOptions({
-         headerRight: () => <Button title={t('next')} disabled={isSubmitting} onPress={handleSubmit(handleCreate)} />,
+         headerRight: () => (
+            <Button title={t('common:next')} disabled={isSubmitting} onPress={handleSubmit(handleCreate)} />
+         ),
       });
    }, [handleSubmit]);
 

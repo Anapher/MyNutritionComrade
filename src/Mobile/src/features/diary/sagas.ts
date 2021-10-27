@@ -87,7 +87,7 @@ function* onBarcodeScannedAction({
          navigation.replace('AddProduct', {
             product,
             onSubmitPop: 1,
-            submitTitle: i18next.t('add'),
+            submitTitle: i18next.t('common:add'),
             onSubmitAction: selectedProductAmount({
                amount: 0,
                servingType: '',

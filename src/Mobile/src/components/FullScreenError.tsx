@@ -17,7 +17,7 @@ export default function FullScreenError({ errorMessage, onRetry }: Props) {
          <Text style={{ color: theme.colors.error }}>{errorMessage}</Text>
          {onRetry && (
             <View style={styles.retryButton}>
-               <Button onPress={onRetry} title={t('retry')} />
+               <Button onPress={onRetry} title={t('common:retry')} />
             </View>
          )}
       </View>

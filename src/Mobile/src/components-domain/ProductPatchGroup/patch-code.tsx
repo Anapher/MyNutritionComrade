@@ -8,7 +8,7 @@ import { getPropertyOperationType, PatchView } from './utils';
 export default function patchCode(operation: Operation, currentProduct: ProductProperties, t: TFunction): PatchView {
    return {
       type: getPropertyOperationType(operation, currentProduct.code),
-      title: t('create_product.barcode'),
+      title: t('product_properties.barcode'),
       view: <ValuePatch operation={operation} currentValue={currentProduct.code || undefined} />,
    };
 }

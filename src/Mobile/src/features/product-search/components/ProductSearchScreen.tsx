@@ -32,7 +32,7 @@ export default function ProductSearchScreen({
       switch (item.type) {
          case 'product':
             navigation.navigate('AddProduct', {
-               submitTitle: t('add'),
+               submitTitle: t('common:add'),
                onSubmitAction: selectedProductAmount({
                   amount: 0,
                   servingType: '',

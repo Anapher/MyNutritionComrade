@@ -13,7 +13,7 @@ export default function ProductOverviewServings(product: Product): SettingsSecti
    const isLiquid = Boolean(product.tags?.liquid);
 
    return {
-      renderHeader: () => <SettingsHeader label={t('create_product.servings')} />,
+      renderHeader: () => <SettingsHeader label={t('product_properties.servings')} />,
       settings: Object.entries(product.servings)
          .filter(([key, value]) => value && !baseUnits.includes(key))
          .map<SettingsItem>(([key, value]) => ({

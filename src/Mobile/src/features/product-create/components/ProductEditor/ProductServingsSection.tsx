@@ -43,7 +43,7 @@ export default function ProductServingsSection(form: UseFormReturn<ProductProper
    };
 
    return {
-      renderHeader: () => <SettingsHeader label={t('create_product.servings')} />,
+      renderHeader: () => <SettingsHeader label={t('product_properties.servings')} />,
       settings: [
          ...Object.entries(servings)
             .filter(([key, value]) => value && !baseUnits.includes(key))

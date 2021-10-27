@@ -63,11 +63,6 @@
     },
     "product_label": "{{product, product}}",
     "custom_meal": "Custom meal",
-    "remove": "Remove",
-    "change": "Change",
-    "add": "Add",
-    "cancel": "Cancel",
-    "create": "Create",
     "settings": {
         "personal_info": {
             "title": "Personal Information",
@@ -156,25 +151,25 @@
         "not_configured": "You can configure your nutrition goal in settings"
     },
     "product_properties": {
-        "default_serving": "Default serving"
+        "default_serving": "Default serving",
+        "base_unit": "Base unit",
+        "barcode": "Barcode",
+        "nutritional_values": "Nutritional Values",
+        "label": "Label",
+        "tags": "Tags",
+        "servings": "Servings"
     },
     "create_product": {
         "title": "Create product",
-        "base_unit": "Base unit",
-        "barcode": "Barcode",
         "enter_barcode": "Enter barcode here",
         "scan_barcode": "Scan barcode",
         "average_nutritional_values": "Ø Nutritional Values / {{base}}",
-        "nutritional_values": "Nutritional Values",
-        "label": "Label",
         "label_placeholder": "Name and producer",
-        "tags": "Tags",
         "tags_placeholder": "Comma separated",
         "label_description": "Please copy the label from the product and include the producer if possible. Tags can be alternatives for searching.",
         "add_label": "Add label",
         "change_label": "Change label",
         "product_name": "Product Name",
-        "servings": "Servings",
         "add_servings": "Add servings",
         "serving_categories": {
             "product": "Product",
@@ -222,8 +217,6 @@
         "applied": "Applied",
         "rejected": "Rejected"
     },
-    "language": "Language",
-    "save": "Save",
     "auth": {
         "title": "Login",
         "login_description": "We will send you single use password. We will not save any data about you, especially not your email address.",
@@ -232,8 +225,6 @@
         "password_description": "Please input the password we sent to your email address"
     },
     "email": "Email address",
-    "next": "Next",
-    "submit": "Submit",
     "errors": {
         "no_response": "The server is unreachable.",
         "response_no_success": "The server responded with code {{status}}. This is likely a bug.",
@@ -241,7 +232,6 @@
     },
     "properties": "Properties",
     "error_occurred": "Error occurred",
-    "retry": "Retry",
     "loading_message": "Loading...",
     "catalog": "Catalog",
     "catalog_many": "Catalogs",

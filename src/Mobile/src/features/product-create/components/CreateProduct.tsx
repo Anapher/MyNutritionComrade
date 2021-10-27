@@ -69,7 +69,9 @@ export default function CreateProduct({
 
    useLayoutEffect(() => {
       navigation.setOptions({
-         headerRight: () => <Button title={t('create')} disabled={isSubmitting} onPress={handleSubmit(handleCreate)} />,
+         headerRight: () => (
+            <Button title={t('common:create')} disabled={isSubmitting} onPress={handleSubmit(handleCreate)} />
+         ),
       });
    }, [handleSubmit]);
 

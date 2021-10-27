@@ -19,7 +19,7 @@ export default function patchNutritionalInfo(
 ): PatchView {
    return {
       type: 'modify',
-      title: t('create_product.nutritional_values'),
+      title: t('product_properties.nutritional_values'),
       view: <SettingsView settings={nutritionalInfo.map((x) => getNutritionRow(x, operations, currentProduct, t))} />,
    };
 }

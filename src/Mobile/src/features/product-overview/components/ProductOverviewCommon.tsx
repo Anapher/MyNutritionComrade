@@ -6,25 +6,17 @@ import SettingsReadOnlyKeyValue from 'src/components/Settings/Items/SettingsRead
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsSection } from 'src/components/Settings/SettingsList';
 import { Product } from 'src/types';
-import { getBaseUnit } from 'src/utils/product-utils';
 
 export default function ProductOverviewCommon(product: Product): SettingsSection {
    const { t } = useTranslation();
-   // const baseUnit = getBaseUnit(product);
 
    return {
       renderHeader: () => <SettingsHeader label={t('properties')} />,
       settings: [
-         // {
-         //    key: 'baseUnit',
-         //    render: () => (
-         //       <SettingsReadOnlyKeyValue title={t('create_product.base_unit')}>{baseUnit}</SettingsReadOnlyKeyValue>
-         //    ),
-         // },
          {
             key: 'code',
             render: () => (
-               <SettingsReadOnlyKeyValue title={t('create_product.barcode')}>
+               <SettingsReadOnlyKeyValue title={t('product_properties.barcode')}>
                   <Text style={[styles.codeValueText, product.code ? undefined : styles.codeNotSet]}>
                      {product.code || t<string>('settings.not_set')}
                   </Text>

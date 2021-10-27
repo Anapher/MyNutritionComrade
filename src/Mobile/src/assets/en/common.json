@@ -1,4 +1,12 @@
 {
     "cancel": "Cancel",
-    "remove": "Remove"
+    "remove": "Remove",
+    "save": "Save",
+    "next": "Next",
+    "submit": "Submit",
+    "create": "Create",
+    "add": "Add",
+    "change": "Change",
+    "retry": "Retry",
+    "language": "Language"
 }

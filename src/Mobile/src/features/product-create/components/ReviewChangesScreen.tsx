@@ -54,7 +54,7 @@ export default function ReviewChangesScreen({
    useLayoutEffect(() => {
       navigation.setOptions({
          headerTitle: t('review_changes.title'),
-         headerRight: () => <Button title={t('submit')} onPress={handleSubmit} />,
+         headerRight: () => <Button title={t('common:submit')} onPress={handleSubmit} />,
       });
    }, []);
 

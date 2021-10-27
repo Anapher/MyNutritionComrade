@@ -63,7 +63,7 @@ export default function AddLabelScreen({
          headerRight: () => (
             <Button
                disabled={!isValid}
-               title={mode === 'create' ? t('add') : t('save')}
+               title={mode === 'create' ? t('common:add') : t('common:save')}
                onPress={handleSubmit((values) => {
                   onSubmit({ ...values, tags: stringToTags(values.tags) });
                   navigation.goBack();
@@ -88,7 +88,7 @@ export default function AddLabelScreen({
                            rules={{ required: true }}
                            render={({ field: { value, onChange } }) => (
                               <SettingsButtonLink
-                                 title={t('language')}
+                                 title={t('common:language')}
                                  onPress={() => handleSelectLanguage(onChange)}
                                  secondary={t(`languages.${value}`)}
                               />
@@ -110,7 +110,7 @@ export default function AddLabelScreen({
                            render={({ field: { value, onChange } }) => (
                               <SettingsTextInput
                                  titleStyle={styles.textInputTitle}
-                                 title={t('create_product.label')}
+                                 title={t('product_properties.label')}
                                  value={value}
                                  onChangeValue={onChange}
                                  placeholder={t('create_product.label_placeholder')}
@@ -130,7 +130,7 @@ export default function AddLabelScreen({
                               render={({ field: { value, onChange } }) => (
                                  <SettingsTextInput
                                     titleStyle={styles.textInputTitle}
-                                    title={t('create_product.tags')}
+                                    title={t('product_properties.tags')}
                                     value={value}
                                     placeholder={t('create_product.tags_placeholder')}
                                     onChangeValue={onChange}
