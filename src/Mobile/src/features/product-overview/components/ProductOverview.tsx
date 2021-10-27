@@ -2,8 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 import SettingsList from 'src/components/Settings/SettingsList';
 import StatusIndicator from 'src/components/StatusIndicator';
-import useRequestData from 'src/hooks/useRequestData';
-import api from 'src/services/api';
 import { Product, ProductContributionStatusDto } from 'src/types';
 import ProductOverviewActions from './ProductOverviewActions';
 import ProductOverviewCommon from './ProductOverviewCommon';
@@ -14,11 +12,10 @@ import ProductOverviewServings from './ProductOverviewServings';
 type Props = {
    product: Product;
    contributionStatus?: ProductContributionStatusDto | null;
+   loading?: boolean;
 };
 
-export default function ProductOverview({ product, contributionStatus }: Props) {
-   const [status, loading] = useRequestData(() => api.product.getContributionStatus(product.id), contributionStatus);
-
+export default function ProductOverview({ product, contributionStatus, loading }: Props) {
    return (
       <View>
          <SettingsList
@@ -27,7 +24,7 @@ export default function ProductOverview({ product, contributionStatus }: Props) 
                ProductOverviewNutritions(product),
                ProductOverviewCommon(product),
                ProductOverviewServings(product),
-               ProductOverviewActions(product, status),
+               ProductOverviewActions(product, contributionStatus),
             ]}
          />
          <StatusIndicator status={loading ? 'none' : 'loading'} />
