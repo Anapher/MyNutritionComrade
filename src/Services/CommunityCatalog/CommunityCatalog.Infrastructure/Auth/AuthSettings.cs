@@ -7,6 +7,8 @@ namespace CommunityCatalog.Infrastructure.Auth
     {
         public string SecretKey { get; set; } = "test";
 
+        public bool UseTestEmailSender { get; set; }
+
         /// <summary>
         ///     The signing key to use when generating tokens.
         /// </summary>

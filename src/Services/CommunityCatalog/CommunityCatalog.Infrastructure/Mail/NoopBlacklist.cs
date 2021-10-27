@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CommunityCatalog.Core.Gateways.Services;
 
-namespace CommunityCatalog.Infrastructure.Email
+namespace CommunityCatalog.Infrastructure.Mail
 {
     public class NoopBlacklist : IEmailBlacklist
     {

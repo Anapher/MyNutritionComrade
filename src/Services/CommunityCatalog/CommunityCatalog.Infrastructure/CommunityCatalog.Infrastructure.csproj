@@ -1,21 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
-
-	<Import Project="../language.props" />
-
-	<ItemGroup>
-	  <PackageReference Include="JsonSubTypes" Version="1.8.0" />
-	  <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
-	  <PackageReference Include="MongoDB.Concurrency" Version="1.1.0" />
-	  <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
-	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
-	  <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\CommunityCatalog.Core\CommunityCatalog.Core.csproj" />
-	</ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+    <Import Project="../language.props" />
+    <ItemGroup>
+        <PackageReference Include="JsonSubTypes" Version="1.8.0" />
+        <PackageReference Include="MailKit" Version="2.15.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+        <PackageReference Include="MongoDB.Concurrency" Version="1.1.0" />
+        <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.2" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CommunityCatalog.Core\CommunityCatalog.Core.csproj" />
+    </ItemGroup>
 </Project>

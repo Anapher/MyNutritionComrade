@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Autofac;
 using CommunityCatalog.Core;
 using CommunityCatalog.Core.Gateways.Services;
@@ -8,7 +7,7 @@ using CommunityCatalog.Extensions;
 using CommunityCatalog.Infrastructure;
 using CommunityCatalog.Infrastructure.Auth;
 using CommunityCatalog.Infrastructure.Data;
-using CommunityCatalog.Infrastructure.Email;
+using CommunityCatalog.Infrastructure.Mail;
 using CommunityCatalog.Options;
 using CommunityCatalog.Services;
 using FluentValidation.AspNetCore;
@@ -28,15 +27,6 @@ using MyNutritionComrade.Models.Validation;
 
 namespace CommunityCatalog
 {
-    public class TestEmailSender : IEmailSender
-    {
-        public Task SendPasswordToEmail(string receiverEmailAddress, string password)
-        {
-            Console.WriteLine($"[Email to {receiverEmailAddress}]: {password}");
-            return Task.CompletedTask;
-        }
-    }
-
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -59,14 +49,24 @@ namespace CommunityCatalog
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDb"));
             services.Configure<AdminOptions>(Configuration.GetSection("Admins"));
             services.Configure<MirrorOptions>(Configuration.GetSection("Mirror"));
-
-            services.AddSingleton<IEmailSender, TestEmailSender>();
+            services.Configure<MailOptions>(Configuration.GetSection("Mail"));
 
             var jwtIssuerOptions = new JwtIssuerOptions();
             Configuration.GetSection("JwtIssuerOptions").Bind(jwtIssuerOptions);
 
             var authSettings = new AuthSettings();
             Configuration.GetSection("AuthSettings").Bind(authSettings);
+
+            if (authSettings.UseTestEmailSender)
+            {
+                services.AddSingleton<IEmailSender, TestEmailSender>();
+            }
+            else
+            {
+                services.AddSingleton<IEmailSender, RealEmailSender>();
+            }
+
+            services.AddSingleton<IMailService, MailService>();
 
             var tokenValidationParameters = new TokenValidationParameters
             {
