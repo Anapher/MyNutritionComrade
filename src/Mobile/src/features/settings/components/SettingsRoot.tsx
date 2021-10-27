@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import SettingsList from 'src/components/Settings/SettingsList';
+import AccountSettingsItem from './account/AccountSettingsItem';
 import NutritionGoalCaloriesSettingsItem from './nutrition-calories/SettingsItem';
 import NutritionGoalProteinSettingsItem from './nutrition-protein/SettingsItem';
 import PersonalInfoSettingsItem from './personal-info/SettingsItem';
@@ -22,6 +23,9 @@ export default function SettingsRoot() {
                   { key: 'calories', render: () => <NutritionGoalCaloriesSettingsItem /> },
                   { key: 'protein', render: () => <NutritionGoalProteinSettingsItem /> },
                ],
+            },
+            {
+               settings: [{ key: 'account', render: () => <AccountSettingsItem /> }],
             },
          ]}
          contentInset={{ bottom: 16 }}

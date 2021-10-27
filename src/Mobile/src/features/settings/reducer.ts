@@ -40,10 +40,13 @@ const settingsSlice = createSlice({
       setAuthentication(state, { payload }: PayloadAction<AuthSettings>) {
          state.auth = payload;
       },
+      signOut(state) {
+         state.auth = undefined;
+      },
    },
 });
 
-export const { firstStartCompleted, setPersonalInfo, setWeight, setNutritionGoal, setAuthentication } =
+export const { firstStartCompleted, setPersonalInfo, setWeight, setNutritionGoal, setAuthentication, signOut } =
    settingsSlice.actions;
 
 export default settingsSlice.reducer;

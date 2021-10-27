@@ -56,7 +56,7 @@ export default function SettingsButtonLink({
                         {secondary}
                      </Text>
                   )}
-                  {showSecondaryBelow && secondary && <Caption>{secondary}</Caption>}
+                  {showSecondaryBelow && secondary !== undefined && <Caption>{secondary}</Caption>}
                </View>
                {icon === 'arrow' && (
                   <Icon name="chevron-right" size={28} style={{ marginVertical: -2 }} color={theme.colors.disabled} />

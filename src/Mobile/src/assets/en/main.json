@@ -137,6 +137,11 @@
             "add_body_weight": "Add body weight",
             "balance": "Balance"
         },
+        "account": {
+            "title": "Account",
+            "sign_out": "Sign out",
+            "sign_in": "Sign in"
+        },
         "not_set": "Not set"
     },
     "nutrition_goal_overview": {
