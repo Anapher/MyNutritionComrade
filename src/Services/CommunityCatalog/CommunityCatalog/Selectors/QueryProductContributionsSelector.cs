@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -13,7 +14,7 @@ namespace CommunityCatalog.Selectors
 {
     public interface IQueryProductContributionsSelector
     {
-        Task<IReadOnlyList<ProductContributionDto>> GetContributions(string productId, string userId,
+        Task<IReadOnlyList<ProductContributionDto>> GetContributions(string productId, string? userId,
             ProductContributionStatus? status);
     }
 
@@ -30,7 +31,7 @@ namespace CommunityCatalog.Selectors
             _contributionVoteCollection = GetCollection<ProductContributionVote>();
         }
 
-        public async Task<IReadOnlyList<ProductContributionDto>> GetContributions(string productId, string userId,
+        public async Task<IReadOnlyList<ProductContributionDto>> GetContributions(string productId, string? userId,
             ProductContributionStatus? status)
         {
             var query = _contributionCollection.AsQueryable().Where(x => x.ProductId == productId);
@@ -39,7 +40,9 @@ namespace CommunityCatalog.Selectors
 
             var contributions = await query.ToListAsync();
             var voteStatistics = await GetContributionStatisticsOfProduct(productId);
-            var userVotes = await GetVotesOfUserForProductContributionsOfProduct(productId, userId);
+            var userVotes = userId == null
+                ? Array.Empty<ProductContributionVote>()
+                : await GetVotesOfUserForProductContributionsOfProduct(productId, userId);
 
             var result = new List<ProductContributionDto>();
             foreach (var contribution in contributions)
@@ -69,7 +72,7 @@ namespace CommunityCatalog.Selectors
                 .Where(x => x.ProductId == productId && x.UserId == userId).ToListAsync();
         }
 
-        private ProductContributionDto MapContributionToDto(ProductContribution contribution, string userId,
+        private ProductContributionDto MapContributionToDto(ProductContribution contribution, string? userId,
             SelectedContributionStatistics? votes, ProductContributionVote? userVote)
         {
             var dto = _mapper.Map<ProductContributionDto>(contribution);

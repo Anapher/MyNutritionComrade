@@ -51,7 +51,7 @@ namespace CommunityCatalog.Controllers
         }
 
         [HttpPatch("{productId}/preview")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult<IReadOnlyList<ProductOperationsGroup>>> PreviewPatchProduct(
             [FromBody] IReadOnlyList<Operation> operations, string productId)
         {
@@ -108,13 +108,13 @@ namespace CommunityCatalog.Controllers
         }
 
         [HttpGet("{productId}/contributions")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult<IReadOnlyList<ProductContributionDto>>> GetProductContributions(string productId,
             [FromServices] IQueryProductContributionsSelector selector)
         {
             try
             {
-                var userId = User.GetUserId();
+                var userId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null;
                 var result = await selector.GetContributions(productId, userId, null);
 
                 return Ok(result);
@@ -126,7 +126,7 @@ namespace CommunityCatalog.Controllers
         }
 
         [HttpGet("{productId}/contributions/status")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult<ProductContributionStatusDto>> GetProductContributionStatus(string productId,
             [FromServices] IFetchProductContributionStatusSelector selector)
         {
