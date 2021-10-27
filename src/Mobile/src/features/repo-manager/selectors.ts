@@ -10,3 +10,10 @@ export const selectProducts = (state: RootState) =>
    undefined;
 
 export const selectIsDownloadingIndexes = (state: RootState) => state.repoManager.downloading;
+
+export const selectProduct = (state: RootState, productId: string) => {
+   if (!state.repoManager.initializationResult) return undefined;
+   if (state.repoManager.initializationResult.type === 'not-initialized') return undefined;
+
+   return state.repoManager.initializationResult.data[productId] ?? null;
+};

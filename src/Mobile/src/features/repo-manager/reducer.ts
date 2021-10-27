@@ -27,7 +27,7 @@ const repoManagerSlice = createSlice({
       downloadRepositoryUpdates(state) {
          state.downloading = true;
       },
-      downloadRepositoryUpdatesFinished(state) {
+      productRepositoryUpdated(state) {
          state.downloading = false;
       },
       updateRepository(state, _: PayloadAction<string>) {
@@ -40,7 +40,7 @@ export const {
    initialize,
    setInitializationResult,
    downloadRepositoryUpdates,
-   downloadRepositoryUpdatesFinished,
+   productRepositoryUpdated,
    updateRepository,
 } = repoManagerSlice.actions;
 

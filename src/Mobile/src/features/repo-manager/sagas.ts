@@ -5,7 +5,7 @@ import { updateProductRepository } from 'src/services/product-repository-downloa
 import { createProductIndex, InitializationResult } from 'src/services/product-index-factory';
 import {
    downloadRepositoryUpdates,
-   downloadRepositoryUpdatesFinished,
+   productRepositoryUpdated,
    initialize,
    setInitializationResult,
    updateRepository,
@@ -34,7 +34,7 @@ function* downloadUpdates() {
 
    yield call(initializeRepository);
 
-   yield put(downloadRepositoryUpdatesFinished());
+   yield put(productRepositoryUpdated());
 }
 
 function* handleUpdateRepository({ payload }: PayloadAction<string>) {
@@ -48,7 +48,7 @@ function* handleUpdateRepository({ payload }: PayloadAction<string>) {
 
    yield call(updateProductRepository, link);
    yield call(initializeRepository);
-   yield put(downloadRepositoryUpdatesFinished());
+   yield put(productRepositoryUpdated());
 }
 
 function* repoManagerSaga() {

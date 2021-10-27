@@ -46,6 +46,8 @@ export default function AddProduct({
       dispatch(initialize({ product, amount: initialAmount, servingType: initialServingType }));
    }, [product, initialAmount, initialServingType]);
 
+   product = slider?.product || product; // the product of the slider may be updated
+
    useAddProductHeader({
       title: t('product_label', { product }),
       submitTitle,
