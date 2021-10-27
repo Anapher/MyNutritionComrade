@@ -1,4 +1,3 @@
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useLayoutEffect } from 'react';
@@ -7,8 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { Button, StyleSheet } from 'react-native';
 import { Caption, useTheme } from 'react-native-paper';
 import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
-import SettingsList, { SettingsSection } from 'src/components/Settings/SettingsList';
 import SettingsTextInput from 'src/components/Settings/Items/SettingsTextInput';
+import SettingsList, { SettingsSection } from 'src/components/Settings/SettingsList';
+import useActionSheetWrapper, { CancelButton, SheetButton } from 'src/hooks/useActionSheetWrapper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductLabelViewModel } from '../types';
 
@@ -44,18 +44,13 @@ export default function AddLabelScreen({
       mode: 'all',
    });
 
-   const { showActionSheetWithOptions } = useActionSheet();
+   const showActionSheet = useActionSheetWrapper();
 
    const handleSelectLanguage = (onChange: (newValue: string) => void) => {
-      showActionSheetWithOptions(
-         {
-            options: availableLanguages.map((x) => t(`languages.${x}`)),
-            userInterfaceStyle: 'dark',
-         },
-         (i) => {
-            onChange(availableLanguages[i]);
-         },
-      );
+      showActionSheet([
+         ...availableLanguages.map<SheetButton>((x) => ({ label: t(`languages.${x}`), onPress: () => onChange(x) })),
+         CancelButton(),
+      ]);
    };
 
    const handleDelete = () => {

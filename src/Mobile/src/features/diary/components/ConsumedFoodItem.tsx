@@ -1,10 +1,10 @@
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
+import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion } from 'src/types';
 import { getFoodPortionId } from 'src/utils/food-portion-utils';
@@ -18,7 +18,7 @@ export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const dispatch = useDispatch();
    const { t } = useTranslation();
-   const { showActionSheetWithOptions } = useActionSheet();
+   const showActionSheet = useActionSheetWrapper();
 
    const handleRemove = () => {
       dispatch(removeConsumption({ date, time, foodId: getFoodPortionId(foodPortion) }));
@@ -44,32 +44,25 @@ export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }
          };
 
          const handleShowOptions = () => {
-            showActionSheetWithOptions(
+            showActionSheet(
+               [
+                  {
+                     label: t('add_product.show_product'),
+                     onPress: () => navigation.push('ProductOverview', { product: foodPortion.product }),
+                  },
+                  {
+                     label: t('consumption_actions.change_amount'),
+                     onPress: () => handleChangeProductAmount(),
+                  },
+                  {
+                     label: t('common:remove'),
+                     onPress: () => handleRemove(),
+                     destructive: true,
+                  },
+                  CancelButton(),
+               ],
                {
                   title: t('product_label', { product: foodPortion.product }),
-                  options: [
-                     t('add_product.show_product'),
-                     t('consumption_actions.change_amount'),
-                     t('common:remove'),
-                     t('common:cancel'),
-                  ],
-                  cancelButtonIndex: 3,
-                  destructiveButtonIndex: 2,
-               },
-               (selectedIndex) => {
-                  switch (selectedIndex) {
-                     case 0:
-                        navigation.push('ProductOverview', { product: foodPortion.product });
-                        break;
-                     case 1:
-                        handleChangeProductAmount();
-                        break;
-                     case 2:
-                        handleRemove();
-                        break;
-                     default:
-                        break;
-                  }
                },
             );
          };

@@ -1,4 +1,3 @@
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import jwtDecode from 'jwt-decode';
@@ -6,6 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
+import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { signOut } from '../../reducer';
 import { selectAuthInfo } from '../../selectors';
@@ -13,23 +13,15 @@ import { selectAuthInfo } from '../../selectors';
 export default function AccountSettingsItem() {
    const { t } = useTranslation();
    const authInfo = useSelector(selectAuthInfo);
-   const { showActionSheetWithOptions } = useActionSheet();
+   const showActionSheet = useActionSheetWrapper();
    const dispatch = useDispatch();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
 
    const handleShowOptions = () => {
-      showActionSheetWithOptions(
-         {
-            options: [t('settings.account.sign_out'), t('common:cancel')],
-            cancelButtonIndex: 1,
-            destructiveButtonIndex: 0,
-         },
-         (index) => {
-            if (index === 0) {
-               dispatch(signOut());
-            }
-         },
-      );
+      showActionSheet([
+         { label: t('settings.account.sign_out'), destructive: true, onPress: () => dispatch(signOut()) },
+         CancelButton(),
+      ]);
    };
 
    const handleSignIn = () => {

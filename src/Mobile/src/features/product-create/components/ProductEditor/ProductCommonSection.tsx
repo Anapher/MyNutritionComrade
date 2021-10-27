@@ -1,4 +1,3 @@
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
@@ -9,25 +8,22 @@ import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink
 import SettingsTextInput from 'src/components/Settings/Items/SettingsTextInput';
 import SettingsHeader from 'src/components/Settings/SettingsHeader';
 import { SettingsSection } from 'src/components/Settings/SettingsList';
+import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductProperties, ProductTags } from 'src/types';
 
 export default function ProductCommonSection({ control, setValue }: UseFormReturn<ProductProperties>): SettingsSection {
    const theme = useTheme();
-   const { showActionSheetWithOptions } = useActionSheet();
+   const showActionSheet = useActionSheetWrapper();
    const { t } = useTranslation();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
 
    const handleChangeBaseUnit = (onChange: (newValue?: ProductTags) => void) => {
-      showActionSheetWithOptions(
-         {
-            options: ['g', 'ml'],
-            userInterfaceStyle: 'dark',
-         },
-         (i) => {
-            onChange(i === 0 ? undefined : { liquid: true });
-         },
-      );
+      showActionSheet([
+         { label: 'g', onPress: () => onChange(undefined) },
+         { label: 'ml', onPress: () => onChange({ liquid: true }) },
+         CancelButton(),
+      ]);
    };
 
    const handleScanBarcode = () => {
