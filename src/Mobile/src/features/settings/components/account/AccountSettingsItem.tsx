@@ -1,6 +1,7 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import jwtDecode from 'jwt-decode';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,13 +40,20 @@ export default function AccountSettingsItem() {
       return <SettingsButtonLink title={t('settings.account.sign_in')} onPress={handleSignIn} icon="arrow" />;
    }
 
+   const isAdmin = isUserAdmin(authInfo.token);
    return (
       <SettingsButtonLink
          title={t('settings.account.title')}
-         secondary={`${authInfo?.email}`}
+         style={{ backgroundColor: '#e74d3c5a' }}
+         secondary={`${authInfo?.email}` + (isAdmin ? ' - ADMIN' : '')}
          onPress={handleShowOptions}
          icon="arrow"
          showSecondaryBelow
       />
    );
+}
+
+function isUserAdmin(token: string) {
+   const result = jwtDecode(token) as any;
+   return result.rol === 'admin';
 }
