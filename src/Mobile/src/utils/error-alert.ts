@@ -7,7 +7,7 @@ export function showErrorAlert(error: any, title?: string) {
    let message = error.toString();
    const axiosError = error as AxiosError;
    if (axiosError.isAxiosError) {
-      message = axiosErrorToString(message);
+      message = axiosErrorToString(axiosError);
    }
 
    Alert.alert(title || i18next.t('error_occurred'), message, [{ text: 'OK', style: 'cancel' }], { cancelable: true });
