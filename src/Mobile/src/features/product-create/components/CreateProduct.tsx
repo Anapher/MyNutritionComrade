@@ -45,7 +45,7 @@ export default function CreateProduct({
 
    const {
       handleSubmit,
-      formState: { isSubmitting },
+      formState: { isSubmitting, errors },
       setError,
    } = form;
 

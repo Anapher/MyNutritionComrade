@@ -1,4 +1,3 @@
-import { useActionSheet } from '@expo/react-native-action-sheet';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import React from 'react';
@@ -13,8 +12,8 @@ import StatusIndicator from 'src/components/StatusIndicator';
 import config from 'src/config';
 import { updateRepository } from 'src/features/repo-manager/reducer';
 import { selectInitializationResult, selectIsDownloadingIndexes } from 'src/features/repo-manager/selectors';
+import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
 import { RepositoryStatistics } from 'src/services/product-index-factory';
-import wrapActionSheet, { CancelButton } from 'src/utils/action-sheet-wrapper';
 
 export default function IndexesOverview() {
    const dispatch = useDispatch();
@@ -22,7 +21,7 @@ export default function IndexesOverview() {
    const isUpdating = useSelector(selectIsDownloadingIndexes);
    const { t } = useTranslation();
 
-   const { showActionSheetWithOptions } = useActionSheet();
+   const showActionSheet = useActionSheetWrapper();
 
    if (isUpdating && !initializationResult) {
       return <FullScreenLoading />;
@@ -33,8 +32,7 @@ export default function IndexesOverview() {
    }
 
    const handleRefresh = (key: string) => {
-      wrapActionSheet(
-         showActionSheetWithOptions,
+      showActionSheet(
          [
             {
                label: t('settings.indexes.refresh_repository'),

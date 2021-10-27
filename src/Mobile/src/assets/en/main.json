@@ -155,6 +155,9 @@
         "missing": "Missing",
         "not_configured": "You can configure your nutrition goal in settings"
     },
+    "product_properties": {
+        "default_serving": "Default serving"
+    },
     "create_product": {
         "title": "Create product",
         "base_unit": "Base unit",
@@ -178,8 +181,7 @@
             "kitchen_measurements": "Kitchen Measurements",
             "applications": "Applications",
             "quantities": "Quantities"
-        },
-        "default_serving": "Default serving"
+        }
     },
     "barcode_scanner": {
         "product_not_found": "Product not found",
@@ -237,7 +239,7 @@
         "response_no_success": "The server responded with code {{status}}. This is likely a bug.",
         "ProductCodeAlreadyExists": "There already exists a product with the same code."
     },
-    "product_properties": "Properties",
+    "properties": "Properties",
     "error_occurred": "Error occurred",
     "retry": "Retry",
     "loading_message": "Loading...",

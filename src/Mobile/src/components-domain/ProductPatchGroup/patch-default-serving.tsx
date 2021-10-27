@@ -17,7 +17,7 @@ export default function patchDefaultServing(
 
    return {
       type: 'modify',
-      title: t('create_product.default_serving'),
+      title: t('product_properties.default_serving'),
       view: (
          <View>
             <ValuePatch operation={defaultServingOp} currentValue={currentProduct.defaultServing} />

@@ -13,7 +13,7 @@ export default function ProductOverviewCommon(product: Product): SettingsSection
    // const baseUnit = getBaseUnit(product);
 
    return {
-      renderHeader: () => <SettingsHeader label={t('product_properties')} />,
+      renderHeader: () => <SettingsHeader label={t('properties')} />,
       settings: [
          // {
          //    key: 'baseUnit',
