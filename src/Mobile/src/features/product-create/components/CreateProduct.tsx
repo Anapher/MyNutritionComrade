@@ -51,7 +51,7 @@ export default function CreateProduct({
 
    const handleCreate = async (data: ProductProperties) => {
       try {
-         await makeSafeRequest(async () => await api.product.create(data), true);
+         await makeSafeRequest(() => api.product.create(data), true);
          dispatch(updateRepository(config.writeRepository.key));
          navigation.pop(1);
       } catch (error) {

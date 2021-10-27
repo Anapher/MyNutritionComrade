@@ -1,4 +1,3 @@
-import { NavigationProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createAction } from '@reduxjs/toolkit';
 import { BarCodeScanningResult } from 'expo-camera';
