@@ -20,6 +20,7 @@ import { ProductLabelViewModel } from './features/product-create/types';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
+import IndexesOverview from './features/settings/components/indexes/IndexesOverview';
 import NutritionCalories from './features/settings/components/nutrition-calories/NutritionCalories';
 import NutritionProtein from './features/settings/components/nutrition-protein/NutritionProtein';
 import PersonalInfo from './features/settings/components/personal-info/PersonalInfo';
@@ -95,6 +96,7 @@ export type RootNavigatorParamList = {
    ChangeProduct: { product: Product };
    ReviewProductChanges: { product: Product; changes: ProductOperationsGroup[] };
    ProductContributions: { product: Product };
+   IndexesOverview: undefined;
 };
 
 export default function RootNavigator() {
@@ -192,6 +194,7 @@ export default function RootNavigator() {
             component={ProductContributionsScreen}
             options={{ headerTitle: t('product_contributions.title') }}
          />
+         <Stack.Screen name="IndexesOverview" component={IndexesOverview} options={{ headerTitle: 'Indexes' }} />
       </Stack.Navigator>
    );
 }

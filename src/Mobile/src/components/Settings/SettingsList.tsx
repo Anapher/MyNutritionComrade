@@ -19,7 +19,7 @@ export type SettingsItem = {
 
 export type SettingsSection = {
    settings: SettingsItem[];
-   renderHeader?: () => React.ReactElement;
+   renderHeader?: () => React.ReactElement | null;
 };
 
 type Props = Omit<Omit<Omit<SectionListProps<any>, 'sections'>, 'renderItem'>, 'keyExtractor'> & {

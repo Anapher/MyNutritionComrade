@@ -16,6 +16,7 @@ type Props = SettingItemProps & {
    selectable?: boolean;
    selected?: boolean;
    textStyles?: StyleProp<TextStyle>;
+   titleSingleLine?: boolean;
 };
 
 export default function SettingsButtonLink({
@@ -28,6 +29,7 @@ export default function SettingsButtonLink({
    selectable,
    selected,
    textStyles,
+   titleSingleLine,
    ...props
 }: Props) {
    const theme = useTheme();
@@ -46,7 +48,12 @@ export default function SettingsButtonLink({
          >
             <View style={styles.content}>
                <View style={[styles.textContainer, showSecondaryBelow ? undefined : styles.rowView]}>
-                  <Text style={[styles.title, textStyles, formLayout && { flex: 1 }]}>{title}</Text>
+                  <Text
+                     numberOfLines={titleSingleLine ? 1 : undefined}
+                     style={[styles.title, textStyles, formLayout && { flex: 1 }]}
+                  >
+                     {title}
+                  </Text>
                   {!showSecondaryBelow && (
                      <Text
                         numberOfLines={1}

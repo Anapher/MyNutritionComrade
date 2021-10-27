@@ -8,3 +8,5 @@ export const selectProducts = (state: RootState) =>
    (state.repoManager.initializationResult?.type !== 'not-initialized' &&
       state.repoManager.initializationResult?.data) ||
    undefined;
+
+export const selectIsDownloadingIndexes = (state: RootState) => state.repoManager.downloading;

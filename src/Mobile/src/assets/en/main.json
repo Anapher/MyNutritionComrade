@@ -142,6 +142,12 @@
             "sign_out": "Sign out",
             "sign_in": "Sign in"
         },
+        "indexes": {
+            "title": "Indexes",
+            "refresh_repository": "Refresh repository",
+            "repositories_not_initialized": "Not initialized",
+            "repository_not_initialized": "Repository not initialized"
+        },
         "not_set": "Not set"
     },
     "nutrition_goal_overview": {
@@ -234,5 +240,9 @@
     "product_properties": "Properties",
     "error_occurred": "Error occurred",
     "retry": "Retry",
-    "loading_message": "Loading..."
+    "loading_message": "Loading...",
+    "catalog": "Catalog",
+    "catalog_many": "Catalogs",
+    "product": "Product",
+    "product_many": "Products"
 }

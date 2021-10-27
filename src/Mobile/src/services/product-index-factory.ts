@@ -1,21 +1,32 @@
 import { Product } from 'src/types';
 import { DateTime } from 'luxon';
 import { retriveStoredRepository, StoredCatalog } from './product-data-storage';
+import _ from 'lodash';
 
 export type ProductRepositoryLink = { key: string; url: string; pollFrequencyHours: number };
 
-type InitializationResultReady = { type: 'ready'; data: Record<string, Product> };
-type InitializationResultUpdateRequired = {
+type InitializationResultReady = InitializationResultBase & { type: 'ready'; data: Record<string, Product> };
+type InitializationResultUpdateRequired = InitializationResultBase & {
    type: 'update-required';
    data: Record<string, Product>;
    reposThatNeedUpdate: string[];
 };
-type InitializationResultNotInitialized = { type: 'not-initialized' };
+type InitializationResultNotInitialized = InitializationResultBase & { type: 'not-initialized' };
 
 export type InitializationResult =
    | InitializationResultReady
    | InitializationResultUpdateRequired
    | InitializationResultNotInitialized;
+
+export type InitializationResultBase = {
+   repoStatistics: Record<string, RepositoryStatistics>;
+};
+
+export type RepositoryStatistics = {
+   lastUpdated: string;
+   catalogsCount: number;
+   productsCount: number;
+};
 
 /**
  * Attempt to create a product index from local data
@@ -26,42 +37,66 @@ export async function createProductIndex(repositories: ProductRepositoryLink[]):
    const products: Record<string, Product> = {};
    const reposThatNeedUpdate = new Array<string>();
    let hasProduct = false;
+   const repoStatistics: Record<string, RepositoryStatistics> = {};
 
    for (const link of repositories) {
-      const { data, updateRequired } = await fetchRepositoryDataLocally(link);
-      if (data) {
-         for (const catalog of data) {
+      const storedResult = await fetchRepositoryDataLocally(link);
+      if (storedResult.initialized) {
+         const { catalogs, lastUpdated } = storedResult;
+         for (const catalog of catalogs) {
             for (const product of catalog.data) {
                products[product.id] = product;
                hasProduct = true;
             }
          }
+
+         repoStatistics[link.key] = {
+            catalogsCount: catalogs.length,
+            lastUpdated,
+            productsCount: _.sumBy(catalogs, (x) => x.data.length),
+         };
       }
-      if (updateRequired) reposThatNeedUpdate.push(link.key);
+
+      if (storedResult.updateRequired) reposThatNeedUpdate.push(link.key);
    }
 
    if (hasProduct) {
       if (reposThatNeedUpdate.length > 0) {
-         return { type: 'update-required', data: products, reposThatNeedUpdate };
+         return { type: 'update-required', data: products, reposThatNeedUpdate, repoStatistics };
       }
 
-      return { type: 'ready', data: products };
+      return { type: 'ready', data: products, repoStatistics };
    }
 
-   return { type: 'not-initialized' };
+   return { type: 'not-initialized', repoStatistics };
 }
 
-async function fetchRepositoryDataLocally(link: ProductRepositoryLink): Promise<{
-   data?: StoredCatalog[];
+type FetchedDataFound = {
+   initialized: true;
+   catalogs: StoredCatalog[];
+   lastUpdated: string;
    updateRequired: boolean;
-}> {
+};
+
+type FetchedDataNotFound = {
+   initialized: false;
+   updateRequired: true;
+};
+
+async function fetchRepositoryDataLocally(
+   link: ProductRepositoryLink,
+): Promise<FetchedDataFound | FetchedDataNotFound> {
    const result = await retriveStoredRepository(link);
    if (result) {
       const updateRequired = isUpdateRequired(result.lastUpdated, link);
-      return { data: Object.values(result.catalogs), updateRequired };
+      return {
+         initialized: true,
+         catalogs: Object.values(result.catalogs),
+         updateRequired,
+         lastUpdated: result.lastUpdated,
+      };
    } else {
-      // especially uninitialized
-      return { updateRequired: true };
+      return { initialized: false, updateRequired: true };
    }
 }
 
