@@ -2,7 +2,7 @@ import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Keyboard } from 'react-native';
+import { FlatList, Keyboard, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { Divider, useTheme } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { ProductSearchCompletedAction, RootNavigatorParamList } from 'src/RootNavigator';
@@ -103,13 +103,19 @@ export default function ProductSearchScreen({
    };
 
    return (
-      <FlatList
-         data={results}
-         keyboardShouldPersistTaps="handled"
-         style={{ backgroundColor: theme.colors.background }}
-         ItemSeparatorComponent={() => <Divider inset />}
-         keyExtractor={getSearchResultKey}
-         renderItem={({ item }) => <SearchResultItem item={item} onPress={() => onPressItem(item)} />}
-      />
+      <KeyboardAvoidingView
+         style={StyleSheet.absoluteFill}
+         keyboardVerticalOffset={Platform.select({ ios: 60, android: 78 })}
+         behavior="padding"
+      >
+         <FlatList
+            data={results}
+            keyboardShouldPersistTaps="handled"
+            style={{ backgroundColor: theme.colors.background }}
+            ItemSeparatorComponent={() => <Divider inset />}
+            keyExtractor={getSearchResultKey}
+            renderItem={({ item }) => <SearchResultItem item={item} onPress={() => onPressItem(item)} />}
+         />
+      </KeyboardAvoidingView>
    );
 }

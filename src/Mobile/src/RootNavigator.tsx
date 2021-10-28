@@ -17,6 +17,7 @@ import ConfigureServingsScreen from './features/product-create/components/Config
 import CreateProduct from './features/product-create/components/CreateProduct';
 import ReviewChangesScreen from './features/product-create/components/ReviewChangesScreen';
 import { ProductLabelViewModel } from './features/product-create/types';
+import AddCustomProductScreen from './features/product-custom/components/AddCustomProductScreen';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
 import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
@@ -30,7 +31,14 @@ import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/se
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
 import { ProductSearchConfig } from './services/search-engine/types';
-import { FoodPortion, Product, ProductContributionStatusDto, ProductOperationsGroup, ProductProperties } from './types';
+import {
+   FoodPortion,
+   FoodPortionCustom,
+   Product,
+   ProductContributionStatusDto,
+   ProductOperationsGroup,
+   ProductProperties,
+} from './types';
 
 const Stack = createNativeStackNavigator();
 
@@ -97,6 +105,7 @@ export type RootNavigatorParamList = {
    ReviewProductChanges: { product: Product; changes: ProductOperationsGroup[] };
    ProductContributions: { product: Product };
    IndexesOverview: undefined;
+   AddCustomProduct: { initialValues?: Partial<FoodPortionCustom>; onSubmit: (value: FoodPortionCustom) => void };
 };
 
 export default function RootNavigator() {
@@ -194,7 +203,16 @@ export default function RootNavigator() {
             component={ProductContributionsScreen}
             options={{ headerTitle: t('product_contributions.title') }}
          />
-         <Stack.Screen name="IndexesOverview" component={IndexesOverview} options={{ headerTitle: 'Indexes' }} />
+         <Stack.Screen
+            name="IndexesOverview"
+            component={IndexesOverview}
+            options={{ headerTitle: t('indexes.title') }}
+         />
+         <Stack.Screen
+            name="AddCustomProduct"
+            component={AddCustomProductScreen}
+            options={{ headerTitle: t('add_custom_product.title') }}
+         />
       </Stack.Navigator>
    );
 }

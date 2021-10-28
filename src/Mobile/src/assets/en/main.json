@@ -178,6 +178,10 @@
             "quantities": "Quantities"
         }
     },
+    "add_custom_product": {
+        "title": "Add custom product",
+        "name": "Name"
+    },
     "barcode_scanner": {
         "product_not_found": "Product not found",
         "product_not_found_message": "Would you mind taking two minutes to add the product to our database?",

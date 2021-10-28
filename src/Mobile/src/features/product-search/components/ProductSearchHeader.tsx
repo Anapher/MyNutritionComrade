@@ -17,7 +17,7 @@ type Props = {
 function ProductSearchHeader({
    navigation,
    route: {
-      params: { config },
+      params: { config, onCreatedAction, onCreatedPop },
    },
 }: Props) {
    const theme = useTheme();
@@ -49,12 +49,17 @@ function ProductSearchHeader({
          />
          {!config.disableMealCreation && (
             <IconButton
-               icon="silverware-fork-knife"
+               icon="blender"
                size={16}
                style={styles.mealIconButton}
                onPress={() => {
                   Keyboard.dismiss();
-                  //   navigation.navigate('Meals');
+                  navigation.navigate('AddCustomProduct', {
+                     onSubmit: (value) => {
+                        navigation.pop(onCreatedPop + 2);
+                        dispatch({ ...onCreatedAction, payload: { ...onCreatedAction.payload, foodPortion: value } });
+                     },
+                  });
                }}
             />
          )}

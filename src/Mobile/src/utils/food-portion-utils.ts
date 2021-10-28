@@ -2,6 +2,7 @@ import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { parse } from 'search-params';
 import { generatedMealIds } from 'src/consts';
+import { emptyProduct } from 'src/features/product-create/data';
 import { ConsumedPortion, FoodPortion, NutritionalInfo, Product, RecentMealSuggestion } from 'src/types';
 import { changeVolume, computeNutritionHash, sumNutritions } from './nutrition-utils';
 import { getBaseUnit } from './product-utils';
@@ -41,6 +42,8 @@ export function getFoodPortionNutritions(portion: FoodPortion): NutritionalInfo 
          return changeVolume(nutritionsOnePortionOfMeal, portion.portion * nutritionsOnePortionOfMeal.volume);
       case 'suggestion':
          return sumNutritions(portion.items.map((x) => getFoodPortionNutritions(x)));
+      default:
+         return emptyProduct.nutritionalInfo;
    }
 }
 

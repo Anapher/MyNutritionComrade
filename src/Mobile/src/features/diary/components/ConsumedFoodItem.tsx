@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
+import { CustomFoodPortionView, ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
 import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion } from 'src/types';
@@ -74,6 +74,8 @@ export default function ConsumedFoodItem({ consumed: { foodPortion, date, time }
                onLongPress={handleShowOptions}
             />
          );
+      case 'custom':
+         return <CustomFoodPortionView foodPortion={foodPortion} />;
       default:
          return null;
    }

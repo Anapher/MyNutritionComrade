@@ -44,6 +44,7 @@ export function CustomFoodPortionView({ onPress, onLongPress, foodPortion, conta
 
    return (
       <FoodPortionItem
+         hideVolume
          onPress={onPress}
          onLongPress={onLongPress}
          label={foodPortion.label || t('custom_meal')}
@@ -63,6 +64,8 @@ type FoodPortionItemProps = {
    label: string;
    nutritionalInfo: NutritionalInfo;
    isLiquid: boolean;
+
+   hideVolume?: boolean;
 };
 
 function FoodPortionItem({
@@ -72,6 +75,7 @@ function FoodPortionItem({
    label,
    isLiquid,
    containerStyle,
+   hideVolume,
 }: FoodPortionItemProps) {
    const theme = useTheme();
    const { t } = useTranslation();
@@ -99,12 +103,14 @@ function FoodPortionItem({
                      {label}
                   </Text>
                   <View style={styles.verticalCenterAlignedRow}>
-                     <Text style={[styles.description, { color: descriptionColor }]}>
-                        {volume}
-                        {isLiquid ? 'ml' : 'g'}
-                     </Text>
+                     {!hideVolume && (
+                        <Text style={[styles.description, { color: descriptionColor }]}>
+                           {volume}
+                           {isLiquid ? 'ml' : 'g'}
+                        </Text>
+                     )}
                      <Text style={[styles.description, { color: descriptionBColor, fontSize: 11 }]}>
-                        {' | '}
+                        {!hideVolume && ' | '}
                         {`${t('nutritional_info.fat')}: ${roundNumber(fat)}g | ${t(
                            'nutritional_info.carbohydrates_short',
                         )}: ${roundNumber(carbohydrates)}g | ${t('nutritional_info.protein')}: ${roundNumber(

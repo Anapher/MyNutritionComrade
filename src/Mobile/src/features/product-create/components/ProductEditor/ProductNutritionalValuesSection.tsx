@@ -1,5 +1,5 @@
 import React from 'react';
-import { Controller, UseFormReturn, useFormState } from 'react-hook-form';
+import { Control, Controller, UseFormReturn, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { Caption, useTheme } from 'react-native-paper';
@@ -10,6 +10,7 @@ import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInp
 import { ProductProperties } from 'src/types';
 import { getBaseUnit } from 'src/utils/product-utils';
 import { nutritionalInfo } from '../../data';
+import { TFunction } from 'i18next';
 
 export default function ProductNutritionalValuesSection({
    control,
@@ -33,35 +34,44 @@ export default function ProductNutritionalValuesSection({
             )}
          </>
       ),
-      settings: nutritionalInfo.map(({ name, translationKey, unit, inset }) => ({
-         key: name,
-         render: () => (
-            <Controller
-               control={control}
-               name={`nutritionalInfo.${name}` as any}
-               render={({ field: { value, onChange }, fieldState: { error } }) => (
-                  <SettingsNumberInput
-                     title={t(`nutritional_info.${translationKey || name}`)}
-                     placeholder={`0${unit}`}
-                     value={value}
-                     onChangeValue={onChange}
-                     titleStyle={[
-                        styles.text,
-                        inset ? styles.textInset : undefined,
-                        error ? { color: theme.colors.error } : undefined,
-                     ]}
-                     inputProps={{
-                        returnKeyType: 'next',
-                        selectTextOnFocus: true,
-                        blurOnSubmit: false,
-                     }}
-                  />
-               )}
-            />
-         ),
-      })),
+      settings: nutritionalInfoSettingsItems(control as any, theme, t, 'nutritionalInfo.'),
    };
 }
+
+export const nutritionalInfoSettingsItems = (
+   control: Control,
+   theme: ReactNativePaper.Theme,
+   t: TFunction,
+   path: string = '',
+) => {
+   return nutritionalInfo.map(({ name, translationKey, unit, inset }) => ({
+      key: name,
+      render: () => (
+         <Controller
+            control={control}
+            name={`${path}${name}` as any}
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
+               <SettingsNumberInput
+                  title={t(`nutritional_info.${translationKey || name}`)}
+                  placeholder={`0${unit}`}
+                  value={value}
+                  onChangeValue={onChange}
+                  titleStyle={[
+                     styles.text,
+                     inset ? styles.textInset : undefined,
+                     error ? { color: theme.colors.error } : undefined,
+                  ]}
+                  inputProps={{
+                     returnKeyType: 'next',
+                     selectTextOnFocus: true,
+                     blurOnSubmit: false,
+                  }}
+               />
+            )}
+         />
+      ),
+   }));
+};
 
 const styles = StyleSheet.create({
    text: {
