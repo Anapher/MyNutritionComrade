@@ -10,44 +10,38 @@ import {
    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import extractActionSections from './extractActionSections';
 import { ItemContext } from './ItemContext';
-
-export type SettingsItem = {
-   render: () => React.ReactElement;
-   key: string;
-};
-
-export type SettingsSection = {
-   settings: SettingsItem[];
-   renderHeader?: () => React.ReactNode | null;
-};
+import { ActionListItemDescription } from './types';
 
 type Props = Omit<Omit<Omit<SectionListProps<any>, 'sections'>, 'renderItem'>, 'keyExtractor'> & {
-   settings: SettingsSection[];
+   children: React.ReactNode;
 };
 
-export default function SettingsList({ settings, style, ...props }: Props) {
-   const sections = settings
-      .filter((x) => x.settings.length > 0)
-      .map<SectionListData<SettingsItem>>(({ settings, renderHeader }, i) => ({
-         data: settings,
-         key: i.toString(),
+export default function ActionList({ children, style, ...props }: Props) {
+   const sections = extractActionSections(children)
+      .filter((x) => x.items.length > 0)
+      .map<SectionListData<ActionListItemDescription>>(({ items, renderHeader, name }, i) => ({
+         data: items,
+         key: name ?? i.toString(),
          renderHeader,
       }));
 
+   console.log(sections);
+
    return (
       <KeyboardAvoidingView
-         style={{ height: '100%' }}
+         style={StyleSheet.absoluteFill}
          keyboardVerticalOffset={Platform.select({ ios: 60, android: 78 })}
-         behavior={'padding'}
+         behavior="padding"
       >
          <SectionList
             style={[styles.root, style]}
             contentInset={{ bottom: 16 }}
             sections={sections}
             stickySectionHeadersEnabled={false}
-            renderItem={RenderSettingsItem}
-            keyExtractor={(item) => item.key}
+            renderItem={RenderActionItem}
+            keyExtractor={(item) => item.name}
             renderSectionFooter={() => <View style={{ marginBottom: 32 }} />}
             renderSectionHeader={({ section }) => section.renderHeader?.()}
             ListFooterComponent={<SafeAreaView />}
@@ -57,7 +51,7 @@ export default function SettingsList({ settings, style, ...props }: Props) {
    );
 }
 
-const RenderSettingsItem: SectionListRenderItem<SettingsItem> = ({ index, item, section }) => {
+const RenderActionItem: SectionListRenderItem<ActionListItemDescription> = ({ index, item, section }) => {
    const top = index === 0;
    const bottom = section.data.length - 1 === index;
 

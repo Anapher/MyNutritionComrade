@@ -1,6 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
-import SettingsList from 'src/components/Settings/SettingsList';
+import { ActionList, ActionListItem, ActionListSection } from 'src/components/ActionList';
 import StatusIndicator from 'src/components/StatusIndicator';
 import { Product, ProductContributionStatusDto } from 'src/types';
 import ProductOverviewActions from './ProductOverviewActions';
@@ -17,17 +16,15 @@ type Props = {
 
 export default function ProductOverview({ product, contributionStatus, loading }: Props) {
    return (
-      <View>
-         <SettingsList
-            settings={[
-               ProductOverviewLabels(product),
-               ProductOverviewNutritions(product),
-               ProductOverviewCommon(product),
-               ProductOverviewServings(product),
-               ProductOverviewActions(product, contributionStatus),
-            ]}
-         />
-         <StatusIndicator status={loading ? 'none' : 'loading'} />
-      </View>
+      <ActionList>
+         {ProductOverviewLabels(product)}
+         {ProductOverviewNutritions(product)}
+         {ProductOverviewCommon(product)}
+         {ProductOverviewServings(product)}
+         {ProductOverviewActions(product, contributionStatus)}
+         <ActionListSection name="status">
+            {loading && <ActionListItem name="status" render={() => <StatusIndicator status="loading" />} />}
+         </ActionListSection>
+      </ActionList>
    );
 }

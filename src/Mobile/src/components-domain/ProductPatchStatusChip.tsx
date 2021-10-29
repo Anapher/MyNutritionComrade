@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { BORDER_ROUNDING } from 'src/components/Settings/config';
+import { config } from 'src/components/ActionList';
 import { OperationType } from './ProductPatchGroup/utils';
 
 const operationTypeStyles: {
@@ -40,7 +40,7 @@ export default function ProductPatchStatusChip({ status }: Props) {
 
 const styles = StyleSheet.create({
    statusChip: {
-      borderRadius: BORDER_ROUNDING,
+      borderRadius: config.BORDER_ROUNDING,
       borderWidth: 0,
       paddingHorizontal: 8,
       paddingVertical: 2,

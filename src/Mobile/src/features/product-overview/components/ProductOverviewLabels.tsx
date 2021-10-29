@@ -1,17 +1,18 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Caption, Text } from 'react-native-paper';
-import SettingItem from 'src/components/Settings/SettingItem';
-import { SettingsSection } from 'src/components/Settings/SettingsList';
+import { ActionListItem, ActionListSection } from 'src/components/ActionList';
+import ActionItem from 'src/components/ActionList/Items/ActionItem';
 import { Product, ProductLabel } from 'src/types';
 
-export default function ProductOverviewLabels(product: Product): SettingsSection {
-   return {
-      settings: Object.entries(product.label).map(([lang, data]) => ({
-         key: lang,
-         render: () => <LabelSettingItem label={data} lang={lang} />,
-      })),
-   };
+export default function ProductOverviewLabels(product: Product) {
+   return (
+      <ActionListSection name="labels">
+         {Object.entries(product.label).map(([lang, data]) => (
+            <ActionListItem name={lang} key={lang} render={() => <LabelSettingItem label={data} lang={lang} />} />
+         ))}
+      </ActionListSection>
+   );
 }
 
 type LabelSettingItemProps = {
@@ -21,7 +22,7 @@ type LabelSettingItemProps = {
 
 function LabelSettingItem({ lang, label }: LabelSettingItemProps) {
    return (
-      <SettingItem padding>
+      <ActionItem padding>
          <View style={styles.labelItemContainer}>
             <Text style={styles.labelLangText}>{lang.toUpperCase()}</Text>
             <View style={styles.labelDataContainer}>
@@ -29,7 +30,7 @@ function LabelSettingItem({ lang, label }: LabelSettingItemProps) {
                {label.tags && <Caption>{label.tags?.join(', ')}</Caption>}
             </View>
          </View>
-      </SettingItem>
+      </ActionItem>
    );
 }
 

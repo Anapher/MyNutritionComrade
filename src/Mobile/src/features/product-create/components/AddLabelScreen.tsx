@@ -5,9 +5,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, StyleSheet } from 'react-native';
 import { Caption, useTheme } from 'react-native-paper';
-import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
-import SettingsTextInput from 'src/components/Settings/Items/SettingsTextInput';
-import SettingsList, { SettingsSection } from 'src/components/Settings/SettingsList';
+import {
+   ActionButtonLink,
+   ActionList,
+   ActionListItem,
+   ActionListSection,
+   ActionTextInput,
+} from 'src/components/ActionList';
 import useActionSheetWrapper, { CancelButton, SheetButton } from 'src/hooks/useActionSheetWrapper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductLabelViewModel } from '../types';
@@ -75,94 +79,84 @@ export default function AddLabelScreen({
    }, [isValid]);
 
    return (
-      <SettingsList
-         settings={[
-            {
-               settings: [
-                  {
-                     key: 'language',
-                     render: () => (
-                        <Controller
-                           control={control}
-                           name="language"
-                           rules={{ required: true }}
-                           render={({ field: { value, onChange } }) => (
-                              <SettingsButtonLink
-                                 title={t('common:language')}
-                                 onPress={() => handleSelectLanguage(onChange)}
-                                 secondary={t(`languages.${value}`)}
-                              />
-                           )}
+      <ActionList>
+         <ActionListSection name="language">
+            <ActionListItem
+               name="language"
+               render={() => (
+                  <Controller
+                     control={control}
+                     name="language"
+                     rules={{ required: true }}
+                     render={({ field: { value, onChange } }) => (
+                        <ActionButtonLink
+                           title={t('common:language')}
+                           onPress={() => handleSelectLanguage(onChange)}
+                           secondary={t(`languages.${value}`)}
                         />
-                     ),
-                  },
-               ],
-            },
-            {
-               settings: [
-                  {
-                     key: 'label',
-                     render: () => (
-                        <Controller
-                           control={control}
-                           name="value"
-                           rules={{ required: true }}
-                           render={({ field: { value, onChange } }) => (
-                              <SettingsTextInput
-                                 titleStyle={styles.textInputTitle}
-                                 title={t('product_properties.label')}
-                                 value={value}
-                                 onChangeValue={onChange}
-                                 placeholder={t('create_product.label_placeholder')}
-                                 autoFocus
-                              />
-                           )}
+                     )}
+                  />
+               )}
+            />
+         </ActionListSection>
+         <ActionListSection name="values">
+            <ActionListItem
+               name="label"
+               render={() => (
+                  <Controller
+                     control={control}
+                     name="value"
+                     rules={{ required: true }}
+                     render={({ field: { value, onChange } }) => (
+                        <ActionTextInput
+                           titleStyle={styles.textInputTitle}
+                           title={t('product_properties.label')}
+                           value={value}
+                           onChangeValue={onChange}
+                           placeholder={t('create_product.label_placeholder')}
+                           autoFocus
                         />
-                     ),
-                  },
-                  {
-                     key: 'tags',
-                     render: () => (
-                        <>
-                           <Controller
-                              control={control}
-                              name="tags"
-                              render={({ field: { value, onChange } }) => (
-                                 <SettingsTextInput
-                                    titleStyle={styles.textInputTitle}
-                                    title={t('product_properties.tags')}
-                                    value={value}
-                                    placeholder={t('create_product.tags_placeholder')}
-                                    onChangeValue={onChange}
-                                 />
-                              )}
+                     )}
+                  />
+               )}
+            />
+            <ActionListItem
+               name="tags"
+               render={() => (
+                  <>
+                     <Controller
+                        control={control}
+                        name="tags"
+                        render={({ field: { value, onChange } }) => (
+                           <ActionTextInput
+                              titleStyle={styles.textInputTitle}
+                              title={t('product_properties.tags')}
+                              value={value}
+                              placeholder={t('create_product.tags_placeholder')}
+                              onChangeValue={onChange}
                            />
-                           <Caption style={styles.description}>{t('create_product.label_description')}</Caption>
-                        </>
-                     ),
-                  },
-               ],
-            },
-            ...[
-               onDelete
-                  ? ({
-                       settings: [
-                          {
-                             key: 'remove',
-                             render: () => (
-                                <SettingsButtonLink
-                                   textStyles={{ color: theme.colors.primary }}
-                                   title={t('common:remove')}
-                                   onPress={handleDelete}
-                                />
-                             ),
-                          },
-                       ],
-                    } as SettingsSection)
-                  : undefined,
-            ].filter((x): x is SettingsSection => x !== undefined),
-         ]}
-      />
+                        )}
+                     />
+                     <Caption style={styles.description}>{t('create_product.label_description')}</Caption>
+                  </>
+               )}
+            />
+         </ActionListSection>
+         {onDelete && (
+            <ActionListSection name="delete">
+               <ActionListItem
+                  name="remove"
+                  render={() => (
+                     <ActionButtonLink
+                        textStyles={{ color: theme.colors.primary }}
+                        title={t('common:remove')}
+                        onPress={handleDelete}
+                     />
+                  )}
+               />
+            </ActionListSection>
+         )}
+      </ActionList>
    );
 }
 

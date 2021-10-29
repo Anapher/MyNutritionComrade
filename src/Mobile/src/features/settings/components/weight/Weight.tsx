@@ -1,8 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import SettingsList from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
+import { ActionList, ActionListItem, ActionListSection, ActionNumberInput } from 'src/components/ActionList';
 import { setWeight } from '../../reducer';
 import { selectWeightInfo } from '../../selectors';
 
@@ -17,24 +16,20 @@ export default function Weight() {
    };
 
    return (
-      <SettingsList
-         settings={[
-            {
-               settings: [
-                  {
-                     key: 'weight',
-                     render: () => (
-                        <SettingsNumberInput
-                           title={t('settings.weight.current_weight')}
-                           value={weightInfo.currentWeight}
-                           placeholder={t('settings.weight.enter_here')}
-                           onChangeValue={handleChange}
-                        />
-                     ),
-                  },
-               ],
-            },
-         ]}
-      ></SettingsList>
+      <ActionList>
+         <ActionListSection name="default">
+            <ActionListItem
+               name="weight"
+               render={() => (
+                  <ActionNumberInput
+                     title={t('settings.weight.current_weight')}
+                     value={weightInfo.currentWeight}
+                     placeholder={t('settings.weight.enter_here')}
+                     onChangeValue={handleChange}
+                  />
+               )}
+            />
+         </ActionListSection>
+      </ActionList>
    );
 }

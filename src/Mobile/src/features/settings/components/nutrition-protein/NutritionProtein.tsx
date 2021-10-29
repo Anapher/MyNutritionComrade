@@ -1,10 +1,13 @@
-import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
-import SettingsList, { SettingsItem } from 'src/components/Settings/SettingsList';
-import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
+import {
+   ActionButtonLink,
+   ActionList,
+   ActionListItem,
+   ActionListSection,
+   ActionNumberInput,
+} from 'src/components/ActionList';
 import { setNutritionGoal } from '../../reducer';
 import { selectNutritionGoal } from '../../selectors';
 import { UserNutritionGoal } from '../../types';
@@ -25,125 +28,101 @@ export default function NutritionProtein() {
       dispatch(setNutritionGoal({ ...nutritionGoal, ...values }));
    };
 
-   const proteinFixedItems = proteinFixedView(nutritionGoal, t, handleChange);
-   const manualProteinItems = manualProteinPerKgView(nutritionGoal, t, handleChange);
-
-   return (
-      <SettingsList
-         settings={[
-            {
-               settings: [
-                  proteinFixedItems.settingsItem,
-                  manualProteinItems.settingsItem,
-                  ...presetProteinPerKg.map<SettingsItem>(({ key, amount }) => ({
-                     key,
-                     render: () => (
-                        <SettingsButtonLink
-                           title={t(`settings.protein.${key}`)}
-                           secondary={t(`settings.protein.${key}_description`)}
-                           showSecondaryBelow
-                           selectable
-                           selected={
-                              protein?.type === 'proteinByBodyweight' && protein.proteinPerKgBodyweight === amount
-                           }
-                           onPress={() =>
-                              handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: amount } })
-                           }
-                        />
-                     ),
-                  })),
-                  {
-                     key: 'none',
-                     render: () => (
-                        <SettingsButtonLink
-                           title={t('settings.protein.none')}
-                           selectable
-                           selected={!protein}
-                           onPress={() => handleChange({ protein: undefined })}
-                        />
-                     ),
-                  },
-               ],
-            },
-            ...(!proteinFixedItems.newSection ? [] : [{ settings: proteinFixedItems.newSection }]),
-            ...(!manualProteinItems.newSection ? [] : [{ settings: manualProteinItems.newSection }]),
-         ]}
-      ></SettingsList>
-   );
-}
-
-function proteinFixedView(
-   { protein }: UserNutritionGoal,
-   t: TFunction,
-   handleChange: (newValue: Partial<UserNutritionGoal>) => void,
-): { settingsItem: SettingsItem; newSection?: SettingsItem[] } {
-   const selected = protein?.type === 'proteinFixed';
-
-   return {
-      settingsItem: {
-         key: 'proteinFixed',
-         render: () => (
-            <SettingsButtonLink
-               title={t('settings.protein.manual_protein_per_day')}
-               selectable
-               selected={selected}
-               onPress={() => handleChange({ protein: { type: 'proteinFixed', proteinPerDay: 120 } })}
-            />
-         ),
-      },
-      newSection: !selected
-         ? undefined
-         : [
-              {
-                 key: 'proteinFixed.input',
-                 render: () => (
-                    <SettingsNumberInput
-                       title={t('settings.protein.protein_per_day') + ':'}
-                       value={protein.proteinPerDay || undefined}
-                       onChangeValue={(x) => handleChange({ protein: { type: 'proteinFixed', proteinPerDay: x ?? 0 } })}
-                    />
-                 ),
-              },
-           ],
-   };
-}
-
-function manualProteinPerKgView(
-   { protein }: UserNutritionGoal,
-   t: TFunction,
-   handleChange: (newValue: Partial<UserNutritionGoal>) => void,
-): { settingsItem: SettingsItem; newSection?: SettingsItem[] } {
-   const selected =
+   const proteinFixedSelected = protein?.type === 'proteinFixed';
+   const proteinByBodyweightSelected =
       protein?.type === 'proteinByBodyweight' &&
       !presetProteinPerKg.find((x) => x.amount === protein.proteinPerKgBodyweight);
 
-   return {
-      settingsItem: {
-         key: 'protein_per_kg',
-         render: () => (
-            <SettingsButtonLink
-               title={t('settings.protein.manual_protein_per_kg')}
-               selectable
-               selected={selected}
-               onPress={() => handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: 2 } })}
+   return (
+      <ActionList>
+         <ActionListSection name="selection">
+            <ActionListItem
+               name="protein-fixed"
+               render={() => (
+                  <ActionButtonLink
+                     title={t('settings.protein.manual_protein_per_day')}
+                     selectable
+                     selected={proteinFixedSelected}
+                     onPress={() => handleChange({ protein: { type: 'proteinFixed', proteinPerDay: 120 } })}
+                  />
+               )}
             />
-         ),
-      },
-      newSection: !selected
-         ? undefined
-         : [
-              {
-                 key: 'protein_per_kg.manual',
-                 render: () => (
-                    <SettingsNumberInput
-                       title={t('settings.protein.protein_per_day_kg') + ':'}
-                       value={protein.proteinPerKgBodyweight || undefined}
-                       onChangeValue={(x) =>
-                          handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: x ?? 0 } })
-                       }
-                    />
-                 ),
-              },
-           ],
-   };
+            <ActionListItem
+               name="protein-by-bodyweight"
+               render={() => (
+                  <ActionButtonLink
+                     title={t('settings.protein.manual_protein_per_kg')}
+                     selectable
+                     selected={proteinByBodyweightSelected}
+                     onPress={() =>
+                        handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: 2 } })
+                     }
+                  />
+               )}
+            />
+            {presetProteinPerKg.map(({ key, amount }) => (
+               <ActionListItem
+                  key={key}
+                  name={key}
+                  render={() => (
+                     <ActionButtonLink
+                        title={t(`settings.protein.${key}`)}
+                        secondary={t(`settings.protein.${key}_description`)}
+                        showSecondaryBelow
+                        selectable
+                        selected={protein?.type === 'proteinByBodyweight' && protein.proteinPerKgBodyweight === amount}
+                        onPress={() =>
+                           handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: amount } })
+                        }
+                     />
+                  )}
+               />
+            ))}
+            <ActionListItem
+               name="none"
+               render={() => (
+                  <ActionButtonLink
+                     title={t('settings.protein.none')}
+                     selectable
+                     selected={!protein}
+                     onPress={() => handleChange({ protein: undefined })}
+                  />
+               )}
+            />
+         </ActionListSection>
+
+         {proteinFixedSelected && (
+            <ActionListSection name="protein-fixed-selection">
+               <ActionListItem
+                  name="selection"
+                  render={() => (
+                     <ActionNumberInput
+                        title={t('settings.protein.protein_per_day') + ':'}
+                        value={protein.proteinPerDay || undefined}
+                        onChangeValue={(x) =>
+                           handleChange({ protein: { type: 'proteinFixed', proteinPerDay: x ?? 0 } })
+                        }
+                     />
+                  )}
+               />
+            </ActionListSection>
+         )}
+         {proteinByBodyweightSelected && (
+            <ActionListSection name="protein-by-bodyweight-selection">
+               <ActionListItem
+                  name="selection"
+                  render={() => (
+                     <ActionNumberInput
+                        title={t('settings.protein.protein_per_day_kg') + ':'}
+                        value={protein.proteinPerKgBodyweight || undefined}
+                        onChangeValue={(x) =>
+                           handleChange({ protein: { type: 'proteinByBodyweight', proteinPerKgBodyweight: x ?? 0 } })
+                        }
+                     />
+                  )}
+               />
+            </ActionListSection>
+         )}
+      </ActionList>
+   );
 }

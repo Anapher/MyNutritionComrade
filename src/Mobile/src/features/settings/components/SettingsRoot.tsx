@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import SettingsList from 'src/components/Settings/SettingsList';
+import { ActionList, ActionListItem, ActionListSection } from 'src/components/ActionList';
 import AccountSettingsItem from './account/AccountSettingsItem';
 import IndexesSettingsItem from './indexes/IndexesSettingsItem';
 import NutritionGoalCaloriesSettingsItem from './nutrition-calories/SettingsItem';
@@ -10,30 +10,22 @@ import WeightSettingsItem from './weight/SettingsItem';
 
 export default function SettingsRoot() {
    return (
-      <SettingsList
-         style={styles.root}
-         settings={[
-            {
-               settings: [
-                  { key: 'personal', render: () => <PersonalInfoSettingsItem /> },
-                  { key: 'weight', render: () => <WeightSettingsItem /> },
-               ],
-            },
-            {
-               settings: [
-                  { key: 'calories', render: () => <NutritionGoalCaloriesSettingsItem /> },
-                  { key: 'protein', render: () => <NutritionGoalProteinSettingsItem /> },
-               ],
-            },
-            {
-               settings: [{ key: 'account', render: () => <AccountSettingsItem /> }],
-            },
-            {
-               settings: [{ key: 'indexes', render: () => <IndexesSettingsItem /> }],
-            },
-         ]}
-         contentInset={{ bottom: 16 }}
-      />
+      <ActionList style={styles.root} contentInset={{ bottom: 16 }}>
+         <ActionListSection name="personal">
+            <ActionListItem name="personal" render={() => <PersonalInfoSettingsItem />} />
+            <ActionListItem name="weight" render={() => <WeightSettingsItem />} />
+         </ActionListSection>
+         <ActionListSection name="goals">
+            <ActionListItem name="calories" render={() => <NutritionGoalCaloriesSettingsItem />} />
+            <ActionListItem name="protein" render={() => <NutritionGoalProteinSettingsItem />} />
+         </ActionListSection>
+         <ActionListSection name="account">
+            <ActionListItem name="account" render={() => <AccountSettingsItem />} />
+         </ActionListSection>
+         <ActionListSection name="indexes">
+            <ActionListItem name="indexes" render={() => <IndexesSettingsItem />} />
+         </ActionListSection>
+      </ActionList>
    );
 }
 

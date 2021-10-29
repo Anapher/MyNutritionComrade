@@ -6,10 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import SettingsTextInput from 'src/components/Settings/Items/SettingsTextInput';
-import SettingsHeader from 'src/components/Settings/SettingsHeader';
-import SettingsList from 'src/components/Settings/SettingsList';
-import { nutritionalInfoSettingsItems } from 'src/features/product-create/components/ProductEditor/ProductNutritionalValuesSection';
+import { ActionList, ActionListItem, ActionListSection, ActionTextInput } from 'src/components/ActionList';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { FoodPortionCustom } from 'src/types';
 import { schema } from '../validation';
@@ -47,34 +44,27 @@ export default function AddCustomProductScreen({
    }, [handleSubmit]);
 
    return (
-      <SettingsList
-         settings={[
-            {
-               settings: [
-                  {
-                     key: 'label',
-                     render: () => (
-                        <Controller
-                           control={control}
-                           name="label"
-                           render={({ field: { value, onChange } }) => (
-                              <SettingsTextInput
-                                 title="Label"
-                                 placeholder="Optional"
-                                 value={value}
-                                 onChangeValue={onChange}
-                              />
-                           )}
-                        />
-                     ),
-                  },
-               ],
-            },
-            {
-               renderHeader: () => <SettingsHeader label={t('product_properties.nutritional_values')} />,
-               settings: nutritionalInfoSettingsItems(control as any, theme, t, 'nutritionalInfo.'),
-            },
-         ]}
-      />
+      <ActionList>
+         <ActionListSection name="label">
+            <ActionListItem
+               name="label"
+               render={() => (
+                  <Controller
+                     control={control}
+                     name="label"
+                     render={({ field: { value, onChange } }) => (
+                        <ActionTextInput title="Label" placeholder="Optional" value={value} onChangeValue={onChange} />
+                     )}
+                  />
+               )}
+            />
+         </ActionListSection>
+         {/* <ActionListSection
+            name="nutritional_info"
+            renderHeader={() => <SettingsHeader label={t('product_properties.nutritional_values')} />}
+         >
+            {nutritionalInfoSettingsItems(control as any, theme, t, 'nutritionalInfo.')}
+         </ActionListSection> */}
+      </ActionList>
    );
 }

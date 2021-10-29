@@ -4,10 +4,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { ActionButtonLink, ActionList, ActionListItem, ActionListSection } from 'src/components/ActionList';
 import FullScreenError from 'src/components/FullScreenError';
 import FullScreenLoading from 'src/components/FullScreenLoading';
-import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
-import SettingsList from 'src/components/Settings/SettingsList';
 import StatusIndicator from 'src/components/StatusIndicator';
 import config from 'src/config';
 import { updateRepository } from 'src/features/repo-manager/reducer';
@@ -47,32 +46,31 @@ export default function IndexesOverview() {
    };
 
    return (
-      <SettingsList
-         settings={[
-            {
-               settings: config.productRepositories.map(({ key, url }) => ({
-                  key,
-                  render: () => (
-                     <SettingsButtonLink
+      <ActionList>
+         <ActionListSection name="indexes">
+            {config.productRepositories.map(({ key, url }) => (
+               <ActionListItem
+                  key={key}
+                  name={key}
+                  render={() => (
+                     <ActionButtonLink
                         title={url}
                         titleSingleLine
                         showSecondaryBelow
                         secondary={getRepositoryDescription(t, initializationResult.repoStatistics[key])}
                         onPress={() => handleRefresh(key)}
                      />
-                  ),
-               })),
-            },
-            {
-               settings: [
-                  {
-                     key: 'loading',
-                     render: () => <View>{isUpdating && <StatusIndicator status="loading" />}</View>,
-                  },
-               ],
-            },
-         ]}
-      />
+                  )}
+               />
+            ))}
+         </ActionListSection>
+         <ActionListSection name="status">
+            <ActionListItem
+               name="status"
+               render={() => <View>{isUpdating && <StatusIndicator status="loading" />}</View>}
+            />
+         </ActionListSection>
+      </ActionList>
    );
 }
 

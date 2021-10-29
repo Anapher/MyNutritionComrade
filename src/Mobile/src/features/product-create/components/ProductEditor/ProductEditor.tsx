@@ -1,6 +1,6 @@
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import SettingsList from 'src/components/Settings/SettingsList';
+import { ActionList } from 'src/components/ActionList';
 import { ProductProperties } from 'src/types';
 import ProductCommonSection from './ProductCommonSection';
 import ProductLabelSection from './ProductLabelSection';
@@ -13,13 +13,11 @@ type Props = {
 
 export default function ProductEditor({ form }: Props) {
    return (
-      <SettingsList
-         settings={[
-            ProductLabelSection(form),
-            ProductCommonSection(form),
-            ProductNutritionalValuesSection(form),
-            ProductServingsSection(form),
-         ]}
-      />
+      <ActionList>
+         {ProductLabelSection(form)}
+         {ProductCommonSection(form)}
+         {ProductNutritionalValuesSection(form)}
+         {ProductServingsSection(form)}
+      </ActionList>
    );
 }

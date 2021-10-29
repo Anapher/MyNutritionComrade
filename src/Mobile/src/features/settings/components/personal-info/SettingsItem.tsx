@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
+import { ActionButtonLink } from 'src/components/ActionList';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { selectPersonalInfo } from '../../selectors';
 import { calculateAge } from './utils';
@@ -26,7 +26,7 @@ export default function SettingsItem() {
    }
 
    return (
-      <SettingsButtonLink
+      <ActionButtonLink
          title={t('settings.personal_info.title')}
          secondary={givenInfos.length > 0 ? givenInfos.join(' | ') : undefined}
          onPress={() => navigation.push('SettingsPersonalInfo')}

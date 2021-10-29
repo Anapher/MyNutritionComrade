@@ -4,7 +4,7 @@ import jwtDecode from 'jwt-decode';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
+import { ActionButtonLink } from 'src/components/ActionList';
 import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { signOut } from '../../reducer';
@@ -29,12 +29,12 @@ export default function AccountSettingsItem() {
    };
 
    if (!authInfo) {
-      return <SettingsButtonLink title={t('settings.account.sign_in')} onPress={handleSignIn} icon="arrow" />;
+      return <ActionButtonLink title={t('settings.account.sign_in')} onPress={handleSignIn} icon="arrow" />;
    }
 
    const isAdmin = isUserAdmin(authInfo.token);
    return (
-      <SettingsButtonLink
+      <ActionButtonLink
          title={t('settings.account.title')}
          style={{ backgroundColor: '#e74d3c5a' }}
          secondary={`${authInfo?.email}` + (isAdmin ? ' - ADMIN' : '')}

@@ -4,9 +4,9 @@ import _ from 'lodash';
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ActionItem from 'src/components/ActionList/Items/ActionItem';
 import FullScreenError from 'src/components/FullScreenError';
 import FullScreenLoading from 'src/components/FullScreenLoading';
-import SettingItem from 'src/components/Settings/SettingItem';
 import useRequestData from 'src/hooks/useRequestData';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import api from 'src/services/api';
@@ -48,9 +48,9 @@ export default function ProductContributionsScreen({
          refreshing={isLoading}
          onRefresh={() => onRetry()}
          renderItem={({ item }) => (
-            <SettingItem itemContextOverride={{ top: true, bottom: true }} style={styles.item} padding>
+            <ActionItem itemContextOverride={{ top: true, bottom: true }} style={styles.item} padding>
                <ProductContributionView data={item} product={product} onRefresh={onRetry} />
-            </SettingItem>
+            </ActionItem>
          )}
          ListFooterComponent={() => <View style={{ marginBottom: bottom }} />}
       />

@@ -4,19 +4,13 @@ import React from 'react';
 import { UseFormReturn, useFormState } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Caption, useTheme } from 'react-native-paper';
-import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
-import SettingsHeader from 'src/components/Settings/SettingsHeader';
-import { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
+import { ActionButtonLink, ActionHeader, ActionListItem, ActionListSection } from 'src/components/ActionList';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ProductLabel, ProductProperties } from 'src/types';
 
 const supportedLanguages = ['de', 'en'];
 
-export default function ProductLabelSection({
-   setValue,
-   watch,
-   control,
-}: UseFormReturn<ProductProperties>): SettingsSection {
+export default function ProductLabelSection({ setValue, watch, control }: UseFormReturn<ProductProperties>) {
    const theme = useTheme();
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const label = watch('label');
@@ -56,28 +50,29 @@ export default function ProductLabelSection({
       });
    };
 
-   return {
-      renderHeader: () => <SettingsHeader label={t('create_product.product_name')} />,
-      settings: [
-         ...Object.entries(label ?? {}).map<SettingsItem>(([language, value]) => ({
-            key: language,
-            render: () => {
-               const hasTags = Boolean(value.tags && value.tags.length > 0);
-               return (
-                  <SettingsButtonLink
-                     title={value.value}
-                     secondary={t(`languages.${language}`) + (hasTags ? ' | ' + value.tags?.join(', ') : '')}
-                     showSecondaryBelow={hasTags}
-                     onPress={() => handleChangeLabel(language, value)}
-                  />
-               );
-            },
-         })),
-         {
-            key: 'add-button',
-            render: () => (
+   return (
+      <ActionListSection name="label" renderHeader={() => <ActionHeader label={t('create_product.product_name')} />}>
+         {Object.entries(label ?? {}).map(([language, value]) => (
+            <ActionListItem
+               name={language}
+               render={() => {
+                  const hasTags = Boolean(value.tags && value.tags.length > 0);
+                  return (
+                     <ActionButtonLink
+                        title={value.value}
+                        secondary={t(`languages.${language}`) + (hasTags ? ' | ' + value.tags?.join(', ') : '')}
+                        showSecondaryBelow={hasTags}
+                        onPress={() => handleChangeLabel(language, value)}
+                     />
+                  );
+               }}
+            />
+         ))}
+         <ActionListItem
+            name="add-button"
+            render={() => (
                <>
-                  <SettingsButtonLink
+                  <ActionButtonLink
                      title={t('create_product.add_label')}
                      onPress={handleAddLabel}
                      textStyles={{ color: theme.colors.primary }}
@@ -87,8 +82,8 @@ export default function ProductLabelSection({
                      <Caption style={{ color: theme.colors.error, margin: 24 }}>{errors.label.message}</Caption>
                   )}
                </>
-            ),
-         },
-      ],
-   };
+            )}
+         />
+      </ActionListSection>
+   );
 }

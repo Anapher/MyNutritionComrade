@@ -6,9 +6,7 @@ import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { IconButton, useTheme } from 'react-native-paper';
-import SettingsNumberInput from 'src/components/Settings/Items/SettingsNumberInput';
-import SettingsHeader from 'src/components/Settings/SettingsHeader';
-import SettingsList, { SettingsItem, SettingsSection } from 'src/components/Settings/SettingsList';
+import { ActionList, ActionListItem, ActionListSection, ActionNumberInput } from 'src/components/ActionList';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { getServings, ServingInfo } from '../data';
 
@@ -53,7 +51,6 @@ export default function ConfigureServingsScreen({
    const theme = useTheme();
 
    const { t } = useTranslation();
-   const defaultServing = watch('defaultServing');
    const tags = watch('tags');
 
    const isLiquid = Boolean(tags?.liquid);
@@ -63,48 +60,50 @@ export default function ConfigureServingsScreen({
    };
 
    return (
-      <SettingsList
-         settings={[
-            ...servingsFactory(isLiquid, t).map<SettingsSection>(({ title, data }) => ({
-               renderHeader: () => <SettingsHeader label={title} />,
-               settings: data
+      <ActionList>
+         {servingsFactory(isLiquid, t).map(({ title, data }) => (
+            <ActionListSection name={title} key={title}>
+               {data
                   .filter((x) => x.predefinedValue !== 0)
-                  .map<SettingsItem>(({ id, labelKey, descriptionKey, predefinedValue }) => ({
-                     key: id,
-                     render: () => (
-                        <Controller
-                           control={control}
-                           name={`servings.${id}`}
-                           render={({ field: { value, onChange } }) =>
-                              predefinedValue === undefined ? (
-                                 <SettingsNumberInput
-                                    title={t(labelKey)}
-                                    onChangeValue={onChange as any}
-                                    value={value}
-                                    placeholder="None"
-                                    rightAction={
-                                       <IconButton
-                                          icon="information-outline"
-                                          color={theme.colors.disabled}
-                                          onPress={showServingInfo(labelKey, descriptionKey)}
-                                       />
-                                    }
-                                 />
-                              ) : (
-                                 <SettingsNumberInput
-                                    title={t(labelKey)}
-                                    onChangeValue={() => {}}
-                                    value={predefinedValue}
-                                    inputProps={{ editable: false, style: { color: theme.colors.disabled } }}
-                                    titleStyle={{ color: theme.colors.disabled }}
-                                 />
-                              )
-                           }
-                        />
-                     ),
-                  })),
-            })),
-         ]}
-      />
+                  .map(({ id, labelKey, descriptionKey, predefinedValue }) => (
+                     <ActionListItem
+                        key={id}
+                        name={id}
+                        render={() => (
+                           <Controller
+                              control={control}
+                              name={`servings.${id}`}
+                              render={({ field: { value, onChange } }) =>
+                                 predefinedValue === undefined ? (
+                                    <ActionNumberInput
+                                       title={t(labelKey)}
+                                       onChangeValue={onChange as any}
+                                       value={value}
+                                       placeholder="None"
+                                       rightAction={
+                                          <IconButton
+                                             icon="information-outline"
+                                             color={theme.colors.disabled}
+                                             onPress={showServingInfo(labelKey, descriptionKey)}
+                                          />
+                                       }
+                                    />
+                                 ) : (
+                                    <ActionNumberInput
+                                       title={t(labelKey)}
+                                       onChangeValue={() => {}}
+                                       value={predefinedValue}
+                                       inputProps={{ editable: false, style: { color: theme.colors.disabled } }}
+                                       titleStyle={{ color: theme.colors.disabled }}
+                                    />
+                                 )
+                              }
+                           />
+                        )}
+                     />
+                  ))}
+            </ActionListSection>
+         ))}
+      </ActionList>
    );
 }

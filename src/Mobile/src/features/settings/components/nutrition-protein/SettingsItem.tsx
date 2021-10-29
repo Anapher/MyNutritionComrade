@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import SettingsButtonLink from 'src/components/Settings/Items/SettingsButtonLink';
+import { ActionButtonLink } from 'src/components/ActionList';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { selectNutritionGoal } from '../../selectors';
 
@@ -22,7 +22,7 @@ export default function SettingsItem() {
    }
 
    return (
-      <SettingsButtonLink
+      <ActionButtonLink
          title={t('settings.protein.title')}
          onPress={() => navigation.push('SettingsNutritionGoalProtein')}
          icon="arrow"

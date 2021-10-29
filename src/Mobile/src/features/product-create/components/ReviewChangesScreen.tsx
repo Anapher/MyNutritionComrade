@@ -7,7 +7,7 @@ import { Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import getPatchView from 'src/components-domain/ProductPatchGroup';
 import ProductPatchStatusChip from 'src/components-domain/ProductPatchStatusChip';
-import SettingItem from 'src/components/Settings/SettingItem';
+import ActionItem from 'src/components/ActionList/Items/ActionItem';
 import config from 'src/config';
 import { updateRepository } from 'src/features/repo-manager/reducer';
 import useSafeRequest from 'src/hooks/useSafeRequest';
@@ -64,7 +64,7 @@ export default function ReviewChangesScreen({
          keyExtractor={(_, i) => i.toString()}
          style={{ padding: 16 }}
          renderItem={({ item }) => (
-            <SettingItem itemContextOverride={{ top: true, bottom: true }} style={styles.item} padding>
+            <ActionItem itemContextOverride={{ top: true, bottom: true }} style={styles.item} padding>
                <>
                   <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                      <ProductPatchStatusChip status={item.type} />
@@ -72,7 +72,7 @@ export default function ReviewChangesScreen({
                   </View>
                   <View style={{ marginTop: 16 }}>{item.view}</View>
                </>
-            </SettingItem>
+            </ActionItem>
          )}
       />
    );

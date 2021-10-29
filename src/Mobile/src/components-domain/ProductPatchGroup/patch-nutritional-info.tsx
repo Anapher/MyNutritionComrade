@@ -3,9 +3,8 @@ import { TFunction } from 'i18next';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import SettingsReadOnlyKeyValue from 'src/components/Settings/Items/SettingsReadOnlyKeyValue';
-import { SettingsItem } from 'src/components/Settings/SettingsList';
-import SettingsView from 'src/components/Settings/SettingsView';
+import { ActionListItem, ReadOnlyKeyValue } from 'src/components/ActionList';
+import StaticActionView from 'src/components/ActionList/StaticActionView';
 import { nutritionalInfo, NutritionRow } from 'src/features/product-create/data';
 import { ProductProperties } from 'src/types';
 import { formatNutritionalValue } from 'src/utils/product-utils';
@@ -20,7 +19,11 @@ export default function patchNutritionalInfo(
    return {
       type: 'modify',
       title: t('product_properties.nutritional_values'),
-      view: <SettingsView settings={nutritionalInfo.map((x) => getNutritionRow(x, operations, currentProduct, t))} />,
+      view: (
+         <StaticActionView>
+            {nutritionalInfo.map((x) => getNutritionRow(x, operations, currentProduct, t))}
+         </StaticActionView>
+      ),
    };
 }
 
@@ -29,31 +32,33 @@ function getNutritionRow(
    operations: Operation[],
    currentProduct: ProductProperties,
    t: TFunction,
-): SettingsItem {
+) {
    const operation = operations.find((x) => x.path.endsWith(name));
    const currentValue = currentProduct.nutritionalInfo[name];
    const formatValue = (n: number) => formatNutritionalValue(n, unit);
 
-   return {
-      key: name,
-      render: () => (
-         <SettingsReadOnlyKeyValue
-            title={t(`nutritional_info.${translationKey || name}`)}
-            titleStyle={[inset ? styles.textInset : undefined]}
-         >
-            {operation ? (
-               <ValuePatch
-                  operation={operation}
-                  currentValue={currentValue}
-                  formatValue={formatValue}
-                  textStyle={styles.valueText}
-               />
-            ) : (
-               <Text style={styles.valueText}>{formatValue(currentValue)}</Text>
-            )}
-         </SettingsReadOnlyKeyValue>
-      ),
-   };
+   return (
+      <ActionListItem
+         name={name}
+         render={() => (
+            <ReadOnlyKeyValue
+               title={t(`nutritional_info.${translationKey || name}`)}
+               titleStyle={[inset ? styles.textInset : undefined]}
+            >
+               {operation ? (
+                  <ValuePatch
+                     operation={operation}
+                     currentValue={currentValue}
+                     formatValue={formatValue}
+                     textStyle={styles.valueText}
+                  />
+               ) : (
+                  <Text style={styles.valueText}>{formatValue(currentValue)}</Text>
+               )}
+            </ReadOnlyKeyValue>
+         )}
+      />
+   );
 }
 
 const styles = StyleSheet.create({

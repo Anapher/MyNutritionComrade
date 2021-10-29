@@ -2,29 +2,26 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import SettingsReadOnlyKeyValue from 'src/components/Settings/Items/SettingsReadOnlyKeyValue';
-import SettingsHeader from 'src/components/Settings/SettingsHeader';
-import { SettingsSection } from 'src/components/Settings/SettingsList';
+import { ActionHeader, ActionListItem, ActionListSection, ReadOnlyKeyValue } from 'src/components/ActionList';
 import { Product } from 'src/types';
 
-export default function ProductOverviewCommon(product: Product): SettingsSection {
+export default function ProductOverviewCommon(product: Product) {
    const { t } = useTranslation();
 
-   return {
-      renderHeader: () => <SettingsHeader label={t('properties')} />,
-      settings: [
-         {
-            key: 'code',
-            render: () => (
-               <SettingsReadOnlyKeyValue title={t('product_properties.barcode')}>
+   return (
+      <ActionListSection name="common" renderHeader={() => <ActionHeader label={t('properties')} />}>
+         <ActionListItem
+            name="code"
+            render={() => (
+               <ReadOnlyKeyValue title={t('product_properties.barcode')}>
                   <Text style={[styles.codeValueText, product.code ? undefined : styles.codeNotSet]}>
                      {product.code || t<string>('settings.not_set')}
                   </Text>
-               </SettingsReadOnlyKeyValue>
-            ),
-         },
-      ],
-   };
+               </ReadOnlyKeyValue>
+            )}
+         />
+      </ActionListSection>
+   );
 }
 
 const styles = StyleSheet.create({
