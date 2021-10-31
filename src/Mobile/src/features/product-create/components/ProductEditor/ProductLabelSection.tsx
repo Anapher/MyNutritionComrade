@@ -55,6 +55,7 @@ export default function ProductLabelSection({ setValue, watch, control }: UseFor
          {Object.entries(label ?? {}).map(([language, value]) => (
             <ActionListItem
                name={language}
+               key={language}
                render={() => {
                   const hasTags = Boolean(value.tags && value.tags.length > 0);
                   return (

@@ -46,6 +46,7 @@ export const nutritionalInfoSettingsItems = (
    return nutritionalInfo.map(({ name, translationKey, unit, inset }) => (
       <ActionListItem
          name={name}
+         key={name}
          render={() => (
             <Controller
                control={control}

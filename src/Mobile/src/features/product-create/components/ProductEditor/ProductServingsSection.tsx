@@ -51,6 +51,7 @@ export default function ProductServingsSection(form: UseFormReturn<ProductProper
             .filter(([key, value]) => value && !baseUnits.includes(key))
             .map(([key, value]) => (
                <ActionListItem
+                  key={key}
                   name={key}
                   render={() => (
                      <ActionNumberInput

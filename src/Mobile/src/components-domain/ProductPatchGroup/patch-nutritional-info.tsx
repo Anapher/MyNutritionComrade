@@ -39,6 +39,7 @@ function getNutritionRow(
 
    return (
       <ActionListItem
+         key={name}
          name={name}
          render={() => (
             <ReadOnlyKeyValue
