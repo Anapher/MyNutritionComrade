@@ -24,10 +24,12 @@
         "scan": "Scan"
     },
     "product_search": {
+        "title": "Search",
         "search_hint": "Search for products",
         "tap_to_choose_volume": "Tap to choose volume",
         "recent_meal_yesterday": "Yesterdays {{time, captializeFirstLetter}}",
-        "recent_meal": "{{time, captializeFirstLetter}} from {{date, dateHuge}}"
+        "recent_meal": "{{time, captializeFirstLetter}} from {{date, dateHuge}}",
+        "create_product": "Create product"
     },
     "serving_types": {
         "g": "g",

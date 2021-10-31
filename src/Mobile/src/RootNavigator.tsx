@@ -131,13 +131,7 @@ export default function RootNavigator() {
                headerRight: ({}) => <IconButton icon="cog" onPress={() => navigation.navigate('Settings')} />,
             })}
          />
-         <Stack.Screen
-            name="SearchProduct"
-            component={ProductSearchScreen}
-            options={({ route, navigation }) => ({
-               header: () => <ProductSearchHeader route={route as any} navigation={navigation} />,
-            })}
-         />
+         <Stack.Screen name="SearchProduct" component={ProductSearchScreen} options={{ headerShadowVisible: false }} />
          <Stack.Screen name="AddProduct" component={AddProduct} />
          <Stack.Screen
             name="ScanBarcode"

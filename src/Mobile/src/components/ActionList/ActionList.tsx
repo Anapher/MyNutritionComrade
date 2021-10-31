@@ -27,8 +27,6 @@ export default function ActionList({ children, style, ...props }: Props) {
          renderHeader,
       }));
 
-   console.log(sections);
-
    return (
       <KeyboardAvoidingView
          style={StyleSheet.absoluteFill}
