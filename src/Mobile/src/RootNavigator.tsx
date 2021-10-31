@@ -4,8 +4,8 @@ import { BarCodeScanningResult } from 'expo-camera';
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { IconButton } from 'react-native-paper';
 import { useSelector } from 'react-redux';
+import SimpleIconButton from './components/SimpleIconButton';
 import LoginScreen from './features/auth/components/LoginScreen';
 import LoginScreenPassword from './features/auth/components/LoginScreenPassword';
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
@@ -19,7 +19,6 @@ import ReviewChangesScreen from './features/product-create/components/ReviewChan
 import { ProductLabelViewModel } from './features/product-create/types';
 import AddCustomProductScreen from './features/product-custom/components/AddCustomProductScreen';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
-import ProductSearchHeader from './features/product-search/components/ProductSearchHeader';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
 import IndexesOverview from './features/settings/components/indexes/IndexesOverview';
 import NutritionCalories from './features/settings/components/nutrition-calories/NutritionCalories';
@@ -128,7 +127,7 @@ export default function RootNavigator() {
             component={HomeScreen}
             options={({ navigation }) => ({
                headerTitle: 'My Nutrition Comrade',
-               headerRight: ({}) => <IconButton icon="cog" onPress={() => navigation.navigate('Settings')} />,
+               headerRight: ({}) => <SimpleIconButton icon="cog" onPress={() => navigation.navigate('Settings')} />,
             })}
          />
          <Stack.Screen name="SearchProduct" component={ProductSearchScreen} options={{ headerShadowVisible: false }} />
