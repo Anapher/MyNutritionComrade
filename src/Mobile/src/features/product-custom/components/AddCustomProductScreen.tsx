@@ -6,7 +6,14 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { ActionList, ActionListItem, ActionListSection, ActionTextInput } from 'src/components/ActionList';
+import {
+   ActionHeader,
+   ActionList,
+   ActionListItem,
+   ActionListSection,
+   ActionTextInput,
+} from 'src/components/ActionList';
+import { nutritionalInfoSettingsItems } from 'src/features/product-create/components/ProductEditor/ProductNutritionalValuesSection';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { FoodPortionCustom } from 'src/types';
 import { schema } from '../validation';
@@ -59,12 +66,12 @@ export default function AddCustomProductScreen({
                )}
             />
          </ActionListSection>
-         {/* <ActionListSection
+         <ActionListSection
             name="nutritional_info"
-            renderHeader={() => <SettingsHeader label={t('product_properties.nutritional_values')} />}
+            renderHeader={() => <ActionHeader label={t('product_properties.nutritional_values')} />}
          >
             {nutritionalInfoSettingsItems(control as any, theme, t, 'nutritionalInfo.')}
-         </ActionListSection> */}
+         </ActionListSection>
       </ActionList>
    );
 }
