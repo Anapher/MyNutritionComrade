@@ -60,7 +60,12 @@ export default function AddCustomProductScreen({
                      control={control}
                      name="label"
                      render={({ field: { value, onChange } }) => (
-                        <ActionTextInput title="Label" placeholder="Optional" value={value} onChangeValue={onChange} />
+                        <ActionTextInput
+                           title={t('product_properties.label')}
+                           placeholder={t('common:optional')}
+                           value={value}
+                           onChangeValue={onChange}
+                        />
                      )}
                   />
                )}

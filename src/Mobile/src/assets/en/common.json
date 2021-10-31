@@ -8,5 +8,6 @@
     "add": "Add",
     "change": "Change",
     "retry": "Retry",
-    "language": "Language"
+    "language": "Language",
+    "optional": "Optional"
 }
