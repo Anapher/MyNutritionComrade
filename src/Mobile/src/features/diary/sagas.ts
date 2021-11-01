@@ -27,6 +27,7 @@ import { getSelectedDate, selectConsumedPortions } from './selectors';
 import { selectedProductAmount } from '../product-search/actions';
 import i18next from 'src/services/i18n';
 import { Alert } from 'react-native';
+import { createActionTemplate } from 'src/utils/redux-utils';
 
 function* loadSelectedDate({ payload }: PayloadAction<string>) {
    const database: SQLiteDatabase = yield call(getDatabase);
@@ -88,11 +89,9 @@ function* onBarcodeScannedAction({
             product,
             onSubmitPop: 1,
             submitTitle: i18next.t('common:add'),
-            onSubmitAction: selectedProductAmount({
-               amount: 0,
-               servingType: '',
+            onSubmitAction: createActionTemplate(selectedProductAmount, {
                product,
-               completedAction: addConsumption({ date, time, append: true, foodPortion: null as any }),
+               completedAction: createActionTemplate(addConsumption, { date, time, append: true }),
             }),
          });
          return;

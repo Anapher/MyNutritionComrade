@@ -1,4 +1,4 @@
-import { FoodPortion } from './../../types';
+import { FoodPortion } from 'src/types';
 import { DateTime } from 'luxon';
 import { ConsumedPortion, ConsumptionTime } from 'src/types';
 import { SQLiteDatabase } from './types';

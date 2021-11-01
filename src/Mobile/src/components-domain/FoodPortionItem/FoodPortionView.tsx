@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { View, ViewStyle, StyleProp } from 'react-native';
 import { Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import { roundNumber } from 'src/utils/string-utils';
-import { styles } from './food-portion-styles';
+import { styles } from '../food-portion-styles';
 import { FoodPortion, FoodPortionCustom, FoodPortionProduct, NutritionalInfo } from 'src/types';
 import { useTranslation } from 'react-i18next';
 import { getFoodPortionNutritions } from 'src/utils/food-portion-utils';

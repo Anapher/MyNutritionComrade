@@ -9,6 +9,10 @@ import SimpleIconButton from './components/SimpleIconButton';
 import LoginScreen from './features/auth/components/LoginScreen';
 import LoginScreenPassword from './features/auth/components/LoginScreenPassword';
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
+import CreateMeal from './features/meal-create/components/CreateMeal';
+import EditMeal from './features/meal-create/components/EditMeal';
+import { MealForm } from './features/meal-create/validation';
+import MealsOverview from './features/meals-overview/components/MealsOverview';
 import AddProduct from './features/product-add/components/AddProduct';
 import ProductContributionsScreen from './features/product-contributions/components/ProductContributionsScreen';
 import AddLabelScreen from './features/product-create/components/AddLabelScreen';
@@ -33,23 +37,23 @@ import { ProductSearchConfig } from './services/search-engine/types';
 import {
    FoodPortion,
    FoodPortionCustom,
+   Meal,
    Product,
    ProductContributionStatusDto,
    ProductOperationsGroup,
    ProductProperties,
 } from './types';
+import { PayloadActionTemplate } from './utils/redux-utils';
 
 const Stack = createNativeStackNavigator();
 
-export type ProductSearchCompletedAction = PayloadAction<{
+export type ProductSearchCompletedAction = PayloadActionTemplate<{
    foodPortion: FoodPortion;
-   [x: string]: any;
 }>;
 
-export type AddProductCompletedAction = PayloadAction<{
+export type AddProductCompletedAction = PayloadActionTemplate<{
    amount: number;
    servingType: string;
-   [x: string]: any;
 }>;
 
 export type BarcodeScannedAction = PayloadAction<{
@@ -105,6 +109,9 @@ export type RootNavigatorParamList = {
    ProductContributions: { product: Product };
    IndexesOverview: undefined;
    AddCustomProduct: { initialValues?: Partial<FoodPortionCustom>; onSubmit: (value: FoodPortionCustom) => void };
+   MealsOverview: undefined;
+   CreateMeal: { initialValue?: Partial<MealForm> } | undefined;
+   EditMeal: { meal: Meal };
 };
 
 export default function RootNavigator() {
@@ -206,6 +213,9 @@ export default function RootNavigator() {
             component={AddCustomProductScreen}
             options={{ headerTitle: t('add_custom_product.title') }}
          />
+         <Stack.Screen name="MealsOverview" component={MealsOverview} options={{ headerTitle: t('meals') }} />
+         <Stack.Screen name="CreateMeal" component={CreateMeal} />
+         <Stack.Screen name="EditMeal" component={EditMeal} />
       </Stack.Navigator>
    );
 }

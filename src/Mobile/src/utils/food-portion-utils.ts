@@ -28,6 +28,10 @@ export function getFoodPortionId(portion: FoodPortion): string {
    return `${portion.type}@${key}`;
 }
 
+export function foodPortionsEqual(x1: FoodPortion, x2: FoodPortion) {
+   return getFoodPortionId(x1) === getFoodPortionId(x2);
+}
+
 export function getFoodPortionNutritions(portion: FoodPortion): NutritionalInfo {
    switch (portion.type) {
       case 'product':

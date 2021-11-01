@@ -9,7 +9,8 @@ import SearchBar from 'src/components/SearchBar';
 import SimpleIconButton from 'src/components/SimpleIconButton';
 import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
 import { ProductSearchCompletedAction, RootNavigatorParamList } from 'src/RootNavigator';
-import { FoodPortionProduct } from 'src/types';
+import { FoodPortion, FoodPortionProduct } from 'src/types';
+import { createActionTemplate } from 'src/utils/redux-utils';
 import { selectedProductAmount } from '../actions';
 import { initializeSearch, setSearchText } from '../reducer';
 import { selectSearchResults, selectSearchText } from '../selectors';
@@ -32,10 +33,22 @@ export default function ProductSearchScreen({
    const dispatch = useDispatch();
    const { t } = useTranslation();
 
+   const handleOnCreated = (foodPortion: FoodPortion) => {
+      dispatch({ ...onCreatedAction, payload: { ...onCreatedAction.payload, foodPortion } });
+   };
+
    const showActionSheet = useActionSheetWrapper();
 
    const handleShowOptions = () => {
       showActionSheet([
+         ...(config.disableMealCreation
+            ? []
+            : [
+                 {
+                    label: t('meals'),
+                    onPress: () => navigation.navigate('MealsOverview'),
+                 },
+              ]),
          {
             label: t('product_search.create_product'),
             onPress: () => navigation.navigate('CreateProduct', { initialValue: {} }),
@@ -49,7 +62,7 @@ export default function ProductSearchScreen({
       navigation.navigate('AddCustomProduct', {
          onSubmit: (value) => {
             navigation.pop(onCreatedPop + 2);
-            dispatch({ ...onCreatedAction, payload: { ...onCreatedAction.payload, foodPortion: value } });
+            handleOnCreated(value);
          },
       });
    };
@@ -78,9 +91,7 @@ export default function ProductSearchScreen({
          case 'product':
             navigation.navigate('AddProduct', {
                submitTitle: t('common:add'),
-               onSubmitAction: selectedProductAmount({
-                  amount: 0,
-                  servingType: '',
+               onSubmitAction: createActionTemplate(selectedProductAmount, {
                   product: item.product,
                   completedAction: onCreatedAction,
                }),
@@ -96,12 +107,7 @@ export default function ProductSearchScreen({
                servingType: item.servingType,
             };
 
-            const action: ProductSearchCompletedAction = {
-               ...onCreatedAction,
-               payload: { ...onCreatedAction.payload, foodPortion },
-            };
-
-            dispatch(action);
+            handleOnCreated(foodPortion);
 
             navigation.pop(onCreatedPop);
             break;

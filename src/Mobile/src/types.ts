@@ -60,7 +60,7 @@ export interface FoodPortionProduct {
    servingType: string;
 }
 
-type FoodPortionItem = FoodPortionCustom | FoodPortionProduct;
+export type FoodPortionItem = FoodPortionCustom | FoodPortionProduct;
 
 export interface FoodPortionMeal {
    type: 'meal';
@@ -115,4 +115,13 @@ export type ProductContributionDto = {
 
 export type ProductOperationsGroup = {
    operations: Operation[];
+};
+
+// --------------------- Meals ---------------------
+export type Meal = {
+   id: string;
+   name: string;
+   createdOn: string;
+
+   items: FoodPortionItem[];
 };

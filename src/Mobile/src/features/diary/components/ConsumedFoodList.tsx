@@ -10,6 +10,7 @@ import { ConsumptionTimes } from 'src/consts';
 import { RootNavigatorParamList } from 'src/RootNavigator';
 import { ConsumedPortion, ConsumptionTime } from 'src/types';
 import { getConsumedPortionId } from 'src/utils/food-portion-utils';
+import { createActionTemplate } from 'src/utils/redux-utils';
 import { addConsumption, barcodeScannedAddProduct } from '../actions';
 import ConsumedFoodItem from './ConsumedFoodItem';
 import ConsumptionTimeFooter from './ConsumptionTimeFooter';
@@ -39,7 +40,7 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
       navigation.navigate('SearchProduct', {
          config: { consumptionTime: time, date: selectedDate },
          onCreatedPop: 1,
-         onCreatedAction: addConsumption({ date: selectedDate, time, append: true, foodPortion: null as any }) as any,
+         onCreatedAction: createActionTemplate(addConsumption, { date: selectedDate, time, append: true }),
       });
    };
 

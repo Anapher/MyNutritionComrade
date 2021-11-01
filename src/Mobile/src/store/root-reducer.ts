@@ -7,6 +7,8 @@ import diary from '../features/diary/reducer';
 import productSearch from '../features/product-search/reducer';
 import productAdd from '../features/product-add/reducer';
 import productOverview from '../features/product-overview/reducer';
+import mealsOverview from '../features/meals-overview/reducer';
+import mealCreate from '../features/meal-create/reducer';
 
 const settingsPersistConfig: PersistConfig<any> = {
    key: 'settings',
@@ -19,6 +21,8 @@ const rootReducer = combineReducers({
    productSearch,
    productAdd,
    productOverview,
+   mealsOverview,
+   mealCreate,
    settings: persistReducer(settingsPersistConfig, settings) as Reducer<SettingsState>,
 });
 

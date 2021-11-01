@@ -2,6 +2,7 @@ import { SQLiteDatabase } from './types';
 import * as SQLite from 'expo-sqlite';
 import config from 'src/config';
 import { createTables as createDiaryTables } from './diary-repository';
+import { createTables as createMealTables } from './meals-repository';
 import wrapSQLDatabase from './sqlite-database-wrapper';
 
 let database: Promise<SQLiteDatabase> | undefined;
@@ -15,6 +16,7 @@ async function createDatabase(): Promise<SQLiteDatabase> {
    const sqliteDb = wrapSQLDatabase(db);
 
    await createDiaryTables(sqliteDb);
+   await createMealTables(sqliteDb);
 
    return sqliteDb;
 }

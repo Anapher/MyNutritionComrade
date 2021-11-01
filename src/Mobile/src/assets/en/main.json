@@ -236,11 +236,17 @@
         "response_no_success": "The server responded with code {{status}}. This is likely a bug.",
         "ProductCodeAlreadyExists": "There already exists a product with the same code."
     },
+    "create_meal": {
+        "meal_name": "Name",
+        "title": "Create meal",
+        "edit_meal": "Edit meal"
+    },
     "properties": "Properties",
     "error_occurred": "Error occurred",
     "loading_message": "Loading...",
     "catalog": "Catalog",
     "catalog_many": "Catalogs",
     "product": "Product",
-    "product_many": "Products"
+    "product_many": "Products",
+    "meals": "Meals"
 }

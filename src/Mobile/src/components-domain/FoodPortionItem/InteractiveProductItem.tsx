@@ -2,17 +2,18 @@ import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ProductFoodPortionView } from 'src/components-domain/FoodPortionView';
+import { ProductFoodPortionView } from 'src/components-domain/FoodPortionItem/FoodPortionView';
 import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
-import { RootNavigatorParamList } from 'src/RootNavigator';
+import { AddProductCompletedAction, RootNavigatorParamList } from 'src/RootNavigator';
 import { FoodPortionProduct } from 'src/types';
-import { setConsumptionDialogAction } from '../../actions';
-import { ConsumedFoodItemProps } from './types';
 
-export default function ConsumedProductItem({
-   consumed: { foodPortion, date, time },
-   onRemove,
-}: ConsumedFoodItemProps<FoodPortionProduct>) {
+type Props = {
+   foodPortion: FoodPortionProduct;
+   onRemove: () => void;
+   changeAmountAction: AddProductCompletedAction;
+};
+
+export default function InteractiveProductItem({ foodPortion, onRemove, changeAmountAction }: Props) {
    const navigation = useNavigation<NativeStackNavigationProp<RootNavigatorParamList>>();
    const { t } = useTranslation();
    const showActionSheet = useActionSheetWrapper();
@@ -24,13 +25,7 @@ export default function ConsumedProductItem({
          amount: foodPortion.amount,
          servingType: foodPortion.servingType,
          onSubmitPop: 1,
-         onSubmitAction: setConsumptionDialogAction({
-            amount: foodPortion.amount,
-            servingType: foodPortion.servingType,
-            date,
-            time,
-            foodPortion,
-         }),
+         onSubmitAction: changeAmountAction,
       });
    };
 

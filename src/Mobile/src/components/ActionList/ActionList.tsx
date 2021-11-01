@@ -14,7 +14,7 @@ import extractActionSections from './extractActionSections';
 import { ItemContext } from './ItemContext';
 import { ActionListItemDescription } from './types';
 
-type Props = Omit<Omit<Omit<SectionListProps<any>, 'sections'>, 'renderItem'>, 'keyExtractor'> & {
+type Props = Omit<SectionListProps<any>, 'sections' | 'renderItem' | 'keyExtractor'> & {
    children: React.ReactNode;
 };
 

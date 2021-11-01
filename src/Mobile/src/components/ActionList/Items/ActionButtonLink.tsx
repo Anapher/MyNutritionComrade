@@ -17,6 +17,7 @@ type Props = ActionItemProps & {
    selected?: boolean;
    textStyles?: StyleProp<TextStyle>;
    titleSingleLine?: boolean;
+   secondarySingleLine?: boolean;
 };
 
 export default function ActionButtonLink({
@@ -30,6 +31,7 @@ export default function ActionButtonLink({
    selected,
    textStyles,
    titleSingleLine,
+   secondarySingleLine,
    ...props
 }: Props) {
    const theme = useTheme();
@@ -63,7 +65,9 @@ export default function ActionButtonLink({
                         {secondary}
                      </Text>
                   )}
-                  {showSecondaryBelow && secondary !== undefined && <Caption>{secondary}</Caption>}
+                  {showSecondaryBelow && secondary !== undefined && (
+                     <Caption numberOfLines={secondarySingleLine ? 1 : undefined}>{secondary}</Caption>
+                  )}
                </View>
                {icon === 'arrow' && (
                   <Icon name="chevron-right" size={28} style={{ marginVertical: -2 }} color={theme.colors.disabled} />

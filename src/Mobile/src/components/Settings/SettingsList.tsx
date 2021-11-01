@@ -22,7 +22,7 @@ export type SettingsSection = {
    renderHeader?: () => React.ReactNode | null;
 };
 
-type Props = Omit<Omit<Omit<SectionListProps<any>, 'sections'>, 'renderItem'>, 'keyExtractor'> & {
+type Props = Omit<SectionListProps<any>, 'sections' | 'renderItem' | 'keyExtractor'> & {
    settings: SettingsSection[];
 };
 
