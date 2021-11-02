@@ -7,7 +7,9 @@ import { ConsumedPortion, FoodPortion, NutritionalInfo, Product, RecentMealSugge
 import { changeVolume, computeNutritionHash, sumNutritions } from './nutrition-utils';
 import { getBaseUnit } from './product-utils';
 
-export function getFoodPortionId(portion: FoodPortion): string {
+export function getFoodPortionId(
+   portion: FoodPortion | { type: 'meal'; mealId: string } | { type: 'product'; product: Product },
+): string {
    let key: string;
 
    switch (portion.type) {

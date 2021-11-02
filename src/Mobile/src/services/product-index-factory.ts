@@ -2,13 +2,20 @@ import { Product } from 'src/types';
 import { DateTime } from 'luxon';
 import { retriveStoredRepository, StoredCatalog } from './product-data-storage';
 import _ from 'lodash';
+import { computeHashCode } from 'src/utils/string-utils';
 
 export type ProductRepositoryLink = { key: string; url: string; pollFrequencyHours: number };
 
-type InitializationResultReady = InitializationResultBase & { type: 'ready'; data: Record<string, Product> };
+type InitializationResultReady = InitializationResultBase & {
+   type: 'ready';
+   data: Record<string, Product>;
+   dataHash: number;
+};
+
 type InitializationResultUpdateRequired = InitializationResultBase & {
    type: 'update-required';
    data: Record<string, Product>;
+   dataHash: number;
    reposThatNeedUpdate: string[];
 };
 type InitializationResultNotInitialized = InitializationResultBase & { type: 'not-initialized' };
@@ -39,21 +46,26 @@ export async function createProductIndex(repositories: ProductRepositoryLink[]):
    let hasProduct = false;
    const repoStatistics: Record<string, RepositoryStatistics> = {};
 
+   const hashBuiler = new Array<string>();
+
    for (const link of repositories) {
       const storedResult = await fetchRepositoryDataLocally(link);
       if (storedResult.initialized) {
          const { catalogs, lastUpdated } = storedResult;
-         for (const catalog of catalogs) {
+
+         for (const [url, catalog] of Object.entries(catalogs)) {
             for (const product of catalog.data) {
                products[product.id] = product;
                hasProduct = true;
             }
+
+            hashBuiler.push(`${catalog.timestamp}/${url}`);
          }
 
          repoStatistics[link.key] = {
-            catalogsCount: catalogs.length,
+            catalogsCount: Object.values(catalogs).length,
             lastUpdated,
-            productsCount: _.sumBy(catalogs, (x) => x.data.length),
+            productsCount: _.sumBy(Object.values(catalogs), (x) => x.data.length),
          };
       }
 
@@ -61,11 +73,19 @@ export async function createProductIndex(repositories: ProductRepositoryLink[]):
    }
 
    if (hasProduct) {
+      const dataHash = computeHashCode(hashBuiler.join('|'));
+
       if (reposThatNeedUpdate.length > 0) {
-         return { type: 'update-required', data: products, reposThatNeedUpdate, repoStatistics };
+         return {
+            type: 'update-required',
+            data: products,
+            reposThatNeedUpdate,
+            repoStatistics,
+            dataHash,
+         };
       }
 
-      return { type: 'ready', data: products, repoStatistics };
+      return { type: 'ready', data: products, repoStatistics, dataHash };
    }
 
    return { type: 'not-initialized', repoStatistics };
@@ -73,7 +93,7 @@ export async function createProductIndex(repositories: ProductRepositoryLink[]):
 
 type FetchedDataFound = {
    initialized: true;
-   catalogs: StoredCatalog[];
+   catalogs: { [url: string]: StoredCatalog };
    lastUpdated: string;
    updateRequired: boolean;
 };
@@ -91,7 +111,7 @@ async function fetchRepositoryDataLocally(
       const updateRequired = isUpdateRequired(result.lastUpdated, link);
       return {
          initialized: true,
-         catalogs: Object.values(result.catalogs),
+         catalogs: result.catalogs,
          updateRequired,
          lastUpdated: result.lastUpdated,
       };

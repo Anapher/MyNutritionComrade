@@ -24,6 +24,7 @@ import { ProductLabelViewModel } from './features/product-create/types';
 import AddCustomProductScreen from './features/product-custom/components/AddCustomProductScreen';
 import ProductOverviewScreen from './features/product-overview/components/ProductOverviewScreen';
 import ProductSearchScreen from './features/product-search/components/ProductSearchScreen';
+import { SearchScreenConfig } from './features/product-search/reducer';
 import IndexesOverview from './features/settings/components/indexes/IndexesOverview';
 import NutritionCalories from './features/settings/components/nutrition-calories/NutritionCalories';
 import NutritionProtein from './features/settings/components/nutrition-protein/NutritionProtein';
@@ -33,7 +34,6 @@ import Weight from './features/settings/components/weight/Weight';
 import { selectIsFirstStart, selectSettingsLoaded } from './features/settings/selectors';
 import WelcomeScreen from './features/welcome/WelcomeScreen';
 import HomeScreen from './HomeScreen';
-import { ProductSearchConfig } from './services/search-engine/types';
 import {
    FoodPortion,
    FoodPortionCustom,
@@ -64,7 +64,7 @@ export type RootNavigatorParamList = {
    Home: undefined;
    Welcome: undefined;
    SearchProduct: {
-      config: ProductSearchConfig;
+      config: SearchScreenConfig;
       onCreatedAction: ProductSearchCompletedAction;
       onCreatedPop: number;
    };

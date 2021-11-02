@@ -1,53 +1,65 @@
 import fuzzysort from 'fuzzysort';
-import _ from 'lodash';
-import { Product } from 'src/types';
 
-type PreparedProduct = {
+export type ProductSearchEntry = {
+   type: 'product';
    id: string;
    label: Fuzzysort.Prepared;
    language: string;
    servingTypes: string[];
+   foodId: string;
 };
 
-export default function fuzzySearch(s: string, searchIndex: PreparedProduct[], servingType?: string[], limit?: number) {
+export type MealSearchEntry = {
+   type: 'meal';
+   label: Fuzzysort.Prepared;
+   mealId: string;
+   foodId: string;
+};
+
+export type SearchEntry = ProductSearchEntry | MealSearchEntry;
+
+export default function fuzzySearch(
+   s: string,
+   searchIndex: SearchEntry[],
+   scores?: Map<string, number>,
+   servingType?: string[],
+   limit?: number,
+) {
    if (servingType && servingType.length > 0) {
       searchIndex = filterServingType(searchIndex, servingType);
    }
 
-   const result = fuzzysort.go(s, searchIndex, { key: 'label', limit });
+   const result = fuzzysort.go(s, searchIndex, {
+      keys: ['label'],
+      limit,
+      scoreFn: !scores
+         ? undefined
+         : (keysResult) => {
+              const keyResult = keysResult[0];
+              if (!keyResult) return -Infinity;
+
+              const obj = (keysResult as any).obj as SearchEntry;
+              return keyResult.score + (scores.get(obj.foodId) ?? 0);
+           },
+   });
+
    return removeDuplicateResults(result);
 }
 
-export function prepareProduct(product: Product): PreparedProduct[] {
-   const result: PreparedProduct[] = [];
-   const info = { id: product.id, servingTypes: Object.keys(product.servings) };
-
-   for (const [language, label] of Object.entries(product.label)) {
-      result.push({ ...info, label: fuzzysort.prepare(label.value)!, language });
-
-      if (label.tags) {
-         for (const tag of label.tags) {
-            result.push({ ...info, label: fuzzysort.prepare(tag)!, language });
-         }
-      }
-   }
-   return result;
-}
-
-function filterServingType(searchIndex: PreparedProduct[], servingType: string[]): PreparedProduct[] {
+function filterServingType(searchIndex: SearchEntry[], servingType: string[]): SearchEntry[] {
    const servingTypeSet = new Set(servingType);
-
-   return searchIndex.filter((x) => x.servingTypes.find((x) => servingTypeSet.has(x)));
+   return searchIndex.filter((x) => x.type !== 'product' || x.servingTypes.find((x) => servingTypeSet.has(x)));
 }
 
-function removeDuplicateResults(result: Fuzzysort.KeyResults<PreparedProduct>): Fuzzysort.KeyResult<PreparedProduct>[] {
+function removeDuplicateResults(result: Fuzzysort.KeysResults<SearchEntry>): Fuzzysort.KeysResult<SearchEntry>[] {
    const productIds = new Set<string>();
-   const processedResult: Fuzzysort.KeyResult<PreparedProduct>[] = [];
+   const processedResult: Fuzzysort.KeysResult<SearchEntry>[] = [];
 
    for (const res of result) {
-      if (productIds.has(res.obj.id)) continue;
-      productIds.add(res.obj.id);
+      // because multiple entries for each products may exist for labels/tags
+      if (productIds.has(res.obj.foodId)) continue;
 
+      productIds.add(res.obj.foodId);
       processedResult.push(res);
    }
 

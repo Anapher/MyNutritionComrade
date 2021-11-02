@@ -6,7 +6,7 @@ export function getSearchResultKey(result: SearchResult): string {
 
    switch (result.type) {
       case 'meal':
-         key = result.mealId;
+         key = result.meal.id;
          break;
       case 'product':
          key = result.product.id;

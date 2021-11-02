@@ -1,4 +1,4 @@
-import { FoodPortion, FoodPortionMeal, FoodPortionProduct, NutritionalInfo, Product } from 'src/types';
+import { FoodPortion, FoodPortionMeal, FoodPortionProduct, Meal, NutritionalInfo, Product } from 'src/types';
 
 export interface Conversion {
    /** the name of the conversion, e. g. kg */
@@ -35,9 +35,7 @@ export interface ServingSuggestion extends ServingSize {
 
 export interface MealSuggestion {
    type: 'meal';
-   mealName: string;
-   mealId: string;
-   nutritionalInfo: NutritionalInfo;
+   meal: Meal;
 
    frequentlyUsedPortion?: FoodPortionMeal;
 }

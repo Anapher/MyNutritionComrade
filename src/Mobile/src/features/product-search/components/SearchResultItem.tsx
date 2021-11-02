@@ -1,15 +1,15 @@
 import color from 'color';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Text, TouchableRipple, useTheme, withTheme } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { TFunction } from 'i18next';
 import _ from 'lodash';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+import { Text, TouchableRipple, useTheme } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { FoodPortion } from 'src/types';
+import { getFoodPortionNutritions, suggestionIdToString } from 'src/utils/food-portion-utils';
 import { roundNumber } from 'src/utils/string-utils';
 import { SearchResult } from '../types';
-import { FoodPortion } from 'src/types';
-import { useTranslation } from 'react-i18next';
-import { TFunction } from 'i18next';
-import { getFoodPortionNutritions, suggestionIdToString } from 'src/utils/food-portion-utils';
 
 type Props = {
    item: SearchResult;
@@ -64,7 +64,7 @@ function getTitle(s: SearchResult, t: TFunction): string {
       case 'serving':
          return t('product_label', { product: s.product });
       case 'meal':
-         return s.mealName;
+         return s.meal.name;
       case 'custom':
          return s.label || t('custom_meal');
       case 'generatedMeal':
@@ -80,7 +80,15 @@ function getDescription(s: SearchResult, t: TFunction): string | null {
          if (s.convertedFrom !== undefined) return `${s.amount * (1 / s.convertedFrom.factor)} ${s.convertedFrom.name}`;
          return `${s.amount} ${s.servingType}`;
       case 'meal':
-         return `${roundNumber(s.nutritionalInfo.energy)} kcal`;
+         return `${roundNumber(
+            getFoodPortionNutritions({
+               type: 'meal',
+               portion: 1,
+               items: s.meal.items,
+               mealId: s.meal.id,
+               mealName: s.meal.name,
+            }).energy,
+         )} kcal`;
       case 'custom':
          return 'todo';
       case 'generatedMeal':

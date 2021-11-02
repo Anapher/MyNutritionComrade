@@ -1,5 +1,5 @@
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import React, { useEffect } from 'react';
+import React from 'react';
 import TabAnalysis from './features/analysis/components/TabAnalysis';
 import TabDiary from './features/diary/components/TabDiary';
 import DownloadRepoWhenRequired from './features/repo-manager/components/DownloadRepoWhenRequired';

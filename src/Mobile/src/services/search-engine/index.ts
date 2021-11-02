@@ -1,25 +1,47 @@
 import _ from 'lodash';
 import { SearchResult, ServingSize } from 'src/features/product-search/types';
 import { Product } from 'src/types';
-import fuzzySearch, { prepareProduct } from './fuzzy-search';
+import fuzzySearch, { SearchEntry } from './fuzzy-search';
 import { ProductSearchQuery, tryParseServingSize } from './input-parser';
+import { SearchIndex } from './search-index';
 import { ProductSearchConfig } from './types';
 
-export default function searchProducts(s: string, products: Product[], config?: ProductSearchConfig): SearchResult[] {
+export default function searchIndex(s: string, index: SearchIndex, config?: ProductSearchConfig): SearchResult[] {
    const result = tryParseServingSize(s);
 
    if (result.productSearch) {
-      const index = products.flatMap((x) => prepareProduct(x));
       const servingTypes = result.serving?.map((x) => x.servingType).filter((x): x is string => !!x);
+      const searchResults = fuzzySearch(
+         result.productSearch,
+         index.entries,
+         config?.scores,
+         servingTypes,
+         config?.limit,
+      );
 
-      const searchResults = fuzzySearch(result.productSearch, index, servingTypes);
-
-      return searchResults
-         .map((x) => products.find((p) => p.id === x.obj.id)!)
-         .map((x) => mapProductToSearchResult(x, result));
+      return searchResults.map((x) => mapSearchEntryToResult(x.obj, result, index));
    }
 
-   return products.slice(0, 10).map((x) => mapProductToSearchResult(x, result));
+   return _(index.entries)
+      .orderBy((x) => config?.scores?.get(x.foodId) ?? 0, 'desc')
+      .uniqBy((x) => x.foodId)
+      .take(config?.limit ?? 50)
+      .map((x) => mapSearchEntryToResult(x, result, index))
+      .value();
+}
+
+function mapSearchEntryToResult(
+   searchEntry: SearchEntry,
+   searchQuery: ProductSearchQuery,
+   index: SearchIndex,
+): SearchResult {
+   switch (searchEntry.type) {
+      case 'product':
+         const product = index.products[searchEntry.id];
+         return mapProductToSearchResult(product, searchQuery);
+      case 'meal':
+         return { type: 'meal', meal: index.meals[searchEntry.mealId] };
+   }
 }
 
 function mapProductToSearchResult(product: Product, searchQuery: ProductSearchQuery): SearchResult {

@@ -23,6 +23,45 @@ export async function createTables(db: SQLiteDatabase): Promise<void> {
    await Promise.all(actions);
 }
 
+export async function selectFrequentlyUsedFood(
+   db: SQLiteDatabase,
+   time: ConsumptionTime,
+   weekday: number,
+): Promise<{ foodId: string; score: number }[]> {
+   const maxAge = 60; // days
+
+   // protection against SQL injections
+   weekday = Number(weekday);
+   if (time !== 'breakfast' && time !== 'dinner' && time !== 'lunch' && time !== 'snack')
+      throw new Error('invalid consumption time');
+
+   const result2 = await db.executeSql(`
+      SELECT COUNT(*) AS count FROM \`consumedPortion\`
+      WHERE julianday('now') - julianday(\`date\`) < ${maxAge}
+         AND julianday('now') - julianday(\`date\`) >= 1
+      `);
+
+   const consumedFoodCount = result2[0]['count'] as number;
+
+   const rewardSameWeekday = maxAge * 0.2 * consumedFoodCount;
+   const rewardSameTime = maxAge * 0.1 * consumedFoodCount;
+
+   const result = await db.executeSql(
+      `SELECT \`foodId\`,
+         SUM(${maxAge} - (julianday('now') - julianday(\`date\`)) +
+            IIF(strftime("%w", \`date\`) = '${weekday}', ${rewardSameWeekday}, 0) +
+            IIF(\`time\` = '${time}', ${rewardSameTime}, 0)
+         ) AS score
+      FROM consumedPortion
+      WHERE julianday('now') - julianday(\`date\`) < ${maxAge}
+         AND julianday('now') - julianday(\`date\`) >= 1
+      GROUP BY \`foodId\`
+      ORDER BY score DESC`,
+   );
+
+   return result.map(({ foodId, score }) => ({ foodId, score }));
+}
+
 /**
  * Insert or overwrite a given portion
  * @param db the database

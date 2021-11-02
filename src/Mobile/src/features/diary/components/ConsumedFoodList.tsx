@@ -38,7 +38,7 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
 
    const handleAddFood = (time: ConsumptionTime) => {
       navigation.navigate('SearchProduct', {
-         config: { consumptionTime: time, date: selectedDate },
+         config: { scoreBy: { time, date: selectedDate } },
          onCreatedPop: 1,
          onCreatedAction: createActionTemplate(addConsumption, { date: selectedDate, time, append: true }),
       });

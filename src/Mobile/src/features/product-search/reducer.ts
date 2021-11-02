@@ -1,10 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ProductSearchConfig } from 'src/services/search-engine/types';
+import { ConsumptionTime } from 'src/types';
 import { SearchResult } from './types';
+
+export type SearchScreenConfig = {
+   limit?: number;
+   scoreBy?: { time: ConsumptionTime; date: string };
+   disableMealCreation?: boolean;
+};
 
 export type ProductSearchState = {
    searchText: string;
-   searchConfig: ProductSearchConfig | null;
+   searchConfig: SearchScreenConfig | null;
    searchResult: SearchResult[];
 };
 
@@ -18,7 +24,7 @@ const productSearchSlice = createSlice({
    name: 'product-search',
    initialState,
    reducers: {
-      initializeSearch(state, { payload }: PayloadAction<ProductSearchConfig>) {
+      initializeSearch(state, { payload }: PayloadAction<SearchScreenConfig>) {
          state.searchText = '';
          state.searchConfig = payload;
          state.searchResult = [];

@@ -1,10 +1,4 @@
-import { ConsumptionTime } from 'src/types';
-
-type SuggestionType = 'product' | 'meal';
-
 export interface ProductSearchConfig {
-   consumptionTime?: ConsumptionTime;
-   date?: string;
-   filter?: SuggestionType[];
-   disableMealCreation?: boolean;
+   scores?: Map<string, number>;
+   limit?: number;
 }
