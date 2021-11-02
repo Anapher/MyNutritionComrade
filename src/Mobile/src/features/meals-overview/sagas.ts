@@ -1,10 +1,9 @@
 import { call, put, takeEvery } from 'redux-saga/effects';
 import getDatabase from 'src/services/sqlite/database-instance';
 import * as mealsRepo from 'src/services/sqlite/meals-repository';
+import { Awaited } from 'src/types';
 import { loadMeals } from './actions';
 import { mealsLoaded } from './reducer';
-
-type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 
 function* handleLoadMeals() {
    const database: Awaited<ReturnType<typeof getDatabase>> = yield call(getDatabase);

@@ -1,5 +1,7 @@
 import { Operation } from 'fast-json-patch';
 
+export type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
+
 // --------------------- Product ---------------------
 
 export interface ProductLabel {
