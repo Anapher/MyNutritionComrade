@@ -18,37 +18,42 @@ function* initializeRepository() {
 }
 
 function* downloadUpdates() {
-   const state: InitializationResult | undefined = yield select(selectInitializationResult);
-   if (!state) return;
-   if (state.type === 'ready') return;
+   try {
+      const state: InitializationResult | undefined = yield select(selectInitializationResult);
+      if (!state) return;
+      if (state.type === 'ready') return;
 
-   let links = config.productRepositories;
-   if (state.type === 'update-required') {
-      links = links.filter((x) => state.reposThatNeedUpdate.includes(x.key));
+      let links = config.productRepositories;
+      if (state.type === 'update-required') {
+         links = links.filter((x) => state.reposThatNeedUpdate.includes(x.key));
+      }
+
+      for (const link of links) {
+         console.log('Update repository', link.url);
+         yield call(updateProductRepository, link);
+      }
+
+      yield call(initializeRepository);
+   } finally {
+      yield put(productRepositoryUpdated());
    }
-
-   for (const link of links) {
-      console.log('Update repository', link.url);
-      yield call(updateProductRepository, link);
-   }
-
-   yield call(initializeRepository);
-
-   yield put(productRepositoryUpdated());
 }
 
 function* handleUpdateRepository({ payload }: PayloadAction<string>) {
-   const link = config.productRepositories.find((x) => x.key === payload);
-   if (!link) {
-      console.error('Invalid link key submitted');
-      return;
+   try {
+      const link = config.productRepositories.find((x) => x.key === payload);
+      if (!link) {
+         console.error('Invalid link key submitted');
+         return;
+      }
+
+      console.log('update repo', link.url);
+
+      yield call(updateProductRepository, link);
+      yield call(initializeRepository);
+   } finally {
+      yield put(productRepositoryUpdated());
    }
-
-   console.log('update repo', link.url);
-
-   yield call(updateProductRepository, link);
-   yield call(initializeRepository);
-   yield put(productRepositoryUpdated());
 }
 
 function* repoManagerSaga() {

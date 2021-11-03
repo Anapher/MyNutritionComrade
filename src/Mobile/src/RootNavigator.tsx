@@ -9,6 +9,7 @@ import SimpleIconButton from './components/SimpleIconButton';
 import LoginScreen from './features/auth/components/LoginScreen';
 import LoginScreenPassword from './features/auth/components/LoginScreenPassword';
 import ScanProductBarCode from './features/barcode-scanner/components/ScanProductBarCode';
+import AddMeal from './features/meal-add/components/AddMeal';
 import CreateMeal from './features/meal-create/components/CreateMeal';
 import EditMeal from './features/meal-create/components/EditMeal';
 import { MealForm } from './features/meal-create/validation';
@@ -54,6 +55,10 @@ export type ProductSearchCompletedAction = PayloadActionTemplate<{
 export type AddProductCompletedAction = PayloadActionTemplate<{
    amount: number;
    servingType: string;
+}>;
+
+export type AddMealCompletedAction = PayloadActionTemplate<{
+   portion: number;
 }>;
 
 export type BarcodeScannedAction = PayloadAction<{
@@ -112,6 +117,13 @@ export type RootNavigatorParamList = {
    MealsOverview: undefined;
    CreateMeal: { initialValue?: Partial<MealForm> } | undefined;
    EditMeal: { meal: Meal };
+   AddMeal: {
+      meal: Meal;
+      submitTitle: string;
+      initialPortion?: number;
+      onSubmitPop: number;
+      onSubmitAction: AddMealCompletedAction;
+   };
 };
 
 export default function RootNavigator() {
@@ -216,6 +228,7 @@ export default function RootNavigator() {
          <Stack.Screen name="MealsOverview" component={MealsOverview} options={{ headerTitle: t('meals') }} />
          <Stack.Screen name="CreateMeal" component={CreateMeal} />
          <Stack.Screen name="EditMeal" component={EditMeal} />
+         <Stack.Screen name="AddMeal" component={AddMeal} />
       </Stack.Navigator>
    );
 }

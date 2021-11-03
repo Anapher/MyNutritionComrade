@@ -15,12 +15,16 @@ import {
    AddConsumptionPayload,
    barcodeScannedAddProduct,
    BarcodeScannedAddProductPayload,
+   changeMealItemAmount,
    ConsumptionId,
    ConsumptionPayload,
+   MealChangeItemAmountPayload,
+   MealSetItemPayload,
    removeConsumption,
    setConsumption,
    setConsumptionDialogAction,
    SetConsumptionDialogActionPayload,
+   setMealItem,
 } from './actions';
 import { selectedDateLoaded, setSelectedDate } from './reducer';
 import { getSelectedDate, selectConsumedPortions } from './selectors';
@@ -78,6 +82,36 @@ function* onSetConsumptionDialogAction({
    yield put(setConsumption({ date, time, foodPortion: { ...foodPortion, amount, servingType } }));
 }
 
+function* onChangeMealItemAmount({
+   payload: { meal, date, time, foodPortion, amount, servingType },
+}: PayloadAction<MealChangeItemAmountPayload>) {
+   yield put(
+      setConsumption({
+         date,
+         time,
+         foodPortion: {
+            ...meal,
+            items: meal.items.map((x) =>
+               getFoodPortionId(x) === getFoodPortionId(foodPortion) ? { ...foodPortion, amount, servingType } : x,
+            ),
+         },
+      }),
+   );
+}
+
+function* onSetMealItem({ payload: { date, time, foodPortion, meal } }: PayloadAction<MealSetItemPayload>) {
+   yield put(
+      setConsumption({
+         date,
+         time,
+         foodPortion: {
+            ...meal,
+            items: meal.items.map((x) => (getFoodPortionId(x) === getFoodPortionId(foodPortion) ? foodPortion : x)),
+         },
+      }),
+   );
+}
+
 function* onBarcodeScannedAction({
    payload: { result, date, time, navigation },
 }: PayloadAction<BarcodeScannedAddProductPayload>) {
@@ -122,6 +156,8 @@ function* diarySaga() {
    yield takeEvery(setConsumptionDialogAction, onSetConsumptionDialogAction);
    yield takeEvery(removeConsumption, onRemoveConsumption);
    yield takeEvery(barcodeScannedAddProduct, onBarcodeScannedAction);
+   yield takeEvery(changeMealItemAmount, onChangeMealItemAmount);
+   yield takeEvery(setMealItem, onSetMealItem);
 }
 
 export default diarySaga;

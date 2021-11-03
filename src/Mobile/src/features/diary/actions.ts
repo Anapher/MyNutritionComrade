@@ -2,7 +2,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createAction } from '@reduxjs/toolkit';
 import { BarCodeScanningResult } from 'expo-camera';
 import { RootNavigatorParamList } from 'src/RootNavigator';
-import { ConsumptionTime, FoodPortion, FoodPortionProduct } from 'src/types';
+import { ConsumptionTime, FoodPortion, FoodPortionItem, FoodPortionMeal, FoodPortionProduct } from 'src/types';
 
 export type ConsumptionId = {
    date: string;
@@ -32,6 +32,19 @@ export type SetConsumptionDialogActionPayload = ConsumptionPayload<FoodPortionPr
 export const setConsumptionDialogAction = createAction<SetConsumptionDialogActionPayload>(
    'diary/set-consumption-dialog-action',
 );
+
+export type MealSetItemPayload = ConsumptionPayload<FoodPortionItem> & {
+   meal: FoodPortionMeal;
+};
+
+export const setMealItem = createAction<MealSetItemPayload>('diary/meal-set-item');
+
+export type MealChangeItemAmountPayload = MealSetItemPayload & {
+   amount: number;
+   servingType: string;
+};
+
+export const changeMealItemAmount = createAction<MealChangeItemAmountPayload>('diary/meal-change-item-amount');
 
 export type BarcodeScannedAddProductPayload = {
    date: string;

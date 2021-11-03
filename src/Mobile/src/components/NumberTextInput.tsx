@@ -17,7 +17,7 @@ function NumberTextInput({ value, onChangeValue, onChangeState, showBottomLine, 
       const s = value?.toString();
       if (displayText !== s) {
          if (Number(displayText) === value) return;
-         if (displayText === '' && value === 0) return;
+         if (!displayText && value === 0) return;
          if (displayText === '0.' && value === 0) return;
          setDisplayText(s);
       }

@@ -241,6 +241,11 @@
         "title": "Create meal",
         "edit_meal": "Edit meal"
     },
+    "add_meal": {
+        "portions": "Portions",
+        "weight": "Weight",
+        "value": "Value"
+    },
     "properties": "Properties",
     "error_occurred": "Error occurred",
     "loading_message": "Loading...",

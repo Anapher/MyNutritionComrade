@@ -17,7 +17,8 @@ type GoalTileProps = {
 
 function GoalTile({ name, targetValue, value, unit }: GoalTileProps) {
    const progress = value / targetValue;
-   const color = progress > 95 ? '#27ae60' : progress > 50 ? '#e67e22' : '#e74c3c';
+
+   const color = progress > 0.95 ? '#27ae60' : progress > 0.5 ? '#e67e22' : '#e74c3c';
    const left = targetValue - value;
 
    return (

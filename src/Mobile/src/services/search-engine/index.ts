@@ -1,10 +1,13 @@
 import _ from 'lodash';
 import { SearchResult, ServingSize } from 'src/features/product-search/types';
 import { Product } from 'src/types';
+import { getBaseUnit } from 'src/utils/product-utils';
 import fuzzySearch, { SearchEntry } from './fuzzy-search';
 import { ProductSearchQuery, tryParseServingSize } from './input-parser';
 import { SearchIndex } from './search-index';
 import { ProductSearchConfig } from './types';
+
+const MAX_ENERGY_DEFAULT_SERVING = 5000;
 
 export default function searchIndex(s: string, index: SearchIndex, config?: ProductSearchConfig): SearchResult[] {
    const result = tryParseServingSize(s);
@@ -52,13 +55,25 @@ function mapProductToSearchResult(product: Product, searchQuery: ProductSearchQu
             type: 'serving',
             product: product,
             amount: matchedServing.amount,
-            servingType: matchedServing.servingType || product.defaultServing,
+            servingType: findReasonableServingType(product, matchedServing.amount, matchedServing.servingType),
             convertedFrom: matchedServing.convertedFrom,
          };
       }
    }
 
    return { type: 'product', product };
+}
+
+function findReasonableServingType(product: Product, amount: number, matchedServing?: string) {
+   if (matchedServing) return matchedServing;
+
+   const energyPerBaseUnit = product.nutritionalInfo.energy / product.nutritionalInfo.volume;
+
+   if (energyPerBaseUnit * product.servings[product.defaultServing] * amount <= MAX_ENERGY_DEFAULT_SERVING) {
+      return product.defaultServing;
+   }
+
+   return getBaseUnit(product);
 }
 
 export function getMatchingServing(

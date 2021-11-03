@@ -5,14 +5,14 @@ import { Awaited } from 'src/types';
 import { loadMeals } from './actions';
 import { mealsLoaded } from './reducer';
 
-function* handleLoadMeals() {
+function* onLoadMeals() {
    const database: Awaited<ReturnType<typeof getDatabase>> = yield call(getDatabase);
    const meals: Awaited<ReturnType<typeof mealsRepo.fetchMeals>> = yield call(mealsRepo.fetchMeals, database);
    yield put(mealsLoaded(meals));
 }
 
 function* mealSaga() {
-   yield takeEvery(loadMeals, handleLoadMeals);
+   yield takeEvery(loadMeals, onLoadMeals);
 }
 
 export default mealSaga;

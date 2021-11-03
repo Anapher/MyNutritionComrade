@@ -8,10 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import SearchBar from 'src/components/SearchBar';
 import SimpleIconButton from 'src/components/SimpleIconButton';
 import useActionSheetWrapper, { CancelButton } from 'src/hooks/useActionSheetWrapper';
-import { ProductSearchCompletedAction, RootNavigatorParamList } from 'src/RootNavigator';
+import { RootNavigatorParamList } from 'src/RootNavigator';
 import { FoodPortion, FoodPortionProduct } from 'src/types';
 import { createActionTemplate } from 'src/utils/redux-utils';
-import { selectedProductAmount } from '../actions';
+import { selectedMealPortion, selectedProductAmount } from '../actions';
 import { initializeSearch, setSearchText } from '../reducer';
 import { selectSearchResults, selectSearchText } from '../selectors';
 import { SearchResult } from '../types';
@@ -111,18 +111,17 @@ export default function ProductSearchScreen({
 
             navigation.pop(onCreatedPop);
             break;
-         //  case 'meal':
-         //      navigation.navigate('SelectMealPortion', {
-         //          mealName: item.mealName,
-         //          initialPortion: item.frequentlyUsedPortion?.portion,
-         //          nutritionalInfo: item.nutritionalInfo,
-         //          disableGoBack: true,
-         //          onSubmit: (portion: number) => {
-         //              onCreated({ type: 'meal', mealId: item.mealId, portion });
-         //              navigation.pop(2);
-         //          },
-         //      });
-         //      break;
+         case 'meal':
+            navigation.navigate('AddMeal', {
+               meal: item.meal,
+               submitTitle: t('common:add'),
+               onSubmitPop: onCreatedPop + 1,
+               onSubmitAction: createActionTemplate(selectedMealPortion, {
+                  meal: item.meal,
+                  completedAction: onCreatedAction,
+               }),
+            });
+            break;
          //  case 'generatedMeal':
          //      onCreated(
          //          {

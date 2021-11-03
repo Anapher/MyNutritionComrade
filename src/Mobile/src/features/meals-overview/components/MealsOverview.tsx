@@ -3,7 +3,7 @@ import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { FAB } from 'react-native-paper';
+import { FAB, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { ActionButtonLink, ActionList, ActionListItem, ActionListSection } from 'src/components/ActionList';
