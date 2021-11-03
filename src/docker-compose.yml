@@ -22,5 +22,3 @@ services:
       - IdentityOptions__EmailSalt=${EMAIL_SALT}
     depends_on:
       - mongo
-#    volumes:
-#      - ${PWD}/appsettings.Production.json:/app/appsettings.Production.json

@@ -6,4 +6,4 @@ export SITE_HOST=yourdomain.com
 export AUTH_SECRET_KEY=fill_in_random_token
 export EMAIL_SALT=fill_in_random_token
 
-docker-compose -f docker-compose.yml -f docker-compose.traefik.yml up --build $@
+docker-compose -f docker-compose.yml -f docker-compose.traefik.yml -f docker-compose.prod.yml up --build $@

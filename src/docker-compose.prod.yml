@@ -1,0 +1,10 @@
+version: "3.4"
+
+services:
+  community-catalog:
+    volumes:
+      - ${PWD}/appsettings.Production.json:/app/appsettings.Production.json
+
+  mongo:
+    volumes:
+      - ./db:/data/db
