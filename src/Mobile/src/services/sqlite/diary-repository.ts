@@ -10,12 +10,22 @@ export async function createTables(db: SQLiteDatabase): Promise<void> {
    db.executeTransaction((tx) => {
       actions.push(
          tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS `consumedPortion` (`id` INTEGER PRIMARY KEY NOT NULL, `json` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `foodId` TEXT)',
+            `CREATE TABLE IF NOT EXISTS \`consumedPortion\` (
+               \`id\` INTEGER PRIMARY KEY NOT NULL,
+               \`json\` TEXT NOT NULL,
+               \`date\` TEXT NOT NULL,
+               \`time\` TEXT NOT NULL,
+               \`foodId\` TEXT NOT NULL
+            )`,
          ),
       );
       actions.push(
          tx.executeSql(
-            'CREATE UNIQUE INDEX IF NOT EXISTS `portionPerDay` ON `consumedPortion` (`date`, `time`, `foodId`)',
+            `CREATE UNIQUE INDEX IF NOT EXISTS \`portionPerDay\` ON \`consumedPortion\` (
+                  \`date\`,
+                  \`time\`,
+                  \`foodId\`
+               )`,
          ),
       );
    });
@@ -35,26 +45,23 @@ export async function selectFrequentlyUsedFood(
    if (time !== 'breakfast' && time !== 'dinner' && time !== 'lunch' && time !== 'snack')
       throw new Error('invalid consumption time');
 
-   const result2 = await db.executeSql(`
-      SELECT COUNT(*) AS count FROM \`consumedPortion\`
-      WHERE julianday('now') - julianday(\`date\`) < ${maxAge}
+   const whereClause = `
+      WHERE \`time\` = '${time}' AND julianday('now') - julianday(\`date\`) < ${maxAge}
          AND julianday('now') - julianday(\`date\`) >= 1
-      `);
+      `;
 
-   const consumedFoodCount = result2[0]['count'] as number;
+   const countResult = await db.executeSql(`SELECT COUNT(*) AS count FROM \`consumedPortion\` ${whereClause}`);
+   const consumedFoodCount = countResult[0]['count'] as number;
 
    const rewardSameWeekday = maxAge * 0.2 * consumedFoodCount;
-   const rewardSameTime = maxAge * 0.1 * consumedFoodCount;
 
    const result = await db.executeSql(
       `SELECT \`foodId\`,
          SUM(${maxAge} - (julianday('now') - julianday(\`date\`)) +
-            IIF(strftime("%w", \`date\`) = '${weekday}', ${rewardSameWeekday}, 0) +
-            IIF(\`time\` = '${time}', ${rewardSameTime}, 0)
+            IIF(strftime("%w", \`date\`) = '${weekday}', ${rewardSameWeekday}, 0)
          ) AS score
       FROM consumedPortion
-      WHERE julianday('now') - julianday(\`date\`) < ${maxAge}
-         AND julianday('now') - julianday(\`date\`) >= 1
+      ${whereClause}
       GROUP BY \`foodId\`
       ORDER BY score DESC`,
    );
