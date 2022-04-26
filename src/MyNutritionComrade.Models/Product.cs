@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MyNutritionComrade.Models
 {
@@ -32,6 +33,11 @@ namespace MyNutritionComrade.Models
         {
             return new Product(id, modifiedOn, properties.Code, properties.Label, properties.NutritionalInfo,
                 properties.Servings, properties.DefaultServing, properties.Tags);
+        }
+
+        public override string ToString()
+        {
+            return $"{Label.Values.First().Value}";
         }
     }
 }

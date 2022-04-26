@@ -6,7 +6,7 @@ namespace MyNutritionComrade.Models.Validation
     {
         public NutritionalInfoValidator()
         {
-            RuleFor(x => x.Energy).GreaterThan(0);
+            RuleFor(x => x.Energy).GreaterThanOrEqualTo(0);
             RuleFor(x => x.Fat).GreaterThanOrEqualTo(0);
             RuleFor(x => x.SaturatedFat).GreaterThanOrEqualTo(0);
             RuleFor(x => x.Carbohydrates).GreaterThanOrEqualTo(0);

@@ -8,5 +8,12 @@
         double DietaryFiber, double Sodium)
     {
         public static NutritionalInfo Empty => new(0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        public NutritionalInfo ChangeVolume(double newVolume)
+        {
+            var factor = newVolume / Volume;
+            return new NutritionalInfo(Volume * factor, Energy * factor, Fat * factor, SaturatedFat * factor,
+                Carbohydrates * factor, Sugars * factor, Protein * factor, DietaryFiber * factor, Sodium * factor);
+        }
     }
 }
