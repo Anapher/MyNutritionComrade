@@ -7,7 +7,7 @@ using MongoDB.Concurrency.Optimistic;
 namespace CommunityCatalog.Services
 {
     public class MongoConcurrencyPipeline<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : notnull
+        where TRequest : IRequest<TResponse>
     {
         private const int RETRIES = 5;
 
