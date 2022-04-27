@@ -149,7 +149,7 @@ namespace CommunityCatalog.Controllers
             var productsUrl = Url.ActionLink(nameof(GetAllProducts));
             var latestChange = await repository.GetLatestProductChange();
 
-            return Ok(new List<ProductCatalogReference> { new(productsUrl, latestChange ?? DateTimeOffset.MinValue) });
+            return Ok(new List<ProductCatalogReference> { new(productsUrl!, latestChange ?? DateTimeOffset.MinValue) });
         }
 
         private async Task EnsureProductWritable(string productId)

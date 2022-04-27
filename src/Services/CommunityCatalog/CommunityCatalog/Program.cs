@@ -30,12 +30,9 @@ namespace CommunityCatalog
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args).UseServiceProviderFactory(new AutofacServiceProviderFactory())
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.UseSerilog((hostingContext, configuration) => configuration.ReadFrom
-                        .Configuration(hostingContext.Configuration).Enrich.FromLogContext());
-                });
+                .UseSerilog((context, configuration) =>
+                    configuration.ReadFrom.Configuration(context.Configuration).Enrich.FromLogContext())
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
         }
     }
 }
