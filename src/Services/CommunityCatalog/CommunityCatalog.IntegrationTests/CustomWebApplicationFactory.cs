@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
@@ -36,9 +37,9 @@ namespace CommunityCatalog.IntegrationTests
             }
         }
 
-        protected override IWebHostBuilder CreateWebHostBuilder()
+        protected override IHostBuilder? CreateHostBuilder()
         {
-            return base.CreateWebHostBuilder().UseSerilog(GetLoggerConfig().CreateLogger());
+            return base.CreateHostBuilder().UseSerilog(GetLoggerConfig().CreateLogger());
         }
 
         private LoggerConfiguration GetLoggerConfig()
