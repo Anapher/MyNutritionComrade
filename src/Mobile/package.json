@@ -27,7 +27,7 @@
     "expo-localization": "~10.2.0",
     "expo-sqlite": "~9.2.1",
     "expo-status-bar": "~1.0.4",
-    "fast-json-patch": "^3.1.0",
+    "fast-json-patch": "^3.1.1",
     "fuzzysort": "^1.1.4",
     "i18next": "^21.2.4",
     "jwt-decode": "^3.1.2",
