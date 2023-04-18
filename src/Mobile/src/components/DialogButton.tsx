@@ -6,7 +6,7 @@ type Props = React.ComponentProps<typeof Button>;
 
 const DialogButton = ({ contentStyle, ...props }: Props) => {
    const theme = useTheme();
-   return <Button color={theme.colors.text} {...props} contentStyle={[styles.contentStyle, contentStyle]} />;
+   return <Button textColor={theme.colors.onSurface} {...props} contentStyle={[styles.contentStyle, contentStyle]} />;
 };
 
 export default DialogButton;

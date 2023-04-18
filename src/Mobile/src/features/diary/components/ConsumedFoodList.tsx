@@ -66,7 +66,7 @@ export default function ConsumedFoodList({ style, consumedFood, selectedDate }: 
             return (
                <FoodPortionHeader
                   foodPortions={section.data.map((x) => x.foodPortion)}
-                  header={t(`consumption_time.${section.time}`)}
+                  header={t<string>(`consumption_time.${section.time}`)}
                   style={styles.sectionHeader}
                />
             );

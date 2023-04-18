@@ -9,7 +9,7 @@ type Props = {
    isRight?: boolean;
    style?: StyleProp<ViewStyle>;
    children?: React.ReactNode;
-   color?: 'primary' | 'accent';
+   color?: 'primary' | 'secondary';
 };
 
 export default function TextToggleButton({

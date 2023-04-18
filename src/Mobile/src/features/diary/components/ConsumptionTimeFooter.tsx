@@ -23,7 +23,7 @@ function ConsumptionTimeFooter({ section: { data }, onAddFood, onScanBarcode, st
                style={[
                   styles.divider,
                   {
-                     borderBottomColor: theme.colors.disabled,
+                     borderBottomColor: theme.colors.outline,
                   },
                ]}
             />

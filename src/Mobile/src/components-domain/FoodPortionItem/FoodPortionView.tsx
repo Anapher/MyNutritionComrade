@@ -80,17 +80,17 @@ function FoodPortionItem({
    const theme = useTheme();
    const { t } = useTranslation();
 
-   const titleColor = Color(theme.colors.text).alpha(0.87).rgb().string();
-   const descriptionColor = Color(theme.colors.text).alpha(0.7).rgb().string();
-   const descriptionBColor = Color(theme.colors.text).alpha(0.4).rgb().string();
+   const titleColor = Color(theme.colors.onSurface).alpha(0.87).rgb().string();
+   const descriptionColor = Color(theme.colors.onSurface).alpha(0.7).rgb().string();
+   const descriptionBColor = Color(theme.colors.onSurface).alpha(0.4).rgb().string();
 
-   const kcalColor = Color(theme.colors.text).alpha(0.8).rgb().string();
+   const kcalColor = Color(theme.colors.onSurface).alpha(0.8).rgb().string();
    const rippleColor = 'black';
 
    const { fat, carbohydrates, protein, volume, energy } = nutritionalInfo;
 
    return (
-      <Surface style={styles.surface}>
+      <Surface style={[styles.surface, { backgroundColor: theme.colors.background }]}>
          <TouchableRipple
             onPress={onPress && (() => onPress())}
             onLongPress={onLongPress && (() => onLongPress())}

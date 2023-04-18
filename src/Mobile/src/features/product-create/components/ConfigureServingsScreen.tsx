@@ -83,7 +83,7 @@ export default function ConfigureServingsScreen({
                                        rightAction={
                                           <IconButton
                                              icon="information-outline"
-                                             color={theme.colors.disabled}
+                                             color={theme.colors.onSurfaceDisabled}
                                              onPress={showServingInfo(labelKey, descriptionKey)}
                                           />
                                        }
@@ -93,8 +93,11 @@ export default function ConfigureServingsScreen({
                                        title={t(labelKey)}
                                        onChangeValue={() => {}}
                                        value={predefinedValue}
-                                       inputProps={{ editable: false, style: { color: theme.colors.disabled } }}
-                                       titleStyle={{ color: theme.colors.disabled }}
+                                       inputProps={{
+                                          editable: false,
+                                          style: { color: theme.colors.onSurfaceDisabled },
+                                       }}
+                                       titleStyle={{ color: theme.colors.onSurfaceDisabled }}
                                     />
                                  )
                               }

@@ -22,7 +22,7 @@ export default function SettingItem({ children, padding, style, itemContextOverr
       <Surface
          style={[
             {
-               backgroundColor: Color(theme.colors.text).alpha(0.06).rgb().string(),
+               backgroundColor: Color(theme.colors.onSurface).alpha(0.06).rgb().string(),
             },
             top ? styles.surfaceTop : undefined,
             bottom ? styles.surfaceBottom : undefined,
@@ -35,7 +35,7 @@ export default function SettingItem({ children, padding, style, itemContextOverr
                <Divider
                   style={[
                      styles.dividerInset,
-                     { backgroundColor: Color(theme.colors.disabled).alpha(0.18).rgb().string() },
+                     { backgroundColor: Color(theme.colors.onSurfaceDisabled).alpha(0.18).rgb().string() },
                   ]}
                />
             )}

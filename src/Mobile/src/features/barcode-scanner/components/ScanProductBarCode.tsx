@@ -24,7 +24,7 @@ function ScanProductBarCode({
 
    useEffect(() => {
       (async () => {
-         const { status } = await Camera.requestPermissionsAsync();
+         const { status } = await Camera.requestCameraPermissionsAsync();
          if (status !== 'granted') {
             navigation.goBack();
          }

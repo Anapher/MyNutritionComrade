@@ -3,24 +3,24 @@ import { NavigationContainer, Theme as NavTheme } from '@react-navigation/native
 import axios from 'axios';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { DarkTheme, overlay, Provider as PaperProvider } from 'react-native-paper';
-import { Theme } from 'react-native-paper/lib/typescript/types';
+import { MD3DarkTheme, overlay, Provider as PaperProvider, ThemeBase } from 'react-native-paper';
 import { Provider } from 'react-redux';
-import config from 'src/config';
+import config from './src/config';
 import InitializeRepo from 'src/features/repo-manager/components/InitializeRepo';
-import store from 'src/store';
+import store from './src/store';
 import RootNavigator from './src/RootNavigator';
 import './src/services/i18n';
 
 axios.defaults.baseURL = config.writeRepository.baseUrl;
 
-const theme: Theme = {
-   ...DarkTheme,
+const theme: typeof MD3DarkTheme = {
+   ...MD3DarkTheme,
    roundness: 2,
    colors: {
-      ...DarkTheme.colors,
+      ...MD3DarkTheme.colors,
       primary: '#2962ff',
-      accent: '#e74c3c',
+      secondary: '#e74c3c',
+      background: 'rgba(14, 13, 15, 1)',
    },
 };
 

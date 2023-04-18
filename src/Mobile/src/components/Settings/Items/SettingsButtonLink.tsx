@@ -58,7 +58,10 @@ export default function SettingsButtonLink({
                      <Text
                         numberOfLines={1}
                         ellipsizeMode="tail"
-                        style={[styles.secondary, !formLayout && { textAlign: 'right', color: theme.colors.disabled }]}
+                        style={[
+                           styles.secondary,
+                           !formLayout && { textAlign: 'right', color: theme.colors.onSurfaceDisabled },
+                        ]}
                      >
                         {secondary}
                      </Text>
@@ -66,7 +69,12 @@ export default function SettingsButtonLink({
                   {showSecondaryBelow && secondary !== undefined && <Caption>{secondary}</Caption>}
                </View>
                {icon === 'arrow' && (
-                  <Icon name="chevron-right" size={28} style={{ marginVertical: -2 }} color={theme.colors.disabled} />
+                  <Icon
+                     name="chevron-right"
+                     size={28}
+                     style={{ marginVertical: -2 }}
+                     color={theme.colors.onSurfaceDisabled}
+                  />
                )}
                {selectable && (
                   <Icon name="check" style={{ opacity: selected ? 1 : 0 }} size={22} color={theme.colors.primary} />

@@ -48,12 +48,12 @@ function NumberTextInput({ value, onChangeValue, onChangeState, showBottomLine, 
                onChangeValue(n);
             }
          }}
-         placeholderTextColor={theme.colors.disabled}
+         placeholderTextColor={theme.colors.onSurfaceDisabled}
          style={[
             {
-               color: theme.colors.text,
+               color: theme.colors.onSurface,
             },
-            showBottomLine && { borderBottomWidth: displayText ? 0 : 1, borderBottomColor: theme.colors.text },
+            showBottomLine && { borderBottomWidth: displayText ? 0 : 1, borderBottomColor: theme.colors.onSurface },
             !isApplied && { color: theme.colors.error },
             style,
          ]}

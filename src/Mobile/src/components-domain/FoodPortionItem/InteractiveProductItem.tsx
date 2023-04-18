@@ -48,7 +48,7 @@ export default function InteractiveProductItem({ foodPortion, onRemove, changeAm
             CancelButton(),
          ],
          {
-            title: t('product_label', { product: foodPortion.product }),
+            title: t<string>('product_label', { product: foodPortion.product }),
          },
       );
    };

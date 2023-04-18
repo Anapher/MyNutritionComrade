@@ -30,7 +30,7 @@ function AndroidPicker({ show, onChange, value, onClose }: Props) {
          display="inline"
          onChange={(_: any, date?: Date) => {
             onClose();
-            if (date) onChange(DateTime.fromJSDate(date).toISODate());
+            if (date) onChange(DateTime.fromJSDate(date).toISODate()!);
          }}
       />
    );
@@ -66,7 +66,7 @@ function IosDateTimePicker({ show, onChange, value, onClose }: Props) {
                            value={DateTime.fromISO(value).toJSDate()}
                            maximumDate={new Date()}
                            onChange={(_: any, date?: Date) => {
-                              if (date) onChange(DateTime.fromJSDate(date).toISODate());
+                              if (date) onChange(DateTime.fromJSDate(date).toISODate()!);
                            }}
                         />
                      </View>

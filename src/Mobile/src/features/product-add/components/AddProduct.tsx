@@ -114,8 +114,8 @@ export default function AddProduct({
                   width={Dimensions.get('window').width - 32}
                   scaleSteps={curveScale.labelStep}
                   curveBackground={curveBackground}
-                  curveGradientStart={theme.colors.accent}
-                  curveGradientEnd={theme.colors.accent}
+                  curveGradientStart={theme.colors.secondary}
+                  curveGradientEnd={theme.colors.secondary}
                   value={amount}
                />
             </View>

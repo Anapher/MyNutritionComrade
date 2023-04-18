@@ -32,18 +32,20 @@ export default function ActionTextInput({
       <ActionItem {...props}>
          <View style={styles.root}>
             <View style={styles.container}>
-               <Text style={[styles.title, error ? { color: theme.colors.text } : undefined, titleStyle]}>{title}</Text>
+               <Text style={[styles.title, error ? { color: theme.colors.onSurface } : undefined, titleStyle]}>
+                  {title}
+               </Text>
                <TextInput
                   style={[
                      styles.input,
                      {
-                        color: theme.colors.text,
+                        color: theme.colors.onSurface,
                      },
                   ]}
                   value={value ?? undefined}
                   onChangeText={onChangeValue}
                   placeholder={placeholder}
-                  placeholderTextColor={theme.colors.disabled}
+                  placeholderTextColor={theme.colors.onSurfaceDisabled}
                   autoFocus={autoFocus}
                   {...inputProps}
                />

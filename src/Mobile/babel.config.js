@@ -8,6 +8,7 @@ module.exports = function (api) {
          },
       },
       plugins: [
+         '@babel/plugin-proposal-unicode-property-regex',
          [
             'babel-plugin-root-import',
             {

@@ -18,8 +18,8 @@ type Props = {
 
 function SearchResultItem({ item, onPress }: Props) {
    const theme = useTheme();
-   const iconColor = color(theme.colors.text).alpha(0.87).rgb().string();
-   const descriptionColor = color(theme.colors.text).alpha(0.54).rgb().string();
+   const iconColor = color(theme.colors.onSurface).alpha(0.87).rgb().string();
+   const descriptionColor = color(theme.colors.onSurface).alpha(0.54).rgb().string();
 
    const { t } = useTranslation();
 
@@ -32,7 +32,7 @@ function SearchResultItem({ item, onPress }: Props) {
          <View style={styles.itemContent}>
             <View style={styles.iconContent}>{icon && <Icon name={icon} color={iconColor} size={24} />}</View>
             <View>
-               <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>
+               <Text style={[styles.title, { color: theme.colors.onSurface }]}>{title}</Text>
                {description !== undefined && (
                   <Text style={[styles.description, { color: descriptionColor }]}>{description}</Text>
                )}

@@ -84,8 +84,8 @@ interface MealPortionViewProps {
 
 function MealPortionView({ foodPortion, ...props }: MealPortionViewProps) {
    const theme = useTheme();
-   const titleColor = Color(theme.colors.text).alpha(0.87).rgb().string();
-   const kcalColor = Color(theme.colors.text).alpha(0.8).rgb().string();
+   const titleColor = Color(theme.colors.onSurface).alpha(0.87).rgb().string();
+   const kcalColor = Color(theme.colors.onSurface).alpha(0.8).rgb().string();
 
    const nutritionInfo = getFoodPortionNutritions(foodPortion);
 

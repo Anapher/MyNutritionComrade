@@ -6,16 +6,18 @@ import { setSelectedDate } from '../reducer';
 import { getSelectedDate, selectConsumedPortions } from '../selectors';
 import ConsumedFoodList from './ConsumedFoodList';
 import TabDiaryHeader from './TabDiaryHeader';
+import { useTheme } from 'react-native-paper';
 
 export default function TabDiary() {
    const dispatch = useDispatch();
+   const theme = useTheme();
 
    const selectedDate = useSelector(getSelectedDate);
    const consumedPortions = useSelector(selectConsumedPortions);
 
    useEffect(() => {
       if (!selectedDate) {
-         dispatch(setSelectedDate(DateTime.now().toISODate()));
+         dispatch(setSelectedDate(DateTime.now().toISODate()!));
       }
    }, [selectedDate, dispatch]);
 
@@ -31,7 +33,11 @@ export default function TabDiary() {
             onChangeSelectedDate={handleChangeSelectedDate}
          />
          {consumedPortions && (
-            <ConsumedFoodList style={styles.list} consumedFood={consumedPortions} selectedDate={selectedDate} />
+            <ConsumedFoodList
+               style={[styles.list, { backgroundColor: theme.colors.background }]}
+               consumedFood={consumedPortions}
+               selectedDate={selectedDate}
+            />
          )}
       </View>
    );

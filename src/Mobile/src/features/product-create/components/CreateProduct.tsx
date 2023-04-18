@@ -60,7 +60,7 @@ export default function CreateProduct({
 
          if (domainError) {
             if (domainError.code === 'ProductCodeAlreadyExists') {
-               setError('code', { message: t('errors.ProductCodeAlreadyExists') });
+               setError('code', { message: t<string>('errors.ProductCodeAlreadyExists') });
                setRequestError(undefined);
             }
          }

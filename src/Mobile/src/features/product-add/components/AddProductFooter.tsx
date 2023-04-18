@@ -48,7 +48,7 @@ export default function AddProductFooter({ product }: Props) {
                   ? t('add_product.contributions_pending', { count: data.openContributions })
                   : t('add_product.show_history')
             }
-            icon="poll-box"
+            icon="history"
             center
             onPress={handleOpenProductContributions}
          />
